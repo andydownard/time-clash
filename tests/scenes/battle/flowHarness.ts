@@ -1,0 +1,239 @@
+// Fakes and helpers for driving BattleFlow in plain Vitest. No Phaser, no DOM.
+import { simulateShot } from '../../../src/game/ballistics';
+import { LAUNCH_ORIGINS, PHASE1_LAYOUT, TEAM_FACING } from '../../../src/game/config';
+import { classifyBlast } from '../../../src/game/damage';
+import { createMatch } from '../../../src/game/match';
+import type {
+  AimInput,
+  BlastResult,
+  MatchController,
+  MatchOptions,
+  Players,
+  Team,
+} from '../../../src/game/types';
+import { windForTurn } from '../../../src/game/wind';
+import { BANK } from '../../../src/questions/bank';
+import { EMPTY_HISTORY, type PickHistory, type Question } from '../../../src/questions/types';
+import { BattleFlow, type FlowDeps } from '../../../src/scenes/battle/flow';
+import type {
+  BattleResult,
+  BattleView,
+  ImpactInfo,
+  PreviewDot,
+  ViewStatus,
+} from '../../../src/scenes/battle/types';
+import type { SfxName } from '../../../src/audio/types';
+import type { HudHandlers, HudState, ReloadAnswer } from '../../../src/ui/types';
+
+export const PLAYERS: Players = [
+  { name: 'Alex', team: 'PAST', grade: 2, subject: 'math' },
+  { name: 'Sam', team: 'FUTURE', grade: 5, subject: 'reading' },
+];
+
+export type Log = string[];
+
+export function makeWorld(
+  opts: {
+    seed?: number;
+    script?: AimInput[];
+    answers?: Array<'right' | 'wrong'>;
+    waitIfPaused?: () => Promise<void>;
+    bank?: FlowDeps['bank'];
+    matchOptions?: Partial<MatchOptions>;
+  } = {},
+) {
+  const log: Log = [];
+  const sfx: SfxName[] = [];
+  const impacts: ImpactInfo[] = [];
+  const tumbles: Team[] = [];
+  const bubbles: Array<{ text: string; team: Team }> = [];
+  const scrapPopups: Array<{ team: Team; amount: number }> = [];
+  const modalQuestions: Question[] = [];
+  const impactLabels: string[] = [];
+  const modalOptions: Array<Record<string, unknown>> = [];
+  const captions: Array<string | null> = [];
+  const hudStates: HudState[] = [];
+  const statuses: ViewStatus[] = [];
+  const previews: Array<{ team: Team; dots: readonly PreviewDot[] | null }> = [];
+  const histories: PickHistory[] = [];
+  const results: BattleResult[] = [];
+  let cover: 'pass' | 'reload' | null = null;
+  const coverViolations: string[] = [];
+  let handlers: HudHandlers | null = null;
+  let dragHandler: ((aim: AimInput) => void) | null = null;
+  const script = [...(opts.script ?? [])];
+  const answers = [...(opts.answers ?? [])];
+
+  const match: MatchController = createMatch({
+    players: PLAYERS,
+    seed: opts.seed ?? 7,
+    ...opts.matchOptions,
+  });
+
+  const guard = (what: string): void => {
+    if (cover) coverViolations.push(`${what} while ${cover} cover up`);
+  };
+
+  const view: BattleView = {
+    syncStatus: (s) => {
+      guard('syncStatus');
+      statuses.push(s);
+    },
+    setActiveTeam: (t) => log.push(`active:${t}`),
+    showPreview: (team, dots) => previews.push({ team, dots }),
+    setAimDragHandler: (h) => {
+      dragHandler = h;
+    },
+    animateShot: async (shooter) => {
+      guard('animateShot');
+      log.push(`fly:${shooter}`);
+    },
+    playImpact: async (info) => {
+      guard('playImpact');
+      impacts.push(info);
+      if (info.result === 'near') impactLabels.push(info.label);
+      log.push(`impact:${info.result}`);
+    },
+    playTumble: async (team) => {
+      guard('playTumble');
+      tumbles.push(team);
+      log.push(`tumble:${team}`);
+    },
+    showScrapPopup: (team, amount) => {
+      scrapPopups.push({ team, amount });
+      log.push(`scrap:${team}:${amount}`);
+    },
+  };
+
+  let lastAutoKey = '';
+  const autoplay = (key: string): void => {
+    if (key === lastAutoKey) return;
+    lastAutoKey = key;
+    const h = handlers;
+    const aim = script.shift();
+    if (!h || !aim) return;
+    queueMicrotask(() => {
+      h.onAim(aim);
+      h.onFire();
+    });
+  };
+
+  const overlay = {
+    cover: null as 'pass' | 'reload' | null,
+    showHud: (h: HudHandlers) => {
+      handlers = h;
+      log.push('hud:show');
+    },
+    updateHud: (s: HudState) => {
+      hudStates.push(s);
+      if (s.canFire)
+        autoplay(
+          `${s.activeTeam}:${s.shotsLeft}:${s.baseHp.PAST}:${s.baseHp.FUTURE}:${s.scrap.PAST}:${s.scrap.FUTURE}:${s.wind}`,
+        );
+    },
+    hideHud: () => {},
+    showTurnBanner: async (o: { name: string; shot: 1 | 2 }) => {
+      log.push(`banner:${o.name}:${o.shot}`);
+    },
+    showPassScreen: async (o: { nextName: string; nextTeam: Team }) => {
+      cover = 'pass';
+      log.push(`pass:${o.nextTeam}`);
+      await Promise.resolve();
+      cover = null;
+    },
+    showReloadModal: async (o: { question: Question; team: Team }): Promise<ReloadAnswer> => {
+      cover = 'reload';
+      modalQuestions.push(o.question);
+      modalOptions.push(o as unknown as Record<string, unknown>);
+      log.push(`reload:${o.team}`);
+      await Promise.resolve();
+      cover = null;
+      const kind = answers.shift() ?? 'right';
+      return kind === 'right'
+        ? { correct: true, elapsedMs: 1000, choice: o.question.answer }
+        : { correct: false, elapsedMs: 9000, choice: 'nope' };
+    },
+    showSpeechBubble: (o: { text: string; team: Team }) => {
+      bubbles.push({ text: o.text, team: o.team });
+      log.push(`bubble:${o.team}`);
+    },
+    setCaption: (t: string | null) => void captions.push(t),
+  };
+
+  const audio = { playSfx: (n: SfxName) => void sfx.push(n) };
+
+  const deps: FlowDeps = {
+    match,
+    overlay: overlay as unknown as FlowDeps['overlay'],
+    view,
+    audio: audio as unknown as FlowDeps['audio'],
+    bank: opts.bank ?? BANK,
+    history: EMPTY_HISTORY,
+    onHistory: (h) => histories.push(h),
+    onFinished: (r) => {
+      log.push('finished');
+      results.push(r);
+    },
+    wait: async () => {},
+    waitIfPaused: opts.waitIfPaused,
+  };
+
+  const flow = new BattleFlow(deps);
+  return {
+    flow,
+    match,
+    log,
+    sfx,
+    impacts,
+    tumbles,
+    bubbles,
+    scrapPopups,
+    modalQuestions,
+    modalOptions,
+    impactLabels,
+    captions,
+    hudStates,
+    statuses,
+    previews,
+    histories,
+    results,
+    coverViolations,
+    handlers: () => handlers,
+    drag: (aim: AimInput) => dragHandler?.(aim),
+    hasDragHandler: () => dragHandler !== null,
+    deps,
+  };
+}
+
+/** Find an aim whose shot lands as `wanted` for that team on that turn. Brute force, deterministic. */
+export function findAim(
+  seed: number,
+  turnNumber: number,
+  team: Team,
+  wanted: BlastResult,
+): AimInput {
+  const wind = windForTurn(seed, turnNumber);
+  const enemy: Team = team === 'PAST' ? 'FUTURE' : 'PAST';
+  for (let power = 100; power >= 10; power -= 2) {
+    for (let angleDeg = 5; angleDeg <= 85; angleDeg += 2) {
+      const r = simulateShot({
+        angleDeg,
+        power,
+        origin: LAUNCH_ORIGINS[team],
+        facing: TEAM_FACING[team],
+        wind,
+        layout: PHASE1_LAYOUT,
+      });
+      if (r.hit.kind === 'out_of_bounds' || r.hit.kind === 'timeout') continue;
+      if (classifyBlast(r.landing, PHASE1_LAYOUT.bases[enemy]) === wanted) {
+        return { angleDeg, power };
+      }
+    }
+  }
+  throw new Error(`no ${wanted} aim for ${team} on turn ${turnNumber}`);
+}
+
+/** Let queued promises and microtasks settle. */
+export const settle = async (): Promise<void> => {
+  for (let i = 0; i < 60; i++) await new Promise<void>((r) => setTimeout(r, 0));
+};

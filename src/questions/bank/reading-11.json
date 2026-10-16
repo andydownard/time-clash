@@ -1,0 +1,539 @@
+[
+  {
+    "id": "reading-11-0001",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "vocab",
+    "prompt": "Read: \"The baker was meticulous. She measured every cup of flour with great care.\" What does \"meticulous\" mean?",
+    "choices": ["very careful", "very loud", "quite sleepy", "a bit lazy"],
+    "answer": "very careful",
+    "hint": "Look at how she measured the flour.",
+    "tags": ["vocab-in-context", "original"]
+  },
+  {
+    "id": "reading-11-0002",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "vocab",
+    "prompt": "Read: \"The soap bubble was ephemeral. It popped a moment after it formed.\" What does \"ephemeral\" mean?",
+    "choices": ["lasting a long time", "lasting a short time", "very heavy", "full of color"],
+    "answer": "lasting a short time",
+    "hint": "Think about how fast the bubble popped.",
+    "tags": ["vocab-in-context", "original"]
+  },
+  {
+    "id": "reading-11-0003",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "vocab",
+    "prompt": "Read: \"Phones are ubiquitous. You can see them in every room, shop, and park.\" What does \"ubiquitous\" mean?",
+    "choices": ["hard to find", "brand new", "found everywhere", "very noisy"],
+    "answer": "found everywhere",
+    "hint": "The clue is every room, shop, and park.",
+    "tags": ["vocab-in-context", "original"]
+  },
+  {
+    "id": "reading-11-0004",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "vocab",
+    "prompt": "Read: \"Mia gave a candid answer. She told her friend exactly what she thought.\" What does \"candid\" mean?",
+    "choices": ["silly and loud", "shy and quiet", "sweet and sticky", "honest and open"],
+    "answer": "honest and open",
+    "hint": "She told what she really thought.",
+    "tags": ["vocab-in-context", "original"]
+  },
+  {
+    "id": "reading-11-0005",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "vocab",
+    "prompt": "Read: \"Leo is frugal. He saves his coins and spends them only on things he needs.\" What does \"frugal\" mean?",
+    "choices": ["careful with money", "full of fun", "slow to learn", "good at sports"],
+    "answer": "careful with money",
+    "hint": "Think about how he treats his coins.",
+    "tags": ["vocab-in-context", "original"]
+  },
+  {
+    "id": "reading-11-0006",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "vocab",
+    "prompt": "Read: \"Sam was reluctant to jump in the cold pool. He stood at the edge for a long time.\" What does \"reluctant\" mean?",
+    "choices": ["eager", "unwilling", "proud", "sleepy"],
+    "answer": "unwilling",
+    "hint": "He stood at the edge and waited.",
+    "tags": ["vocab-in-context", "original"]
+  },
+  {
+    "id": "reading-11-0007",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "vocab",
+    "prompt": "Read: \"Typewriters are mostly obsolete. Most people now use computers.\" What does \"obsolete\" mean?",
+    "choices": ["very new", "easy to fix", "no longer used", "extra loud"],
+    "answer": "no longer used",
+    "hint": "Most people use something else now.",
+    "tags": ["vocab-in-context", "original"]
+  },
+  {
+    "id": "reading-11-0008",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "vocab",
+    "prompt": "Read: \"Ana is gregarious. She loves parties and talks to everyone she meets.\" What does \"gregarious\" mean?",
+    "choices": ["quiet and shy", "tall and thin", "grumpy and rude", "friendly and social"],
+    "answer": "friendly and social",
+    "hint": "She loves to be with people.",
+    "tags": ["vocab-in-context", "original"]
+  },
+  {
+    "id": "reading-11-0009",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "vocab",
+    "prompt": "Read: \"The tenacious puppy kept pulling the rope. It would not let go.\" What does \"tenacious\" mean?",
+    "choices": ["refusing to give up", "fast asleep", "very gentle", "a bit clumsy"],
+    "answer": "refusing to give up",
+    "hint": "The puppy would not let go.",
+    "tags": ["vocab-in-context", "original"]
+  },
+  {
+    "id": "reading-11-0010",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "vocab",
+    "prompt": "Read: \"The speech was verbose. It used a hundred words where ten would do.\" What does \"verbose\" mean?",
+    "choices": ["very short", "using too many words", "very funny", "hard to hear"],
+    "answer": "using too many words",
+    "hint": "Compare a hundred words to ten.",
+    "tags": ["vocab-in-context", "original"]
+  },
+  {
+    "id": "reading-11-0011",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "vocab",
+    "prompt": "Read: \"The coach was lenient. When players came late, she only said, \"Be on time next game.\"\" What does \"lenient\" mean?",
+    "choices": ["very strict", "very young", "not strict", "often angry"],
+    "answer": "not strict",
+    "hint": "She did not give a big punishment.",
+    "tags": ["vocab-in-context", "original"]
+  },
+  {
+    "id": "reading-11-0012",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "vocab",
+    "prompt": "Read: \"Dev took a pragmatic view. He picked the plan that would really work, not the fanciest one.\" What does \"pragmatic\" mean?",
+    "choices": ["dreamy", "fearful", "careless", "practical"],
+    "answer": "practical",
+    "hint": "He cared about what really works.",
+    "tags": ["vocab-in-context", "original"]
+  },
+  {
+    "id": "reading-11-0013",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "vocab",
+    "prompt": "Read: \"The mouse found a meager meal. It was just two crumbs.\" What does \"meager\" mean?",
+    "choices": ["very small in amount", "huge and tasty", "spicy and hot", "cold and wet"],
+    "answer": "very small in amount",
+    "hint": "Two crumbs is not much.",
+    "tags": ["vocab-in-context", "original"]
+  },
+  {
+    "id": "reading-11-0014",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "vocab",
+    "prompt": "Read: \"The benevolent king gave warm coats to every child in the town.\" What does \"benevolent\" mean?",
+    "choices": ["silly and loud", "kind and giving", "selfish", "tired and slow"],
+    "answer": "kind and giving",
+    "hint": "Think about why he gave coats.",
+    "tags": ["vocab-in-context", "original"]
+  },
+  {
+    "id": "reading-11-0015",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "vocab",
+    "prompt": "Read: \"Washing the same dishes each day felt mundane to Rosa.\" What does \"mundane\" mean?",
+    "choices": ["thrilling", "magical", "ordinary and dull", "dangerous"],
+    "answer": "ordinary and dull",
+    "hint": "Doing the same task each day feels this way.",
+    "tags": ["vocab-in-context", "original"]
+  },
+  {
+    "id": "reading-11-0016",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "vocab",
+    "prompt": "Read: \"The inventor leaned in to scrutinize the tiny gear.\" What does \"scrutinize\" mean?",
+    "choices": ["toss away", "paint over", "ignore", "examine closely"],
+    "answer": "examine closely",
+    "hint": "She leaned in to look.",
+    "tags": ["vocab-in-context", "original"]
+  },
+  {
+    "id": "reading-11-0017",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this story?",
+    "passage": "Bees visit flowers to drink sweet nectar. As they travel, pollen sticks to their legs. They carry it to the next flower, and this helps plants make seeds.",
+    "choices": [
+      "Bees help plants make seeds.",
+      "Bees make honey in winter.",
+      "Flowers grow only in spring.",
+      "Bees have tiny legs."
+    ],
+    "answer": "Bees help plants make seeds.",
+    "hint": "Ask what the bees do for the plants.",
+    "tags": ["main-idea", "original"]
+  },
+  {
+    "id": "reading-11-0018",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this story?",
+    "passage": "Sleep gives the body time to rest. During sleep, the brain sorts what you learned that day. People who sleep well often think more clearly.",
+    "choices": [
+      "Brains work only at night.",
+      "Good sleep helps the body and mind.",
+      "People should learn in bed.",
+      "Sleep takes up a lot of time."
+    ],
+    "answer": "Good sleep helps the body and mind.",
+    "hint": "Look for the idea that all three sentences share.",
+    "tags": ["main-idea", "original"]
+  },
+  {
+    "id": "reading-11-0019",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this story?",
+    "passage": "A library lends books for free. Many also offer computers, quiet rooms, and story hours. A library card is all you need to start.",
+    "choices": [
+      "Libraries are always quiet.",
+      "Story hours are for babies.",
+      "Libraries offer many free things.",
+      "Computers are better than books."
+    ],
+    "answer": "Libraries offer many free things.",
+    "hint": "What do all the sentences say about the library?",
+    "tags": ["main-idea", "original"]
+  },
+  {
+    "id": "reading-11-0020",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this story?",
+    "passage": "Trees in a city give cool shade on hot days. Their leaves clean the air. Birds also build nests in them.",
+    "choices": [
+      "Birds like hot days.",
+      "Leaves are green.",
+      "Cities have no parks.",
+      "City trees help people and animals."
+    ],
+    "answer": "City trees help people and animals.",
+    "hint": "Think about who gains from the trees.",
+    "tags": ["main-idea", "original"]
+  },
+  {
+    "id": "reading-11-0021",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this story?",
+    "passage": "Food scraps can become rich soil. Worms and tiny living things break the scraps down. Gardeners then spread this soil on their plants.",
+    "choices": [
+      "Food scraps can be turned into soil for gardens.",
+      "Worms eat all garden plants.",
+      "Gardeners grow food scraps.",
+      "Soil is always rich."
+    ],
+    "answer": "Food scraps can be turned into soil for gardens.",
+    "hint": "Follow what happens to the scraps.",
+    "tags": ["main-idea", "original"]
+  },
+  {
+    "id": "reading-11-0022",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this story?",
+    "passage": "At first, Nia could not ride her bike without falling. She practiced each day for a week. Soon she rode all the way to the park.",
+    "choices": [
+      "Bikes are hard to ride.",
+      "Practice helps people get better.",
+      "Parks are far from home.",
+      "Falling is fun."
+    ],
+    "answer": "Practice helps people get better.",
+    "hint": "What changed from the start to the end?",
+    "tags": ["main-idea", "original"]
+  },
+  {
+    "id": "reading-11-0023",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this story?",
+    "passage": "The moon pulls on the ocean. This pull makes the water rise and fall twice a day. We call these changes tides.",
+    "choices": [
+      "The ocean is very deep.",
+      "Water falls from the sky.",
+      "The moon causes ocean tides.",
+      "The moon is bright at night."
+    ],
+    "answer": "The moon causes ocean tides.",
+    "hint": "What makes the water rise and fall?",
+    "tags": ["main-idea", "original"]
+  },
+  {
+    "id": "reading-11-0024",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this story?",
+    "passage": "One ant cannot carry a big crumb. But many ants can lift it together. They work as a team to bring food home.",
+    "choices": [
+      "Ants love crumbs.",
+      "One ant is very strong.",
+      "Ants live in homes.",
+      "Ants work together to move food."
+    ],
+    "answer": "Ants work together to move food.",
+    "hint": "Look at what the ants do as a team.",
+    "tags": ["main-idea", "original"]
+  },
+  {
+    "id": "reading-11-0025",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this story?",
+    "passage": "Long ago, sailors used stars to find their way at sea. One star in the north always stays in the same spot. It showed them which way to go.",
+    "choices": [
+      "Sailors used stars to find their way.",
+      "Stars are very far away.",
+      "Ships were slow long ago.",
+      "The sea is very big."
+    ],
+    "answer": "Sailors used stars to find their way.",
+    "hint": "What did the sailors use the stars for?",
+    "tags": ["main-idea", "original"]
+  },
+  {
+    "id": "reading-11-0026",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this story?",
+    "passage": "Old paper can be turned into new paper. First it is mixed with water to make a soft pulp. Then the pulp is pressed flat and dried.",
+    "choices": [
+      "Water is soft.",
+      "Old paper can be made into new paper.",
+      "Paper is always white.",
+      "Pulp is hard to dry."
+    ],
+    "answer": "Old paper can be made into new paper.",
+    "hint": "Think about the steps from old to new.",
+    "tags": ["main-idea", "original"]
+  },
+  {
+    "id": "reading-11-0027",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this story?",
+    "passage": "A cactus lives where rain is rare. Its thick stem stores water for dry days. Its spines give shade and keep animals away.",
+    "choices": [
+      "Cactus spines are sharp.",
+      "Rain is bad for plants.",
+      "A cactus has ways to live in dry places.",
+      "Animals like to eat cactus."
+    ],
+    "answer": "A cactus has ways to live in dry places.",
+    "hint": "Each sentence tells how it handles dry land.",
+    "tags": ["main-idea", "original"]
+  },
+  {
+    "id": "reading-11-0028",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this story?",
+    "passage": "When Omar saw a new student eating alone, he sat down beside her. They talked about games and laughed. By the end of lunch, she had a new friend.",
+    "choices": [
+      "Lunch is the best part of school.",
+      "Games are more fun than books.",
+      "New students are always shy.",
+      "A small act of kindness can make a friend."
+    ],
+    "answer": "A small act of kindness can make a friend.",
+    "hint": "What did Omar do, and what came of it?",
+    "tags": ["main-idea", "original"]
+  },
+  {
+    "id": "reading-11-0029",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "grammar",
+    "prompt": "Pick the word that fits: Neither of the boys ___ ready.",
+    "choices": ["is", "are", "were", "been"],
+    "answer": "is",
+    "hint": "Neither means one or the other. It takes a single form.",
+    "tags": ["subject-verb-agreement", "original"]
+  },
+  {
+    "id": "reading-11-0030",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "grammar",
+    "prompt": "Which sentence uses the right they-re word?",
+    "choices": [
+      "Their going to the park.",
+      "They're going to the park.",
+      "There going to the park.",
+      "Theyre going to the park."
+    ],
+    "answer": "They're going to the park.",
+    "hint": "The word should mean they are.",
+    "tags": ["homophones", "original"]
+  },
+  {
+    "id": "reading-11-0031",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "grammar",
+    "prompt": "Pick the word that fits: The dog wagged ___ tail.",
+    "choices": ["it's", "its'", "its", "it"],
+    "answer": "its",
+    "hint": "You need the word that shows the tail belongs to the dog.",
+    "tags": ["possessives", "original"]
+  },
+  {
+    "id": "reading-11-0032",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "grammar",
+    "prompt": "Pick the word that fits: Mom gave the map to Jo and ___.",
+    "choices": ["I", "myself", "mine", "me"],
+    "answer": "me",
+    "hint": "Try it without Jo. Mom gave the map to ___.",
+    "tags": ["pronouns", "original"]
+  },
+  {
+    "id": "reading-11-0033",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "grammar",
+    "prompt": "Pick the word that fits: Each of the cats ___ a bell.",
+    "choices": ["has", "have", "are having", "having"],
+    "answer": "has",
+    "hint": "Each means one at a time.",
+    "tags": ["subject-verb-agreement", "original"]
+  },
+  {
+    "id": "reading-11-0034",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "grammar",
+    "prompt": "Which sentence uses commas the right way?",
+    "choices": [
+      "We packed apples pears, and grapes.",
+      "We packed apples, pears, and grapes.",
+      "We packed, apples pears and grapes.",
+      "We, packed apples, pears and grapes."
+    ],
+    "answer": "We packed apples, pears, and grapes.",
+    "hint": "Commas go between the things in a list.",
+    "tags": ["commas", "original"]
+  },
+  {
+    "id": "reading-11-0035",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "grammar",
+    "prompt": "Pick the word that fits: I would have gone if I ___ known.",
+    "choices": ["have", "would", "had", "has"],
+    "answer": "had",
+    "hint": "The sentence talks about the past.",
+    "tags": ["verb-tense", "original"]
+  },
+  {
+    "id": "reading-11-0036",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "grammar",
+    "prompt": "Which word is the verb in this sentence? The tall robot waved quickly.",
+    "choices": ["tall", "robot", "quickly", "waved"],
+    "answer": "waved",
+    "hint": "Find the action word.",
+    "tags": ["parts-of-speech", "original"]
+  },
+  {
+    "id": "reading-11-0037",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "grammar",
+    "prompt": "Pick the word that fits: We have ___ apples than we did.",
+    "choices": ["fewer", "less", "lesser", "least"],
+    "answer": "fewer",
+    "hint": "You can count apples one by one.",
+    "tags": ["word-choice", "original"]
+  },
+  {
+    "id": "reading-11-0038",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "grammar",
+    "prompt": "Which sentence asks who owns the coat?",
+    "choices": [
+      "Who's coat is this?",
+      "Whose coat is this?",
+      "Whos coat is this?",
+      "Whose' coat is this?"
+    ],
+    "answer": "Whose coat is this?",
+    "hint": "You want the word that asks who owns it.",
+    "tags": ["homophones", "original"]
+  },
+  {
+    "id": "reading-11-0039",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "grammar",
+    "prompt": "Which sentence compares the right way?",
+    "choices": [
+      "She speaks more clearer than her brother.",
+      "She speaks most clearly than her brother.",
+      "She speaks more clearly than her brother.",
+      "She speaks clearlier than her brother."
+    ],
+    "answer": "She speaks more clearly than her brother.",
+    "hint": "Pick the one with a single comparing word.",
+    "tags": ["comparisons", "original"]
+  },
+  {
+    "id": "reading-11-0040",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "grammar",
+    "prompt": "Which one is a full sentence, not a piece of one?",
+    "choices": [
+      "Because the band played.",
+      "Playing until midnight.",
+      "After the long show.",
+      "The band played until midnight."
+    ],
+    "answer": "The band played until midnight.",
+    "hint": "A full sentence tells who did what.",
+    "tags": ["sentence-fragments", "original"]
+  }
+]

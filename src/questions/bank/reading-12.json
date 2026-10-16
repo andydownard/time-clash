@@ -1,0 +1,529 @@
+[
+  {
+    "id": "reading-12-0001",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? Phones are ubiquitous, so you can see them everywhere.",
+    "choices": ["found everywhere", "very rare", "hard to use", "always broken"],
+    "answer": "found everywhere",
+    "hint": "Look at the end of the sentence.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-12-0002",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "mainidea",
+    "prompt": "Read the passage. What is the main idea?",
+    "passage": "Bees visit flowers to drink nectar. As they move from flower to flower, pollen sticks to their legs. This pollen helps plants make seeds and fruit.",
+    "choices": [
+      "Bees are the biggest insects.",
+      "Bees help plants make seeds and fruit.",
+      "Flowers are only for looking at.",
+      "Bees sleep all winter."
+    ],
+    "answer": "Bees help plants make seeds and fruit.",
+    "hint": "Ask what bees do for the plants.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-12-0003",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "grammar",
+    "prompt": "Which word is spelled the right way?",
+    "choices": ["neccessary", "necesary", "necessary", "neccesary"],
+    "answer": "necessary",
+    "hint": "Think of one c and two s letters.",
+    "tags": ["grammar", "spelling"]
+  },
+  {
+    "id": "reading-12-0004",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? The meticulous builder checked every small detail twice.",
+    "choices": ["careless", "very tired", "quite loud", "very careful"],
+    "answer": "very careful",
+    "hint": "Think about checking twice.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-12-0005",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "mainidea",
+    "prompt": "Read the passage. What is the main idea?",
+    "passage": "Many towns now plant trees along their streets. Trees give shade on hot days. They also clean the air and give birds a home.",
+    "choices": [
+      "Street trees help a town in many ways.",
+      "Birds are the best pets.",
+      "Hot days are not fun.",
+      "Towns have too many streets."
+    ],
+    "answer": "Street trees help a town in many ways.",
+    "hint": "Find the idea that covers all the sentences.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-12-0006",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "grammar",
+    "prompt": "Pick the word that fits. The dog wagged ___ tail.",
+    "choices": ["it's", "its", "its'", "is"],
+    "answer": "its",
+    "hint": "Which one shows the tail belongs to the dog?",
+    "tags": ["grammar", "grammar"]
+  },
+  {
+    "id": "reading-12-0007",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? The snowman was ephemeral and was gone by noon.",
+    "choices": ["lasting forever", "very funny", "lasting a short time", "full of color"],
+    "answer": "lasting a short time",
+    "hint": "It was gone by noon.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-12-0008",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "mainidea",
+    "prompt": "Read the passage. What is the main idea?",
+    "passage": "Sleep is important for students. A rested brain remembers more and pays better attention. Students who sleep well often do better on tests.",
+    "choices": [
+      "Tests are too hard.",
+      "Students should stay up late.",
+      "Brains are very heavy.",
+      "Good sleep helps students learn."
+    ],
+    "answer": "Good sleep helps students learn.",
+    "hint": "What do all three sentences say about sleep?",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-12-0009",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "grammar",
+    "prompt": "Pick the word that fits. ___ going to the park after lunch.",
+    "choices": ["They're", "Their", "There", "Theyre"],
+    "answer": "They're",
+    "hint": "Try saying \"they are\" in the blank.",
+    "tags": ["grammar", "homophone"]
+  },
+  {
+    "id": "reading-12-0010",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? Her candid answer was honest, even if it was not what we hoped.",
+    "choices": ["sneaky", "honest and open", "shy", "sweet"],
+    "answer": "honest and open",
+    "hint": "The sentence uses the word honest nearby.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-12-0011",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "mainidea",
+    "prompt": "Read the passage. What is the main idea?",
+    "passage": "Long ago, sailors used stars to find their way across the sea. They learned which stars stay in the same place each night. These stars worked like a map in the sky.",
+    "choices": [
+      "Stars are very hot.",
+      "Sailors liked to sleep at night.",
+      "Sailors used stars to find their way.",
+      "Maps are made of paper."
+    ],
+    "answer": "Sailors used stars to find their way.",
+    "hint": "Look for what the sailors did with the stars.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-12-0012",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "grammar",
+    "prompt": "Which sentence is right?",
+    "choices": [
+      "Me and Mia went to the fair.",
+      "Mia and me went to the fair.",
+      "I and Mia went to the fair.",
+      "Mia and I went to the fair."
+    ],
+    "answer": "Mia and I went to the fair.",
+    "hint": "Take out \"Mia and\" and see what sounds right.",
+    "tags": ["grammar", "grammar"]
+  },
+  {
+    "id": "reading-12-0013",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? The sign was ambiguous, so two people read it in two different ways.",
+    "choices": ["having more than one meaning", "very bright", "written in code", "broken"],
+    "answer": "having more than one meaning",
+    "hint": "Two people read it two ways.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-12-0014",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "mainidea",
+    "prompt": "Read the passage. What is the main idea?",
+    "passage": "A library is more than a place for books. You can borrow games, join a club, or learn to code. Many libraries also have quiet rooms for study.",
+    "choices": [
+      "Libraries are always noisy.",
+      "Libraries offer many things besides books.",
+      "Games are better than books.",
+      "Clubs meet at night."
+    ],
+    "answer": "Libraries offer many things besides books.",
+    "hint": "The first sentence tells you a lot.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-12-0015",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "grammar",
+    "prompt": "Pick the word that fits. She ran ___ than her brother.",
+    "choices": ["more fast", "fastest", "faster", "most fast"],
+    "answer": "faster",
+    "hint": "You are comparing two people.",
+    "tags": ["grammar", "grammar"]
+  },
+  {
+    "id": "reading-12-0016",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? The benevolent king gave free food to families in need.",
+    "choices": ["strict", "sleepy", "proud", "kind and giving"],
+    "answer": "kind and giving",
+    "hint": "Think about why he gave free food.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-12-0017",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "mainidea",
+    "prompt": "Read the passage. What is the main idea?",
+    "passage": "Recycling paper saves trees. It also uses less water than making new paper. And it keeps old paper out of the trash.",
+    "choices": [
+      "Recycling paper helps the planet in several ways.",
+      "Paper is hard to make.",
+      "Trees grow very slowly.",
+      "Trash cans are too small."
+    ],
+    "answer": "Recycling paper helps the planet in several ways.",
+    "hint": "Count the good things the passage lists.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-12-0018",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "grammar",
+    "prompt": "What is the plural of the word \"child\"?",
+    "choices": ["childs", "children", "childes", "childrens"],
+    "answer": "children",
+    "hint": "This word does not just add an s.",
+    "tags": ["grammar", "grammar"]
+  },
+  {
+    "id": "reading-12-0019",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? The tenacious puppy kept pulling the rope and would not let go.",
+    "choices": ["lazy", "tiny", "not giving up", "noisy"],
+    "answer": "not giving up",
+    "hint": "Think about a puppy that will not let go.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-12-0020",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "mainidea",
+    "prompt": "Read the passage. What is the main idea?",
+    "passage": "Frogs begin life as eggs in water. The eggs hatch into tadpoles, which swim and have tails. Later the tadpoles grow legs and become frogs.",
+    "choices": [
+      "Frogs lay eggs on roofs.",
+      "Tadpoles cannot swim.",
+      "Tails are the best part of a frog.",
+      "A frog changes a lot as it grows."
+    ],
+    "answer": "A frog changes a lot as it grows.",
+    "hint": "The passage follows the steps of a life.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-12-0021",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "grammar",
+    "prompt": "Pick the word that fits. Yesterday, we ___ a big kite.",
+    "choices": ["flew", "flied", "flown", "flyed"],
+    "answer": "flew",
+    "hint": "Think of the past of the word \"fly\".",
+    "tags": ["grammar", "verb"]
+  },
+  {
+    "id": "reading-12-0022",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? Water was scarce in the desert, so each hiker had only a little.",
+    "choices": ["plentiful", "small in supply", "dirty", "cold"],
+    "answer": "small in supply",
+    "hint": "Each hiker had only a little.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-12-0023",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "mainidea",
+    "prompt": "Read the passage. What is the main idea?",
+    "passage": "Practice is the key to playing music well. A student who plays ten minutes each day will improve faster than one who plays for two hours once a week. Small, steady effort wins.",
+    "choices": [
+      "Music is only for adults.",
+      "Two hours is always too long.",
+      "Short daily practice works better than rare long practice.",
+      "Weekends are the best time to play."
+    ],
+    "answer": "Short daily practice works better than rare long practice.",
+    "hint": "Look at the last sentence.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-12-0024",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "grammar",
+    "prompt": "Which sentence has the right commas?",
+    "choices": [
+      "We packed, apples pears and plums.",
+      "We, packed apples pears, and plums.",
+      "We packed apples pears, and, plums.",
+      "We packed apples, pears, and plums."
+    ],
+    "answer": "We packed apples, pears, and plums.",
+    "hint": "A list needs commas between the items.",
+    "tags": ["grammar", "punctuation"]
+  },
+  {
+    "id": "reading-12-0025",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? The speech was verbose. It used a hundred words where ten would do.",
+    "choices": ["using too many words", "very quiet", "full of jokes", "well planned"],
+    "answer": "using too many words",
+    "hint": "It used a hundred words where ten would do.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-12-0026",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "mainidea",
+    "prompt": "Read the passage. What is the main idea?",
+    "passage": "The first bicycles had no pedals. Riders pushed with their feet along the ground. Later, inventors added pedals and a chain, and bikes became easier to ride.",
+    "choices": [
+      "Riders liked to walk.",
+      "Bicycles changed over time to become easier to ride.",
+      "Chains are made of gold.",
+      "Inventors never made bikes."
+    ],
+    "answer": "Bicycles changed over time to become easier to ride.",
+    "hint": "Notice the word \"later\".",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-12-0027",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "grammar",
+    "prompt": "Which word is an adverb? She spoke softly to the baby.",
+    "choices": ["spoke", "baby", "softly", "She"],
+    "answer": "softly",
+    "hint": "An adverb tells how something is done.",
+    "tags": ["grammar", "grammar"]
+  },
+  {
+    "id": "reading-12-0028",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? Be pragmatic: pick the plan that really works, not one that only sounds nice.",
+    "choices": ["dreamy", "playful", "careless", "practical"],
+    "answer": "practical",
+    "hint": "Think about a plan that really works.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-12-0029",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "mainidea",
+    "prompt": "Read the passage. What is the main idea?",
+    "passage": "Deserts get very little rain, but life still finds a way. Cacti store water in thick stems. Some desert animals come out only at night, when it is cool.",
+    "choices": [
+      "Desert plants and animals have ways to live with little water.",
+      "Cacti are the only desert plants.",
+      "Deserts get rain every day.",
+      "Animals in deserts sleep all year."
+    ],
+    "answer": "Desert plants and animals have ways to live with little water.",
+    "hint": "Ask how each living thing handles the dry land.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-12-0030",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "grammar",
+    "prompt": "Pick the word that fits. The team of players ___ ready.",
+    "choices": ["are", "is", "were", "be"],
+    "answer": "is",
+    "hint": "The subject is one team.",
+    "tags": ["grammar", "grammar"]
+  },
+  {
+    "id": "reading-12-0031",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? Floppy disks are obsolete because no one uses them now.",
+    "choices": ["brand new", "very small", "no longer used", "easy to fold"],
+    "answer": "no longer used",
+    "hint": "No one uses them now.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-12-0032",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "mainidea",
+    "prompt": "Read the passage. What is the main idea?",
+    "passage": "Maps use symbols to show things like roads, rivers, and parks. A key tells you what each symbol means. Without the key, a map can be hard to read.",
+    "choices": [
+      "Rivers are always blue.",
+      "Parks are the best place to visit.",
+      "Roads are hard to build.",
+      "A map key helps you understand the symbols."
+    ],
+    "answer": "A map key helps you understand the symbols.",
+    "hint": "Which part tells you why the key matters?",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-12-0033",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "grammar",
+    "prompt": "Which sentence is a complete sentence?",
+    "choices": [
+      "The cat sat on the warm step.",
+      "Sat on the warm step.",
+      "The cat on the warm step.",
+      "Because the cat sat."
+    ],
+    "answer": "The cat sat on the warm step.",
+    "hint": "A complete sentence has a subject and a verb.",
+    "tags": ["grammar", "grammar"]
+  },
+  {
+    "id": "reading-12-0034",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? The meager meal was just one small roll for the whole team.",
+    "choices": ["delicious", "too small in amount", "too hot", "huge"],
+    "answer": "too small in amount",
+    "hint": "It was just one small roll for the team.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-12-0035",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "mainidea",
+    "prompt": "Read the passage. What is the main idea?",
+    "passage": "When you work on a team, you share the job. Each person does a part, and the work gets done faster. Team members also learn from one another.",
+    "choices": [
+      "One person should do all the work.",
+      "Teams are always large.",
+      "Teamwork makes work faster and helps people learn.",
+      "Learning is a game."
+    ],
+    "answer": "Teamwork makes work faster and helps people learn.",
+    "hint": "Find what the sentences say about teams.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-12-0036",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "grammar",
+    "prompt": "Which one shows that the book belongs to the girl?",
+    "choices": ["the girls book", "the girl book's", "the girl's' book", "the girl's book"],
+    "answer": "the girl's book",
+    "hint": "Add an apostrophe and an s to the owner.",
+    "tags": ["grammar", "punctuation"]
+  },
+  {
+    "id": "reading-12-0037",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? A diligent student, Rosa worked on her project every day until it was done.",
+    "choices": ["hard-working", "forgetful", "rude", "unlucky"],
+    "answer": "hard-working",
+    "hint": "She worked every day.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-12-0038",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? The lake was serene, with no wind and not one ripple.",
+    "choices": ["stormy", "calm and peaceful", "muddy", "crowded"],
+    "answer": "calm and peaceful",
+    "hint": "No wind and no ripples.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-12-0039",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? Rain was inevitable, since dark clouds covered the whole sky.",
+    "choices": ["very unlikely", "fun", "sure to happen", "late"],
+    "answer": "sure to happen",
+    "hint": "The sky gives a clue.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-12-0040",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? The bright orange hat was conspicuous in the crowd of gray coats.",
+    "choices": ["hidden", "old", "heavy", "easy to notice"],
+    "answer": "easy to notice",
+    "hint": "It stood out from the gray coats.",
+    "tags": ["vocab", "context"]
+  }
+]

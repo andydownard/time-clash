@@ -1,0 +1,148 @@
+<!-- AGENT INSTRUCTIONS — read and obey before writing any code. -->
+# Time Clash — a free, kid-friendly artillery game that teaches math and reading
+
+> **Global engineering contract:** https://github.com/rallytasks/agents/blob/main/AGENTS.md
+> Every rule there applies to this repo. `GLOBAL_AGENTS.md` is a local copy of it. Refresh the copy when the agents repo changes. This file adds only project specifics and any `Override <ID>:` lines.
+@GLOBAL_AGENTS.md
+
+`CLAUDE.md` is a symlink to this file. Edit `AGENTS.md` only.
+
+**Read first:** [QUICKSTART.md](./QUICKSTART.md) → this file → [ARCHITECTURE.md](./ARCHITECTURE.md) → [docs/GAME_SPEC.md](./docs/GAME_SPEC.md) → [docs/BUILD.md](./docs/BUILD.md). For UI or audio work also read [docs/DESIGN_BRIEF.md](./docs/DESIGN_BRIEF.md) and [docs/NARRATION.md](./docs/NARRATION.md).
+
+## What this is
+Two players share one computer and take turns. One commands a Medieval castle (Team Past). The other commands a secret base in futuristic Austin (Team Future). Each turn has 2 shots. After shot 2, the player answers a reading or math question to reload. Tone is slapstick. No gore, no blood, ever.
+
+The game is **free**. No ads. No accounts. No purchases. No tracking. The players are children.
+
+Owner: Andy Downard. Built for and with his family. Stack choices favor simple, free, and fast to change.
+
+## Stack
+TypeScript · Vite · Phaser 3 (game canvas) · plain DOM and CSS for menus and modals · Vitest (unit) · Playwright (browser). Static site with no server through Phase 3. Phase 4 adds one small Node WebSocket relay (`ws`). Host on Cloudflare Pages or GitHub Pages (free). Scope key: none (no accounts). Phase 4 uses `room_code`.
+
+## Commands
+test: `npm test` · lint: `npm run lint` · typecheck: `npm run typecheck` · build: `npm run build` · run: `npm run dev` · browser tests: `npm run e2e` · question check: `npm run check:questions` · bundle check: `npm run check:dist`
+
+## Vocabulary
+| User sees | Code uses | NEVER say in UI |
+|---|---|---|
+| Team Past | `PAST` | P1, player object |
+| Team Future | `FUTURE` | P2, player object |
+| Chrono | `chrono` (the narrator) | bot, AI, assistant, narrator |
+| Scrap | `scrap` | currency, coins, money, price |
+| Reload | `reload` | quiz, test, exam |
+| Camp | `camp` | lobby, menu |
+| Wipeout | `tumble` | death, kill, die, dead, defeat |
+| Base health | `baseHp` | lives |
+| Rematch | `rematch` | retry, play again |
+| How to Play | `intro` | tutorial |
+
+## Top damage risks
+1. **Anything gory, scary, or mean.** Wipeouts are silly and nobody is hurt. Copy lint blocks banned words (`kill`, `die`, `dead`, `blood`, `gore`, `defeat`, `buy`, `price`).
+2. **Collecting data from children.** Keep all progress in the browser (`localStorage`). No analytics, no third-party scripts, no cookies, no ads, no sign-in. Children's names never leave the device.
+3. **The other player seeing the answer.** The whole board is covered while a reload question is up (`INJECTION`-style leak of hidden state, `SERVER` in Phase 4).
+4. **Wrong or off-level questions.** Every question has a checked answer key and a grade. `npm run check:questions` runs in CI.
+5. **Sound that blasts, cannot be skipped, or autoplays.** Sound starts only after a tap. Every voice line has captions. Skip, Replay, and Mute always work.
+6. **Hard-to-use controls.** Tap targets under 56px, text under 20px, or color-only cues fail review.
+7. **Silent drift between rules and art.** Game rules live in `src/game/` with no Phaser imports and are unit tested. Phaser only draws and plays sound.
+
+## Shipping gates (a feature must pass all three)
+- **Gate 1: First five minutes.** A new family starts a match in 60 seconds with no reading help. The intro voice teaches the rest.
+- **Gate 2: Always fun.** A wrong answer never blocks play. A player always gets to reload. Fast answers earn bonus scrap, slow ones lose nothing.
+- **Gate 3: Learning is the game.** The reload question is the heart of the loop. Do not add features that skip, shrink, or hide it unless Andy approves.
+
+## Project rules & overrides
+- Override TENANT: not applicable. No user accounts or shared data through Phase 3.
+- Override SESSION: not applicable until Phase 4. Room codes are random, expire after 2 hours idle, and carry no personal data.
+- Override MONEY: not applicable. The game is free. Never add ads, payments, or paywalls.
+- Override PII: do not log names. Phase 4 relay logs hold room code and event type only. No IPs kept.
+- Override AI: no model calls at runtime. Any future AI feature needs Andy's approval and a panel review first.
+- Override GIT: one deploy branch. PR into `main` with green CI, then the static host deploys `main`. No staging hop. Confirm the deployed build shows its SHA on `/version.txt` after every deploy (`VERIFY`).
+- Override UI: smallest supported screens are iPad portrait (768x1024) and iPad landscape (1024x768), plus laptop. Phone is not supported through Phase 3. Screenshot at 1280x800 and 1024x768 before calling any visual change done.
+- Override TRACKING: use `INBOX.md` and `BACKLOG.md`. Never create new tracking files.
+- Feedback FAB: not used. This is a kids' game with no accounts.
+- **Panel review for user-facing changes.** Panel: a 6-year-old, a 12-year-old, a parent, a teacher, and a slapstick comedy writer. Moderated by a staff game designer. Micro (typo) = auto-GO. Small = 2 min. Medium = 10 min. Large = 30 min. A BLOCK from the parent or teacher on safety, privacy, or learning can only be overridden by Andy.
+- **Voice and writing.** Plain English. Third-grade reading level for any text a child must read. Short sentences. Chrono's humor is cheeky and warm, never mean. Strunk and White for docs and commits.
+- **Randomness is seeded** in all game logic so tests repeat.
+- **Config in one place.** Balance numbers live in `src/game/config.ts`. No magic numbers elsewhere.
+- **Audio.** All sound effects and voice are original or CC0. Keep a `public/audio/CREDITS.md` with the source and license of each file.
+- **Art.** All art is original (from the Claude Design handoff or made for this project). No real brand logos or copyrighted characters.
+- **Accessibility.** Keyboard play (arrow keys, Space to fire). Captions on all speech. Reduced-motion support. Contrast 4.5:1 body, 3:1 large UI. No color-only meaning.
+
+## Refactoring constraints
+Allowed: splitting files, extracting shared styles, renaming internals, adding types, adding tests, reorganizing folders.
+Not allowed without Andy:
+- Removing the intro voice, captions, Skip, or Replay.
+- Removing the pass-the-mouse cover or the 2-shots-then-reload turn shape.
+- Adding network calls, analytics, ads, accounts, or purchases.
+- Making any wipeout, hit, or message scary.
+
+## Pattern detection
+When you find one of these, check the files you touched for every instance:
+1. Question text visible while the other player can see the screen.
+2. Audio that plays before a user tap.
+3. Speech without a caption.
+4. Missing negative-path tests (illegal turn moves, a third shot, a skipped reload).
+5. Unseeded randomness in game logic.
+6. Phaser imports inside `src/game/`.
+7. Hex colors or fonts that drift from the design system.
+8. Unchecked `localStorage` reads (wrap in `try/catch`, it can throw or come back empty).
+9. Words from the banned list in any UI string.
+10. Tap targets under 56px.
+
+## Values check (CST principles, adapted)
+| Principle | Test |
+|---|---|
+| Human dignity | Nobody is shamed for a wrong answer. Slapstick hits the character's pride, never a person. |
+| Common good | Works on a shared family computer or school iPad. No account, no install, works offline after first load. |
+| Subsidiarity | Parents and teachers pick the grade and subject. The game never judges the kid. |
+| Solidarity | Younger and older siblings can play fairly together. Different grade levels per side is the core feature. |
+| Preferential option for the vulnerable | A pre-reader, a slow reader, or a child with one free hand can play. Voice, captions, large targets, and keyboard or touch input all work. |
+
+## Regressions
+Check this list before coding. If your change touches a listed area, read the existing code first.
+
+| # | What broke | Rule/test that prevents it |
+|---|---|---|
+| 1 | A sight-word item offered homophones (see and sea), so a child who heard the word could be marked wrong. | `src/questions/homophones.ts` rule in `check:questions`. `tests/questions/checkBank.test.ts` homophone cases. |
+| 2 | `.tc-row { display: flex }` beat the `hidden` attribute, so Setup showed "Yes, clear it" at all times. | Global `[hidden]` rule in `ui.css`. `tests/ui/styles.test.ts`, `e2e/setup.spec.ts` (confirm buttons hidden). |
+| 3 | The ? and gear buttons covered the Team Past card. The HUD had a second ? with the same test id. The turn banner and tumble bubble covered cards and health tags. The aim panel sat on a base. | `e2e/layout.spec.ts` and `e2e/portrait.spec.ts` geometry checks. `tests/ui/hud.test.ts` (no HUD ?). `tests/ui/styles.test.ts` (room tokens). `bubbleAnchor` test in `tests/scenes/battle/geometry.test.ts`. |
+| 4 | One Escape closed Settings and also paused the game. The pause panel did not trap Tab, so Fire stayed reachable. | `tests/scenes/chrome.test.ts`, `tests/scenes/battle/pauseUi.test.ts`. |
+| 5 | The question card focused answer 1 (it looked picked). A wrong answer flashed away in 1.8 s and never showed the hint. Reading questions had no read-aloud. There was no Mute on covers. | `tests/ui/covers.test.ts`, `tests/questions/spoken.test.ts`, `tests/scenes/battle/flow.test.ts`. |
+| 6 | One 8 s fast limit for every question, so careful readers rarely earned the bonus. | `tests/game/reload.test.ts` (`fastWindowMs`). |
+| 7 | A fast voice dropped the last captions. Sound stayed off after an iPad interruption. Speech was never primed in the tap. | `tests/audio/robustness.test.ts`, `tests/scenes/boot.test.ts`. |
+| 8 | Canvas labels drew under 20 px on iPad sizes. | `tests/scenes/battle/textScale.test.ts`, label check in `e2e/layout.spec.ts` and `e2e/portrait.spec.ts`. |
+| 9 | The same tumble line could show twice in a row when the bag refilled. | `tests/game/bag.test.ts`. |
+| 10 | The e2e test hook shipped inside the production bundle. No security headers existed. | `npm run check:dist` in CI. `tests/hardening.test.ts`. |
+
+## Current state (2026-10-15)
+Phase 1 is built: Tap to Play, How to Play (5 cards, captions, Skip, Replay, Mute), Loading, Setup, Battle (2 shots, then reload), Victory and Rematch. Sound is made in code with WebAudio: cannon boom for Team Past, laser pew for Team Future, and one original music loop in two flavors. Test runs are silent (`tests/setup/silent.ts` and `e2e/support/silent.ts` fail a test that starts real sound). Question bank has 40 questions per grade per subject (1,040 total, checked by `npm run check:questions`). Last full unit run: 58 files, 1,394 tests passing (`npm test`). Intro voice audio files are not recorded yet, so the browser's speech voice is used. Open polish and content items are in `BACKLOG.md`. Phase 2 (Camp Hub) follows `docs/BUILD.md`.
+
+## Pre-merge checklist
+1. `npm test`, `npm run lint`, `npm run typecheck`, `npm run build` pass with zero failures.
+2. `npm run e2e` passes in Chromium and WebKit.
+3. `npm run check:questions` passes.
+4. Copy lint passes (no banned words).
+5. Intro voice does not play before a tap. Skip works.
+6. Screenshots at 1280x800 and 1024x768 attached for any visual change.
+7. Markdown updated for any behavior change (`DOCS`).
+8. No network calls or third-party scripts were added.
+9. Panel review done at the right size.
+
+## Maximum parallelization
+When work splits into independent pieces, dispatch them in parallel in isolated git worktrees. Name the model in each dispatch. Split by file ownership. Suggested split: rules (`src/game/`), questions (`src/questions/`), UI and intro (`src/ui/`, `src/data/`), art wiring (`src/scenes/`).
+
+## Work tracking
+New ideas go in [INBOX.md](./INBOX.md) (raw, 30-day expiry). Triage moves them to [BACKLOG.md](./BACKLOG.md) (P0 to P3). Delete or move to Shipped when done. Never create new ad-hoc tracking files.
+
+## Doc index
+| Topic | File |
+|---|---|
+| Get running in 10 minutes | [QUICKSTART.md](./QUICKSTART.md) |
+| Architecture and data shapes | [ARCHITECTURE.md](./ARCHITECTURE.md) |
+| Privacy and child safety | [SECURITY.md](./SECURITY.md) |
+| Original game spec | [docs/GAME_SPEC.md](./docs/GAME_SPEC.md) |
+| Phased build plan and start prompt | [docs/BUILD.md](./docs/BUILD.md) |
+| Text to paste into Claude Design | [docs/DESIGN_BRIEF.md](./docs/DESIGN_BRIEF.md) |
+| Intro voice script and audio plan | [docs/NARRATION.md](./docs/NARRATION.md) |
+| Global rules (copy) | [GLOBAL_AGENTS.md](./GLOBAL_AGENTS.md) |
+| Backlog and inbox | [BACKLOG.md](./BACKLOG.md), [INBOX.md](./INBOX.md) |

@@ -1,0 +1,270 @@
+// Every user-facing string lives here. Kids read these, so: short words, short sentences.
+// Vocabulary table in AGENTS.md applies. Banned words are checked by tests/contracts/copy.test.ts.
+// Intro narration text lives in src/data/introScript.ts (from docs/NARRATION.md).
+import { TURN } from '../game/config';
+import type { AwardId } from '../game/awards';
+import { windLevel } from '../game/wind';
+import type { Subject, Team } from '../game/types';
+
+export const GAME_TITLE = 'Time Clash';
+export const GAME_SUBTITLE = 'Past vs. Future';
+
+export const TEAM_NAMES: Record<Team, string> = { PAST: 'Team Past', FUTURE: 'Team Future' };
+export const TEAM_HOMES: Record<Team, string> = { PAST: 'Castle', FUTURE: 'Secret Base' };
+
+export const SUBJECT_LABELS: Record<Subject, string> = {
+  reading: 'Reading',
+  math: 'Math',
+  both: 'Both',
+};
+
+/** Short label for chips: K, 1, 2 ... 12. */
+export const gradeLabel = (grade: number): string => (grade === 0 ? 'K' : String(grade));
+/** Long label for screen readers and summaries. */
+export const gradeChipLabel = (grade: number): string =>
+  grade === 0 ? 'Kindergarten' : `Grade ${grade}`;
+
+// ---------- Shared buttons ----------
+export const BUTTONS = {
+  howToPlay: 'How to Play',
+  howToPlayIcon: '?',
+  soundOn: 'Sound on',
+  soundOff: 'Sound off',
+  captionsOn: 'Captions on',
+  captionsOff: 'Captions off',
+  musicOn: 'Music on',
+  musicOff: 'Music off',
+  motionOn: 'Motion on',
+  motionOff: 'Motion off',
+  volume: 'Volume',
+  pause: 'Pause',
+  resume: 'Keep playing',
+  next: 'Next',
+  ok: 'OK',
+} as const;
+
+// ---------- Tap to Start ----------
+export const TAP_TO_START = {
+  button: 'TAP TO PLAY',
+  helper: 'Tap the big button to start. Sound starts after you tap.',
+} as const;
+
+// ---------- Intro (How to Play) ----------
+export const INTRO = {
+  heading: 'How to Play',
+  skip: 'Skip',
+  replay: 'Replay',
+  mute: 'Mute',
+  unmute: 'Unmute',
+  next: 'Next card',
+  done: "Let's go!",
+  cardOf: (n: number, total: number): string => `Card ${n} of ${total}`,
+} as const;
+
+// ---------- Loading ----------
+export const LOADING = {
+  /** From docs/DESIGN_BRIEF.md. Rotates every TIMING.loadingMessageMs. */
+  messages: [
+    'Charging the laser cannon with a potato...',
+    'Teaching the catapult how to do long division...',
+    'Telling the knights what Wi-Fi is...',
+    'Warming up the dad jokes...',
+    'Buffing out dignity scratches from the last fall...',
+    "Looking for Austin's secret base behind a taco truck...",
+  ],
+  percent: (p: number): string => `${Math.round(p)}%`,
+  errorTitle: 'Oops! Some pieces got lost in time.',
+  errorBody: "Let's grab them again.",
+  errorButton: 'Try again',
+} as const;
+
+// ---------- Setup ----------
+export const SETUP = {
+  heading: 'Who is playing?',
+  nameLabel: 'Name',
+  namePlaceholder: 'Type a name',
+  gradeLabel: 'Grade',
+  subjectLabel: 'Subject',
+  gradeHelper: 'Each team gets questions for its own grade. That keeps it fair.',
+  subjectHelper: 'Both mixes reading and math.',
+  start: "Let's clash!",
+  nameEmpty: 'Type a name first.',
+  nameTooLong: 'Names can be up to 12 letters.',
+  nameBlocked: "Let's pick a different name.",
+} as const;
+
+// ---------- Battle HUD ----------
+export const HUD = {
+  angle: 'Angle',
+  power: 'Power',
+  fire: 'Fire!',
+  baseHealth: 'Base health',
+  scrap: 'Scrap',
+  shotsLeft: 'Shots left',
+  keyboardHint: 'Arrow keys aim. Space fires.',
+  yourTurn: 'Your turn',
+  angleValue: (deg: number): string => `${Math.round(deg)}°`,
+  powerValue: (p: number): string => `${Math.round(p)}`,
+  hpValue: (hp: number): string => `${Math.round(hp)} / 100`,
+  shotsValue: (n: number): string => `${n} of ${TURN.shotsPerTurn}`,
+} as const;
+
+/** Wind uses words and arrows, never a bare number and never color alone. */
+export const windWord = (wind: number): string =>
+  ['Calm', 'Breezy', 'Windy', 'Super windy'][windLevel(wind)] as string;
+
+export const windLabel = (wind: number): string => {
+  const level = windLevel(wind);
+  if (level === 0) return 'Wind: calm';
+  const word = windWord(wind).toLowerCase();
+  const arrows = '→'.repeat(level);
+  // The owner wants the number kept on screen (INBOX learning aim), now with words to explain it.
+  const n = Math.abs(Math.round(Number(wind)));
+  return Number(wind) > 0
+    ? `Wind: ${word} ${arrows} (${n})`
+    : `Wind: ${'←'.repeat(level)} ${word} (${n})`;
+};
+
+// ---------- Turn banner and pass screen ----------
+export const turnBanner = (name: string, shot: number): string =>
+  `${String(name).toUpperCase()}, YOUR TURN! (SHOT ${shot} OF ${TURN.shotsPerTurn})`;
+
+export const PASS_SCREEN = {
+  heading: 'Pass the screen!',
+  noPeeking: 'No peeking at their question!',
+  upNext: (name: string): string => `${name}, you're up!`,
+  ready: "I'm ready!",
+  /** Shown beside the heading, so the next side is clear without color. */
+  icon: { PAST: '🏰', FUTURE: '🛸' } as Record<Team, string>,
+} as const;
+
+// ---------- Reload ----------
+export const RELOAD = {
+  heading: 'Reload time!',
+  instructions: 'Answer to reload your launcher.',
+  hint: 'Hint',
+  speak: 'Hear it',
+  hintIcon: '💡',
+  gotIt: 'Got it',
+  matchWord: (word: string): string => `Tap the word that matches: ${word}`,
+  why: (hint: string): string => `Clue: ${hint}`,
+  timerLabel: 'Quick answers earn extra scrap. Take your time!',
+  reloaded: 'RELOADED!',
+  fastBonus: '+2 scrap! Super fast!',
+  slowCorrect: '+1 scrap! Nice work!',
+  wrong: (answer: string): string => `Nice try! The answer is ${answer}.`,
+  lostQuestion: 'Oops! Chrono lost the question. Free reload!',
+  wrongReloaded: 'Reloaded anyway. You always get to reload!',
+} as const;
+
+// ---------- Hits and tumbles ----------
+export const HITS = {
+  direct: 'Direct hit!',
+  near: 'So close!',
+  miss: 'Whoosh! Missed.',
+  blocks: 'Boing! Toy blocks everywhere!',
+} as const;
+
+/** More ways to say it. The scene picks with a seeded shuffle bag, so no line repeats back to back. */
+export const HIT_LINES = {
+  direct: ['Direct hit!', 'Bullseye! Boom!', 'Right on target!', 'Whack! Great shot!'],
+  near: [
+    'So close!',
+    'Almost! Did you feel that breeze?',
+    'Whoa, that was near!',
+    'Just a hair away!',
+  ],
+  miss: [
+    'Whoosh! Missed.',
+    'Splat! Right in the dirt.',
+    'Nothing but sky!',
+    'Oops! The wind took it.',
+  ],
+} as const;
+
+/** Chrono's quick joke after a reload. Warm, and always at Chrono's expense. */
+export const RELOAD_QUIPS = {
+  fast: [
+    'Zoom! Even my clock is dizzy!',
+    'Wow! I blinked and you were done!',
+    'Fast brain! I need to catch up!',
+  ],
+  slow: [
+    'Nice and steady. I like it!',
+    'Good thinking! I would have guessed.',
+    'Careful brain wins the day!',
+  ],
+  wrong: [
+    'My pointer is wiggly too. Try the next one!',
+    'Oops! Even Chrono does that. Onward!',
+    'No worries! The clue will stick now.',
+  ],
+} as const;
+
+/** Said by whoever tumbled. Picked with a seeded shuffle bag, so each one shows up. */
+export const TUMBLE_LINES = [
+  'Just inspecting the floor for loose pennies!',
+  'Oops! My legs forgot how to stand!',
+  'I meant to do that. It was a spin move!',
+  'Who put the gravity on maximum?!',
+  'Just checking the lawn for four-leaf clovers!',
+  'The ground jumped up and hugged me!',
+  'I was only looking for my shoe!',
+  'Is the floor supposed to be this close?',
+  'Nap time! Just for one second!',
+  'My knees tied a bow. Ta-da!',
+  'Whoa! The world is sideways now!',
+  'I am a pancake. A proud pancake!',
+] as const;
+
+// ---------- Victory ----------
+export const VICTORY = {
+  heading: (name: string): string => `${name} wins!`,
+  teamWins: (team: Team): string => `${TEAM_NAMES[team]} wins!`,
+  goodSport: 'Rematch? My dignity needs a rematch!',
+  wipeout: 'Wipeout!',
+  awardsHeading: 'Awards',
+  awards: {
+    quickestBrain: 'Quickest Brain',
+    mostWobbles: 'Most Wobbles',
+    sharpestShot: 'Sharpest Shot',
+    brainPower: 'Brain Power',
+    scrapCollector: 'Scrap Collector',
+    goodSport: 'Good Sport',
+  } as Record<AwardId, string>,
+  statsHeading: 'Scoreboard',
+  shotsFired: 'Shots fired',
+  directHits: 'Direct hits',
+  questionsAnswered: 'Questions answered',
+  correctAnswers: 'Right answers',
+  fastestAnswer: 'Fastest answer',
+  fastestValue: (ms: number | null): string =>
+    ms === null ? 'None yet' : `${(Number(ms) / 1000).toFixed(1)} seconds`,
+  scrapEarned: 'Scrap earned',
+  rematch: 'Rematch',
+  backToStart: 'Back to Start',
+} as const;
+
+// ---------- Errors ----------
+export const ERRORS = {
+  generic: 'Something went wonky. Tap to try again.',
+  tryAgain: 'Try again',
+  noSound: 'Sound is not working here. Captions are on.',
+  saveFailed: 'This browser will not save. The game still works today.',
+} as const;
+
+// ---------- Added by the UI track (additive) ----------
+export const UI_EXTRA = {
+  gradeError: 'Pick a grade.',
+  subjectError: 'Pick a subject.',
+  chronoName: 'Chrono',
+  clearData: 'Clear my data',
+  clearDataAsk: 'Clear names and settings from this device?',
+  clearDataYes: 'Yes, clear it',
+  clearDataNo: 'Keep them',
+  clearDataDone: 'All clear. Nothing is saved now.',
+  choicesLabel: 'Answer choices',
+  stepsLabel: 'Steps',
+  loadingLabel: 'Loading',
+  playerCard: (team: Team): string => `${TEAM_NAMES[team]} player`,
+} as const;

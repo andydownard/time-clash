@@ -1,0 +1,540 @@
+[
+  {
+    "id": "reading-9-0001",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "vocab",
+    "prompt": "What does \"reluctant\" mean? \"Mia was reluctant to jump into the cold lake.\"",
+    "choices": ["unwilling", "eager", "able", "ready"],
+    "answer": "unwilling",
+    "hint": "She did not feel like doing it right away.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-9-0002",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "vocab",
+    "prompt": "What does \"meticulous\" mean? \"The meticulous builder checked every tiny detail.\"",
+    "choices": ["very loud", "very careful", "very late", "very tired"],
+    "answer": "very careful",
+    "hint": "Think about someone who checks each little part.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-9-0003",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "vocab",
+    "prompt": "What does \"scarce\" mean? \"Fresh water was scarce in the dry valley.\"",
+    "choices": ["easy to find", "very cold", "hard to find", "very clean"],
+    "answer": "hard to find",
+    "hint": "Think about what a dry place lacks.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-9-0004",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "vocab",
+    "prompt": "What does \"diligent\" mean? \"A diligent student, Leo finished his work every day.\"",
+    "choices": ["forgetful", "noisy", "clumsy", "hardworking"],
+    "answer": "hardworking",
+    "hint": "Think about someone who keeps trying every day.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-9-0005",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "vocab",
+    "prompt": "What does \"ambiguous\" mean? \"The sign was ambiguous, so we could not tell which way to turn.\"",
+    "choices": ["unclear", "colorful", "broken", "friendly"],
+    "answer": "unclear",
+    "hint": "Think about a message that can be read two ways.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-9-0006",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "vocab",
+    "prompt": "What does \"abundant\" mean? \"Apples were abundant in the orchard this fall.\"",
+    "choices": ["rotten", "plentiful", "tiny", "rare"],
+    "answer": "plentiful",
+    "hint": "Picture trees heavy with fruit.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-9-0007",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "vocab",
+    "prompt": "What does \"hasty\" mean? \"Her hasty choice made her miss a key clue.\"",
+    "choices": ["wise", "slow", "rushed", "planned"],
+    "answer": "rushed",
+    "hint": "Think about doing something too fast.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-9-0008",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "vocab",
+    "prompt": "What does \"fragile\" mean? \"Pack the fragile glass vase with care.\"",
+    "choices": ["very heavy", "very bright", "well known", "easily broken"],
+    "answer": "easily broken",
+    "hint": "Think about what can crack if you drop it.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-9-0009",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "vocab",
+    "prompt": "What does \"vivid\" mean? \"The artist used vivid colors that seemed to glow.\"",
+    "choices": ["bright and clear", "dull and gray", "faded", "plain"],
+    "answer": "bright and clear",
+    "hint": "Think of colors that pop out at you.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-9-0010",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "vocab",
+    "prompt": "What does \"obstacle\" mean? \"A fallen log was an obstacle on the trail.\"",
+    "choices": ["a shortcut", "something in the way", "a map", "a rest stop"],
+    "answer": "something in the way",
+    "hint": "Think about what you must go around.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-9-0011",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "vocab",
+    "prompt": "What does \"inevitable\" mean? \"With dark clouds overhead, rain was inevitable.\"",
+    "choices": ["impossible", "unlikely", "sure to happen", "welcome"],
+    "answer": "sure to happen",
+    "hint": "Think about what the clouds are telling you.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-9-0012",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "vocab",
+    "prompt": "What does \"convey\" mean? \"A smile can convey friendliness without a word.\"",
+    "choices": ["hide", "forget", "measure", "communicate"],
+    "answer": "communicate",
+    "hint": "Think about how a smile shares a feeling.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-9-0013",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "vocab",
+    "prompt": "What does \"durable\" mean? \"These durable boots lasted for many years.\"",
+    "choices": ["long-lasting", "brand new", "too small", "very soft"],
+    "answer": "long-lasting",
+    "hint": "Think about boots that last through years of wear.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-9-0014",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "vocab",
+    "prompt": "What does \"jubilant\" mean? \"The jubilant crowd cheered when the team won.\"",
+    "choices": ["puzzled", "joyful", "sleepy", "nervous"],
+    "answer": "joyful",
+    "hint": "Think about how cheering fans feel.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-9-0015",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "passage": "Bees visit flowers to drink nectar. As they move from flower to flower, pollen sticks to their legs. The pollen then moves to other flowers, which helps plants make seeds.",
+    "choices": [
+      "Bees only live inside flowers.",
+      "Nectar is a kind of seed.",
+      "Bees help plants make seeds.",
+      "Flowers grow only in spring."
+    ],
+    "answer": "Bees help plants make seeds.",
+    "hint": "Ask what the bees do for the plants.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-9-0016",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "passage": "Lena started a book club at her school. Each week, ten kids meet to share what they read. Now many of them read more books than before.",
+    "choices": [
+      "Lena does not like to read.",
+      "Ten kids is too many for a club.",
+      "Books are hard to find at school.",
+      "Lena's book club got kids to read more."
+    ],
+    "answer": "Lena's book club got kids to read more.",
+    "hint": "Think about what changed after the club began.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-9-0017",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "passage": "Sleep gives the body time to rest and grow. It also helps the brain store what you learned that day. That is why a good night's sleep helps you do well at school.",
+    "choices": [
+      "Sleep is important for the body and the brain.",
+      "School starts very early.",
+      "The brain stops working at night.",
+      "Kids should learn while they sleep."
+    ],
+    "answer": "Sleep is important for the body and the brain.",
+    "hint": "Look for the idea that covers every sentence.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-9-0018",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "passage": "Long ago, sailors used the stars to find their way across the sea. They learned which stars stayed in the same place each night. These fixed stars worked like a guide in the dark sky.",
+    "choices": [
+      "Stars move all over the sky.",
+      "Sailors used stars to guide their ships.",
+      "Sailors were afraid of the night.",
+      "Ships could not sail in the day."
+    ],
+    "answer": "Sailors used stars to guide their ships.",
+    "hint": "Think about how the stars helped the sailors.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-9-0019",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "passage": "Old cans can be melted and made into new ones. Paper can be turned into fresh sheets. When people recycle, less trash goes into the ground.",
+    "choices": [
+      "Cans are made of paper.",
+      "Trash is fun to sort.",
+      "Recycling turns old things into new things.",
+      "New things cost too much."
+    ],
+    "answer": "Recycling turns old things into new things.",
+    "hint": "Find the idea that fits both cans and paper.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-9-0020",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "passage": "A camel's hump stores fat, not water. The fat gives the camel energy when food is hard to find. This helps camels travel far across the desert.",
+    "choices": [
+      "A camel's hump is full of water.",
+      "Camels eat all day long.",
+      "Deserts have plenty of food.",
+      "A camel's hump helps it travel through the desert."
+    ],
+    "answer": "A camel's hump helps it travel through the desert.",
+    "hint": "Think about what the hump is used for.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-9-0021",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "passage": "A lighthouse sends a bright beam over the water at night. Ships see the light and know where the rocky shore is. This helps ships stay on a safe path.",
+    "choices": [
+      "Lighthouses help ships stay safe at night.",
+      "Lighthouses are built on beaches for fun.",
+      "Ships only sail on sunny days.",
+      "The beam of light is very small."
+    ],
+    "answer": "Lighthouses help ships stay safe at night.",
+    "hint": "Think about why the light is there.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-9-0022",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "passage": "Sam could not play the piano well at first. He practiced for twenty minutes each day. After a few months, he played his first song without a mistake.",
+    "choices": [
+      "Sam was born to play piano.",
+      "Daily practice helped Sam get better at piano.",
+      "Songs are easy to learn.",
+      "Sam quit after a few months."
+    ],
+    "answer": "Daily practice helped Sam get better at piano.",
+    "hint": "Look at what Sam did each day.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-9-0023",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "passage": "Some islands are made by volcanoes under the sea. Hot rock pushes up from below and cools in the water. Over many years, the rock piles up until it rises above the waves.",
+    "choices": [
+      "All islands are made of sand.",
+      "Water is hotter than rock.",
+      "Volcanoes under the sea can build islands.",
+      "Islands sink in a few days."
+    ],
+    "answer": "Volcanoes under the sea can build islands.",
+    "hint": "Think about how the new land is made.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-9-0024",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "passage": "Ice floats because it is lighter than water. When water freezes, it spreads out and takes up more room. This is why a frozen lake has a cap on top and water below.",
+    "choices": [
+      "Lakes freeze from the bottom up.",
+      "Water gets smaller when it freezes.",
+      "Fish cannot live in lakes.",
+      "Frozen water floats because it is lighter."
+    ],
+    "answer": "Frozen water floats because it is lighter.",
+    "hint": "Look at where the frozen part sits in the lake.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-9-0025",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "passage": "The moon does not make its own light. It shines because it reflects light from the sun. As the moon moves around Earth, we see different amounts of its bright side.",
+    "choices": [
+      "The moon shines by reflecting sunlight.",
+      "The moon makes its own light.",
+      "The moon is bigger than the sun.",
+      "The moon stays in one spot."
+    ],
+    "answer": "The moon shines by reflecting sunlight.",
+    "hint": "Think about where the moon's light comes from.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-9-0026",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "passage": "Ants work together to get food. Some ants find the food, and others carry it home. Together they can move things much bigger than one ant.",
+    "choices": [
+      "Ants are bigger than most bugs.",
+      "Ants work as a team to move food.",
+      "One ant can lift a whole log.",
+      "Ants never find any food."
+    ],
+    "answer": "Ants work as a team to move food.",
+    "hint": "Think about how the ants share the job.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-9-0027",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "passage": "A good listener looks at the speaker and waits for a turn to talk. She asks questions about what she heard. This shows the speaker that she cares.",
+    "choices": [
+      "Talking is better than listening.",
+      "Questions are rude to ask.",
+      "Good listeners show they care by how they act.",
+      "Speakers like to be alone."
+    ],
+    "answer": "Good listeners show they care by how they act.",
+    "hint": "Think about what all the actions have in common.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-9-0028",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "grammar",
+    "prompt": "Choose the correct word: The kids packed ___ bags and left.",
+    "choices": ["there", "they're", "them", "their"],
+    "answer": "their",
+    "hint": "Think about who owns the bags.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-9-0029",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "grammar",
+    "prompt": "Choose the correct word: ___ going to be late.",
+    "choices": ["You're", "Your", "Yours", "Youre"],
+    "answer": "You're",
+    "hint": "Try saying the short form of two words.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-9-0030",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "grammar",
+    "prompt": "Which sentence is written correctly?",
+    "choices": [
+      "Him and me went to the park.",
+      "He and I went to the park.",
+      "Me and he went to the park.",
+      "Him and I went to the park."
+    ],
+    "answer": "He and I went to the park.",
+    "hint": "Try each one with just one person in it.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-9-0031",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "grammar",
+    "prompt": "Choose the verb that fits: The birds in the tree ___ singing.",
+    "choices": ["is", "be", "are", "am"],
+    "answer": "are",
+    "hint": "The subject is more than one bird.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-9-0032",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "grammar",
+    "prompt": "Choose the correct word: Yesterday, Ana ___ to the store.",
+    "choices": ["goed", "go", "going", "went"],
+    "answer": "went",
+    "hint": "The action already happened.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-9-0033",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "grammar",
+    "prompt": "Choose the correct word: This box is ___ than that one.",
+    "choices": ["heavier", "more heavy", "heavyer", "most heavy"],
+    "answer": "heavier",
+    "hint": "Short words often add -er after fixing the ending.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-9-0034",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "grammar",
+    "prompt": "Which sentence is a question written correctly?",
+    "choices": [
+      "Where did you put the keys.",
+      "Where did you put the keys?",
+      "where did you put the keys?",
+      "Where did you put the keys,"
+    ],
+    "answer": "Where did you put the keys?",
+    "hint": "Check the first letter and the last mark.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-9-0035",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "grammar",
+    "prompt": "Which sentence uses the apostrophe correctly?",
+    "choices": [
+      "The dogs bone's was under the bed.",
+      "The dog bone's was under the bed.",
+      "The dog's bone was under the bed.",
+      "The dogs' bone's was under the bed."
+    ],
+    "answer": "The dog's bone was under the bed.",
+    "hint": "The apostrophe shows who owns the bone.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-9-0036",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "grammar",
+    "prompt": "In the sentence \"The tall boy ran quickly,\" which word is an adverb?",
+    "choices": ["tall", "boy", "ran", "quickly"],
+    "answer": "quickly",
+    "hint": "Which word tells how he ran?",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-9-0037",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "grammar",
+    "prompt": "Which word is a noun in this sentence? \"The happy puppy jumped over the fence.\"",
+    "choices": ["puppy", "happy", "jumped", "over"],
+    "answer": "puppy",
+    "hint": "A noun names a person, place, or thing. One of these is an animal.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-9-0038",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "grammar",
+    "prompt": "Choose the correct word: Yesterday, the wind ___ the hat off his head.",
+    "choices": ["blue", "blew", "blow", "blown"],
+    "answer": "blew",
+    "hint": "It is a past action, and not a color.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-9-0039",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "grammar",
+    "prompt": "Choose the best word: I wanted to play outside, ___ it was raining.",
+    "choices": ["or", "until", "but", "like"],
+    "answer": "but",
+    "hint": "The two parts of the sentence work against each other.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-9-0040",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "grammar",
+    "prompt": "Which sentence has no mistakes?",
+    "choices": [
+      "She don't have any apples.",
+      "She doesn't have no apples.",
+      "She don't has any apples.",
+      "She doesn't have any apples."
+    ],
+    "answer": "She doesn't have any apples.",
+    "hint": "Watch for double no-words and verb matches.",
+    "tags": ["grammar"]
+  }
+]

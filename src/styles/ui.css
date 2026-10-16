@@ -1,0 +1,757 @@
+/* Time Clash UI styles. Colors come from tokens.css only. No external fonts, images, or URLs.
+   Floors (AGENTS.md): tap targets 56px, text 20px, visible focus, reduced motion. */
+
+[data-tc-root] {
+  font-family: var(--tc-font);
+  font-size: var(--tc-text-min);
+  line-height: 1.4;
+  color: var(--tc-text);
+}
+[data-tc-root] * {
+  box-sizing: border-box;
+}
+[data-tc-root] p,
+[data-tc-root] h1,
+[data-tc-root] h2 {
+  margin: 0 0 12px;
+}
+[data-tc-root] h1,
+[data-tc-root] h2,
+.tc-title,
+.tc-big {
+  font-family: var(--tc-font-display);
+}
+[data-tc-root] h1 {
+  font-size: calc(var(--tc-text-min) * 2);
+}
+[data-tc-root] h2 {
+  font-size: calc(var(--tc-text-min) * 1.5);
+}
+.tc-title {
+  font-size: calc(var(--tc-text-min) * 3);
+  margin: 0 0 8px;
+}
+.tc-big {
+  font-size: calc(var(--tc-text-min) * 1.4);
+  font-weight: 700;
+}
+.tc-muted {
+  color: var(--tc-muted-text);
+  font-size: var(--tc-text-min);
+}
+
+/* ---------- Focus (every control) ---------- */
+[data-tc-root] :focus-visible {
+  outline: 4px solid var(--tc-focus);
+  outline-offset: 3px;
+}
+
+/* ---------- Buttons and controls (56px floor) ---------- */
+.tc-btn,
+.tc-chip,
+.tc-input,
+.tc-choice,
+.tc-icon-btn,
+.tc-range {
+  min-height: var(--tc-tap);
+  font-family: var(--tc-font);
+  font-size: var(--tc-text-min);
+}
+.tc-btn,
+.tc-chip,
+.tc-choice,
+.tc-icon-btn {
+  min-width: var(--tc-tap);
+  padding: 8px 20px;
+  border: 3px solid var(--tc-border);
+  border-radius: var(--tc-radius);
+  cursor: pointer;
+  font-weight: 700;
+  touch-action: manipulation;
+}
+.tc-btn:hover,
+.tc-chip:hover,
+.tc-choice:hover {
+  filter: brightness(1.06);
+}
+.tc-btn:active,
+.tc-chip:active,
+.tc-choice:active {
+  transform: translateY(2px);
+}
+.tc-btn:disabled,
+.tc-btn[aria-disabled='true'] {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+.tc-btn-primary,
+.tc-btn-past {
+  background: var(--tc-past-btn-bg);
+  color: var(--tc-past-btn-text);
+}
+.tc-btn-future {
+  background: var(--tc-future-btn-bg);
+  color: var(--tc-future-btn-text);
+}
+.tc-btn-neutral,
+.tc-icon-btn {
+  background: var(--tc-neutral-btn-bg);
+  color: var(--tc-neutral-btn-text);
+}
+.tc-btn-fire {
+  background: var(--tc-past-btn-bg);
+  color: var(--tc-past-btn-text);
+  font-size: calc(var(--tc-text-min) * 1.4);
+  min-width: 160px;
+}
+.tc-btn-huge {
+  font-size: calc(var(--tc-text-min) * 2);
+  min-height: 96px;
+  min-width: 320px;
+}
+.tc-icon-btn {
+  border-radius: 50%;
+  padding: 0;
+  width: var(--tc-tap);
+}
+.tc-input {
+  width: 100%;
+  padding: 8px 14px;
+  border: 3px solid var(--tc-border);
+  border-radius: var(--tc-radius);
+  background: var(--tc-card);
+  color: var(--tc-text);
+}
+.tc-range {
+  width: 100%;
+  accent-color: var(--tc-ring);
+}
+.tc-chip {
+  background: var(--tc-card);
+  color: var(--tc-text);
+  padding: 8px 12px;
+}
+.tc-chip-wide {
+  min-width: 120px;
+}
+/* The chosen chip shows a thick border and a check mark, not color alone. */
+.tc-chip[aria-checked='true'] {
+  background: var(--tc-neutral-btn-bg);
+  color: var(--tc-neutral-btn-text);
+  border-width: 5px;
+}
+.tc-chip[aria-checked='true']::before {
+  content: '\2713 ';
+}
+.tc-choice {
+  background: var(--tc-choice-bg);
+  color: var(--tc-text);
+  width: 100%;
+  text-align: center;
+  font-size: calc(var(--tc-text-min) * 1.4);
+}
+.tc-choice[data-state='right'] {
+  background: var(--tc-good-bg);
+  color: var(--tc-good-text);
+  border-width: 6px;
+}
+.tc-choice[data-state='right']::after {
+  content: ' \2713';
+}
+.tc-choice[data-state='tried'] {
+  background: var(--tc-oops-bg);
+  color: var(--tc-oops-text);
+}
+.tc-choice[aria-disabled='true'] {
+  cursor: default;
+}
+
+/* ---------- Layers, screens, covers ---------- */
+.tc-screen {
+  position: absolute;
+  inset: 0;
+  /* Start below the fixed ? and gear row, and paint the strip above in the page color. */
+  top: var(--tc-chrome-row);
+  box-shadow: 0 calc(-1 * var(--tc-chrome-row)) 0 var(--tc-page);
+  overflow: auto;
+  padding: 24px 32px;
+  background: var(--tc-page);
+  color: var(--tc-text);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.tc-cover {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  padding: 24px;
+  color: var(--tc-cover-text);
+  font-family: var(--tc-font);
+  font-size: var(--tc-text-min);
+}
+.tc-cover[data-team='PAST'] {
+  box-shadow: inset 0 0 0 12px var(--tc-past-accent);
+}
+.tc-cover[data-team='FUTURE'] {
+  box-shadow: inset 0 0 0 12px var(--tc-future-accent);
+}
+.tc-pass .tc-btn {
+  min-height: 64px;
+  margin-top: 16px;
+  font-size: calc(var(--tc-text-min) * 1.2);
+}
+.tc-team-icon {
+  font-size: 64px;
+  line-height: 1;
+  margin: 0;
+}
+.tc-cover-card {
+  width: min(900px, 100%);
+  text-align: center;
+}
+.tc-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+}
+.tc-corner {
+  align-self: flex-end;
+}
+.tc-error {
+  min-height: 1.4em;
+  color: var(--tc-error-text);
+  font-weight: 700;
+}
+
+/* ---------- Banner, bubble, caption ---------- */
+.tc-banner {
+  position: absolute;
+  top: var(--tc-hud-row);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 28px;
+  border: 4px solid var(--tc-white);
+  border-radius: var(--tc-radius);
+  color: var(--tc-banner-text);
+  font-family: var(--tc-font-display);
+  font-size: calc(var(--tc-text-min) * 1.5);
+  font-weight: 800;
+  text-align: center;
+  max-width: 94vw;
+  animation: tc-drop var(--tc-banner-drop) cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+.tc-banner[data-team='PAST'] {
+  background: var(--tc-past-banner-bg);
+}
+.tc-banner[data-team='FUTURE'] {
+  background: var(--tc-future-banner-bg);
+  border-color: var(--tc-future-accent);
+}
+.tc-bubble {
+  max-width: min(320px, 28vw);
+  padding: 10px 16px;
+  border: 3px solid var(--tc-ink);
+  border-radius: var(--tc-radius);
+  background: var(--tc-white);
+  color: var(--tc-ink);
+  font-weight: 700;
+  transform: translate(-50%, -100%);
+}
+.tc-caption {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  max-width: min(960px, 94vw);
+  padding: 10px 20px;
+  border-radius: var(--tc-radius);
+  background: var(--tc-caption-bg);
+  color: var(--tc-caption-text);
+  font-size: calc(var(--tc-text-min) * 1.2);
+  text-align: center;
+}
+/* An author display rule (like .tc-row) must never beat the hidden attribute. */
+[hidden] {
+  display: none !important;
+}
+
+/* ---------- HUD ---------- */
+.tc-hud {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+/* The question heading takes focus from code so screen readers start there. It is not a control. */
+[data-tc-root] .tc-reload-head h2:focus-visible {
+  outline-color: transparent;
+}
+/* The HUD frame only takes focus from code, to keep keys working. It is not a control. */
+[data-tc-root] .tc-hud:focus-visible {
+  outline-color: transparent;
+}
+.tc-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.tc-hud > * > * {
+  pointer-events: auto;
+}
+.tc-hud-top {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 12px;
+  padding-left: var(--tc-chrome-clear);
+}
+.tc-hud-center {
+  text-align: center;
+  background: var(--tc-card);
+  border: 3px solid var(--tc-border);
+  border-radius: var(--tc-radius);
+  padding: 6px 14px;
+  font-weight: 700;
+}
+.tc-wind-bar {
+  display: block;
+  height: 10px;
+  margin-top: 4px;
+  border: 2px solid var(--tc-border);
+  border-radius: 6px;
+  background: var(--tc-white);
+  overflow: hidden;
+}
+.tc-wind-fill {
+  display: block;
+  height: 100%;
+  background: var(--tc-wood);
+}
+.tc-hud-corner {
+  display: flex;
+  gap: 8px;
+}
+.tc-team-panel {
+  background: var(--tc-card);
+  border: 3px solid var(--tc-border);
+  border-radius: var(--tc-radius);
+  padding: 8px 14px;
+  min-width: 220px;
+}
+.tc-team-panel[data-team='PAST'][data-active='true'] {
+  border-color: var(--tc-past-accent);
+  border-width: 6px;
+}
+.tc-team-panel[data-team='FUTURE'][data-active='true'] {
+  border-color: var(--tc-future-accent);
+  border-width: 6px;
+  background: var(--tc-future-banner-bg);
+  color: var(--tc-white);
+}
+.tc-team-panel[data-active='false'] {
+  opacity: 0.8;
+}
+.tc-active-mark {
+  visibility: hidden;
+  margin-right: 6px;
+}
+.tc-team-panel[data-active='true'] .tc-active-mark {
+  visibility: visible;
+}
+.tc-team-name {
+  font-weight: 800;
+}
+.tc-hp-meter {
+  height: 20px;
+  border: 2px solid var(--tc-border);
+  border-radius: 10px;
+  background: var(--tc-white);
+  overflow: hidden;
+}
+.tc-hp-fill {
+  display: block;
+  height: 100%;
+  background: var(--tc-torch-gold);
+  transition: width 300ms ease;
+}
+/* The aim controls sit between the two bases (they fill 0 to 20% and 80% to 100% of the width),
+   so a child can see the base they aim from. */
+.tc-hud-bottom {
+  position: absolute;
+  left: 20%;
+  right: 20%;
+  bottom: 72px;
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 0 12px;
+}
+.tc-hud-bottom > * {
+  pointer-events: auto;
+}
+.tc-aim {
+  display: grid;
+  gap: 6px;
+  background: var(--tc-card);
+  border: 3px solid var(--tc-border);
+  border-radius: var(--tc-radius);
+  padding: 8px 14px;
+  min-width: 340px;
+}
+.tc-slider-row {
+  display: grid;
+  grid-template-columns: 90px 1fr 70px;
+  gap: 10px;
+  align-items: center;
+}
+.tc-hint {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  width: max-content;
+  margin: 8px auto 0;
+  font-size: var(--tc-text-min);
+}
+@media (hover: hover) and (pointer: fine) {
+  .tc-hint {
+    display: block;
+    background: var(--tc-card);
+    border-radius: var(--tc-radius);
+    padding: 4px 12px;
+  }
+}
+
+/* ---------- Setup ---------- */
+.tc-setup-form {
+  width: min(1100px, 100%);
+}
+.tc-team-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.tc-team-card {
+  background: var(--tc-card);
+  border: 4px solid var(--tc-border);
+  border-radius: var(--tc-radius);
+  padding: 16px;
+}
+.tc-team-card[data-team='PAST'] {
+  border-color: var(--tc-past-accent);
+}
+.tc-team-card[data-team='FUTURE'] {
+  border-color: var(--tc-night);
+}
+.tc-team-card legend {
+  font-family: var(--tc-font-display);
+  font-weight: 800;
+  padding: 0 8px;
+}
+.tc-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.tc-label {
+  font-weight: 800;
+  margin: 12px 0 4px;
+}
+.tc-privacy {
+  margin-top: 24px;
+  text-align: center;
+}
+
+/* ---------- Intro ---------- */
+.tc-chrono {
+  display: inline-block;
+  padding: 4px 16px;
+  border-radius: 999px;
+  background: var(--tc-purple);
+  color: var(--tc-white);
+  font-weight: 800;
+  margin-right: 12px;
+}
+.tc-intro-card {
+  width: min(760px, 100%);
+  background: var(--tc-card);
+  border: 4px solid var(--tc-border);
+  border-radius: var(--tc-radius);
+  padding: 20px;
+  text-align: center;
+}
+.tc-art {
+  height: 160px;
+  border-radius: var(--tc-radius);
+  background: var(--tc-parchment);
+  border: 3px dashed var(--tc-stone);
+}
+.tc-dots {
+  display: flex;
+  gap: 14px;
+}
+.tc-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 3px solid var(--tc-border);
+  background: var(--tc-card);
+}
+.tc-dot[aria-current='step'] {
+  background: var(--tc-neutral-btn-bg);
+  transform: scale(1.4);
+}
+
+/* ---------- Loading ---------- */
+.tc-bar {
+  width: min(720px, 100%);
+  height: 28px;
+  border: 3px solid var(--tc-border);
+  border-radius: 14px;
+  background: var(--tc-card);
+  overflow: hidden;
+}
+.tc-bar-fill {
+  height: 100%;
+  width: 0;
+  background: var(--tc-torch-gold);
+  transition: width 200ms ease;
+}
+
+/* ---------- Reload ---------- */
+.tc-reload-card {
+  display: grid;
+  gap: 12px;
+}
+.tc-reload-who {
+  font-weight: 800;
+}
+.tc-prompt {
+  font-family: var(--tc-font-display);
+  font-weight: 800;
+  font-size: calc(var(--tc-text-min) * 1.8);
+}
+.tc-reload[data-layout='reading-young'] .tc-prompt {
+  font-size: var(--tc-text-young);
+}
+.tc-passage {
+  background: var(--tc-card);
+  color: var(--tc-text);
+  border-radius: var(--tc-radius);
+  padding: 12px 16px;
+  text-align: left;
+}
+.tc-choices {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.tc-reload[data-layout='reading-young'] .tc-choice {
+  font-size: var(--tc-text-young);
+}
+.tc-feedback {
+  min-height: 3.2em;
+}
+.tc-feedback[data-state='right'] {
+  background: var(--tc-good-bg);
+  color: var(--tc-good-text);
+  border-radius: var(--tc-radius);
+  padding: 8px;
+}
+.tc-feedback[data-state='oops'] {
+  background: var(--tc-oops-bg);
+  color: var(--tc-oops-text);
+  border-radius: var(--tc-radius);
+  padding: 8px;
+}
+.tc-why {
+  font-weight: 700;
+  color: inherit;
+}
+/* Hint is a small helper, apart from the four answers. */
+.tc-hint-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 2px dashed var(--tc-stone);
+}
+.tc-hint-btn {
+  width: auto;
+}
+.tc-speak-btn {
+  justify-self: center;
+}
+.tc-next-row {
+  display: flex;
+  justify-content: center;
+}
+.tc-cover-mute {
+  justify-self: center;
+}
+.tc-hint-text {
+  color: var(--tc-cover-text);
+  font-weight: 700;
+}
+/* A friendly ring that fills over the fast-answer time. Nothing is lost when it ends. */
+.tc-timer {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+}
+.tc-timer .tc-muted {
+  color: var(--tc-cover-text);
+  margin: 0;
+}
+.tc-timer-ring {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 6px solid var(--tc-steel);
+  border-top-color: var(--tc-torch-gold);
+  animation: tc-spin var(--tc-fast-ms) linear 1 both;
+}
+
+/* Math: stacked fractions and raised exponents */
+.tc-frac {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  vertical-align: middle;
+  margin: 0 4px;
+  line-height: 1.1;
+}
+.tc-frac-top {
+  border-bottom: 3px solid currentcolor;
+  padding: 0 4px;
+}
+.tc-frac-bottom {
+  padding: 0 4px;
+}
+
+/* ---------- Stats table ---------- */
+.tc-awards h2,
+.tc-award-card h3 {
+  margin: 0 0 8px;
+}
+.tc-award-card {
+  min-width: 220px;
+  padding: 12px 20px;
+  background: var(--tc-card);
+  border: 3px solid var(--tc-border);
+  border-radius: var(--tc-radius);
+}
+.tc-award-card ul {
+  margin: 0;
+  padding-left: 24px;
+  text-align: left;
+  font-weight: 700;
+}
+.tc-chrono-says {
+  max-width: 640px;
+  padding: 10px 18px;
+  background: var(--tc-white);
+  color: var(--tc-ink);
+  border: 3px solid var(--tc-ink);
+  border-radius: var(--tc-radius);
+}
+.tc-btn-big {
+  min-height: 72px;
+  min-width: 220px;
+  font-size: calc(var(--tc-text-min) * 1.3);
+}
+
+/* ---------- Motion ---------- */
+.tc-slide-in {
+  animation: tc-slide 350ms ease-out both;
+}
+.tc-reload,
+.tc-pass {
+  animation: tc-pop var(--tc-modal-pop) ease-out both;
+}
+@keyframes tc-drop {
+  from {
+    transform: translate(-50%, -150%);
+  }
+  to {
+    transform: translate(-50%, 0);
+  }
+}
+@keyframes tc-slide {
+  from {
+    transform: translateX(60px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+@keyframes tc-pop {
+  from {
+    transform: scale(0.94);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+@keyframes tc-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Reduced motion: no slides, drops, pops, or spins. Fades only. */
+@media (prefers-reduced-motion: reduce) {
+  [data-tc-root] *,
+  [data-tc-root] *::before,
+  [data-tc-root] *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+[data-motion='reduced'],
+[data-motion='reduced'] * {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* ---------- Smaller screens: iPad portrait ---------- */
+@media (max-width: 900px) {
+  .tc-team-cards {
+    grid-template-columns: 1fr;
+  }
+  .tc-hud-top {
+    flex-wrap: wrap;
+  }
+  .tc-team-panel {
+    min-width: 180px;
+  }
+  /* Portrait: aim panel and Fire share one row in the band below the picture. */
+  .tc-hud-bottom {
+    left: 0;
+    right: 0;
+    bottom: 88px;
+    align-items: stretch;
+  }
+  .tc-aim {
+    flex: 1;
+    min-width: 0;
+  }
+}
+@media (max-width: 760px) {
+  .tc-choices {
+    grid-template-columns: 1fr;
+  }
+}

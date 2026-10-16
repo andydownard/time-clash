@@ -1,0 +1,16 @@
+node_modules
+dist
+coverage
+.env
+.env.*
+!.env.example
+playwright-report
+test-results
+.DS_Store
+*.log
+*.pem
+*.key
+.railway/
+.claude/settings.local.json
+.vercel
+.wrangler

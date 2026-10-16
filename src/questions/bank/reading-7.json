@@ -1,0 +1,560 @@
+[
+  {
+    "id": "reading-7-0001",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "vocab",
+    "prompt": "Read: \"Mia was reluctant to jump into the cold lake.\" What does reluctant mean?",
+    "choices": ["not eager", "excited", "sleepy", "proud"],
+    "answer": "not eager",
+    "hint": "Think about someone who stands at the edge and waits.",
+    "tags": ["context-clues"]
+  },
+  {
+    "id": "reading-7-0002",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "vocab",
+    "prompt": "Read: \"The chef was meticulous. She measured every spice with care.\" What does meticulous mean?",
+    "choices": [
+      "always in a hurry",
+      "very careful about small details",
+      "bad at cooking",
+      "fond of loud music"
+    ],
+    "answer": "very careful about small details",
+    "hint": "Look at how she measured the spice.",
+    "tags": ["context-clues"]
+  },
+  {
+    "id": "reading-7-0003",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "vocab",
+    "prompt": "Read: \"The desert was barren. Not one plant grew there.\" What does barren mean?",
+    "choices": ["full of water", "covered in snow", "empty of plants", "busy with people"],
+    "answer": "empty of plants",
+    "hint": "The next sentence tells you what is missing.",
+    "tags": ["context-clues"]
+  },
+  {
+    "id": "reading-7-0004",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "vocab",
+    "prompt": "Read: \"Leo's answer was concise. It took only one short line.\" What does concise mean?",
+    "choices": ["long and slow", "wrong", "silly", "short and clear"],
+    "answer": "short and clear",
+    "hint": "Think about how many words he used.",
+    "tags": ["context-clues"]
+  },
+  {
+    "id": "reading-7-0005",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "vocab",
+    "prompt": "Read: \"The rabbit was cautious and looked both ways before it crossed.\" What does cautious mean?",
+    "choices": ["careful to avoid trouble", "very loud", "very hungry", "easy to fool"],
+    "answer": "careful to avoid trouble",
+    "hint": "The rabbit looked both ways first.",
+    "tags": ["context-clues"]
+  },
+  {
+    "id": "reading-7-0006",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "vocab",
+    "prompt": "Which word is the best synonym for ancient?",
+    "choices": ["very new", "very old", "very big", "very fast"],
+    "answer": "very old",
+    "hint": "Think of castles and old ruins.",
+    "tags": ["synonym"]
+  },
+  {
+    "id": "reading-7-0007",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "vocab",
+    "prompt": "Which word is the opposite of generous?",
+    "choices": ["kind", "giving", "selfish", "friendly"],
+    "answer": "selfish",
+    "hint": "A generous person shares. The opposite keeps everything.",
+    "tags": ["antonym"]
+  },
+  {
+    "id": "reading-7-0008",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "vocab",
+    "prompt": "Read: \"The storm was brief. It was over in a minute.\" What does brief mean?",
+    "choices": ["very strong", "very cold", "hard to see", "lasting a short time"],
+    "answer": "lasting a short time",
+    "hint": "The next sentence says how long it lasted.",
+    "tags": ["context-clues"]
+  },
+  {
+    "id": "reading-7-0009",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "vocab",
+    "prompt": "The prefix \"un-\" means \"not.\" What does the word unfair mean?",
+    "choices": ["not fair", "very fair", "fair again", "before fair"],
+    "answer": "not fair",
+    "hint": "Add the meaning of the prefix to the base word.",
+    "tags": ["prefix"]
+  },
+  {
+    "id": "reading-7-0010",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "vocab",
+    "prompt": "The prefix \"re-\" means \"again.\" What does the word rewrite mean?",
+    "choices": ["write less", "write again", "never write", "write before"],
+    "answer": "write again",
+    "hint": "Think about doing the job one more time.",
+    "tags": ["prefix"]
+  },
+  {
+    "id": "reading-7-0011",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "vocab",
+    "prompt": "The suffix \"-less\" means \"without.\" What does the word fearless mean?",
+    "choices": ["full of fear", "a little fear", "without fear", "fear again"],
+    "answer": "without fear",
+    "hint": "Look at the ending and what it means.",
+    "tags": ["suffix"]
+  },
+  {
+    "id": "reading-7-0012",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "vocab",
+    "prompt": "Read: \"The old map was fragile, so Sam held it gently.\" What does fragile mean?",
+    "choices": ["very heavy", "very bright", "full of color", "easy to break or tear"],
+    "answer": "easy to break or tear",
+    "hint": "Why would Sam hold it gently?",
+    "tags": ["context-clues"]
+  },
+  {
+    "id": "reading-7-0013",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "vocab",
+    "prompt": "Read: \"Ana was thrilled. She jumped and cheered all afternoon.\" What does thrilled mean?",
+    "choices": ["very happy and excited", "tired and slow", "puzzled", "worried"],
+    "answer": "very happy and excited",
+    "hint": "Think about jumping and cheering.",
+    "tags": ["context-clues"]
+  },
+  {
+    "id": "reading-7-0014",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "vocab",
+    "prompt": "Read: \"The path was treacherous, with loose rocks and a slippery slope.\" What does treacherous mean?",
+    "choices": ["easy to follow", "unsafe to walk on", "short and flat", "pretty and green"],
+    "answer": "unsafe to walk on",
+    "hint": "Loose rocks and slippery ground are clues.",
+    "tags": ["context-clues"]
+  },
+  {
+    "id": "reading-7-0015",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "Read the passage. What is the main idea?",
+    "choices": [
+      "Bees like to drink nectar.",
+      "Flowers come in many colors.",
+      "Bees help plants grow seeds and fruit.",
+      "Bees live in large hives."
+    ],
+    "answer": "Bees help plants grow seeds and fruit.",
+    "hint": "Ask what the whole passage is mostly about.",
+    "tags": ["main-idea"],
+    "passage": "Bees visit flowers to drink sweet nectar. As they move from flower to flower, pollen sticks to their legs. The pollen then rubs off on other flowers. This helps new seeds and fruit grow."
+  },
+  {
+    "id": "reading-7-0016",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "Read the passage. What is the main idea?",
+    "choices": [
+      "Everyone should wake up early.",
+      "Meals are the best part of the day.",
+      "Stress is hard to avoid.",
+      "A daily routine can help you feel calm and get things done."
+    ],
+    "answer": "A daily routine can help you feel calm and get things done.",
+    "hint": "Look for the idea that every sentence supports.",
+    "tags": ["main-idea"],
+    "passage": "Many people keep a daily routine. They wake up at the same time and eat meals at set times. A steady routine can help you feel calm. It also helps you finish tasks without stress."
+  },
+  {
+    "id": "reading-7-0017",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "Read the passage. What is the main idea?",
+    "choices": [
+      "Footprints on the Moon last a long time because it has no wind.",
+      "The Moon is made of rock.",
+      "People like to walk on the Moon.",
+      "Wind is strong on Earth."
+    ],
+    "answer": "Footprints on the Moon last a long time because it has no wind.",
+    "hint": "Think about why the prints stay.",
+    "tags": ["main-idea"],
+    "passage": "The Moon has no air or wind. Because of this, footprints left there stay for a very long time. Nothing blows them away. Some prints may last for millions of years."
+  },
+  {
+    "id": "reading-7-0018",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "Read the passage. What is the main idea?",
+    "choices": [
+      "Libraries are always quiet.",
+      "Libraries offer many things besides books.",
+      "Children love story time.",
+      "Books are hard to find."
+    ],
+    "answer": "Libraries offer many things besides books.",
+    "hint": "The passage lists several things. What do they show together?",
+    "tags": ["main-idea"],
+    "passage": "A library is more than a place for books. You can borrow music, join a club, or use a computer. Many libraries also host story time for young children. There is something for almost everyone."
+  },
+  {
+    "id": "reading-7-0019",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "Read the passage. What is the main idea?",
+    "choices": [
+      "Sea turtles eat only plants.",
+      "Sand is warm in summer.",
+      "Sea turtles make long trips to lay eggs where they were born.",
+      "Turtles are slow on land."
+    ],
+    "answer": "Sea turtles make long trips to lay eggs where they were born.",
+    "hint": "Follow the turtle's trip from start to end.",
+    "tags": ["main-idea"],
+    "passage": "Sea turtles travel thousands of miles in their lives. They swim from feeding grounds to the beach where they were born. There they lay their eggs in the sand. Then they swim back out to sea."
+  },
+  {
+    "id": "reading-7-0020",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "Read the passage. What is the main idea?",
+    "choices": [
+      "Students have too much homework.",
+      "Beds should be soft.",
+      "Dreams are always strange.",
+      "Sleep is important for learning and growing."
+    ],
+    "answer": "Sleep is important for learning and growing.",
+    "hint": "Which sentence says why sleep matters?",
+    "tags": ["main-idea"],
+    "passage": "Good sleep helps your body and mind. When you rest, your brain sorts what you learned that day. Your body also grows and mends itself. That is why students need plenty of sleep."
+  },
+  {
+    "id": "reading-7-0021",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "Read the passage. What is the main idea?",
+    "choices": [
+      "Sailors used stars to find their way at sea.",
+      "Ships were very small long ago.",
+      "Stars are far from Earth.",
+      "Cloudy nights are cold."
+    ],
+    "answer": "Sailors used stars to find their way at sea.",
+    "hint": "What did sailors do with the stars?",
+    "tags": ["main-idea"],
+    "passage": "Long ago, sailors used the stars to find their way. They knew certain stars always showed north. By checking the sky each night, they could steer the ship. Clear skies made the trip much easier."
+  },
+  {
+    "id": "reading-7-0022",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "Read the passage. What is the main idea?",
+    "choices": [
+      "Worms are the best pets.",
+      "Compost turns scraps into soil that helps gardens.",
+      "Apples grow in autumn.",
+      "Gardens need a lot of water."
+    ],
+    "answer": "Compost turns scraps into soil that helps gardens.",
+    "hint": "Think about what a compost pile makes.",
+    "tags": ["main-idea"],
+    "passage": "A compost pile turns scraps into rich soil. Apple cores, leaves, and eggshells slowly break down. Tiny worms and bugs help with the work. Gardeners then spread the soil on their plants."
+  },
+  {
+    "id": "reading-7-0023",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "Read the passage. What is the main idea?",
+    "choices": [
+      "Zara does not like the band.",
+      "Songs are always easy.",
+      "Practice helped Zara get better at music.",
+      "Zara has a new school."
+    ],
+    "answer": "Practice helped Zara get better at music.",
+    "hint": "Look at what changed after a month.",
+    "tags": ["main-idea"],
+    "passage": "Zara joined the school band but could not play well at first. She practiced twenty minutes each day. After a month, her songs sounded smooth. Her hard work paid off."
+  },
+  {
+    "id": "reading-7-0024",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "Read the passage. What is the main idea?",
+    "choices": [
+      "Mountains are cold at the top.",
+      "Rock is heavy to carry.",
+      "People live near peaks.",
+      "Volcanoes build mountains as melted rock cools in layers."
+    ],
+    "answer": "Volcanoes build mountains as melted rock cools in layers.",
+    "hint": "The passage explains how something is made.",
+    "tags": ["main-idea"],
+    "passage": "Volcanoes form when hot melted rock pushes up through the ground. The rock cools and hardens into layers. Over many years, the layers build a tall mountain. This is how many famous peaks were made."
+  },
+  {
+    "id": "reading-7-0025",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "Read the passage. What is the main idea?",
+    "choices": [
+      "A helmet must fit well to keep your head safe.",
+      "Bikes are faster than cars.",
+      "Straps come in many colors.",
+      "Falling is fun."
+    ],
+    "answer": "A helmet must fit well to keep your head safe.",
+    "hint": "What does the passage say about fit?",
+    "tags": ["main-idea"],
+    "passage": "Bike helmets protect your head if you fall. They work best when they fit snugly and sit level. A loose helmet can slide and fail to help. Always check the strap before you ride."
+  },
+  {
+    "id": "reading-7-0026",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "Read the passage. What is the main idea?",
+    "choices": [
+      "Owls sleep all day long.",
+      "Owls have body parts that help them hunt at night.",
+      "Feathers are very soft.",
+      "Mice are hard to catch."
+    ],
+    "answer": "Owls have body parts that help them hunt at night.",
+    "hint": "Each sentence names one body part and its job.",
+    "tags": ["main-idea"],
+    "passage": "Owls hunt at night. Their big eyes see well in the dark. Soft feathers let them fly without a sound. Their ears can find tiny noises on the ground."
+  },
+  {
+    "id": "reading-7-0027",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "Read the passage. What is the main idea?",
+    "choices": [
+      "Pictures look best in color.",
+      "Pockets are too small.",
+      "Phones have changed a lot since they were first made.",
+      "Music is loud."
+    ],
+    "answer": "Phones have changed a lot since they were first made.",
+    "hint": "Compare the start and the end of the passage.",
+    "tags": ["main-idea"],
+    "passage": "The first telephones were large and hard to use. Today a phone fits in your pocket. It can take pictures and play music too. Phones have changed a great deal over time."
+  },
+  {
+    "id": "reading-7-0028",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "grammar",
+    "prompt": "Which sentence is written correctly?",
+    "choices": [
+      "There dog ran across the yard.",
+      "They're dog ran across the yard.",
+      "Thier dog ran across the yard.",
+      "Their dog ran across the yard."
+    ],
+    "answer": "Their dog ran across the yard.",
+    "hint": "Pick the word that shows who owns the dog.",
+    "tags": ["their-there"]
+  },
+  {
+    "id": "reading-7-0029",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "grammar",
+    "prompt": "Which word completes the sentence? \"The team lost ____ first game.\"",
+    "choices": ["its", "it's", "its'", "it is"],
+    "answer": "its",
+    "hint": "Pick the word that shows belonging, with no apostrophe.",
+    "tags": ["its-it's"]
+  },
+  {
+    "id": "reading-7-0030",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "grammar",
+    "prompt": "Which sentence has the correct verb?",
+    "choices": [
+      "The girls was happy.",
+      "The girls were happy.",
+      "The girls is happy.",
+      "The girls be happy."
+    ],
+    "answer": "The girls were happy.",
+    "hint": "Plural people need a plural helper word.",
+    "tags": ["subject-verb"]
+  },
+  {
+    "id": "reading-7-0031",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "grammar",
+    "prompt": "Which sentence uses a comma correctly?",
+    "choices": [
+      "After, lunch we played outside.",
+      "After lunch we, played outside.",
+      "After lunch, we played outside.",
+      "After lunch we played, outside."
+    ],
+    "answer": "After lunch, we played outside.",
+    "hint": "A comma goes after the opening phrase.",
+    "tags": ["commas"]
+  },
+  {
+    "id": "reading-7-0032",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "grammar",
+    "prompt": "Which word is an adverb in this sentence? \"The snail moved slowly.\"",
+    "choices": ["snail", "moved", "The", "slowly"],
+    "answer": "slowly",
+    "hint": "It tells how the snail moved.",
+    "tags": ["parts-of-speech"]
+  },
+  {
+    "id": "reading-7-0033",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "grammar",
+    "prompt": "Which word is the past tense of \"swim\"?",
+    "choices": ["swam", "swimmed", "swum", "swims"],
+    "answer": "swam",
+    "hint": "Think of what you say about yesterday: Yesterday I ____.",
+    "tags": ["verb-tense"]
+  },
+  {
+    "id": "reading-7-0034",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "grammar",
+    "prompt": "Which sentence uses the apostrophe correctly?",
+    "choices": [
+      "The students book's are on the desk.",
+      "The students' books are on the desk.",
+      "The student's' books are on the desk.",
+      "The students books' are on the desk."
+    ],
+    "answer": "The students' books are on the desk.",
+    "hint": "The books belong to more than one student.",
+    "tags": ["apostrophes"]
+  },
+  {
+    "id": "reading-7-0035",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "grammar",
+    "prompt": "Which word completes the sentence? \"Ben ran faster than ____.\"",
+    "choices": ["my", "myself", "I", "mine"],
+    "answer": "I",
+    "hint": "Finish the thought: faster than I ran.",
+    "tags": ["pronouns"]
+  },
+  {
+    "id": "reading-7-0036",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "grammar",
+    "prompt": "Which sentence is a complete sentence?",
+    "choices": [
+      "Above the hill and the trees.",
+      "Flying high in the sky.",
+      "When the kite flew away.",
+      "The kite flew high above the hill."
+    ],
+    "answer": "The kite flew high above the hill.",
+    "hint": "A complete sentence has a doer and an action.",
+    "tags": ["sentences"]
+  },
+  {
+    "id": "reading-7-0037",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "grammar",
+    "prompt": "Which word is a noun in this sentence? \"The brave knight rode home.\"",
+    "choices": ["knight", "brave", "rode", "The"],
+    "answer": "knight",
+    "hint": "A noun names a person, place, or thing.",
+    "tags": ["parts-of-speech"]
+  },
+  {
+    "id": "reading-7-0038",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "grammar",
+    "prompt": "Which sentence uses the right word?",
+    "choices": [
+      "I want too go to.",
+      "I want to go too.",
+      "I want two go too.",
+      "I want to go two."
+    ],
+    "answer": "I want to go too.",
+    "hint": "One of these words means also.",
+    "tags": ["homophones"]
+  },
+  {
+    "id": "reading-7-0039",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "grammar",
+    "prompt": "Which word is spelled correctly?",
+    "choices": ["seperate", "separete", "separate", "seperete"],
+    "answer": "separate",
+    "hint": "There is an a in the middle: sep-a-rate.",
+    "tags": ["spelling"]
+  },
+  {
+    "id": "reading-7-0040",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "grammar",
+    "prompt": "Which sentence has correct capital letters?",
+    "choices": [
+      "my aunt visited Texas in July.",
+      "My Aunt visited texas in july.",
+      "My aunt visited texas in July.",
+      "My aunt visited Texas in July."
+    ],
+    "answer": "My aunt visited Texas in July.",
+    "hint": "Names of places and months need capitals.",
+    "tags": ["capitals"]
+  }
+]

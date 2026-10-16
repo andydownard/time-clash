@@ -1,0 +1,42 @@
+{
+  "name": "time-clash",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Time Clash: a free, kid-friendly artillery game that teaches math and reading.",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "typecheck": "tsc --noEmit",
+    "e2e": "playwright test",
+    "check:questions": "tsx scripts/check-questions.ts",
+    "check:dist": "tsx scripts/check-dist.ts",
+    "blind:export": "tsx scripts/blind-export.ts",
+    "blind:compare": "tsx scripts/blind-compare.ts"
+  },
+  "dependencies": {
+    "phaser": "3.90.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@playwright/test": "1.64.1",
+    "@types/node": "22.20.5",
+    "@vitest/coverage-v8": "5.0.5",
+    "eslint": "10.12.0",
+    "globals": "17.13.0",
+    "jsdom": "30.1.3",
+    "prettier": "3.9.10",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.71.2",
+    "vite": "8.3.4",
+    "vitest": "5.0.5"
+  }
+}

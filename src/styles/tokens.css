@@ -1,0 +1,85 @@
+/* Design tokens. Palette from docs/DESIGN_BRIEF.md. No external fonts or images.
+   tests/ui/contrast.test.ts checks the text pairs below. */
+:root {
+  /* Brief palette: Past */
+  --tc-parchment: #f3e3c3;
+  --tc-stone: #8c8a84;
+  --tc-banner-red: #b3372b;
+  --tc-torch-gold: #f2b134;
+  --tc-wood: #6b4423;
+  /* Brief palette: Future */
+  --tc-night: #0e1a33;
+  --tc-cyan: #2ee6ff;
+  --tc-magenta: #ff3dae;
+  --tc-mint: #7cffc4;
+  --tc-steel: #b9c4d0;
+  /* Brief palette: shared */
+  --tc-orange: #ff7a1a;
+  --tc-purple: #3b2a5e;
+  --tc-white: #ffffff;
+  --tc-ink: #1b1b26;
+
+  /* Meaning tokens */
+  --tc-page: var(--tc-parchment);
+  --tc-card: var(--tc-white);
+  --tc-text: var(--tc-ink);
+  --tc-muted-text: #4a4a5a;
+  --tc-border: var(--tc-wood);
+  /* Room for the fixed ? and gear row (chrome.ts): two tap targets, a gap, and margins. */
+  --tc-chrome-row: calc(var(--tc-tap) + 24px);
+  --tc-chrome-clear: calc(var(--tc-tap) * 2 + 36px);
+  /* Height of the HUD card row. The turn banner sits below it. */
+  --tc-hud-row: 184px;
+  --tc-focus: #2f6fed;
+  --tc-ring: #1f6fed;
+  --tc-cover-bg: var(--tc-night);
+  --tc-cover-text: var(--tc-white);
+  --tc-caption-bg: var(--tc-ink);
+  --tc-caption-text: var(--tc-white);
+  --tc-choice-bg: var(--tc-white);
+  --tc-error-text: #9b1c1c;
+  --tc-good-bg: #d7f7e6;
+  --tc-good-text: #0b5d3b;
+  --tc-oops-bg: #fff0d1;
+  --tc-oops-text: #6b3a00;
+
+  /* Team accents. Each team owns one. */
+  --tc-past-accent: var(--tc-banner-red);
+  --tc-future-accent: var(--tc-cyan);
+  --tc-past-btn-bg: var(--tc-banner-red);
+  --tc-past-btn-text: var(--tc-white);
+  --tc-future-btn-bg: var(--tc-cyan);
+  --tc-future-btn-text: var(--tc-ink);
+  --tc-neutral-btn-bg: var(--tc-purple);
+  --tc-neutral-btn-text: var(--tc-white);
+  --tc-banner-text: var(--tc-white);
+  --tc-past-banner-bg: var(--tc-banner-red);
+  --tc-future-banner-bg: var(--tc-night);
+
+  /* Size floors (AGENTS.md accessibility). Mirrors UI in src/game/config.ts. */
+  --tc-tap: 56px;
+  --tc-text-min: 20px;
+  --tc-text-young: 32px;
+
+  /* Type: the system rounded stack. Nothing is downloaded. */
+  --tc-font:
+    ui-rounded, 'SF Pro Rounded', 'Hiragino Maru Gothic ProN', 'Nunito', 'Segoe UI', system-ui,
+    -apple-system, sans-serif;
+  --tc-font-display:
+    ui-rounded, 'SF Pro Rounded', 'Arial Rounded MT Bold', 'Nunito', 'Segoe UI', system-ui,
+    sans-serif;
+
+  --tc-radius: 16px;
+  --tc-gap: 16px;
+
+  /* Motion */
+  --tc-banner-drop: 400ms;
+  --tc-modal-pop: 250ms;
+}
+
+/* On a portrait iPad the two team cards wrap onto two rows, so the banner needs more room. */
+@media (max-width: 900px) {
+  :root {
+    --tc-hud-row: 300px;
+  }
+}

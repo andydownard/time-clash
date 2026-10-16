@@ -1,0 +1,530 @@
+[
+  {
+    "id": "reading-6-0001",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? The map was so vague that we could not find the park.",
+    "choices": ["not clear", "very big", "brand new", "full of color"],
+    "answer": "not clear",
+    "hint": "Think about why they could not find the park.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-6-0002",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? Mia was reluctant to jump in the cold pool.",
+    "choices": ["very happy", "not eager", "in a hurry", "able"],
+    "answer": "not eager",
+    "hint": "She is not sure she wants to jump.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-6-0003",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? The tiny kitten was fragile, so we held it gently.",
+    "choices": ["very loud", "fast", "easy to hurt", "sleepy"],
+    "answer": "easy to hurt",
+    "hint": "That is why we were gentle.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-6-0004",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? Our class will gather leaves for the art project.",
+    "choices": ["throw away", "paint", "count out", "bring together"],
+    "answer": "bring together",
+    "hint": "You pick them up and put them in one place.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-6-0005",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? The rabbit was swift and left the fox far behind.",
+    "choices": ["very fast", "very tired", "very small", "very quiet"],
+    "answer": "very fast",
+    "hint": "It got far ahead of the fox.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-6-0006",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? Sam was weary after the long hike, so he sat down.",
+    "choices": ["very hungry", "very tired", "full of joy", "a bit lost"],
+    "answer": "very tired",
+    "hint": "Why would someone sit down after a long hike?",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-6-0007",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? The chef used an abundant amount of cheese, and the pizza was covered.",
+    "choices": ["very little", "very old", "more than enough", "hard to find"],
+    "answer": "more than enough",
+    "hint": "The pizza was covered.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-6-0008",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? Ana was cautious as she crossed the icy bridge.",
+    "choices": ["silly", "angry", "shy", "careful"],
+    "answer": "careful",
+    "hint": "Ice is slippery, so she moved with care.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-6-0009",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? The twins are identical, so no one can tell them apart.",
+    "choices": ["exactly alike", "very different", "far away", "quite old"],
+    "answer": "exactly alike",
+    "hint": "No one can tell them apart.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-6-0010",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? The old house was vacant. No one lived there.",
+    "choices": ["crowded", "empty", "pretty", "noisy"],
+    "answer": "empty",
+    "hint": "The next sentence tells you the meaning.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-6-0011",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? Leo felt triumphant when his kite flew higher than all the others.",
+    "choices": ["worried", "bored", "proud of winning", "confused"],
+    "answer": "proud of winning",
+    "hint": "His kite did better than all the rest.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-6-0012",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? The soup was bland, so Dad added salt and pepper.",
+    "choices": ["too spicy", "too hot", "very sweet", "with little flavor"],
+    "answer": "with little flavor",
+    "hint": "Why add salt and pepper?",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-6-0013",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? The two teams had to cooperate to move the huge log.",
+    "choices": ["work together", "race each other", "take turns napping", "argue"],
+    "answer": "work together",
+    "hint": "The log was huge, so they needed each other.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-6-0014",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? A tiny crack in the glass was barely visible.",
+    "choices": ["able to be heard", "able to be seen", "able to be eaten", "able to be lifted"],
+    "answer": "able to be seen",
+    "hint": "Think about what your eyes can do.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-6-0015",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "Read the story. What is it mostly about?",
+    "choices": [
+      "Bees make loud noises.",
+      "Flowers are all red.",
+      "Bees help plants grow.",
+      "Fruit is sweet."
+    ],
+    "answer": "Bees help plants grow.",
+    "hint": "Look at what the pollen helps do.",
+    "tags": ["mainidea", "science"],
+    "passage": "Bees visit flowers to drink sweet nectar. As they move from flower to flower, pollen sticks to their legs. The pollen helps new flowers and fruit grow."
+  },
+  {
+    "id": "reading-6-0016",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "Read the story. What is it mostly about?",
+    "choices": [
+      "Rosa lost her coins.",
+      "Rosa read a funny book.",
+      "Rosa has a big family.",
+      "Rosa got ready for a pet."
+    ],
+    "answer": "Rosa got ready for a pet.",
+    "hint": "What was Rosa doing the whole time?",
+    "tags": ["mainidea", "story"],
+    "passage": "Rosa wanted a pet, so she made a plan. She read books about dogs and saved coins in a jar. After two months, she was ready to ask her parents."
+  },
+  {
+    "id": "reading-6-0017",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "Read the story. What is it mostly about?",
+    "choices": [
+      "The sun is important to Earth.",
+      "Plants are green.",
+      "Nights are long.",
+      "Planets are round."
+    ],
+    "answer": "The sun is important to Earth.",
+    "hint": "Every sentence tells why the sun matters.",
+    "tags": ["mainidea", "science"],
+    "passage": "The sun gives us light and heat. Plants use sunlight to make food. Without the sun, our planet would be dark and very cold."
+  },
+  {
+    "id": "reading-6-0018",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "Read the story. What is it mostly about?",
+    "choices": [
+      "Corn is hard to grow.",
+      "A class garden is growing at school.",
+      "Carrots are orange.",
+      "Teachers like to water."
+    ],
+    "answer": "A class garden is growing at school.",
+    "hint": "Think about the place and what is happening there.",
+    "tags": ["mainidea", "story"],
+    "passage": "Our school garden has grown a lot this year. Each class has a row of its own. We planted beans, carrots, and corn, and we water them every day."
+  },
+  {
+    "id": "reading-6-0019",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "Read the story. What is it mostly about?",
+    "choices": [
+      "Maps are always old.",
+      "North is a cold place.",
+      "Maps have parts that help us.",
+      "Pictures are hard to draw."
+    ],
+    "answer": "Maps have parts that help us.",
+    "hint": "The passage names parts of a map and what they do.",
+    "tags": ["mainidea", "social"],
+    "passage": "Maps show us where places are. A map key explains the little pictures on the map. A compass rose shows which way is north."
+  },
+  {
+    "id": "reading-6-0020",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "Read the story. What is it mostly about?",
+    "choices": [
+      "Ben dislikes pianos.",
+      "Ben forgot his song.",
+      "Ben moved to a new town.",
+      "Practice helped Ben do well."
+    ],
+    "answer": "Practice helped Ben do well.",
+    "hint": "What did Ben do before the show, and how did it end?",
+    "tags": ["mainidea", "story"],
+    "passage": "Ben was nervous about his first piano show. He practiced his song every night. On the big day, he played it with a smile, and everyone clapped."
+  },
+  {
+    "id": "reading-6-0021",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "Read the story. What is it mostly about?",
+    "choices": [
+      "A frog changes as it grows.",
+      "Tadpoles live on land.",
+      "Frogs lay one egg.",
+      "Water is always cold."
+    ],
+    "answer": "A frog changes as it grows.",
+    "hint": "The passage goes step by step from egg to frog.",
+    "tags": ["mainidea", "science"],
+    "passage": "Frogs begin life as eggs in the water. The eggs hatch into tadpoles with tails. Over time, the tadpoles grow legs and become frogs."
+  },
+  {
+    "id": "reading-6-0022",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "Read the story. What is it mostly about?",
+    "choices": [
+      "Glass is heavy.",
+      "Recycling helps make less trash.",
+      "Cans are made of paper.",
+      "Trash is smelly."
+    ],
+    "answer": "Recycling helps make less trash.",
+    "hint": "Which idea do all the sentences share?",
+    "tags": ["mainidea", "science"],
+    "passage": "Recycling saves things we can use again. Paper, glass, and cans can be turned into new things. When we recycle, we make less trash."
+  },
+  {
+    "id": "reading-6-0023",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "Read the story. What is it mostly about?",
+    "choices": [
+      "Books are the best.",
+      "Movies are long.",
+      "A library has many things to use.",
+      "Classes are hard."
+    ],
+    "answer": "A library has many things to use.",
+    "hint": "The passage lists many things in one place.",
+    "tags": ["mainidea", "social"],
+    "passage": "The library has more than books. You can borrow music, movies, and games. There are also free classes for kids on many days."
+  },
+  {
+    "id": "reading-6-0024",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "Read the story. What is it mostly about?",
+    "choices": [
+      "Penguins fly very high.",
+      "Fish are slow.",
+      "Wings are heavy.",
+      "Penguins are good at swimming."
+    ],
+    "answer": "Penguins are good at swimming.",
+    "hint": "What can penguins do well?",
+    "tags": ["mainidea", "science"],
+    "passage": "Penguins cannot fly, but they are great swimmers. They use their strong flippers like wings in the water. They can zoom after fish very fast."
+  },
+  {
+    "id": "reading-6-0025",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "Read the story. What is it mostly about?",
+    "choices": [
+      "Kai and Dev solved a problem with their fort.",
+      "Sheets are soft.",
+      "Kai and Dev dislike forts.",
+      "Clothespins are small."
+    ],
+    "answer": "Kai and Dev solved a problem with their fort.",
+    "hint": "They had a problem. How did they fix it?",
+    "tags": ["mainidea", "story"],
+    "passage": "Kai and Dev wanted to build a fort. They tried sheets, but the sheets kept falling. Then they used clothespins to hold the sheets, and the fort stood up."
+  },
+  {
+    "id": "reading-6-0026",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "Read the story. What is it mostly about?",
+    "choices": [
+      "Rainbows are very far away.",
+      "Rainbows form from sunlight and rain.",
+      "Raindrops are purple.",
+      "The sun is a rainbow."
+    ],
+    "answer": "Rainbows form from sunlight and rain.",
+    "hint": "The passage explains how something happens.",
+    "tags": ["mainidea", "science"],
+    "passage": "A rainbow shows up when sunlight passes through raindrops. The light bends and splits into many colors. You often see one when the sun shines after a rain."
+  },
+  {
+    "id": "reading-6-0027",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "Read the story. What is it mostly about?",
+    "choices": [
+      "Flour is expensive.",
+      "Lily lives far away.",
+      "Lily and Grandpa enjoy baking together.",
+      "Bread is hard to eat."
+    ],
+    "answer": "Lily and Grandpa enjoy baking together.",
+    "hint": "Who is doing what, and how do they feel?",
+    "tags": ["mainidea", "story"],
+    "passage": "Every Saturday, Grandpa and Lily bake bread together. She measures the flour while he mixes the dough. They love the warm smell that fills the kitchen."
+  },
+  {
+    "id": "reading-6-0028",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "grammar",
+    "prompt": "Pick the best word to finish the sentence. The dogs ___ in the yard.",
+    "choices": ["plays", "playing", "played so", "play"],
+    "answer": "play",
+    "hint": "More than one dog is doing the action.",
+    "tags": ["grammar", "verb-agreement"]
+  },
+  {
+    "id": "reading-6-0029",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "grammar",
+    "prompt": "Pick the best word to finish the sentence. My sister ___ a book every week.",
+    "choices": ["reads", "read them", "reading", "readed"],
+    "answer": "reads",
+    "hint": "One person does the action, so the verb ends in s.",
+    "tags": ["grammar", "verb-agreement"]
+  },
+  {
+    "id": "reading-6-0030",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "grammar",
+    "prompt": "Pick the best word to finish the sentence. Yesterday, we ___ to the lake.",
+    "choices": ["go", "went", "going", "goes"],
+    "answer": "went",
+    "hint": "The word Yesterday tells you it already happened.",
+    "tags": ["grammar", "verb-tense"]
+  },
+  {
+    "id": "reading-6-0031",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "grammar",
+    "prompt": "Pick the best word to finish the sentence. Is that ___ coat on the chair?",
+    "choices": ["you're", "yours'", "your", "you"],
+    "answer": "your",
+    "hint": "It shows that the coat belongs to someone.",
+    "tags": ["grammar", "homophones"]
+  },
+  {
+    "id": "reading-6-0032",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "grammar",
+    "prompt": "Pick the best word to finish the sentence. ___ going to the park after lunch.",
+    "choices": ["Were", "Where", "Wear", "We're"],
+    "answer": "We're",
+    "hint": "It is a short way to say two words.",
+    "tags": ["grammar", "homophones"]
+  },
+  {
+    "id": "reading-6-0033",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "grammar",
+    "prompt": "Pick the best word to finish the sentence. The cat chased ___ tail.",
+    "choices": ["its", "it's", "its'", "it is"],
+    "answer": "its",
+    "hint": "It shows that the tail belongs to the cat.",
+    "tags": ["grammar", "homophones"]
+  },
+  {
+    "id": "reading-6-0034",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "grammar",
+    "prompt": "Which sentence is written the right way?",
+    "choices": [
+      "Me and Tom goes to the zoo.",
+      "Tom and I went to the zoo.",
+      "Tom and me went to the zoo.",
+      "Tom and I goes to the zoo."
+    ],
+    "answer": "Tom and I went to the zoo.",
+    "hint": "Try the sentence with only I. Does it sound right?",
+    "tags": ["grammar", "pronouns"]
+  },
+  {
+    "id": "reading-6-0035",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "grammar",
+    "prompt": "Pick the best word to finish the sentence. Maya ran ___ than her brother.",
+    "choices": ["more fast", "fastest", "faster", "most fast"],
+    "answer": "faster",
+    "hint": "You are comparing just two people.",
+    "tags": ["grammar", "comparing"]
+  },
+  {
+    "id": "reading-6-0036",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "grammar",
+    "prompt": "Pick the best word to finish the sentence. This is the ___ cake I have ever tasted.",
+    "choices": ["better", "more good", "goodest", "best"],
+    "answer": "best",
+    "hint": "You are comparing one cake to all the others.",
+    "tags": ["grammar", "comparing"]
+  },
+  {
+    "id": "reading-6-0037",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "grammar",
+    "prompt": "Pick the best word to finish the sentence. There are ___ many apples in the bowl to carry.",
+    "choices": ["too", "to", "two", "tu"],
+    "answer": "too",
+    "hint": "It means more than is needed.",
+    "tags": ["grammar", "homophones"]
+  },
+  {
+    "id": "reading-6-0038",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "grammar",
+    "prompt": "Which word is a noun?",
+    "choices": ["quickly", "garden", "bright", "jumped"],
+    "answer": "garden",
+    "hint": "A noun names a person, place, or thing.",
+    "tags": ["grammar", "parts-of-speech"]
+  },
+  {
+    "id": "reading-6-0039",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "grammar",
+    "prompt": "Which sentence has the right end mark?",
+    "choices": [
+      "Can we go outside now.",
+      "Can we go outside now!.",
+      "Can we go outside now?",
+      "Can we go outside now,"
+    ],
+    "answer": "Can we go outside now?",
+    "hint": "The sentence asks something.",
+    "tags": ["grammar", "punctuation"]
+  },
+  {
+    "id": "reading-6-0040",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "grammar",
+    "prompt": "Which word is a verb in this sentence? The bird sang a sweet song.",
+    "choices": ["bird", "sweet", "song", "sang"],
+    "answer": "sang",
+    "hint": "A verb tells what someone does.",
+    "tags": ["grammar", "parts-of-speech"]
+  }
+]

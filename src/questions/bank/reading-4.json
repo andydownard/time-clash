@@ -1,0 +1,539 @@
+[
+  {
+    "id": "reading-4-0001",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "vocab",
+    "prompt": "In the sentence, what does \"enormous\" mean? \"The elephant was enormous.\"",
+    "choices": ["very big", "very small", "very loud", "very old"],
+    "answer": "very big",
+    "hint": "Think about how big an elephant is.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-4-0002",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "vocab",
+    "prompt": "What does \"gentle\" mean? \"She gave the kitten a gentle pat.\"",
+    "choices": ["hard and fast", "soft and kind", "loud and silly", "slow and sleepy"],
+    "answer": "soft and kind",
+    "hint": "Think about how you pet a tiny kitten.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-4-0003",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "vocab",
+    "prompt": "What does \"ancient\" mean? \"The ancient castle had stood for a thousand years.\"",
+    "choices": ["brand new", "very tall", "very old", "very dark"],
+    "answer": "very old",
+    "hint": "Look at how many years it has stood.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-4-0004",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "vocab",
+    "prompt": "What does \"curious\" mean? \"The curious fox sniffed every box.\"",
+    "choices": ["feeling sleepy", "feeling cold", "wanting to hide", "wanting to learn more"],
+    "answer": "wanting to learn more",
+    "hint": "Why would a fox sniff every box?",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-4-0005",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "vocab",
+    "prompt": "What does \"swift\" mean? \"The swift rabbit zoomed past us.\"",
+    "choices": ["fast", "tiny", "quiet", "fluffy"],
+    "answer": "fast",
+    "hint": "The rabbit zoomed past.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-4-0006",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "vocab",
+    "prompt": "What does \"weary\" mean? \"After the long hike, Mia felt weary.\"",
+    "choices": ["very hungry", "very tired", "very proud", "very silly"],
+    "answer": "very tired",
+    "hint": "Think about how you feel after a long hike.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-4-0007",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "vocab",
+    "prompt": "What does \"fragile\" mean? \"Be careful with the fragile glass bowl.\"",
+    "choices": ["hard to lift", "full of soup", "easy to break", "very shiny"],
+    "answer": "easy to break",
+    "hint": "Why would you need to be careful?",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-4-0008",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "vocab",
+    "prompt": "What does \"bright\" mean here? \"Leo is a bright boy who solves puzzles fast.\"",
+    "choices": ["sunny", "tall", "funny", "smart"],
+    "answer": "smart",
+    "hint": "He solves puzzles fast.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-4-0009",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "vocab",
+    "prompt": "Which word means the OPPOSITE of \"ancient\"?",
+    "choices": ["modern", "huge", "tasty", "frosty"],
+    "answer": "modern",
+    "hint": "Think of something brand new.",
+    "tags": ["vocab", "antonym"]
+  },
+  {
+    "id": "reading-4-0010",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "vocab",
+    "prompt": "Which word means almost the SAME as \"tiny\"?",
+    "choices": ["heavy", "small", "bumpy", "sticky"],
+    "answer": "small",
+    "hint": "It is the opposite of giant.",
+    "tags": ["vocab", "synonym"]
+  },
+  {
+    "id": "reading-4-0011",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "vocab",
+    "prompt": "What does \"construct\" mean? \"The team will construct a robot from spare parts.\"",
+    "choices": ["to paint", "to lose", "to build", "to carry"],
+    "answer": "to build",
+    "hint": "Parts are put together to make a robot.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-4-0012",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "vocab",
+    "prompt": "What does \"glum\" mean? \"Sam looked glum when the picnic was rained out.\"",
+    "choices": ["excited", "sleepy", "hungry", "sad"],
+    "answer": "sad",
+    "hint": "Think about how you feel when plans get rained out.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-4-0013",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "vocab",
+    "prompt": "What does the prefix \"un-\" do in \"unlock\"?",
+    "choices": [
+      "It means not or the opposite",
+      "It means again",
+      "It means many",
+      "It means before"
+    ],
+    "answer": "It means not or the opposite",
+    "hint": "Think about what you do to a locked door.",
+    "tags": ["vocab", "prefix"]
+  },
+  {
+    "id": "reading-4-0014",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "vocab",
+    "prompt": "What does the prefix \"re-\" mean in \"rewrite\"?",
+    "choices": ["never", "again", "under", "before"],
+    "answer": "again",
+    "hint": "If you rewrite a story, you write it one more time.",
+    "tags": ["vocab", "prefix"]
+  },
+  {
+    "id": "reading-4-0015",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "passage": "Bees fly from flower to flower. They sip sweet nectar and carry pollen on their legs. This helps plants make seeds and fruit.",
+    "choices": [
+      "Bees like to sleep in hives.",
+      "Flowers are always red.",
+      "Bees help plants grow fruit and seeds.",
+      "Fruit is sweet to eat."
+    ],
+    "answer": "Bees help plants grow fruit and seeds.",
+    "hint": "Ask what the whole passage is mostly about.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-4-0016",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "passage": "Tomas practiced piano every day for a month. At first he missed many notes. Now he can play a whole song.",
+    "choices": [
+      "Tomas does not like music.",
+      "Pianos are very large.",
+      "Songs are always short.",
+      "Practice helped Tomas get better at piano."
+    ],
+    "answer": "Practice helped Tomas get better at piano.",
+    "hint": "What changed from the start to the end?",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-4-0017",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "passage": "Camels can go many days without water. They store fat in their humps. Their thick lashes keep sand out of their eyes.",
+    "choices": [
+      "Camels have body parts that help them live in the desert.",
+      "Camels are faster than horses.",
+      "Sand is hard to walk on.",
+      "Deserts have no animals."
+    ],
+    "answer": "Camels have body parts that help them live in the desert.",
+    "hint": "Each sentence tells about a camel body part.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-4-0018",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "Which sentence tells the main idea?",
+    "passage": "A library is a great place to visit. You can borrow books for free. You can also find quiet spots to read and games to play.",
+    "choices": [
+      "Books must be returned late.",
+      "A library has many fun things to do.",
+      "Games are better than books.",
+      "Quiet people work there."
+    ],
+    "answer": "A library has many fun things to do.",
+    "hint": "Look for the idea that covers all the sentences.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-4-0019",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "What is this passage mostly about?",
+    "passage": "The moon changes shape each night. Some nights it looks like a thin curve. On other nights it looks like a full circle.",
+    "choices": [
+      "Why stars are bright",
+      "How to build a rocket",
+      "How the moon looks different over time",
+      "When the sun comes up"
+    ],
+    "answer": "How the moon looks different over time",
+    "hint": "Think about what changes each night.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-4-0020",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "passage": "To make a paper plane, fold the sheet in half. Then fold the top corners to the middle. Last, fold the wings down and let it fly.",
+    "choices": [
+      "It tells why planes are loud.",
+      "It tells who invented paper.",
+      "It tells where birds sleep.",
+      "It tells how to make a paper plane."
+    ],
+    "answer": "It tells how to make a paper plane.",
+    "hint": "The sentences go in steps.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-4-0021",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "passage": "Rain barrels catch water from roofs. People use that water for their gardens. This saves water from the tap.",
+    "choices": [
+      "Rain barrels help save water.",
+      "Roofs are made of tin.",
+      "Gardens grow in winter.",
+      "Taps are very old."
+    ],
+    "answer": "Rain barrels help save water.",
+    "hint": "What is the job of a rain barrel?",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-4-0022",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "passage": "Penguins cannot fly. But they are great swimmers. Their wings work like flippers in the water.",
+    "choices": [
+      "Penguins live in warm sand.",
+      "Penguins swim well even though they cannot fly.",
+      "All birds can swim.",
+      "Flippers are made of wood."
+    ],
+    "answer": "Penguins swim well even though they cannot fly.",
+    "hint": "Which sentence covers both facts?",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-4-0023",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "Which title fits this passage best?",
+    "passage": "Nina planted a seed in a small pot. She gave it water and sunlight each day. In two weeks, a green sprout popped up.",
+    "choices": [
+      "A Day at the Beach",
+      "The Big Snowstorm",
+      "Nina Grows a Plant",
+      "Nina Learns to Swim"
+    ],
+    "answer": "Nina Grows a Plant",
+    "hint": "A good title tells what the story is mostly about.",
+    "tags": ["mainidea", "title"]
+  },
+  {
+    "id": "reading-4-0024",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "passage": "Mia lost her mitten on the way to school. She looked in her bag and her coat. Then she found it in her boot.",
+    "choices": [
+      "Mia does not like school.",
+      "Boots keep feet warm.",
+      "Coats are hard to find.",
+      "Mia looked for her lost mitten and found it."
+    ],
+    "answer": "Mia looked for her lost mitten and found it.",
+    "hint": "What problem did Mia solve?",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-4-0025",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "passage": "Honey is made by bees. They fill small wax cells with it. Bees eat it in winter when flowers are gone.",
+    "choices": [
+      "Bees make honey and save it for winter.",
+      "Wax is a kind of candle.",
+      "Winter is cold and snowy.",
+      "Flowers have many petals."
+    ],
+    "answer": "Bees make honey and save it for winter.",
+    "hint": "Look at what bees do with honey.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-4-0026",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "passage": "Our class made a mural for the hallway. Each student painted one tile. When we joined them, they showed our whole town.",
+    "choices": [
+      "Paint can be messy.",
+      "Students worked together on a painted mural.",
+      "Halls are long and wide.",
+      "Towns have many roads."
+    ],
+    "answer": "Students worked together on a painted mural.",
+    "hint": "Think about what everyone did together.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-4-0027",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "grammar",
+    "prompt": "Which word is a noun? \"The happy dog ran home.\"",
+    "choices": ["happy", "ran", "dog", "the"],
+    "answer": "dog",
+    "hint": "A noun is a person, place, or thing.",
+    "tags": ["grammar", "noun"]
+  },
+  {
+    "id": "reading-4-0028",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "grammar",
+    "prompt": "Which word is a verb? \"The cat jumped over the fence.\"",
+    "choices": ["cat", "over", "fence", "jumped"],
+    "answer": "jumped",
+    "hint": "A verb shows action.",
+    "tags": ["grammar", "verb"]
+  },
+  {
+    "id": "reading-4-0029",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "grammar",
+    "prompt": "Which word is an adjective? \"She wore a red hat.\"",
+    "choices": ["red", "wore", "hat", "she"],
+    "answer": "red",
+    "hint": "An adjective describes a noun.",
+    "tags": ["grammar", "adjective"]
+  },
+  {
+    "id": "reading-4-0030",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "grammar",
+    "prompt": "Which sentence is written correctly?",
+    "choices": [
+      "Me and my brother likes pizza.",
+      "My brother and I like pizza.",
+      "My brother and me like pizza.",
+      "I and my brother likes pizza."
+    ],
+    "answer": "My brother and I like pizza.",
+    "hint": "Say it without \"my brother\" and see if it sounds right.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-4-0031",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "grammar",
+    "prompt": "Choose the right word. \"The twins ___ playing in the park.\"",
+    "choices": ["is", "am", "are", "be"],
+    "answer": "are",
+    "hint": "The word \"twins\" means more than one.",
+    "tags": ["grammar", "agreement"]
+  },
+  {
+    "id": "reading-4-0032",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "grammar",
+    "prompt": "Choose the right word. \"Their dog wagged ___ tail.\"",
+    "choices": ["it's", "its is", "itz", "its"],
+    "answer": "its",
+    "hint": "Which one shows that the tail belongs to the dog?",
+    "tags": ["grammar", "possessive"]
+  },
+  {
+    "id": "reading-4-0033",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "grammar",
+    "prompt": "Which sentence needs a question mark at the end?",
+    "choices": [
+      "Where did you put my shoes",
+      "Please close the door",
+      "I love ice cream",
+      "What a big wave"
+    ],
+    "answer": "Where did you put my shoes",
+    "hint": "Look for the sentence that asks something.",
+    "tags": ["grammar", "punctuation"]
+  },
+  {
+    "id": "reading-4-0034",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "grammar",
+    "prompt": "Which word is spelled correctly?",
+    "choices": ["becuase", "because", "becase", "becouse"],
+    "answer": "because",
+    "hint": "Say it slowly: be-cause.",
+    "tags": ["grammar", "spelling"]
+  },
+  {
+    "id": "reading-4-0035",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "grammar",
+    "prompt": "Which is the plural of \"box\"?",
+    "choices": ["boxs", "boxies", "boxes", "boxen"],
+    "answer": "boxes",
+    "hint": "Words that end in x add es.",
+    "tags": ["grammar", "plural"]
+  },
+  {
+    "id": "reading-4-0036",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "grammar",
+    "prompt": "Which sentence uses the past tense?",
+    "choices": [
+      "Ava walks to the lake.",
+      "Ava will walk to the lake.",
+      "Ava is walking to the lake.",
+      "Ava walked to the lake."
+    ],
+    "answer": "Ava walked to the lake.",
+    "hint": "Past tense tells what already happened.",
+    "tags": ["grammar", "tense"]
+  },
+  {
+    "id": "reading-4-0037",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "grammar",
+    "prompt": "Where does the comma go? \"We packed apples bananas and grapes.\"",
+    "choices": ["After apples and after bananas", "After we", "After packed", "After and"],
+    "answer": "After apples and after bananas",
+    "hint": "Use commas to split items in a list.",
+    "tags": ["grammar", "punctuation"]
+  },
+  {
+    "id": "reading-4-0038",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "grammar",
+    "prompt": "Which word is a pronoun? \"Ben said he was ready.\"",
+    "choices": ["Ben", "he", "said", "ready"],
+    "answer": "he",
+    "hint": "A pronoun takes the place of a noun.",
+    "tags": ["grammar", "pronoun"]
+  },
+  {
+    "id": "reading-4-0039",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "grammar",
+    "prompt": "Which sentence is a complete sentence?",
+    "choices": [
+      "Stopped at the corner.",
+      "The bus at the corner.",
+      "The bus stopped at the corner.",
+      "Because the bus stopped."
+    ],
+    "answer": "The bus stopped at the corner.",
+    "hint": "A complete sentence has who and what they did.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-4-0040",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "grammar",
+    "prompt": "Choose the right word. \"I like pizza, ___ my sister likes soup.\"",
+    "choices": ["or", "so", "if", "but"],
+    "answer": "but",
+    "hint": "The two ideas are different.",
+    "tags": ["grammar", "conjunction"]
+  }
+]

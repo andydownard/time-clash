@@ -1,0 +1,544 @@
+[
+  {
+    "id": "reading-10-0001",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "vocab",
+    "prompt": "What does \"meticulous\" mean? \"The meticulous baker measured every spoon of sugar.\"",
+    "choices": [
+      "very careful about small details",
+      "careless and quick",
+      "loud and proud",
+      "tired and slow"
+    ],
+    "answer": "very careful about small details",
+    "hint": "Think about someone who checks every little step.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-10-0002",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "vocab",
+    "prompt": "What does \"reluctant\" mean? \"Leo was reluctant to jump into the cold pool.\"",
+    "choices": [
+      "ready and excited",
+      "not wanting to do something",
+      "able to swim fast",
+      "sure of the water"
+    ],
+    "answer": "not wanting to do something",
+    "hint": "He is standing at the edge and the water is cold.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-10-0003",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "vocab",
+    "prompt": "What does \"ephemeral\" mean? \"The ephemeral rainbow faded after a minute.\"",
+    "choices": ["lasting for years", "very colorful", "lasting a very short time", "very large"],
+    "answer": "lasting a very short time",
+    "hint": "The rainbow faded after only a minute.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-10-0004",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "vocab",
+    "prompt": "What does \"benevolent\" mean? \"The benevolent queen gave bread to every family.\"",
+    "choices": ["proud and loud", "sly and sneaky", "shy and quiet", "kind and giving"],
+    "answer": "kind and giving",
+    "hint": "Think about why she shared bread with everyone.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-10-0005",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "vocab",
+    "prompt": "What does \"scarce\" mean? \"Fresh water was scarce in the dry valley.\"",
+    "choices": ["hard to find", "easy to find", "cold to touch", "good to taste"],
+    "answer": "hard to find",
+    "hint": "The valley was dry, so there was very little.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-10-0006",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "vocab",
+    "prompt": "What does \"diligent\" mean? \"The diligent student finished her project early.\"",
+    "choices": ["lazy and slow", "hard-working and careful", "silly and loud", "nervous and shy"],
+    "answer": "hard-working and careful",
+    "hint": "She finished early because she kept working.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-10-0007",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "vocab",
+    "prompt": "What does \"candid\" mean? \"Be candid and tell me what you really think.\"",
+    "choices": ["sneaky and sly", "quiet and shy", "honest and open", "angry and loud"],
+    "answer": "honest and open",
+    "hint": "Telling what you really think means no hiding.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-10-0008",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "vocab",
+    "prompt": "What does \"abundant\" mean? \"Apples were abundant in the orchard this fall.\"",
+    "choices": ["very rare", "very sour", "not yet ripe", "more than enough"],
+    "answer": "more than enough",
+    "hint": "Picture trees full of apples everywhere you look.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-10-0009",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "vocab",
+    "prompt": "What does \"hinder\" mean? \"Deep mud can hinder a wagon on a long trip.\"",
+    "choices": ["slow down or block", "speed up", "paint bright colors", "make lighter"],
+    "answer": "slow down or block",
+    "hint": "What would mud do to wagon wheels?",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-10-0010",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "vocab",
+    "prompt": "What does \"vivid\" mean? \"She gave a vivid description of the sunset.\"",
+    "choices": ["dull and gray", "bright and clear", "short and quick", "quiet and soft"],
+    "answer": "bright and clear",
+    "hint": "You could picture every color in your mind.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-10-0011",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "vocab",
+    "prompt": "What does \"ambiguous\" mean? \"The sign was ambiguous, so we could not tell which way to turn.\"",
+    "choices": [
+      "painted in gold",
+      "very easy to read",
+      "able to be understood in more than one way",
+      "made of wood"
+    ],
+    "answer": "able to be understood in more than one way",
+    "hint": "We could not tell which way to turn.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-10-0012",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "vocab",
+    "prompt": "What does \"frugal\" mean? \"A frugal family reuses jars instead of throwing them away.\"",
+    "choices": [
+      "rich and fancy",
+      "messy and loud",
+      "lost and lonely",
+      "careful not to waste things"
+    ],
+    "answer": "careful not to waste things",
+    "hint": "Reusing jars saves things and money.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-10-0013",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "vocab",
+    "prompt": "What does \"obsolete\" mean? \"The old tape player is obsolete now that we have phones.\"",
+    "choices": ["no longer used", "brand new", "very costly", "extra loud"],
+    "answer": "no longer used",
+    "hint": "A newer thing took its place.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-10-0014",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "vocab",
+    "prompt": "What does \"tranquil\" mean? \"The lake was tranquil in the early morning.\"",
+    "choices": ["wild and stormy", "calm and peaceful", "cold and deep", "dark and muddy"],
+    "answer": "calm and peaceful",
+    "hint": "Think of a quiet morning with no waves.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-10-0015",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "vocab",
+    "prompt": "What does \"inevitable\" mean? \"With the clouds so dark, rain was inevitable.\"",
+    "choices": ["very unlikely", "already over", "sure to happen", "hard to see"],
+    "answer": "sure to happen",
+    "hint": "The dark clouds make it almost certain.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-10-0016",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "vocab",
+    "prompt": "What does \"resilient\" mean? \"The resilient plant grew back after the frost.\"",
+    "choices": ["easy to break", "hard to find", "slow to grow", "able to bounce back"],
+    "answer": "able to bounce back",
+    "hint": "It grew back after a hard time.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-10-0017",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of the passage?",
+    "passage": "Bees visit flowers to drink nectar. As they move from flower to flower, pollen sticks to their legs. This pollen helps new seeds and fruits to grow.",
+    "choices": [
+      "Bees help plants make seeds and fruit.",
+      "Flowers are all the same color.",
+      "Bees live in very cold places.",
+      "Fruit is always sweet."
+    ],
+    "answer": "Bees help plants make seeds and fruit.",
+    "hint": "Look at what the pollen helps grow.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-10-0018",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of the passage?",
+    "passage": "Maria wanted to learn the guitar. At first her fingers hurt and the notes sounded wrong. She practiced each day, and soon she could play a whole song.",
+    "choices": [
+      "Guitars are hard to carry.",
+      "Practice helps you get better at something.",
+      "Songs are always short.",
+      "Fingers should never hurt."
+    ],
+    "answer": "Practice helps you get better at something.",
+    "hint": "Think about what changed because she practiced each day.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-10-0019",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of the passage?",
+    "passage": "The moon has no air and no wind. Because of this, the footprints left there long ago have not changed. They may stay for millions of years.",
+    "choices": [
+      "The moon has strong winds.",
+      "Footprints are easy to wash away.",
+      "Footprints on the moon last a very long time.",
+      "People visit the moon every day."
+    ],
+    "answer": "Footprints on the moon last a very long time.",
+    "hint": "Ask why the footprints have not changed.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-10-0020",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of the passage?",
+    "passage": "A library is more than a place for books. Many libraries lend games, tools, and music. Some also hold classes and story hours for all ages.",
+    "choices": [
+      "Libraries only have books.",
+      "Games are better than tools.",
+      "Story hours are only for adults.",
+      "Libraries offer many things besides books."
+    ],
+    "answer": "Libraries offer many things besides books.",
+    "hint": "The passage lists several things libraries share.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-10-0021",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of the passage?",
+    "passage": "Long ago, people sent messages by horse. Later, the telegraph sent words along wires in minutes. Today, a message can reach a friend in a blink.",
+    "choices": [
+      "Sending messages has become faster over time.",
+      "Horses are faster than wires.",
+      "People no longer send messages.",
+      "Telegraphs are used today."
+    ],
+    "answer": "Sending messages has become faster over time.",
+    "hint": "Follow how the time to send a message changes.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-10-0022",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of the passage?",
+    "passage": "Ants work together to build their homes. Some dig tunnels, some carry food, and some care for the young. Each ant has a job that helps the whole group.",
+    "choices": [
+      "Ants like to live alone.",
+      "Ants share the work to help their group.",
+      "Only one ant digs tunnels.",
+      "Ants cannot carry food."
+    ],
+    "answer": "Ants share the work to help their group.",
+    "hint": "Notice that every ant has a job.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-10-0023",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of the passage?",
+    "passage": "Sleep gives your body time to rest and grow. It also helps your brain hold on to what you learned that day. Kids who sleep well often do better at school.",
+    "choices": [
+      "School days are too long.",
+      "Brains never need rest.",
+      "Good sleep helps your body and your learning.",
+      "Kids should stay up late."
+    ],
+    "answer": "Good sleep helps your body and your learning.",
+    "hint": "Think about what sleep does for body and brain.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-10-0024",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of the passage?",
+    "passage": "A tiny seed holds a plan for a whole tree. With water, sunlight, and time, it sends roots down and a stem up. Years later, it may be taller than a house.",
+    "choices": [
+      "Trees do not need water.",
+      "Houses are made from seeds.",
+      "Roots grow up toward the sky.",
+      "Small seeds can grow into very big trees."
+    ],
+    "answer": "Small seeds can grow into very big trees.",
+    "hint": "Compare the size of the seed with the size of the tree.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-10-0025",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of the passage?",
+    "passage": "Rivers carve paths through rock over many years. Water moves bits of stone and sand a little at a time. After a very long time, a deep canyon can form.",
+    "choices": [
+      "Moving water can slowly shape the land.",
+      "Canyons form in one day.",
+      "Rocks are softer than sand.",
+      "Rivers only flow in winter."
+    ],
+    "answer": "Moving water can slowly shape the land.",
+    "hint": "The key words are water and a very long time.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-10-0026",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of the passage?",
+    "passage": "Tomas forgot his lunch at home. His friend Jada shared half of her sandwich without being asked. Tomas smiled and thanked her, and the next day he brought extra snacks to share.",
+    "choices": [
+      "Lunch should be left at home.",
+      "Kindness can spread from one friend to another.",
+      "Sandwiches are the best food.",
+      "Snacks are better than lunch."
+    ],
+    "answer": "Kindness can spread from one friend to another.",
+    "hint": "See what Tomas did after Jada was kind.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-10-0027",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of the passage?",
+    "passage": "Many birds fly south when the weather turns cold. They travel to places where food is easier to find. When spring comes, they fly back home.",
+    "choices": [
+      "All birds stay in one place.",
+      "Birds cannot fly far.",
+      "Some birds travel to find food and warm weather.",
+      "Spring is the coldest season."
+    ],
+    "answer": "Some birds travel to find food and warm weather.",
+    "hint": "Ask why the birds leave and why they return.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-10-0028",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of the passage?",
+    "passage": "A map shows where places are. It can show roads, rivers, and towns on one flat page. A good map helps travelers find their way.",
+    "choices": [
+      "Maps are always round.",
+      "Roads are made of rivers.",
+      "Travelers never need help.",
+      "Maps help people find places."
+    ],
+    "answer": "Maps help people find places.",
+    "hint": "Think about what a traveler uses a map for.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-10-0029",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "grammar",
+    "prompt": "Which word completes the sentence? \"Each of the students ___ a pencil.\"",
+    "choices": ["has", "have", "having", "haved"],
+    "answer": "has",
+    "hint": "Each means one at a time.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-10-0030",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "grammar",
+    "prompt": "Which word completes the sentence? \"The twins left ___ bikes at the park.\"",
+    "choices": ["there", "their", "they're", "them"],
+    "answer": "their",
+    "hint": "Whose bikes are they? The bikes belong to the twins.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-10-0031",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "grammar",
+    "prompt": "Which word completes the sentence? \"The dog wagged ___ tail.\"",
+    "choices": ["it's", "it", "its", "their"],
+    "answer": "its",
+    "hint": "This word shows that the tail belongs to the dog.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-10-0032",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "grammar",
+    "prompt": "Which word completes the sentence? \"The rain had a big ___ on the garden.\"",
+    "choices": ["affect", "affected", "effects", "effect"],
+    "answer": "effect",
+    "hint": "Here you need a thing, not an action.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-10-0033",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "grammar",
+    "prompt": "Which word completes the sentence? \"My brother is taller ___ I am.\"",
+    "choices": ["than", "then", "that", "thin"],
+    "answer": "than",
+    "hint": "You are comparing two people.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-10-0034",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "grammar",
+    "prompt": "Which word completes the sentence? \"Yesterday, we ___ to the museum.\"",
+    "choices": ["go", "went", "goes", "going"],
+    "answer": "went",
+    "hint": "Yesterday tells you it is already finished.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-10-0035",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "grammar",
+    "prompt": "Which word completes the sentence? \"Maya and ___ built a robot.\"",
+    "choices": ["me", "myself", "I", "mine"],
+    "answer": "I",
+    "hint": "Try the sentence with only the second word.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-10-0036",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "grammar",
+    "prompt": "Which sentence has the correct punctuation?",
+    "choices": [
+      "After lunch we, played outside.",
+      "After, lunch we played outside.",
+      "After lunch we played, outside.",
+      "After lunch, we played outside."
+    ],
+    "answer": "After lunch, we played outside.",
+    "hint": "Put a pause after the opening phrase.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-10-0037",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "grammar",
+    "prompt": "Which word completes the sentence? \"The ___ toys were all over the floor.\"",
+    "choices": ["children's", "childrens", "childrens'", "childs"],
+    "answer": "children's",
+    "hint": "The toys belong to the kids, and the plural word does not end in s.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-10-0038",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "grammar",
+    "prompt": "Which one is a complete sentence?",
+    "choices": [
+      "On the warm rug.",
+      "The cat slept on the warm rug.",
+      "Slept all afternoon.",
+      "The cat on the rug."
+    ],
+    "answer": "The cat slept on the warm rug.",
+    "hint": "A full sentence tells who and what they did.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-10-0039",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "grammar",
+    "prompt": "Which word completes the sentence? \"There are ___ cookies in the jar than yesterday.\"",
+    "choices": ["less", "least", "fewer", "much"],
+    "answer": "fewer",
+    "hint": "You can count cookies one by one.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-10-0040",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "grammar",
+    "prompt": "Which word completes the sentence? \"She sang ___ at the show.\"",
+    "choices": ["beautiful", "beauty", "beautify", "beautifully"],
+    "answer": "beautifully",
+    "hint": "This word tells how she sang.",
+    "tags": ["grammar"]
+  }
+]

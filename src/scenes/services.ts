@@ -1,0 +1,105 @@
+// Builds the services every scene shares. Browser pieces are injected so tests can fake them.
+import { createAudioManager } from '../audio/audioManager';
+import type { AudioEnv } from '../audio/types';
+import { createStorage, loadSettings, saveAudioSettings } from '../storage/storage';
+import type { TypedStorage } from '../storage/types';
+import type { QuestionBank } from '../questions/types';
+import { createOverlay } from '../ui/overlay';
+import type { LoadingEnv } from '../ui/loadingLogic';
+import { createHowToPlay } from './chrome';
+import { createSeedSource, type SeedSource } from './flow';
+import type { AppServices } from './registry';
+import { createLoadFaults, type LoadFaults } from './testHook';
+
+type AudioWindow = Partial<
+  Pick<Window, 'speechSynthesis' | 'setTimeout' | 'clearTimeout' | 'performance'>
+> & {
+  AudioContext?: new () => AudioContext;
+  webkitAudioContext?: new () => AudioContext;
+};
+
+/** Nothing here makes sound. The AudioManager only calls these after the first tap. */
+export function createBrowserAudioEnv(win: AudioWindow): AudioEnv {
+  return {
+    createAudioContext: () => {
+      const Ctor = win.AudioContext ?? win.webkitAudioContext;
+      if (!Ctor) return null;
+      try {
+        return new Ctor();
+      } catch {
+        return null;
+      }
+    },
+    createAudioElement: (src) => {
+      try {
+        return new Audio(src);
+      } catch {
+        return null;
+      }
+    },
+    speechSynthesis: win.speechSynthesis ?? null,
+    createUtterance: (text) => new SpeechSynthesisUtterance(text),
+    setTimeout: (fn, ms) => globalThis.setTimeout(fn, ms),
+    clearTimeout: (id) => globalThis.clearTimeout(id as number),
+    now: () => (win.performance ?? performance).now(),
+  };
+}
+
+export type ServiceOptions = {
+  doc: Document;
+  win: AudioWindow;
+  storage?: TypedStorage;
+  loadBank?: () => Promise<QuestionBank>;
+  entropy?: () => number;
+  seeds?: SeedSource;
+  faults?: LoadFaults;
+};
+
+const defaultLoadBank = async (): Promise<QuestionBank> => (await import('../questions/bank')).BANK;
+
+const randomEntropy = (): number => {
+  try {
+    const a = new Uint32Array(1);
+    globalThis.crypto.getRandomValues(a);
+    return (a[0] ?? 0) / 2 ** 32;
+  } catch {
+    return Math.random();
+  }
+};
+
+export function createServices(opts: ServiceOptions): {
+  services: AppServices;
+  seeds: SeedSource;
+  faults: LoadFaults;
+} {
+  const storage = opts.storage ?? createStorage();
+  const settings = loadSettings(storage);
+  const audio = createAudioManager(
+    createBrowserAudioEnv(opts.win),
+    { muted: settings.muted, volume: settings.volume, musicOn: settings.musicOn },
+    (state) => saveAudioSettings(storage, state),
+  );
+  const overlay = createOverlay(opts.doc, { audio, storage });
+  const seeds = opts.seeds ?? createSeedSource(opts.entropy ?? randomEntropy);
+  const faults = opts.faults ?? createLoadFaults();
+  const realLoad = opts.loadBank ?? defaultLoadBank;
+  const env: LoadingEnv = {
+    now: () => (opts.win.performance ?? performance).now(),
+    setTimeout: (fn, ms) => globalThis.setTimeout(fn, ms),
+    clearTimeout: (id) => globalThis.clearTimeout(id as number),
+  };
+  const services: AppServices = {
+    overlay,
+    audio,
+    storage,
+    env,
+    howTo: createHowToPlay({ overlay, audio, env }),
+    session: { match: null, bank: null },
+    loadBank: async () => {
+      if (faults.take()) throw new Error('Test hook: this load was told to fail.');
+      return realLoad();
+    },
+    newSeed: () => seeds.next(),
+  };
+  return { services, seeds, faults };
+}

@@ -1,0 +1,349 @@
+// BattleFlow: the whole battle loop with no Phaser in it.
+// It talks to MatchController (rules), the Overlay (DOM), the BattleView (drawing) and audio.
+// The loop follows docs/CONTRACTS.md:
+//   pass screen -> ready() -> banner -> setAim/fire() -> animate path -> shotLanded()
+//   -> (tumble, bubble) -> ... -> pickQuestion -> showReloadModal -> reloadDone() -> pass()
+import type { AudioManager } from '../../audio/types';
+import { RNG_SALT, TEAM_FACING, TURN } from '../../game/config';
+import { simulateShot } from '../../game/ballistics';
+import { createShuffleBag } from '../../game/bag';
+import { createRng } from '../../game/rng';
+import type { AimInput, MatchController, Rng, Team } from '../../game/types';
+import { HIT_LINES, RELOAD as RELOAD_COPY, RELOAD_QUIPS } from '../../data/copy';
+import { timeCaptions } from '../../data/introScript';
+import { noteMissed, pickQuestion } from '../../questions/pick';
+import type { PickHistory, QuestionBank } from '../../questions/types';
+import type { HudHandlers, HudState, Overlay } from '../../ui/types';
+import { bubbleAnchor } from './geometry';
+import { describeImpact } from './impact';
+import { previewDots } from './trajectory';
+import { bubbleText, tumblingTeam } from './tumble';
+import type { BattleResult, BattleView, ViewStatus } from './types';
+import { IMPACT_BEAT_MS, SCRAP_POPUP_MS, WIN_BEAT_MS } from './visual';
+
+export type FlowDeps = {
+  match: MatchController;
+  overlay: Pick<
+    Overlay,
+    | 'showHud'
+    | 'updateHud'
+    | 'hideHud'
+    | 'showTurnBanner'
+    | 'showPassScreen'
+    | 'showReloadModal'
+    | 'showSpeechBubble'
+    | 'setCaption'
+  >;
+  view: BattleView;
+  audio?: Pick<AudioManager, 'playSfx' | 'speak'> &
+    Partial<Pick<AudioManager, 'setMusicTeam' | 'stopMusic'>>;
+  bank: QuestionBank;
+  history: PickHistory;
+  onHistory?: (history: PickHistory) => void;
+  onMuteToggle?: () => void;
+  onFinished: (result: BattleResult) => void;
+  /** Resolves after ms. The scene uses a real timer; tests resolve at once. */
+  wait: (ms: number) => Promise<void>;
+  /** Resolves right away unless the game is paused. */
+  waitIfPaused?: () => Promise<void>;
+};
+
+/** Thrown inside the loop when destroy() runs, so every await can bail out. */
+class Stopped extends Error {}
+
+export class BattleFlow {
+  private stopped = false;
+  private history: PickHistory;
+  private readonly questionRng: Rng;
+  private readonly hitBags: Record<'direct' | 'near' | 'miss', { next(): number }>;
+  private readonly quipBags: Record<'fast' | 'slow' | 'wrong', { next(): number }>;
+  private awaitingFire: (() => void) | null = null;
+
+  constructor(private readonly deps: FlowDeps) {
+    this.history = deps.history;
+    this.questionRng = createRng(deps.match.snapshot().seed ^ RNG_SALT.questions);
+    // Jokes come from seeded shuffle bags, so a match repeats and no line shows twice in a row.
+    const lineRng = createRng((deps.match.snapshot().seed ^ RNG_SALT.lines) >>> 0);
+    this.hitBags = {
+      direct: createShuffleBag(lineRng, HIT_LINES.direct.length),
+      near: createShuffleBag(lineRng, HIT_LINES.near.length),
+      miss: createShuffleBag(lineRng, HIT_LINES.miss.length),
+    };
+    this.quipBags = {
+      fast: createShuffleBag(lineRng, RELOAD_QUIPS.fast.length),
+      slow: createShuffleBag(lineRng, RELOAD_QUIPS.slow.length),
+      wrong: createShuffleBag(lineRng, RELOAD_QUIPS.wrong.length),
+    };
+  }
+
+  /** Runs until the match ends or destroy() is called. Resolves quietly in both cases. */
+  async run(): Promise<void> {
+    const { match, overlay } = this.deps;
+    overlay.showHud(this.hudHandlers());
+    try {
+      while (match.snapshot().status === 'PLAYING') {
+        const done = await this.playTurn();
+        if (done) return;
+      }
+    } catch (e) {
+      if (!(e instanceof Stopped)) throw e;
+    } finally {
+      this.deps.audio?.stopMusic?.();
+      this.deps.view.setAimDragHandler(null);
+    }
+  }
+
+  /** Stop the loop. Any pending wait for Fire is released. */
+  destroy(): void {
+    this.stopped = true;
+    this.deps.view.setAimDragHandler(null);
+    const release = this.awaitingFire;
+    this.awaitingFire = null;
+    release?.();
+  }
+
+  // ---------- one turn ----------
+
+  /** Returns true when the match ended and Victory took over. */
+  private async playTurn(): Promise<boolean> {
+    const { match, overlay, view } = this.deps;
+    const team = match.snapshot().turn.team;
+    const names = this.names();
+
+    this.pushStatus(false);
+    view.setActiveTeam(null);
+    await this.gate();
+    await overlay.showPassScreen({ nextName: names[team], nextTeam: team });
+    this.live();
+    match.ready();
+    view.setActiveTeam(team);
+    this.deps.audio?.setMusicTeam?.(team);
+
+    for (const shot of [1, 2] as const) {
+      await this.gate();
+      void overlay.showTurnBanner({ name: names[team], team, shot });
+      await this.aimAndFire(team);
+      this.live();
+      if (match.snapshot().status === 'OVER') {
+        await this.finish();
+        return true;
+      }
+    }
+
+    await this.reload(team);
+    match.pass();
+    return false;
+  }
+
+  /** Wait for the player to aim and fire, then fly the shot and apply it. */
+  private async aimAndFire(team: Team): Promise<void> {
+    const { match, view, audio } = this.deps;
+    const fired = new Promise<void>((resolve) => {
+      this.awaitingFire = resolve;
+    });
+    view.setAimDragHandler((aim) => this.setAim(aim));
+    this.pushStatus(true);
+    this.drawPreview(team);
+    await fired;
+    this.live();
+
+    view.setAimDragHandler(null);
+    view.showPreview(team, null);
+    this.pushStatus(false);
+    await this.gate();
+    const result = match.fire();
+    audio?.playSfx(team === 'PAST' ? 'cannonBoom' : 'laserPew');
+    this.pushStatus(false);
+    await view.animateShot(team, result);
+    this.live();
+
+    const outcome = match.shotLanded();
+    audio?.playSfx('thud');
+    this.pushStatus(false);
+    const label = HIT_LINES[outcome.result][this.hitBags[outcome.result].next()];
+    await view.playImpact(describeImpact(team, result, outcome, label));
+    this.live();
+    await this.deps.wait(IMPACT_BEAT_MS);
+    this.live();
+
+    const tumbler = tumblingTeam(outcome);
+    if (tumbler) {
+      audio?.playSfx('boing');
+      await view.playTumble(tumbler);
+      this.live();
+      const text = bubbleText(outcome);
+      if (text) {
+        this.deps.overlay.showSpeechBubble({
+          text,
+          team: tumbler,
+          anchor: bubbleAnchor(tumbler, match.layout),
+        });
+      }
+    }
+  }
+
+  private async finish(): Promise<void> {
+    const { match, overlay, audio } = this.deps;
+    const snap = match.snapshot();
+    audio?.playSfx('cheer');
+    await this.deps.wait(WIN_BEAT_MS);
+    this.live();
+    overlay.hideHud();
+    if (snap.winner) {
+      this.deps.onFinished({
+        winner: snap.winner,
+        names: this.names(),
+        stats: snap.stats,
+        rematch: match.rematchOptions(),
+      });
+    }
+  }
+
+  /** The learning moment. A wrong answer still reloads (Gate 2). */
+  private async reload(team: Team): Promise<void> {
+    const { match, overlay, view, audio, bank } = this.deps;
+    const player = match.snapshot().players[team === 'PAST' ? 0 : 1];
+    let answer: { correct: boolean; elapsedMs: number } = { correct: false, elapsedMs: Infinity };
+    let asked: { kind: string; grade: number } | null = null;
+    try {
+      const pick = pickQuestion(
+        bank,
+        { subject: player.subject, grade: player.grade, who: team },
+        this.history,
+        this.questionRng,
+      );
+      this.history = pick.history;
+      this.deps.onHistory?.(pick.history);
+      asked = { kind: pick.question.kind, grade: pick.question.grade };
+      await this.gate();
+      answer = await overlay.showReloadModal({
+        question: pick.question,
+        team,
+        playerName: player.name,
+        quip: (kind) => RELOAD_QUIPS[kind][this.quipBags[kind].next()] ?? null,
+        speak: (text, sentences) => {
+          const durationMs = Math.max(1500, text.split(/\s+/).length * 450);
+          audio?.speak(
+            {
+              id: 'read-question',
+              text,
+              captions: timeCaptions(sentences.length > 0 ? sentences : [text], durationMs),
+              durationMs,
+            },
+            { onCaption: (t) => overlay.setCaption(t) },
+          );
+        },
+      });
+      this.live();
+      if (!answer.correct) {
+        this.history = noteMissed(this.history, pick.question.id);
+        this.deps.onHistory?.(this.history);
+      }
+    } catch (e) {
+      if (e instanceof Stopped) throw e;
+      // No question must never stop play: reload with no scrap, and say so out loud.
+      overlay.setCaption(RELOAD_COPY.lostQuestion);
+    }
+    const score = match.reloadDone({
+      correct: answer.correct,
+      elapsedMs: answer.elapsedMs,
+      ...(asked ?? {}),
+    });
+    if (!answer.correct) audio?.playSfx('clunk');
+    this.pushStatus(false);
+    if (score.scrap > 0) {
+      view.showScrapPopup(team, score.scrap);
+      await this.deps.wait(SCRAP_POPUP_MS);
+      this.live();
+    }
+  }
+
+  // ---------- player input ----------
+
+  private hudHandlers(): HudHandlers {
+    return {
+      onAim: (aim) => this.setAim(aim),
+      onFire: () => {
+        const go = this.awaitingFire;
+        if (!go) return;
+        this.awaitingFire = null;
+        go();
+      },
+      onMuteToggle: () => this.deps.onMuteToggle?.(),
+    };
+  }
+
+  private setAim(aim: AimInput): void {
+    if (!this.awaitingFire || this.stopped) return;
+    const { match } = this.deps;
+    try {
+      match.setAim(aim);
+    } catch {
+      return; // not the aiming phase any more; ignore
+    }
+    this.pushStatus(true);
+    this.drawPreview(match.snapshot().turn.team);
+  }
+
+  // ---------- drawing ----------
+
+  private names(): Record<Team, string> {
+    const [past, future] = this.deps.match.snapshot().players;
+    return { PAST: past.name, FUTURE: future.name };
+  }
+
+  private pushStatus(canFire: boolean): void {
+    const { match, overlay, view } = this.deps;
+    const s = match.snapshot();
+    const team = s.turn.team;
+    const shotsLeft = Math.max(0, TURN.shotsPerTurn - s.turn.shotsFired) as 0 | 1 | 2;
+    const aim = s.aim[team];
+    const hud: HudState = {
+      activeTeam: team,
+      names: this.names(),
+      baseHp: s.baseHp,
+      scrap: s.scrap,
+      wind: s.wind,
+      angleDeg: aim.angleDeg,
+      power: aim.power,
+      shotsLeft,
+      canFire,
+    };
+    overlay.updateHud(hud);
+    const status: ViewStatus = {
+      activeTeam: team,
+      names: hud.names,
+      baseHp: s.baseHp,
+      scrap: s.scrap,
+      wind: s.wind,
+      shotsLeft,
+      aim,
+    };
+    view.syncStatus(status);
+  }
+
+  private drawPreview(team: Team): void {
+    const { match, view } = this.deps;
+    const s = match.snapshot();
+    const aim = s.aim[team];
+    const sim = simulateShot({
+      ...aim,
+      origin: match.layout.launchOrigins[team],
+      facing: TEAM_FACING[team],
+      wind: s.wind,
+      layout: match.layout,
+    });
+    view.showPreview(team, previewDots(sim.path));
+  }
+
+  // ---------- helpers ----------
+
+  private live(): void {
+    if (this.stopped) throw new Stopped();
+  }
+
+  private async gate(): Promise<void> {
+    await this.deps.waitIfPaused?.();
+    this.live();
+  }
+}

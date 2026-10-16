@@ -1,0 +1,545 @@
+[
+  {
+    "id": "reading-5-0001",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does \"reluctant\" mean? Mia was reluctant to jump into the cold pool.",
+    "choices": ["unwilling", "eager", "able", "ready"],
+    "answer": "unwilling",
+    "hint": "Think about how you feel before a cold splash.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-5-0002",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does \"enormous\" mean? An enormous whale swam past the boat.",
+    "choices": ["very small", "very big", "very loud", "very slow"],
+    "answer": "very big",
+    "hint": "The whale was next to a boat. Picture the size.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-5-0003",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does \"fragile\" mean? Handle the fragile glass with care.",
+    "choices": ["hard to see", "very heavy", "easy to break", "good to eat"],
+    "answer": "easy to break",
+    "hint": "You must be gentle with it.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-5-0004",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does \"ancient\" mean? The ancient map was thousands of years old.",
+    "choices": ["brand new", "torn", "colorful", "very old"],
+    "answer": "very old",
+    "hint": "Look at the clue about years.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-5-0005",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does \"curious\" mean? The curious cat sniffed every box.",
+    "choices": ["eager to learn", "sleepy", "angry", "hungry"],
+    "answer": "eager to learn",
+    "hint": "The cat wants to find out what is inside.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-5-0006",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does \"generous\" mean? Sam was generous and shared his lunch with the whole team.",
+    "choices": ["greedy", "giving freely", "shy", "loud"],
+    "answer": "giving freely",
+    "hint": "Sharing is the clue.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-5-0007",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does \"swift\" mean? The swift rabbit zipped across the field.",
+    "choices": ["slow", "sleepy", "fast", "fuzzy"],
+    "answer": "fast",
+    "hint": "Zipped is a clue.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-5-0008",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does \"exhausted\" mean? After the long hike, we were exhausted.",
+    "choices": ["very silly", "very cold", "very clean", "very tired"],
+    "answer": "very tired",
+    "hint": "Think about how you feel after a long walk.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-5-0009",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does \"vivid\" mean? She painted a vivid sunset with bright reds and oranges.",
+    "choices": ["bright and clear", "dull and gray", "small and plain", "dark and quiet"],
+    "answer": "bright and clear",
+    "hint": "Bright colors are a clue.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-5-0010",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does \"abundant\" mean? Apples were abundant in the orchard this fall.",
+    "choices": ["rare", "plentiful", "sour", "missing"],
+    "answer": "plentiful",
+    "hint": "There were apples everywhere.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-5-0011",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does \"timid\" mean? The timid puppy hid behind the chair.",
+    "choices": ["bold and loud", "tall and strong", "shy and easily scared", "happy and playful"],
+    "answer": "shy and easily scared",
+    "hint": "The puppy hid.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-5-0012",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "vocab",
+    "prompt": "Which word means the opposite of \"ancient\"?",
+    "choices": ["old", "dusty", "famous", "modern"],
+    "answer": "modern",
+    "hint": "Think of something new.",
+    "tags": ["vocab", "antonym"]
+  },
+  {
+    "id": "reading-5-0013",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "vocab",
+    "prompt": "The prefix \"re-\" in the word \"rebuild\" means what?",
+    "choices": ["again", "never", "under", "before"],
+    "answer": "again",
+    "hint": "If you rebuild, you build it one more time.",
+    "tags": ["vocab", "prefix"]
+  },
+  {
+    "id": "reading-5-0014",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "vocab",
+    "prompt": "Which word is a synonym for \"begin\"?",
+    "choices": ["finish", "start", "pause", "hide"],
+    "answer": "start",
+    "hint": "A synonym means almost the same.",
+    "tags": ["vocab", "synonym"]
+  },
+  {
+    "id": "reading-5-0015",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "choices": [
+      "Bees are the only insects that fly.",
+      "Flowers are always sweet.",
+      "Bees help flowers grow as they gather nectar.",
+      "Honey is the best food."
+    ],
+    "answer": "Bees help flowers grow as they gather nectar.",
+    "hint": "Think about what the whole passage explains.",
+    "tags": ["main-idea"],
+    "passage": "Bees visit flowers to drink sweet nectar. As they move from flower to flower, pollen sticks to their legs. This pollen helps new flowers grow."
+  },
+  {
+    "id": "reading-5-0016",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "choices": [
+      "Tomatoes grow faster than beans.",
+      "Spring is the best season.",
+      "Weeds are hard to find.",
+      "Our class worked hard and grew a garden."
+    ],
+    "answer": "Our class worked hard and grew a garden.",
+    "hint": "What happened from start to end?",
+    "tags": ["main-idea"],
+    "passage": "Our class planted a garden in the spring. We watered it each day and pulled the weeds. By summer, we had tomatoes, beans, and bright sunflowers."
+  },
+  {
+    "id": "reading-5-0017",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "choices": [
+      "A compass helps people find direction.",
+      "Hikers like thick woods.",
+      "Needles are very sharp.",
+      "North is always cold."
+    ],
+    "answer": "A compass helps people find direction.",
+    "hint": "Why do hikers carry a compass?",
+    "tags": ["main-idea"],
+    "passage": "A compass has a needle that points north. Hikers use it to find their way. Even in thick woods, the needle shows which way to go."
+  },
+  {
+    "id": "reading-5-0018",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "choices": [
+      "School starts very early.",
+      "Good sleep helps kids learn and feel well.",
+      "The brain never rests.",
+      "Kids should stay up late."
+    ],
+    "answer": "Good sleep helps kids learn and feel well.",
+    "hint": "What does the passage say sleep does for you?",
+    "tags": ["main-idea"],
+    "passage": "Sleep is important for kids. During sleep, the body rests and the brain sorts what you learned that day. Kids who sleep well often feel happier at school."
+  },
+  {
+    "id": "reading-5-0019",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "choices": [
+      "Pillows are on sale in town.",
+      "Pine Street is very long.",
+      "The library made a cozy place for families to read.",
+      "Saturday is a school day."
+    ],
+    "answer": "The library made a cozy place for families to read.",
+    "hint": "Look for what the passage describes most.",
+    "tags": ["main-idea"],
+    "passage": "The library on Pine Street has a new reading corner. It has soft pillows and low shelves full of picture books. Families can read together there every Saturday."
+  },
+  {
+    "id": "reading-5-0020",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "choices": [
+      "All birds can fly.",
+      "Flippers are used for running.",
+      "Water is always cold.",
+      "Penguins are fast swimmers even though they cannot fly."
+    ],
+    "answer": "Penguins are fast swimmers even though they cannot fly.",
+    "hint": "Which sentence covers every part of the passage?",
+    "tags": ["main-idea"],
+    "passage": "Penguins cannot fly, but they are great swimmers. Their strong flippers push them through the water. Some penguins can zoom faster than a person can run."
+  },
+  {
+    "id": "reading-5-0021",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "choices": [
+      "Practice every day helped Jon get better at drums.",
+      "Drums are louder than guitars.",
+      "Jon's family likes loud songs.",
+      "A month is a very long time."
+    ],
+    "answer": "Practice every day helped Jon get better at drums.",
+    "hint": "What did Jon do that made a change?",
+    "tags": ["main-idea"],
+    "passage": "Jon wanted to learn the drums. He practiced for ten minutes each day. After a month, he could play a whole song for his family."
+  },
+  {
+    "id": "reading-5-0022",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "choices": [
+      "Rivers are bigger than lakes.",
+      "Rain is needed for water and growing plants.",
+      "Crops grow only in winter.",
+      "Roots are tiny and weak."
+    ],
+    "answer": "Rain is needed for water and growing plants.",
+    "hint": "Think about why rain matters.",
+    "tags": ["main-idea"],
+    "passage": "Rain fills rivers and lakes. Plants drink it up through their roots. Without rain, many places would be too dry for crops."
+  },
+  {
+    "id": "reading-5-0023",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "choices": [
+      "Trash cans are too small.",
+      "Plastic bottles are fun to collect.",
+      "Recycling turns used items into new things and keeps the town clean.",
+      "Town workers work at night."
+    ],
+    "answer": "Recycling turns used items into new things and keeps the town clean.",
+    "hint": "What is the reason for sorting?",
+    "tags": ["main-idea"],
+    "passage": "A recycling bin is for paper, cans, and plastic bottles. When we sort our trash, those items can be made into new things. This keeps our town clean."
+  },
+  {
+    "id": "reading-5-0024",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "choices": [
+      "Races are always held in the morning.",
+      "Maya wants to run alone.",
+      "Friends should never cheer.",
+      "Maya is a fast runner who supports her team."
+    ],
+    "answer": "Maya is a fast runner who supports her team.",
+    "hint": "Notice how Maya acts toward others.",
+    "tags": ["main-idea"],
+    "passage": "Maya is the fastest runner on her team. Still, she cheers loudly for her friends at every race. She says a team wins together."
+  },
+  {
+    "id": "reading-5-0025",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "choices": [
+      "Volcanoes are mountains built by hot rock from inside the earth.",
+      "Mountains are always snowy.",
+      "The ground is soft like sand.",
+      "Rocks are never hot."
+    ],
+    "answer": "Volcanoes are mountains built by hot rock from inside the earth.",
+    "hint": "How does a volcano come to be?",
+    "tags": ["main-idea"],
+    "passage": "Volcanoes form when hot melted rock rises up from deep in the earth. The rock pushes out through an opening in the ground. Over time, the cooled rock builds a tall mountain."
+  },
+  {
+    "id": "reading-5-0026",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "choices": [
+      "Bikes are faster than cars.",
+      "Kids stay safe on bikes by following safety rules.",
+      "Corners are scary places.",
+      "School begins at eight."
+    ],
+    "answer": "Kids stay safe on bikes by following safety rules.",
+    "hint": "What do all the sentences have in common?",
+    "tags": ["main-idea"],
+    "passage": "Many kids ride bikes to school. They wear helmets to protect their heads. They also follow traffic signs and look both ways at corners."
+  },
+  {
+    "id": "reading-5-0027",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "choices": [
+      "Doctors cook all the food.",
+      "Fevers happen only in summer.",
+      "A thermometer measures temperature and has many uses.",
+      "Food is always cold."
+    ],
+    "answer": "A thermometer measures temperature and has many uses.",
+    "hint": "Think about what the tool does.",
+    "tags": ["main-idea"],
+    "passage": "A thermometer measures how hot or cold something is. Doctors use one to check a fever. Cooks use one to see if food is ready."
+  },
+  {
+    "id": "reading-5-0028",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "grammar",
+    "prompt": "Which sentence is written correctly?",
+    "choices": [
+      "The dogs runs to the park.",
+      "The dogs running to the park.",
+      "The dogs run to the parks yesterday.",
+      "The dogs ran to the park."
+    ],
+    "answer": "The dogs ran to the park.",
+    "hint": "Check that the verb matches the time and the subject.",
+    "tags": ["grammar", "verbs"]
+  },
+  {
+    "id": "reading-5-0029",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "grammar",
+    "prompt": "Choose the correct word: \"Their dog is cute, and ___ cat is cute too.\"",
+    "choices": ["their", "there", "they're", "thare"],
+    "answer": "their",
+    "hint": "This word shows who owns the cat.",
+    "tags": ["grammar", "homophones"]
+  },
+  {
+    "id": "reading-5-0030",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "grammar",
+    "prompt": "Which sentence has the correct punctuation?",
+    "choices": [
+      "Can we go to the zoo today.",
+      "Can we go to the zoo today?",
+      "can we go to the zoo today?",
+      "Can we go to the zoo today,"
+    ],
+    "answer": "Can we go to the zoo today?",
+    "hint": "A question needs a special mark at the end.",
+    "tags": ["grammar", "punctuation"]
+  },
+  {
+    "id": "reading-5-0031",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "grammar",
+    "prompt": "Choose the correct word: \"I would like ___ apple with my lunch.\"",
+    "choices": ["a", "the an", "an", "some an"],
+    "answer": "an",
+    "hint": "The next word starts with a vowel sound.",
+    "tags": ["grammar", "articles"]
+  },
+  {
+    "id": "reading-5-0032",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "grammar",
+    "prompt": "Which word in the sentence is a noun? \"The tiny bird sang loudly.\"",
+    "choices": ["tiny", "sang", "loudly", "bird"],
+    "answer": "bird",
+    "hint": "A noun names a person, place, or thing.",
+    "tags": ["grammar", "nouns"]
+  },
+  {
+    "id": "reading-5-0033",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "grammar",
+    "prompt": "Which word in the sentence is an adjective? \"She wore a red hat.\"",
+    "choices": ["red", "wore", "hat", "She"],
+    "answer": "red",
+    "hint": "An adjective describes a noun.",
+    "tags": ["grammar", "adjectives"]
+  },
+  {
+    "id": "reading-5-0034",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "grammar",
+    "prompt": "Which sentence uses the correct plural?",
+    "choices": [
+      "There are three boxs on the shelf.",
+      "There are three boxes on the shelf.",
+      "There are three boxies on the shelf.",
+      "There are three boxen on the shelf."
+    ],
+    "answer": "There are three boxes on the shelf.",
+    "hint": "Words that end in x add es.",
+    "tags": ["grammar", "plurals"]
+  },
+  {
+    "id": "reading-5-0035",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "grammar",
+    "prompt": "Choose the correct word: \"Ben ___ his homework last night.\"",
+    "choices": ["finish", "finishing", "finished", "finishes"],
+    "answer": "finished",
+    "hint": "The action already happened.",
+    "tags": ["grammar", "verbs"]
+  },
+  {
+    "id": "reading-5-0036",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "grammar",
+    "prompt": "Which sentence is a complete sentence?",
+    "choices": [
+      "Sang a happy song.",
+      "The class and a song.",
+      "Because the class sang.",
+      "The class sang a happy song."
+    ],
+    "answer": "The class sang a happy song.",
+    "hint": "A complete sentence has a who and a what they did.",
+    "tags": ["grammar", "sentences"]
+  },
+  {
+    "id": "reading-5-0037",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "grammar",
+    "prompt": "Choose the correct word: \"Lily is ___ than her brother.\"",
+    "choices": ["taller", "tallest", "more tall", "tallerer"],
+    "answer": "taller",
+    "hint": "You are comparing two people.",
+    "tags": ["grammar", "comparatives"]
+  },
+  {
+    "id": "reading-5-0038",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "grammar",
+    "prompt": "Which word is spelled correctly?",
+    "choices": ["freind", "friend", "frend", "firend"],
+    "answer": "friend",
+    "hint": "Remember: i before e in this word.",
+    "tags": ["grammar", "spelling"]
+  },
+  {
+    "id": "reading-5-0039",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "grammar",
+    "prompt": "Which pair of words are contractions of \"do not\" and \"it is\"?",
+    "choices": ["dont, its", "do'nt, i'ts", "don't, it's", "don't, its'"],
+    "answer": "don't, it's",
+    "hint": "The apostrophe takes the place of missing letters.",
+    "tags": ["grammar", "contractions"]
+  },
+  {
+    "id": "reading-5-0040",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "grammar",
+    "prompt": "Which sentence uses a comma in a list correctly?",
+    "choices": [
+      "We packed, apples bread and cheese.",
+      "We packed apples bread, and, cheese.",
+      "We, packed apples, bread and cheese.",
+      "We packed apples, bread, and cheese."
+    ],
+    "answer": "We packed apples, bread, and cheese.",
+    "hint": "Commas go between items in a list.",
+    "tags": ["grammar", "punctuation"]
+  }
+]

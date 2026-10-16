@@ -1,0 +1,190 @@
+// Shared contract for the DOM layer that sits on top of the Phaser canvas.
+// All buttons, text inputs, modals, banners, and captions are plain DOM.
+// Phaser draws only the world (backdrop, bases, shots, tumbles).
+import type { Grade, Players, Team, TeamStats, Vec2 } from '../game/types';
+import type { Question } from '../questions/types';
+import type { Settings } from '../storage/types';
+import type { IntroScript } from '../data/types';
+
+/**
+ * Layer order (z-index). The two COVER layers are opaque, full viewport,
+ * position: fixed; inset: 0; solid background color, no transparency, no blur.
+ */
+export const Z = {
+  canvas: 0,
+  hud: 10,
+  bubble: 15,
+  banner: 20,
+  caption: 30,
+  screen: 50, // tap-to-start, intro, loading, setup, victory
+  cover: 100, // pass screen and reload modal
+} as const;
+
+/**
+ * How the board stays hidden (risk 3):
+ * 1. Pass screen and reload modal are opaque full-viewport layers at Z.cover.
+ * 2. While a cover is up, the game root (canvas + HUD) gets `inert`,
+ *    `aria-hidden="true"`, and `visibility: hidden`.
+ * 3. Question DOM is built when the modal opens and removed when it closes.
+ *    It is never pre-rendered or kept hidden in the page.
+ * 4. document.body gets data-cover="pass" | "reload" while a cover is up and
+ *    loses it after. E2E tests read this attribute.
+ */
+export type CoverKind = 'pass' | 'reload';
+
+/** Stable hooks for Playwright. Use as data-testid values. */
+export const TEST_IDS = {
+  tapToPlay: 'tap-to-play',
+  muteToggle: 'mute-toggle',
+  captionsToggle: 'captions-toggle',
+  howToPlay: 'how-to-play',
+  introSkip: 'intro-skip',
+  introReplay: 'intro-replay',
+  introCard: 'intro-card',
+  captionBar: 'caption-bar',
+  loadingRetry: 'loading-retry',
+  setupName: (team: Team) => `setup-name-${team}`,
+  setupGrade: (team: Team, grade: Grade) => `setup-grade-${team}-${grade}`,
+  setupSubject: (team: Team, subject: string) => `setup-subject-${team}-${subject}`,
+  setupNext: 'setup-next',
+  turnBanner: 'turn-banner',
+  passScreen: 'pass-screen',
+  passReady: 'pass-ready',
+  reloadModal: 'reload-modal',
+  reloadChoice: (index: number) => `reload-choice-${index}`,
+  reloadHint: 'reload-hint',
+  reloadSpeak: 'reload-speak',
+  reloadNext: 'reload-next',
+  angleControl: 'aim-angle',
+  powerControl: 'aim-power',
+  fireButton: 'fire',
+  wind: 'wind',
+  baseHp: (team: Team) => `base-hp-${team}`,
+  shotsLeft: 'shots-left',
+  speechBubble: 'speech-bubble',
+  victory: 'victory',
+  rematch: 'rematch',
+  backToStart: 'back-to-start',
+} as const;
+
+// ---------- Per-call options ----------
+
+export type BannerOptions = { name: string; team: Team; shot: 1 | 2 };
+
+export type PassScreenOptions = { nextName: string; nextTeam: Team };
+
+export type ReloadModalOptions = {
+  question: Question;
+  team: Team;
+  playerName: string;
+  /** Reads the question aloud (the Hear it button). Gets the whole text and its sentences. */
+  speak?: (text: string, sentences: string[]) => void;
+  /** Chrono's quick joke for the answer. Optional. */
+  quip?: (outcome: 'fast' | 'slow' | 'wrong') => string | null;
+  /** Injected clock for tests. Default performance.now. */
+  now?: () => number;
+};
+
+export type ReloadAnswer = {
+  correct: boolean;
+  /** From modal open to the first answer tap. */
+  elapsedMs: number;
+  /** The choice text the child tapped. */
+  choice: string;
+};
+
+export type BubbleOptions = {
+  text: string;
+  team: Team;
+  /** World coords (1280x720). The overlay maps them onto the canvas rect. */
+  anchor: Vec2;
+  durationMs?: number;
+};
+
+export type HudState = {
+  activeTeam: Team | null;
+  names: Record<Team, string>;
+  baseHp: Record<Team, number>;
+  scrap: Record<Team, number>;
+  wind: number;
+  angleDeg: number;
+  power: number;
+  shotsLeft: 0 | 1 | 2;
+  /** False while a shot flies or a cover is up. */
+  canFire: boolean;
+};
+
+export type HudHandlers = {
+  onAim: (aim: { angleDeg: number; power: number }) => void;
+  onFire: () => void;
+  onMuteToggle: () => void;
+};
+
+export type VictoryOptions = {
+  winner: Team;
+  names: Record<Team, string>;
+  stats: Record<Team, TeamStats>;
+};
+
+export type VictoryChoice = 'rematch' | 'back-to-start';
+
+export type LoadingHandle = {
+  /** 0 to 1. */
+  setProgress(p: number): void;
+  /** Shows the friendly error. Resolves when Retry is tapped. */
+  showError(): Promise<void>;
+  close(): void;
+};
+
+export type IntroResult = 'finished' | 'skipped';
+
+// ---------- The overlay API ----------
+
+/**
+ * One instance, mounted once over the Phaser parent element.
+ * Every Promise resolves on a user action; none rejects in normal play.
+ * Every button is a real <button>, at least UI.tapTargetMinPx tall, reachable by Tab,
+ * and works with Enter and Space.
+ */
+export interface Overlay {
+  /** root: the element that holds the canvas. canvas: used to map world coords. */
+  mount(root: HTMLElement, canvas: HTMLCanvasElement | null): void;
+  applySettings(settings: Settings): void;
+
+  // Screens (full viewport at Z.screen)
+  /** Resolves inside the tap handler, so the caller can call AudioManager.unlock() synchronously. */
+  showTapToStart(handlers: {
+    onMuteToggle: () => void;
+    onCaptionsToggle: () => void;
+  }): Promise<void>;
+  showIntro(script: IntroScript, play: (cardIndex: number) => Promise<void>): Promise<IntroResult>;
+  showLoading(messages: readonly string[]): LoadingHandle;
+  /** Resolves with validated players (index 0 PAST, 1 FUTURE). */
+  showSetup(initial: Players | null): Promise<Players>;
+  showVictory(options: VictoryOptions): Promise<VictoryChoice>;
+
+  // Battle HUD (Z.hud)
+  showHud(handlers: HudHandlers): void;
+  updateHud(state: HudState): void;
+  hideHud(): void;
+
+  // Battle moments
+  /** Drops in, holds TIMING.bannerHoldMs, then resolves. Does not block input. */
+  showTurnBanner(options: BannerOptions): Promise<void>;
+  /** COVER. Resolves on "I'm ready!". */
+  showPassScreen(options: PassScreenOptions): Promise<void>;
+  /**
+   * COVER. Resolves after the child answers and the feedback beat ends.
+   * A wrong answer shows the right answer kindly, then resolves anyway.
+   */
+  showReloadModal(options: ReloadModalOptions): Promise<ReloadAnswer>;
+  showSpeechBubble(options: BubbleOptions): void;
+
+  // Captions (Z.caption). Hidden when captions are off.
+  setCaption(text: string | null): void;
+
+  /** Which cover is up, if any. */
+  readonly cover: CoverKind | null;
+}
+
+export type CreateOverlay = (doc: Document) => Overlay;
