@@ -84,5 +84,5 @@ export async function expectBannerClear(page: Page, where: string): Promise<void
     overlaps(g.banner, g.past),
     `${where}: banner covers the Past card ${JSON.stringify(g)}`,
   ).toBe(false);
-  expect(overlaps(g.banner, g.future), `${where}: banner covers the Future card`).toBe(false);
+  expect(overlaps(g.banner, g.future), `${where}: banner covers the Future card ${JSON.stringify(g)}`).toBe(false);
 }
