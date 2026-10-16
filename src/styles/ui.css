@@ -732,11 +732,21 @@
   .tc-team-cards {
     grid-template-columns: 1fr;
   }
+  /* Two fixed rows (wind and mute, then both team cards), so font width cannot change the height. */
   .tc-hud-top {
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+  }
+  .tc-hud-center {
+    grid-column: 1 / 3;
+    order: -2;
+  }
+  .tc-hud-corner {
+    grid-column: 3;
+    order: -1;
   }
   .tc-team-panel {
-    min-width: 180px;
+    min-width: 0;
   }
   /* Portrait: aim panel and Fire share one row in the band below the picture. */
   .tc-hud-bottom {
