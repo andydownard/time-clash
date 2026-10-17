@@ -13,6 +13,7 @@ import type {
 } from '../../game/types';
 import type { PickHistory, QuestionBank } from '../../questions/types';
 import type { Overlay } from '../../ui/types';
+import type { ProjectileKind } from './projectileKinds';
 
 export const BATTLE_SCENE_KEY = 'BattleScene';
 /** Where Battle hands off when a team wins. The Victory scene owner must register this key. */
@@ -62,7 +63,7 @@ export interface BattleView {
   /** The player dragged the dial handle. Pass null to turn dragging off. */
   setAimDragHandler(handler: ((aim: AimInput) => void) | null): void;
   /** Fly the projectile along result.path. Resolves when it lands. */
-  animateShot(shooter: Team, result: ShotResult): Promise<void>;
+  animateShot(shooter: Team, result: ShotResult, kind?: ProjectileKind): Promise<void>;
   playImpact(info: ImpactInfo): Promise<void>;
   /** Awkward Tumble for that team's character. Resolves when it springs back up. */
   playTumble(team: Team): Promise<void>;

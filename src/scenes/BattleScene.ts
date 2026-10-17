@@ -31,6 +31,8 @@ import { createStatusArt, type StatusArt } from './battle/statusArt';
 import { createLabelScaler, worldFontPx, type LabelScaler } from './battle/textScale';
 import { preloadCanvasFonts } from './battle/textStyle';
 import { flightDurationMs, pointAtTime } from './battle/trajectory';
+import { DEFAULT_KIND, headingDegrees, type ProjectileKind } from './battle/projectileKinds';
+import { createProjectile } from './battle/projectiles';
 import { tumblePose } from './battle/tumble';
 import {
   BATTLE_SCENE_KEY,
@@ -42,7 +44,7 @@ import {
   type PreviewDot,
   type ViewStatus,
 } from './battle/types';
-import { PALETTE, REDUCED_FADE_MS, TEAM_COLOR } from './battle/visual';
+import { REDUCED_FADE_MS, TEAM_COLOR } from './battle/visual';
 
 const TEAMS: readonly Team[] = ['PAST', 'FUTURE'];
 
@@ -206,19 +208,18 @@ export class BattleScene extends Phaser.Scene implements BattleView {
     }
   }
 
-  animateShot(shooter: Team, result: ShotResult): Promise<void> {
+  animateShot(
+    shooter: Team,
+    result: ShotResult,
+    kind: ProjectileKind = DEFAULT_KIND[shooter],
+  ): Promise<void> {
     const duration = flightDurationMs(result);
-    const ball = this.add
-      .circle(
-        result.path[0]?.x ?? 0,
-        result.path[0]?.y ?? 0,
-        BALLISTICS.projectileRadius,
-        TEAM_COLOR[shooter],
-      )
-      .setStrokeStyle(3, PALETTE.shared.ink)
-      .setDepth(30);
+    const shot = createProjectile(this, kind, shooter, { reduced: this.reduced() });
+    const start = result.path[0];
+    shot.container.setPosition(start?.x ?? 0, start?.y ?? 0);
+    shot.update(headingDegrees(result.path, 0), 0);
     if (duration <= 0) {
-      ball.destroy();
+      shot.destroy();
       return Promise.resolve();
     }
     const reduced = this.reduced();
@@ -231,7 +232,11 @@ export class BattleScene extends Phaser.Scene implements BattleView {
         onUpdate: (tween) => {
           const t = tween.getValue() ?? 0;
           const p = pointAtTime(result.path, t);
-          ball.setPosition(p.x, p.y);
+          shot.container.setPosition(p.x, p.y);
+          shot.update(
+            headingDegrees(result.path, t / (BALLISTICS.stepSeconds * 1000)),
+            t,
+          );
           if (!reduced && t - lastTrail > 50) {
             lastTrail = t;
             const dot = this.add.circle(p.x, p.y, 4, TEAM_COLOR[shooter], 0.7).setDepth(29);
@@ -244,7 +249,7 @@ export class BattleScene extends Phaser.Scene implements BattleView {
           }
         },
         onComplete: () => {
-          ball.destroy();
+          shot.destroy();
           resolve();
         },
       });
