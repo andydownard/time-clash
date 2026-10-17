@@ -114,6 +114,12 @@ export const RNG_SALT = {
 // ---------- Layout (logical world, scaled to fit by Phaser) ----------
 export const WORLD = { width: 1280, height: 720 } as const;
 
+/**
+ * Extra canvas height below the battlefield, in world px. The HUD control bar lives in this band,
+ * so the fighters on the ground are never covered. Physics and layout still use WORLD alone.
+ */
+export const BATTLE_BAND = 200;
+
 const GROUND_Y = 620;
 
 const GROUND: Polygon = [

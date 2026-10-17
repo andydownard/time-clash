@@ -589,6 +589,10 @@ body {
 }
 
 /* ---------- HUD ---------- */
+/* Pause sits top right, just under the team card row (cards end 108px down). */
+:root {
+  --tc-pause-top: 120px;
+}
 .tc-hud {
   position: absolute;
   inset: 0;
@@ -619,7 +623,8 @@ body {
   align-items: stretch;
   justify-content: space-between;
   padding: 12px;
-  padding-left: var(--tc-chrome-clear);
+  /* Wide screens: the cards start to the right of the Sound button, which sits under the ? and gear. */
+  padding-left: calc(var(--tc-tap) * 3 + 40px);
 }
 /* Two shot pips, then a third "Reload" pip: a question comes after shot 2. */
 .tc-pips {
@@ -677,11 +682,12 @@ body {
   height: 100%;
   background: var(--tc-wood);
 }
-/* Sound sits low and left, Pause low and right: one bar of helpers under the picture. */
+/* Sound sits top left, under the ? and gear row. Pause sits top right, under the team card.
+   The band under the picture holds only the controls. */
 .tc-hud-corner {
   position: absolute;
-  left: var(--tc-s-4);
-  bottom: var(--tc-s-4);
+  left: var(--tc-s-3);
+  top: var(--tc-chrome-row);
   display: flex;
   gap: 8px;
 }
@@ -778,32 +784,40 @@ body {
   background: var(--tc-bar-fill);
   transition: width 300ms ease;
 }
-/* The aim controls sit between the two bases (they fill 0 to 20% and 80% to 100% of the width),
-   so a child can see the base they aim from. */
+/* The control bar fills its own band under the picture (the canvas is taller than the
+   battlefield, see BATTLE_BAND). It sits at the bottom of the screen, full width, so the
+   fighters on the ground are never covered. Row 1 is the turn strip. Row 2 is the fighter
+   selector, the aim sliders and Fire. Portrait has more room, so row 2 may wrap. */
 .tc-hud-bottom {
   position: absolute;
-  left: 20%;
-  right: 20%;
-  bottom: 72px;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: var(--tc-s-5);
+  gap: var(--tc-s-2) var(--tc-s-4);
   align-items: flex-end;
   justify-content: center;
-  padding: 0 12px;
+  padding: 0 var(--tc-s-3) var(--tc-s-2);
+}
+.tc-hud-bottom > .tc-turn-strip {
+  order: -1;
+  min-width: 0;
+  max-width: 100%;
 }
 .tc-hud-bottom > * {
   pointer-events: auto;
 }
 .tc-aim {
   display: grid;
-  gap: 6px;
+  gap: 0;
   background: var(--tc-ink-deep);
   color: var(--tc-on-dark);
   border: 4px solid var(--tc-ember);
   border-radius: var(--tc-r-card);
-  box-shadow: 0 6px 0 var(--tc-purple-900);
-  padding: 6px 14px 8px;
+  box-shadow: 0 3px 0 var(--tc-purple-900);
+  padding: 4px 14px;
+  flex: 0 1 460px;
   min-width: 340px;
   font-family: var(--tc-font-voice-new);
   font-weight: var(--tc-fw-new);
@@ -830,12 +844,12 @@ body {
 }
 .tc-hint {
   position: absolute;
-  top: 100%;
+  bottom: 100%;
   left: 50%;
   transform: translateX(-50%);
   width: max-content;
   max-width: 100%;
-  margin: 8px 0 0;
+  margin: 0 0 8px;
   padding: 4px 12px;
   font-size: var(--tc-text-min);
   text-align: center;
@@ -2633,22 +2647,31 @@ button.tc-forge-row[aria-disabled='true'],
     min-width: 0;
     max-width: none;
   }
-  /* Portrait: aim panel and Fire share one row in the band below the picture. */
+  /* Portrait: the team cards take the second row, so Sound and Pause ride the first row with the
+     ? and gear. */
+  .tc-hud-corner {
+    left: var(--tc-chrome-clear);
+    top: var(--tc-s-3);
+  }
+  :root {
+    --tc-pause-top: 12px;
+  }
+  /* Portrait: the band is taller, so the controls wrap to two rows. The aim panel and Fire
+     share the second row. */
   .tc-hud-bottom {
-    left: 0;
-    right: 0;
-    bottom: 88px;
+    /* Starts right under the picture (width x 920/1280 tall: battlefield plus band). */
+    top: calc(100vw * 920 / 1280);
+    bottom: auto;
     align-items: stretch;
+    padding-top: var(--tc-s-2);
+    padding-bottom: var(--tc-s-4);
+  }
+  .tc-hud-bottom .tc-turn-chev {
+    display: none;
   }
   .tc-aim {
-    flex: 1;
+    flex: 1 1 360px;
     min-width: 0;
-  }
-  /* The keyboard hint rides above the controls here, clear of Sound and Pause. */
-  .tc-hint {
-    top: auto;
-    bottom: 100%;
-    margin: 0 0 8px;
   }
   .tc-reload-body {
     padding-inline: var(--tc-s-4);

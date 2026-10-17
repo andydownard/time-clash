@@ -72,6 +72,10 @@ All interactive parts are at least 56px tall and wide (`--tc-tap`).
 
 **Focus ring.** `outline: var(--tc-focus-width) solid var(--tc-focus-on-light)` on light surfaces and `var(--tc-focus-on-dark)` on dark ones, with `outline-offset: var(--tc-focus-offset)`. Never remove it. One ring color cannot reach 3:1 on both parchment and ink, so there are two.
 
+## Battle layout
+
+The Phaser canvas is the 1280x720 battlefield plus a control band below it (`BATTLE_BAND`, 200 world px), so it is 1280x920 and scaled to fit, top-aligned and centered across. Physics and layout still use the 1280x720 world. The HUD control bar sits at the bottom of the screen, full width, inside that band: the turn strip on row 1, then the fighter selector, the Angle and Power sliders and Fire on row 2 (portrait wraps to more rows). The backdrop paints the band as ground (grass left, soil right). Sound sits top left under the ? and gear. Pause sits top right under the team card. The speech bubble maps world to screen with one scale (canvas width / world width) on both axes.
+
 ## Contrast
 
 Computed from the token values by `tests/styles/designPairs.ts` (WCAG 2.1 relative luminance). Ratios are rounded down. Body text needs 4.5:1. Large UI (buttons, borders, focus rings, fills) needs 3:1. The test fails if this table drifts from the tokens.
