@@ -3,19 +3,13 @@
 //
 // Start it with scene.start(BATTLE_SCENE_KEY, data) where data is BattleSceneData.
 import Phaser from 'phaser';
-import { BALLISTICS, TIMING, WORLD } from '../game/config';
+import { BALLISTICS, WORLD } from '../game/config';
 import type { AimInput, BattleLayout, Rect, ShotResult, Team, Vec2 } from '../game/types';
 import { drawBackdrop, type Backdrop } from './battle/backdrop';
 import { createAimArt, type AimArt } from './battle/aimArt';
-import {
-  effectColor,
-  floatLabel,
-  playBlocks,
-  playConfetti,
-  playFade,
-  playPlasmaRing,
-  playPuff,
-} from './battle/effects';
+import { effectColor, floatLabel, playFade } from './battle/effects';
+import { createDamageArt, damageStage, type DamageArt } from './battle/damageArt';
+import { playBaseBlast, playBlastFade, playExplosion, playVanish } from './battle/fightEffects';
 import { BattleFlow } from './battle/flow';
 import { characterSpot, sideAlpha } from './battle/geometry';
 import { sceneReducedMotion } from './battle/reducedMotion';
@@ -33,7 +27,7 @@ import { preloadCanvasFonts } from './battle/textStyle';
 import { flightDurationMs, pointAtTime } from './battle/trajectory';
 import { DEFAULT_KIND, headingDegrees, type ProjectileKind } from './battle/projectileKinds';
 import { createProjectile } from './battle/projectiles';
-import { tumblePose } from './battle/tumble';
+import { fallFrame, fallPose, fallVariant } from './battle/tumble';
 import {
   BATTLE_SCENE_KEY,
   CAMP_SCENE_KEY,
@@ -44,7 +38,7 @@ import {
   type PreviewDot,
   type ViewStatus,
 } from './battle/types';
-import { REDUCED_FADE_MS, TEAM_COLOR } from './battle/visual';
+import { FALL_MS, REDUCED_FADE_MS, TEAM_COLOR } from './battle/visual';
 import { drawUnits, type UnitArt } from './battle/unitArt';
 import { UNITS, type UnitId } from '../game/units';
 
@@ -67,6 +61,12 @@ export class BattleScene extends Phaser.Scene implements BattleView {
   private glowTween: Phaser.Tweens.Tween | null = null;
   private lastStatus: ViewStatus | null = null;
   private fighters: Record<UnitId, UnitArt> | null = null;
+  private baseArts = {} as Record<Team, BaseArt>;
+  private damage = {} as Record<Team, DamageArt>;
+  private blownUp: Record<Team, boolean> = { PAST: false, FUTURE: false };
+  /** A hit fighter lies 'down' after the tumble, is 'gone' in a puff, and returns next turn. */
+  private tumbleState: Record<Team, 'up' | 'down' | 'gone'> = { PAST: 'up', FUTURE: 'up' };
+  private tumbleCount = 0;
 
   constructor() {
     super(BATTLE_SCENE_KEY);
@@ -93,6 +93,8 @@ export class BattleScene extends Phaser.Scene implements BattleView {
         .ellipse(base.x + base.w / 2, base.y + base.h, base.w + 90, 46, TEAM_COLOR[team], 0.6)
         .setVisible(false);
       const art: BaseArt = team === 'PAST' ? drawCastle(this, base) : drawBase(this, base);
+      this.baseArts[team] = art;
+      this.damage[team] = createDamageArt(this, art.container, base, () => this.reduced());
       this.sway.push(...art.sway);
       this.pulse.push(...art.pulse);
       const character = createCharacter(this, team, spot.x, spot.y);
@@ -178,6 +180,12 @@ export class BattleScene extends Phaser.Scene implements BattleView {
   syncStatus(status: ViewStatus): void {
     this.statusArt.sync(status);
     this.lastStatus = status;
+    for (const t of TEAMS) {
+      const stage = damageStage(status.baseHp[t], status.maxBaseHp?.[t] ?? 100);
+      // Marks only go down here (a new match). Playing a hit adds them after its explosion.
+      if (stage < this.damage[t].stage()) this.damage[t].setStage(stage);
+      if (status.baseHp[t] > 0 && this.blownUp[t]) this.restoreBase(t);
+    }
     this.lastAim = status.aim;
     this.aimArt.show(this.dragHandler ? status.activeTeam : null, status.aim);
   }
@@ -191,6 +199,7 @@ export class BattleScene extends Phaser.Scene implements BattleView {
   }
 
   setActiveTeam(team: Team | null): void {
+    this.stepTumbleState(team);
     for (const t of TEAMS) {
       this.sides[t].setAlpha(sideAlpha(t, team));
       for (const u of UNITS) {
@@ -284,29 +293,41 @@ export class BattleScene extends Phaser.Scene implements BattleView {
       'hit',
       this.fontPx,
     );
+    const target = info.target;
+    const status = this.lastStatus;
+    const hp = status?.baseHp[target] ?? 1;
+    const wipedOut = info.result === 'direct' && hp <= 0;
+    const base = this.layout.bases[target];
     if (this.reduced()) {
       await playFade(this, position, effectColor(info.kind), scale);
-      return;
+      if (wipedOut) await playBlastFade(this, base);
+    } else {
+      await playExplosion(this, position, info.kind, scale);
+      if (wipedOut) await playBaseBlast(this, base, target);
     }
-    switch (info.kind) {
-      case 'blocks': {
-        const groundY = this.layout.terrain.ground[0]?.y ?? WORLD.height;
-        await playBlocks(this, this.layout.bases[info.target], groundY);
-        break;
-      }
-      case 'confetti':
-        await playConfetti(this, position, scale);
-        break;
-      case 'plasma':
-        await playPlasmaRing(this, position, scale);
-        break;
-      default:
-        await playPuff(this, position, scale);
+    if (wipedOut) {
+      this.blowUpBase(target);
+    } else if (status && info.result === 'direct') {
+      const stage = damageStage(hp, status.maxBaseHp?.[target] ?? 100);
+      if (stage > this.damage[target].stage()) this.damage[target].setStage(stage);
     }
+  }
+
+  /** The base is gone in the blast. Nobody was inside. */
+  private blowUpBase(team: Team): void {
+    this.blownUp[team] = true;
+    this.baseArts[team].container.setVisible(false);
+    this.damage[team].setStage(0);
+  }
+
+  private restoreBase(team: Team): void {
+    this.blownUp[team] = false;
+    this.baseArts[team].container.setVisible(true);
   }
 
   playTumble(team: Team): Promise<void> {
     const character = this.characters[team];
+    this.resetCharacter(team);
     if (this.reduced()) {
       // Reduced motion: a gentle fade down and back up, no spinning or flying.
       return new Promise<void>((resolve) => {
@@ -322,18 +343,48 @@ export class BattleScene extends Phaser.Scene implements BattleView {
         });
       });
     }
+    const variant = fallVariant(this.tumbleCount++);
+    const homeX = characterSpot(team, this.layout).x;
+    const dir = team === 'PAST' ? 1 : -1;
     return new Promise<void>((resolve) => {
       this.tweens.addCounter({
         from: 0,
-        to: TIMING.tumbleMs,
-        duration: TIMING.tumbleMs,
-        onUpdate: (tween) => character.setPose(tumblePose(tween.getValue() ?? 0)),
+        to: FALL_MS,
+        duration: FALL_MS,
+        onUpdate: (tween) => {
+          const frame = fallFrame(tween.getValue() ?? 0, variant);
+          character.setPose(fallPose(frame));
+          character.container.setX(homeX + frame.dx * dir);
+        },
         onComplete: () => {
-          character.setPose(null);
+          // It stays lying down until the speech bubble has shown and the turn passes.
+          this.tumbleState[team] = 'down';
           resolve();
         },
       });
     });
+  }
+
+  private resetCharacter(team: Team): void {
+    const character = this.characters[team];
+    character.setPose(null);
+    character.container.setX(characterSpot(team, this.layout).x).setAlpha(1);
+    this.tumbleState[team] = 'up';
+  }
+
+  /** A fallen fighter puffs away on the next turn change, and is back on its own turn. */
+  private stepTumbleState(active: Team | null): void {
+    if (active === null) return;
+    for (const t of TEAMS) {
+      const state = this.tumbleState[t];
+      if (state !== 'up' && active === t) {
+        this.resetCharacter(t);
+      } else if (state === 'down') {
+        this.tumbleState[t] = 'gone';
+        const c = this.characters[t].container;
+        void playVanish(this, { x: c.x, y: c.y }, this.reduced(), (a) => c.setAlpha(a));
+      }
+    }
   }
 
   showScrapPopup(team: Team, amount: number): void {

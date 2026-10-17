@@ -3,6 +3,7 @@
 import { TIMING } from '../../game/config';
 import type { BlastOutcome, Team } from '../../game/types';
 import { TUMBLE_LINES } from '../../data/copy';
+import { FALL_DX, FALL_HEIGHT, FALL_MS } from './visual';
 
 export const TUMBLE_STEPS = [
   'fold',
@@ -114,4 +115,139 @@ export function tumblingTeam(outcome: BlastOutcome): Team | null {
 export function bubbleText(outcome: BlastOutcome): string | null {
   if (!outcome.tumble || outcome.bubbleIndex === null) return null;
   return TUMBLE_LINES[outcome.bubbleIndex] ?? null;
+}
+
+// ---------- Fall, topple and vanish ----------
+// A hit fighter flies off its feet, lands, then lies down (or lands on its feet and falls over).
+// Nobody is hurt. The fighter then vanishes in a puff and comes back on the next turn.
+// All three are pure: same time in, same frame out.
+
+export type FallVariant = 'face' | 'feet';
+export type FallPhase = 'fly' | 'land' | 'wobble' | 'topple';
+
+export type FallFrame = {
+  phase: FallPhase;
+  /** 0..1 inside the phase. */
+  progress: number;
+  /** Pixels away from the start, toward the field. Never negative. */
+  dx: number;
+  /** Pixels off the ground. Never negative. */
+  lift: number;
+  /** Clockwise tilt away from the base. 90 means lying down. */
+  rotationDeg: number;
+  squashX: number;
+  squashY: number;
+  armSwingDeg: number;
+  lookDir: -1 | 0 | 1;
+};
+
+/** Where each phase ends, as a share of the total. */
+const FALL_ENDS = { fly: 0.45, land: 0.57, wobble: 0.72, topple: 1 } as const;
+export const LYING_DEG = 90;
+const LAND_SQUASH = 0.35;
+const easeInOut = (u: number): number => (u < 0.5 ? 2 * u * u : 1 - 2 * (1 - u) * (1 - u));
+const clamp01 = (u: number): number => Math.min(1, Math.max(0, u));
+
+/** Alternates by tumble count, so a family sees both kinds. Seeded by the count, not by a clock. */
+export function fallVariant(count: number): FallVariant {
+  return Math.abs(Math.trunc(count)) % 2 === 0 ? 'face' : 'feet';
+}
+
+export function fallFrame(
+  timeMs: number,
+  variant: FallVariant,
+  totalMs: number = FALL_MS,
+): FallFrame {
+  const t = Number.isFinite(timeMs) ? Math.min(totalMs, Math.max(0, timeMs)) : 0;
+  const f = totalMs > 0 ? t / totalMs : 1;
+  const within = (from: number, to: number): number => clamp01((f - from) / (to - from));
+  let phase: FallPhase;
+  let u: number;
+  if (f < FALL_ENDS.fly) {
+    phase = 'fly';
+    u = within(0, FALL_ENDS.fly);
+  } else if (f < FALL_ENDS.land) {
+    phase = 'land';
+    u = within(FALL_ENDS.fly, FALL_ENDS.land);
+  } else if (f < FALL_ENDS.wobble) {
+    phase = 'wobble';
+    u = within(FALL_ENDS.land, FALL_ENDS.wobble);
+  } else {
+    phase = 'topple';
+    u = within(FALL_ENDS.wobble, 1);
+  }
+  const flip = variant === 'feet' ? 360 : 360 + LYING_DEG;
+  let dx = FALL_DX;
+  let lift = 0;
+  let rotationDeg = variant === 'feet' ? 0 : LYING_DEG;
+  let squashY = 1;
+  let armSwingDeg = 0;
+  let lookDir: -1 | 0 | 1 = 0;
+  switch (phase) {
+    case 'fly':
+      dx = FALL_DX * easeOut(u);
+      lift = 4 * FALL_HEIGHT * u * (1 - u);
+      rotationDeg = (flip * easeInOut(u)) % 360;
+      armSwingDeg = (540 * u) % 360;
+      break;
+    case 'land':
+      squashY = 1 - LAND_SQUASH * Math.sin(Math.PI * u);
+      break;
+    case 'wobble':
+      // On its feet it sways. Lying down it looks around, dizzy.
+      if (variant === 'feet') rotationDeg = 10 * Math.sin(Math.PI * 3 * u) * (1 - u);
+      lookDir = u < 0.5 ? -1 : 1;
+      break;
+    case 'topple':
+      if (variant === 'feet') rotationDeg = LYING_DEG * u * u;
+      break;
+  }
+  return {
+    phase,
+    progress: u,
+    dx,
+    lift: Math.max(0, lift),
+    rotationDeg,
+    squashX: 1 + (1 - squashY) * 0.8,
+    squashY,
+    armSwingDeg,
+    lookDir,
+  };
+}
+
+/** The same frame as a TumblePose, so the character sprite can draw it. */
+export function fallPose(frame: FallFrame): TumblePose {
+  const step: Record<FallPhase, TumbleStep> = {
+    fly: 'fold',
+    land: 'pancake',
+    wobble: 'lookLeft',
+    topple: 'spring',
+  };
+  return {
+    step: step[frame.phase],
+    progress: frame.progress,
+    squashX: frame.squashX,
+    squashY: frame.squashY,
+    rotationDeg: frame.rotationDeg,
+    armSwingDeg: frame.armSwingDeg,
+    lift: frame.lift,
+    lookDir: frame.lookDir,
+  };
+}
+
+export type VanishFrame = {
+  /** The fighter fades out in the first part. */
+  characterAlpha: number;
+  puffScale: number;
+  puffAlpha: number;
+};
+
+/** u runs 0..1. The puff grows and fades. The fighter is gone by the time the puff is big. */
+export function vanishFrame(u: number): VanishFrame {
+  const x = clamp01(Number.isFinite(u) ? u : 0);
+  return {
+    characterAlpha: 1 - clamp01(x / 0.4),
+    puffScale: 0.5 + 1.9 * easeOut(x),
+    puffAlpha: x < 0.2 ? 0.9 * (x / 0.2) : 0.9 * (1 - (x - 0.2) / 0.8),
+  };
 }
