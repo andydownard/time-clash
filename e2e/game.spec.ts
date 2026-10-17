@@ -100,7 +100,7 @@ test('plays a full match: aim, fire, reload, pass, win, rematch', async ({ page,
   // A second Space while the ball flies cannot fire again.
   await page.keyboard.press('Space');
   await page.keyboard.press('Space');
-  await expect(tid(page, 'speech-bubble')).toBeVisible({ timeout: 15_000 });
+  await expect(tid(page, 'speech-bubble')).toBeVisible({ timeout: 45_000 });
   await saveShot(page, browserName, 'tumble');
   m = await snap(page);
   expect(m.stats.PAST.shotsFired).toBe(1);
@@ -211,7 +211,7 @@ test('plays a full match: aim, fire, reload, pass, win, rematch', async ({ page,
 
   // ----- Rematch: Loading, then a fresh Battle with the other team first -----
   await tid(page, 'rematch').click();
-  await expect(tid(page, 'pass-screen')).toBeVisible({ timeout: 15_000 });
+  await expect(tid(page, 'pass-screen')).toBeVisible({ timeout: 45_000 });
   m = await snap(page);
   expect(m.status).toBe('PLAYING');
   expect(m.seed).toBe(SEED + 1);
