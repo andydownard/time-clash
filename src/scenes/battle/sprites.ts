@@ -164,11 +164,13 @@ export function createCharacter(
   team: Team,
   x: number,
   groundY: number,
+  /** 1 is full size. The Battle scene passes CHRONO_SCALE so Chrono fits beside the base. */
+  scale = 1,
 ): Character {
   const facing = team === 'PAST' ? 1 : -1;
   const container = scene.add.container(x, groundY);
   const inner = scene.add.container(0, 0);
-  inner.setScale(facing, 1);
+  inner.setScale(facing * scale, scale);
 
   const body = scene.add.graphics();
   const bodyColor = team === 'PAST' ? PALETTE.past.banner : PALETTE.future.edge;

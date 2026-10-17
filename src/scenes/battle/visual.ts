@@ -18,6 +18,8 @@ export const ART = {
   hull: 0x5d6c8c,
   hullDark: 0x1d2744,
   visor: 0xcfd9ee,
+  /** Knight helmet, arms and legs on the Battle board: pale silver with a purple tint. */
+  knightSteel: 0xb3b8d4,
   skin: 0xf5c9a0,
   pink: 0xff5fb0,
   cream: 0xf3e6c8,
@@ -111,12 +113,12 @@ export const PREVIEW_STRIDE = 3;
 /** Alpha of the last preview dot. The first is 1. */
 export const PREVIEW_MIN_ALPHA = 0.15;
 
-/** Character stands this far outside its base, on the ground. */
-export const CHARACTER_OFFSET = 40;
+/** Chrono stands this far outside its base, on the ground. Chrono is small so it fits the gap. */
+export const CHARACTER_OFFSET = 16;
 /** The speech bubble tip sits this far above the character's feet. */
 export const BUBBLE_RISE = 130;
 /** The bubble tail aims this far above the character's feet (about head height). */
-export const TAIL_TARGET_RISE = 90;
+export const TAIL_TARGET_RISE = 66;
 /** Widest a speech bubble gets, in world units. It is centered on the bubble anchor. */
 export const BUBBLE_MAX_WORLD_W = 360;
 
