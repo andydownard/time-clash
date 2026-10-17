@@ -45,6 +45,8 @@ import {
   type ViewStatus,
 } from './battle/types';
 import { REDUCED_FADE_MS, TEAM_COLOR } from './battle/visual';
+import { drawUnits, type UnitArt } from './battle/unitArt';
+import { UNITS, type UnitId } from '../game/units';
 
 const TEAMS: readonly Team[] = ['PAST', 'FUTURE'];
 
@@ -64,6 +66,7 @@ export class BattleScene extends Phaser.Scene implements BattleView {
   private paused = false;
   private glowTween: Phaser.Tweens.Tween | null = null;
   private lastStatus: ViewStatus | null = null;
+  private fighters: Record<UnitId, UnitArt> | null = null;
 
   constructor() {
     super(BATTLE_SCENE_KEY);
@@ -100,6 +103,11 @@ export class BattleScene extends Phaser.Scene implements BattleView {
       this.glows[team] = glow;
       this.characters[team] = character;
     }
+
+    this.fighters = drawUnits(this, this.labels, () => this.reduced());
+    for (const u of UNITS) this.fighters[u.id].container.setDepth(11);
+    const chosen = this.data0.match.snapshot().selected;
+    for (const t of TEAMS) this.setSelectedUnit(t, chosen[t]);
 
     this.startAmbient(backdrop);
     // Canvas text draws in the fallback font until MedievalSharp and Orbitron arrive. Redraw then.
@@ -174,9 +182,20 @@ export class BattleScene extends Phaser.Scene implements BattleView {
     this.aimArt.show(this.dragHandler ? status.activeTeam : null, status.aim);
   }
 
+  /** Point the marker at this team's chosen fighter. */
+  setSelectedUnit(team: Team, id: UnitId): void {
+    if (!this.fighters) return;
+    for (const u of UNITS) {
+      if (u.team === team) this.fighters[u.id].setSelected(u.id === id);
+    }
+  }
+
   setActiveTeam(team: Team | null): void {
     for (const t of TEAMS) {
       this.sides[t].setAlpha(sideAlpha(t, team));
+      for (const u of UNITS) {
+        if (u.team === t) this.fighters?.[u.id].container.setAlpha(sideAlpha(t, team));
+      }
       this.glows[t].setVisible(team === t);
       for (const o of this.statusArt.groupFor(t)) {
         o.setAlpha(sideAlpha(t, team));
@@ -396,6 +415,8 @@ export class BattleScene extends Phaser.Scene implements BattleView {
     this.pause?.destroy();
     this.pause = null;
     this.glowTween?.stop();
+    if (this.fighters) for (const u of UNITS) this.fighters[u.id].destroy();
+    this.fighters = null;
     this.dragHandler = null;
     this.input.off('pointerdown');
     this.input.off('pointermove');

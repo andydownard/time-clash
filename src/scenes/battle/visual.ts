@@ -20,6 +20,9 @@ export const ART = {
   visor: 0xcfd9ee,
   skin: 0xf5c9a0,
   pink: 0xff5fb0,
+  cream: 0xf3e6c8,
+  metal: 0x7d879c,
+  metalDark: 0x3d4560,
   flame: 0xff7a2e,
   // Projectile shades from the designers' missile in campArt.ts.
   missileGreen: 0x2d6a3a,
