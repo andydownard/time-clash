@@ -198,8 +198,9 @@ describe('ui.css: room for the corner buttons', () => {
     expect(body('.tc-screen')).toMatch(/padding:\s*var\(--tc-chrome-row\)/);
     expect(vars['--tc-chrome-row']).toBeDefined();
   });
-  it('the turn banner sits below the HUD cards', () => {
-    expect(body('.tc-banner')).toMatch(/top:\s*var\(--tc-hud-row\)/);
-    expect(vars['--tc-hud-row']).toBeDefined();
+  it('the turn banner is a strip docked on the control bar, not a drop-down over the cards', () => {
+    expect(ui).not.toMatch(/\.tc-banner\s*\{/);
+    expect(body('.tc-turn-strip')).toMatch(/flex:\s*1 1 100%/);
+    expect(body('.tc-hud-bottom')).toMatch(/flex-wrap:\s*wrap/);
   });
 });

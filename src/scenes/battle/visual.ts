@@ -27,6 +27,11 @@ export const ART = {
   skyLow: 0x9a4fc4,
   skyHorizon: 0xee7fa0,
   skyGlow: 0xffb877,
+  /** The night aspen forest: dusky white trunks, dark bark, dim golden leaves. */
+  aspenTrunk: 0xc4bfd6,
+  aspenBark: 0x2a2540,
+  aspenLeafFar: 0x8f7436,
+  aspenLeafNear: 0xa8863a,
 } as const;
 
 /** Colors the drawing code leans on, grouped by team. Every UI color is a design token. */

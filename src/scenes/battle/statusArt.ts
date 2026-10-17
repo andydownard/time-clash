@@ -4,6 +4,7 @@
 // dot against a ring), so nothing depends on color alone.
 import Phaser from 'phaser';
 import { HUD, windWord } from '../../data/copy';
+import { DAMAGE } from '../../game/config';
 import type { BattleLayout, Team } from '../../game/types';
 import { hpFraction, shotIcons, windArrow } from './geometry';
 import { textStyle } from './textStyle';
@@ -183,7 +184,8 @@ export function createStatusArt(
       for (const team of ['PAST', 'FUTURE'] as const) {
         const p = panels[team];
         const hp = status.baseHp[team];
-        p.hp.setText(HUD.hpValue(hp));
+        const max = status.maxBaseHp?.[team] ?? DAMAGE.startingBaseHp;
+        p.hp.setText(HUD.hpValue(hp, max));
         const shotsW = SHOT.step * (shotIcons(0).length - 1) + SHOT.r * 2;
         const w = PANEL.pad + PANEL.iconW + PANEL.gap + p.hp.width + PANEL.gap + shotsW + PANEL.pad;
         const x = team === 'PAST' ? PANEL.edge : worldW - PANEL.edge - w;
@@ -193,7 +195,7 @@ export function createStatusArt(
           p.icon,
           x + PANEL.pad,
           PANEL.y,
-          hpFraction(hp),
+          hpFraction(hp, max),
         );
         p.hp.setPosition(x + PANEL.pad + PANEL.iconW + PANEL.gap, PANEL.y + PANEL.h / 2);
         p.shots.clear();

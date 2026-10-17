@@ -158,7 +158,7 @@ describe('fonts', () => {
     }
   });
   it('buttons, chips, banners, and counters use the new voice', () => {
-    for (const sel of ['.tc-banner', '.tc-percent', '.tc-vs', '.tc-chrono', '.tc-label']) {
+    for (const sel of ['.tc-turn-strip', '.tc-percent', '.tc-vs', '.tc-chrono', '.tc-label']) {
       expect(family(sel), sel).toBe(newVoice);
     }
     const shared = rules.find(
@@ -230,8 +230,8 @@ describe('no color-only meaning', () => {
   });
   it('the current step dot is bigger and the turn banner carries a team shape', () => {
     expect(bodyOf(".tc-dot[aria-current='step']")).toMatch(/scale\(/);
-    expect(ui).toMatch(/\.tc-banner\[data-team='PAST'\]::before/);
-    expect(ui).toMatch(/\.tc-banner\[data-team='FUTURE'\]::before/);
+    expect(ui).toMatch(/\.tc-turn-strip\[data-team='PAST'\] \.tc-turn-text::before/);
+    expect(ui).toMatch(/\.tc-turn-strip\[data-team='FUTURE'\] \.tc-turn-text::before/);
   });
 });
 
@@ -241,9 +241,11 @@ describe('motion', () => {
     expect(reduced).toMatch(/animation:\s*none !important/);
     expect(reduced).toMatch(/transition:\s*none !important/);
   });
-  it('drops the banner tilt when motion is reduced', () => {
-    expect(reduced).toMatch(/\.tc-banner\s*\{\s*transform:\s*translateX\(-50%\);?\s*\}/);
-    expect(ui).toMatch(/\[data-motion='reduced'\] \.tc-banner/);
+  it('stops the flashing chevrons and the turn flash when motion is reduced', () => {
+    // The blanket rule reaches every animation under the app root, including the turn strip.
+    expect(reduced).toMatch(/animation:\s*none !important/);
+    expect(ui).toMatch(/\[data-motion='reduced'\],\s*\[data-motion='reduced'\] \*/);
+    expect(ui).toMatch(/\.tc-turn-chev\s*\{[^}]*animation:/);
   });
   it('every keyframe is used by a class that the reduced rule reaches (all under the app root)', () => {
     const names = [...ui.matchAll(/@keyframes\s+([\w-]+)/g)].map((m) => m[1]);

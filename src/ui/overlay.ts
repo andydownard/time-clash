@@ -14,11 +14,12 @@ import type { LoadingEnv } from './loadingLogic';
 import { isReducedMotion } from './motion';
 import { showCamp } from './campScreen';
 import { showForge } from './forgeScreen';
+import { showUpgrade } from './upgradeScreen';
 import { showPassScreen } from './passScreen';
 import { showReloadModal } from './reloadModal';
 import { showSetup } from './setupScreen';
 import { showLoading, showTapToStart, showVictory } from './simpleScreens';
-import { showSpeechBubble, showTurnBanner } from './transient';
+import { showSpeechBubble } from './transient';
 import { TEST_IDS, Z, type CoverKind, type CreateOverlay, type Overlay } from './types';
 
 export type OverlayDeps = {
@@ -213,11 +214,13 @@ export const createOverlay: CreateOverlayWithDeps = (
       options ? showSetup(ctx, initial, options) : showSetup(ctx, initial)) as Overlay['showSetup'],
     showCamp: () => showCamp(ctx),
     showForge: (options) => showForge(ctx, options),
+    showUpgrade: (options) => showUpgrade(ctx, options),
     showVictory: (options) => showVictory(ctx, options),
     showHud: (handlers) => hud.show(handlers),
     updateHud: (state) => hud.update(state),
     hideHud: () => hud.hide(),
-    showTurnBanner: (options) => showTurnBanner(ctx, options),
+    // The turn banner is the strip on top of the HUD bar. A new turn flashes it and sounds the horn.
+    showTurnBanner: () => hud.flash(),
     showPassScreen: (options) => showPassScreen(ctx, options),
     showReloadModal: (options) => showReloadModal(ctx, options),
     showSpeechBubble: (options) => showSpeechBubble(ctx, options, () => canvasEl),

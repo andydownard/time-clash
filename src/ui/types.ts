@@ -52,6 +52,11 @@ export const TEST_IDS = {
   campForge: 'camp-forge',
   campUpgrade: 'camp-upgrade',
   campStart: 'camp-start',
+  upgradeBack: 'upgrade-back',
+  upgradeScrap: 'upgrade-scrap',
+  upgradeStatus: 'upgrade-status',
+  upgradeTeam: (team: Team) => `upgrade-team-${team}`,
+  upgradeRow: (id: string) => `upgrade-row-${id}`,
   forgeBack: 'forge-back',
   forgeScrap: 'forge-scrap',
   forgeUpgrade: 'forge-upgrade',
@@ -119,6 +124,8 @@ export type HudState = {
   activeTeam: Team | null;
   names: Record<Team, string>;
   baseHp: Record<Team, number>;
+  /** Each base's full health. Missing means 100. An upgrade can raise it. */
+  maxBaseHp?: Record<Team, number>;
   scrap: Record<Team, number>;
   wind: number;
   angleDeg: number;
@@ -141,7 +148,7 @@ export type VictoryOptions = {
 };
 
 /** The Camp starts the match, or sends the family back to Setup to change the players. */
-export type CampChoice = 'battle' | 'players' | 'forge';
+export type CampChoice = 'battle' | 'players' | 'forge' | 'upgrade';
 
 export type ForgeOptions = {
   /** What the family owns now. */
@@ -191,6 +198,8 @@ export interface Overlay {
   showCamp(): Promise<CampChoice>;
   /** Forge Weapon. Changes go through `save`. Resolves when Back is tapped. */
   showForge(options: ForgeOptions): Promise<void>;
+  /** Upgrade Base. Same options as the Forge. Resolves when Back is tapped. */
+  showUpgrade(options: ForgeOptions): Promise<void>;
   showVictory(options: VictoryOptions): Promise<VictoryChoice>;
 
   // Battle HUD (Z.hud)

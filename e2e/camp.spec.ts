@@ -25,11 +25,11 @@ test('Setup leads to the Camp, and Time to Clash! starts the match', async ({ pa
   ]);
 });
 
-test('Upgrade Base stays on the Camp and says it is coming soon', async ({ page }) => {
+test('Upgrade Base opens its screen and Back returns to the Camp', async ({ page }) => {
   await toCamp(page);
-  await expect(page.locator('.tc-camp-soon')).toHaveText(['Coming soon']);
-  await tid(page, 'camp-upgrade').click({ force: true });
-  await expect(tid(page, 'camp-status')).toHaveText('Upgrade Base is coming soon.');
+  await tid(page, 'camp-upgrade').click();
+  await expect(page.locator('[data-screen="upgrade"] h1')).toHaveText('Upgrade Base');
+  await tid(page, 'upgrade-back').click();
   await expect(tid(page, 'camp-start')).toBeVisible();
   await expect(tid(page, 'pass-screen')).toHaveCount(0);
 });

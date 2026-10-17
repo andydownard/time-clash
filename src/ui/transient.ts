@@ -1,42 +1,9 @@
-// Short-lived pieces: the turn banner and speech bubbles.
-import { turnBanner } from '../data/copy';
+// Short-lived pieces: speech bubbles.
 import { TIMING, WORLD } from '../game/config';
 import type { Team } from '../game/types';
 import type { UiCtx } from './ctx';
 import { h } from './dom';
-import { TEST_IDS, type BannerOptions, type BubbleOptions } from './types';
-
-type BannerState = { el: HTMLElement; timer: unknown; resolve: () => void };
-const banners = new WeakMap<UiCtx, BannerState>();
-
-export function showTurnBanner(ctx: UiCtx, options: BannerOptions): Promise<void> {
-  const { doc, env } = ctx;
-  const previous = banners.get(ctx);
-  if (previous) {
-    env.clearTimeout(previous.timer);
-    previous.el.remove();
-    previous.resolve();
-    banners.delete(ctx);
-  }
-  return new Promise<void>((resolve) => {
-    const el = h(doc, 'div', {
-      class: 'tc-banner',
-      'data-testid': TEST_IDS.turnBanner,
-      'data-team': options.team,
-      'data-motion': ctx.motion(),
-      role: 'status',
-      text: turnBanner(options.name, options.shot),
-    });
-    ctx.layer.banner.append(el);
-    ctx.sfx('horn');
-    const timer = env.setTimeout(() => {
-      el.remove();
-      if (banners.get(ctx)?.el === el) banners.delete(ctx);
-      resolve();
-    }, TIMING.bannerHoldMs);
-    banners.set(ctx, { el, timer, resolve });
-  });
-}
+import { TEST_IDS, type BubbleOptions } from './types';
 
 const holdFor = (text: string): number =>
   Math.max(TIMING.bubbleHoldMs, text.trim().split(/\s+/).length * TIMING.bubbleMsPerWord);

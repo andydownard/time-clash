@@ -2,7 +2,7 @@
 // saving, and returns where to go next. Phaser scenes just run a step and follow the route.
 import { LOADING } from '../data/copy';
 import { creditMatch } from '../game/economy';
-import { matchEffectsFor } from '../game/loadout';
+import { matchEffectsFor, type CampState } from '../game/loadout';
 import { loadCamp } from '../storage/storage';
 import type { QuestionBank } from '../questions/types';
 import { runLoading } from '../ui/loadingLogic';
@@ -79,12 +79,14 @@ export async function runCampStep(s: AppServices): Promise<SceneRoute> {
   if (!players) return { key: SCENE_KEYS.setup };
   const choice = await s.overlay.showCamp();
   if (choice === 'players') return { key: SCENE_KEYS.setup };
-  if (choice === 'forge') {
-    await s.overlay.showForge({
+  if (choice === 'forge' || choice === 'upgrade') {
+    const options = {
       camp: loadCamp(s.storage),
-      save: (next) => void s.storage.set('timeclash.camp', next),
-    });
-    // Back from the Forge: the Camp again, which shows what the family now has.
+      save: (next: CampState) => void s.storage.set('timeclash.camp', next),
+    };
+    if (choice === 'forge') await s.overlay.showForge(options);
+    else await s.overlay.showUpgrade(options);
+    // Back from the Forge or Upgrade Base: the Camp again, which shows what the family now has.
     return { key: SCENE_KEYS.camp };
   }
   // The weapons and upgrades the family chose at the Camp go into the match.

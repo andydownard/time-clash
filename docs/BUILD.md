@@ -121,14 +121,14 @@ Status: built. The screens use the Claude Design handoff look. The rules and tok
 The design boards are 1600x900 mockups. We translate their look to 1280x800, 1024x768, and 768x1024. Board names: Main (Camp hub), Loading, Battle, DesignSystem, Setup, Math, Reading, Forge, ForgeFuture, Upgrade, UpgradePast, Destroyed. Phase 2 and 3 boards are not built yet. Phase 2 uses Main. Phase 3 uses Forge, ForgeFuture, Upgrade, and UpgradePast.
 
 ## Phase 2: Camp Hub, base placement, biomes
-- Camp Hub scene per the Main (Camp hub) board in the design handoff. **Built.** The board shows the campfire, both camps, workbenches, and three buttons: [FORGE WEAPON], [UPGRADE BASE] and the big [TIME TO CLASH!]. Only the big one works. The other two show "Coming soon". Tweak Gear is not on the board, so it is not built.
+- Camp Hub scene per the Main (Camp hub) board in the design handoff. **Built.** The board shows the campfire, both camps, workbenches, and three buttons: [FORGE WEAPON], [UPGRADE BASE] and the big [TIME TO CLASH!]. The big one starts the match. Forge Weapon and Upgrade Base open their own screens. Tweak Gear is not on the board, so it is not built.
 - Base Deployment: three Austin spots (skyscraper top, bridge underside, food truck pavilion). The spot changes launch height and cover. Test: each spot has a distinct elevation and a reachable shot path.
 - Parallax biomes: Aspen Forest, Cherry Blossom Forest, Ruined Temple. Selected before battle.
 - Evasion abilities: Hoverboard Dodge (recharges after 2 turns) and Stone Barricade Wall (once per match).
 
 ## Phase 3: Deep crafting and customization
 - Working Camp buttons. Build the Forge screens from the Forge and ForgeFuture boards, and the Upgrade screens from the Upgrade and UpgradePast boards. Recipes combine Past materials (granite, iron) with Future materials (nanotubes, energy shields).
-- **Forge Weapon screen built** from the Forge and ForgeFuture boards (`src/ui/forgeScreen.ts`, `forgeArt.ts`): pick a team, unlock or equip a weapon, forge the one in use. Scrap only. The Upgrade Base screen is not built yet.
+- **Forge Weapon screen built** from the Forge and ForgeFuture boards (`src/ui/forgeScreen.ts`, `forgeArt.ts`): pick a team, unlock or equip a weapon, forge the one in use. Scrap only. **Upgrade Base screen built** from the Upgrade and UpgradePast boards (`src/ui/upgradeScreen.ts`, `upgradeArt.ts`): pick a team, raise any of three upgrades through three levels with Scrap. The battle HUD and base pills show the raised maximum health.
 - **Rules built**: `src/game/weapons.ts`, `upgrades.ts`, `loadout.ts` and `economy.ts`, saved in `timeclash.camp`. Scrap is the only currency. A fresh game plays exactly like Phase 1. The balance test (`tests/game/balance.test.ts`) checks that no single purchase wins the game alone.
 - Hybrid weapons: Nanotech Trebuchet, Wrought-Iron Railgun, EMP-shielded Railgun. Each has stats in `src/game/weapons.ts` (damage, blast radius, speed, reload difficulty).
 - Ammo types: confetti explosives, bouncy plasma spheres, heavy iron bowling balls.

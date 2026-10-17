@@ -32,13 +32,13 @@ Voice dictation made some comments noisy, so a few asks are guesses. Claude Desi
 
 | Board | Status |
 |---|---|
-| 1 Camp Hub | Built, no hawk or fires yet. Home screen for returning families. |
+| 1 Camp Hub | Built, no hawk or fires yet. Home screen for returning families. Both side buttons open their screens. |
 | 2 Loading | Not rebuilt from the latest board (daytime scene, three balloon riders, 10 seconds). |
 | 3 Battle | HUD simplified to one bottom bar. The units, scenery and explosions are not built (Phase 5 Squads). |
 | 4 Setup | Built from the earlier board. |
 | 5 Math, 6 Reading | Built from earlier boards. |
 | 7 and 7b Forge | Built (Scrap only). |
-| 8 and 8b Upgrade | Rules built, screen not built. |
+| 8 and 8b Upgrade | Built (Scrap only, "Upgrade Base"). |
 | 9 Base Destroyed | Built as the Wipeout screen. |
 
 ## Questions Claude Design asked that Andy has not answered

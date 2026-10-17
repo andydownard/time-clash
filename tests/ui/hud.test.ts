@@ -39,60 +39,81 @@ const handlers = (): HudHandlers & {
   };
 };
 
-describe('turn banner', () => {
-  it('shows the banner text for shot 1 and shot 2', () => {
-    void s.overlay.showTurnBanner({ name: 'Alex', team: 'PAST', shot: 1 });
+describe('turn strip (the turn banner)', () => {
+  const show = (over: Partial<HudState> = {}) => {
+    s.overlay.showHud(handlers());
+    s.overlay.updateHud(state(over));
+  };
+
+  it('says whose turn it is and which shot, in words, on the control bar', () => {
+    show({ shotsLeft: 2 });
     expect(q(TEST_IDS.turnBanner)!.textContent).toBe('ALEX, YOUR TURN! (SHOT 1 OF 2)');
     expect(q(TEST_IDS.turnBanner)!.textContent).toBe(turnBanner('Alex', 1));
+    expect(q(TEST_IDS.turnBanner)!.closest('.tc-hud-bottom')).not.toBeNull();
   });
 
-  it('shot 2 text', async () => {
-    const p = s.overlay.showTurnBanner({ name: 'Sam', team: 'FUTURE', shot: 2 });
+  it('says shot 2 after the first shot is fired, and for the other team', () => {
+    show({ activeTeam: 'FUTURE', shotsLeft: 1 });
     expect(q(TEST_IDS.turnBanner)!.textContent).toBe('SAM, YOUR TURN! (SHOT 2 OF 2)');
-    expect(q(TEST_IDS.turnBanner)!.getAttribute('data-team')).toBe('FUTURE');
-    s.clock.advance(TIMING.bannerHoldMs);
-    await p;
+    expect(q(TEST_IDS.turnBanner)!.closest('.tc-turn-strip')!.getAttribute('data-team')).toBe(
+      'FUTURE',
+    );
   });
 
-  it('holds for bannerHoldMs, then resolves and goes away', async () => {
+  it('keeps saying shot 2 of 2 while the last shot flies (never "shot 3")', () => {
+    show({ shotsLeft: 0 });
+    expect(q(TEST_IDS.turnBanner)!.textContent).toBe(turnBanner('Alex', 2));
+  });
+
+  it('is empty when no team is up (nothing to announce)', () => {
+    show({ activeTeam: null });
+    expect(q(TEST_IDS.turnBanner)!.textContent).toBe('');
+  });
+
+  it('puts the name in as text only', () => {
+    show({ names: { PAST: '<i>x</i>', FUTURE: 'Sam' } });
+    expect(q(TEST_IDS.turnBanner)!.querySelector('i')).toBeNull();
+    expect(q(TEST_IDS.turnBanner)!.textContent).toContain('<I>X</I>'.toUpperCase());
+  });
+
+  it('is announced politely, and the chevrons are decoration only', () => {
+    show();
+    expect(q(TEST_IDS.turnBanner)!.getAttribute('role')).toBe('status');
+    expect(document.querySelector('.tc-turn-chev')!.getAttribute('aria-hidden')).toBe('true');
+  });
+
+  it('holds the shot pips (two shots, then reload) inside the strip', () => {
+    show();
+    expect(document.querySelectorAll('.tc-turn-strip .tc-pips .tc-pip')).toHaveLength(3);
+  });
+
+  it('flashes for bannerHoldMs when a turn starts, then stops, and sounds the horn', async () => {
+    show();
+    const strip = document.querySelector('.tc-turn-strip')!;
     let done = false;
     const p = s.overlay.showTurnBanner({ name: 'Alex', team: 'PAST', shot: 1 });
     void p.then(() => (done = true));
+    expect(strip.hasAttribute('data-flash')).toBe(true);
+    expect(s.sfx).toContain('horn');
     s.clock.advance(TIMING.bannerHoldMs - 1);
     await flush();
     expect(done).toBe(false);
     s.clock.advance(1);
     await p;
-    expect(q(TEST_IDS.turnBanner)).toBeNull();
+    expect(strip.hasAttribute('data-flash')).toBe(false);
   });
 
-  it('does not block input (pointer events pass through) and is announced politely', () => {
-    void s.overlay.showTurnBanner({ name: 'Alex', team: 'PAST', shot: 1 });
-    const b = q(TEST_IDS.turnBanner)!;
-    expect(b.getAttribute('role')).toBe('status');
-    const layer = b.closest<HTMLElement>('[data-layer="banner"]')!;
-    expect(layer.style.pointerEvents).toBe('none');
-    expect(layer.style.zIndex).toBe(String(Z.banner));
+  it('does not fail when the HUD is not up (resolves, no flash)', async () => {
+    await expect(
+      s.overlay.showTurnBanner({ name: 'Alex', team: 'PAST', shot: 1 }),
+    ).resolves.toBeUndefined();
   });
 
-  it('a new banner replaces the old one', async () => {
-    void s.overlay.showTurnBanner({ name: 'Alex', team: 'PAST', shot: 1 });
-    const p = s.overlay.showTurnBanner({ name: 'Alex', team: 'PAST', shot: 2 });
-    expect(qa(`[data-testid="${TEST_IDS.turnBanner}"]`)).toHaveLength(1);
-    s.clock.advance(TIMING.bannerHoldMs);
-    await p;
-  });
-
-  it('puts the name in as text only', () => {
-    void s.overlay.showTurnBanner({ name: '<i>x</i>', team: 'PAST', shot: 1 });
-    expect(q(TEST_IDS.turnBanner)!.querySelector('i')).toBeNull();
-  });
-
-  it('is not shown above a cover', () => {
-    void s.overlay.showTurnBanner({ name: 'Alex', team: 'PAST', shot: 1 });
+  it('is hidden above a cover, with the rest of the board', () => {
+    show();
     void s.overlay.showPassScreen({ nextName: 'Sam', nextTeam: 'FUTURE' });
-    const layer = q(TEST_IDS.turnBanner)!.closest<HTMLElement>('[data-layer="banner"]')!;
-    expect(layer.style.visibility).toBe('hidden');
+    const hud = q(TEST_IDS.turnBanner)!.closest<HTMLElement>('[data-layer="hud"]')!;
+    expect(hud.style.visibility).toBe('hidden');
   });
 });
 
@@ -555,23 +576,21 @@ describe('speech bubble tail', () => {
   });
 });
 
-describe('HUD bar header and coach line', () => {
-  it('names whose turn it is in the bar, with the team on the bar', () => {
+describe('HUD bar and coach line', () => {
+  it('puts the team on the strip and on the bar, so the team shows as a shape and in words', () => {
     s.overlay.showHud(handlers());
     s.overlay.updateHud(state({ activeTeam: 'PAST' }));
-    const bar = document.querySelector('.tc-aim')!;
-    expect(bar.querySelector('.tc-turn-name')!.textContent).toBe('Alex');
-    expect(bar.getAttribute('data-team')).toBe('PAST');
+    expect(document.querySelector('.tc-aim')!.getAttribute('data-team')).toBe('PAST');
     s.overlay.updateHud(state({ activeTeam: 'FUTURE' }));
-    expect(bar.querySelector('.tc-turn-name')!.textContent).toBe('Sam');
-    expect(bar.getAttribute('data-team')).toBe('FUTURE');
+    expect(document.querySelector('.tc-aim')!.getAttribute('data-team')).toBe('FUTURE');
+    expect(document.querySelector('.tc-turn-strip')!.getAttribute('data-team')).toBe('FUTURE');
   });
 
-  it('keeps the shot pips in the bar header and no separate shots panel', () => {
+  it('has no separate shots panel and no header inside the bar', () => {
     s.overlay.showHud(handlers());
     s.overlay.updateHud(state());
-    expect(document.querySelector('.tc-aim-head .tc-pips')).not.toBeNull();
     expect(document.querySelector('.tc-hud-center')).toBeNull();
+    expect(document.querySelector('.tc-aim-head')).toBeNull();
     // The shot count is still read out for assistive tech.
     expect(q(TEST_IDS.shotsLeft)!.classList.contains('tc-sr-only')).toBe(true);
   });
@@ -616,5 +635,45 @@ describe('HUD bar header and coach line', () => {
     key(document.body, ' ');
     expect(h.calls).toEqual([]);
     expect(document.querySelector<HTMLElement>('.tc-hint')!.hidden).toBe(false);
+  });
+});
+
+describe('HUD health with a raised maximum (Rebuild the Tower)', () => {
+  it('shows health out of 100 when no maximum is given (a fresh game)', () => {
+    s.overlay.showHud(handlers());
+    s.overlay.updateHud(state({ baseHp: { PAST: 100, FUTURE: 75 } }));
+    expect(q(TEST_IDS.baseHp('PAST'))!.textContent).toContain('100 / 100');
+    const meter = document.querySelector('[data-team="PAST"] [role="meter"]')!;
+    expect(meter.getAttribute('aria-valuemax')).toBe('100');
+  });
+
+  it('shows health out of the raised maximum, and the bar is full at the maximum', () => {
+    s.overlay.showHud(handlers());
+    s.overlay.updateHud(
+      state({ baseHp: { PAST: 124, FUTURE: 100 }, maxBaseHp: { PAST: 124, FUTURE: 100 } }),
+    );
+    expect(q(TEST_IDS.baseHp('PAST'))!.textContent).toContain('124 / 124');
+    const meter = document.querySelector('[data-team="PAST"] [role="meter"]')!;
+    expect(meter.getAttribute('aria-valuemax')).toBe('124');
+    expect(meter.getAttribute('aria-valuenow')).toBe('124');
+    expect(meter.querySelector<HTMLElement>('.tc-hp-fill')!.style.width).toBe('100%');
+  });
+
+  it('scales the bar to the maximum when hurt', () => {
+    s.overlay.showHud(handlers());
+    s.overlay.updateHud(
+      state({ baseHp: { PAST: 62, FUTURE: 100 }, maxBaseHp: { PAST: 124, FUTURE: 100 } }),
+    );
+    const fill = document.querySelector<HTMLElement>('[data-team="PAST"] .tc-hp-fill')!;
+    expect(fill.style.width).toBe('50%');
+  });
+
+  it('never shows more than the maximum, and never below zero', () => {
+    s.overlay.showHud(handlers());
+    s.overlay.updateHud(
+      state({ baseHp: { PAST: 999, FUTURE: -5 }, maxBaseHp: { PAST: 112, FUTURE: 100 } }),
+    );
+    expect(q(TEST_IDS.baseHp('PAST'))!.textContent).toContain('112 / 112');
+    expect(q(TEST_IDS.baseHp('FUTURE'))!.textContent).toContain('0 / 100');
   });
 });

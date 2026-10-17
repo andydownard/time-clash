@@ -477,33 +477,69 @@ body {
 }
 
 /* ---------- Banner, bubble, caption ---------- */
-.tc-banner {
-  position: absolute;
-  top: var(--tc-hud-row);
-  left: 50%;
-  transform: translateX(-50%) rotate(var(--tc-banner-turn-tilt));
-  padding: var(--tc-s-3) var(--tc-s-5);
+/* The turn strip sits on top of the HUD control bar: flashing chevrons, whose turn it is in words,
+   and the shot pips. It is the only turn banner, so everything for a turn is in one place. */
+.tc-turn-strip {
+  flex: 1 1 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--tc-s-3);
+  padding: var(--tc-s-1) var(--tc-s-4);
   border: var(--tc-banner-turn-border);
   border-radius: var(--tc-r-button);
   background: var(--tc-banner-turn-bg);
   color: var(--tc-banner-turn-text);
-  box-shadow: var(--tc-shadow-banner);
+  box-shadow: 0 4px 0 var(--tc-purple-700);
   font-family: var(--tc-font-voice-new);
-  font-size: calc(var(--tc-text-min) * 1.5);
+  font-size: var(--tc-text-min);
   font-weight: var(--tc-fw-new-heavy);
   letter-spacing: var(--tc-ls-caps);
+}
+.tc-turn-text {
+  flex: 1;
+  min-width: 0;
   text-align: center;
-  /* One line when it fits. A long name wraps rather than running off the screen. */
-  width: max-content;
-  max-width: 94vw;
-  animation: tc-drop var(--tc-banner-drop) cubic-bezier(0.3, 1.6, 0.5, 1) both;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 /* The team shows as a shape too, not by color. */
-.tc-banner[data-team='PAST']::before {
+.tc-turn-strip[data-team='PAST'] .tc-turn-text::before {
   content: '\1F3F0  ';
 }
-.tc-banner[data-team='FUTURE']::before {
+.tc-turn-strip[data-team='FUTURE'] .tc-turn-text::before {
   content: '\1F6F8  ';
+}
+.tc-turn-chev {
+  flex: none;
+  color: var(--tc-purple-700);
+  letter-spacing: 0;
+  animation: tc-turn-blink 0.8s steps(2) infinite;
+}
+@keyframes tc-turn-blink {
+  50% {
+    opacity: 0.25;
+  }
+}
+/* A new turn: the strip pulses for a moment. */
+.tc-turn-strip[data-flash] {
+  animation: tc-turn-flash 0.6s ease-in-out 3;
+}
+@keyframes tc-turn-flash {
+  50% {
+    filter: brightness(1.25);
+    transform: scale(1.02);
+  }
+}
+/* The pips sit on the orange strip, so they use Ink instead of Ember. */
+.tc-turn-strip .tc-pip {
+  border-color: var(--tc-ink-deep);
+  background: var(--tc-ink-deep);
+  color: var(--tc-ember);
+}
+.tc-turn-strip .tc-pip[data-used='true'] {
+  background: transparent;
+  color: var(--tc-ink-deep);
 }
 .tc-bubble {
   position: relative;
@@ -745,6 +781,7 @@ body {
   right: 20%;
   bottom: 72px;
   display: flex;
+  flex-wrap: wrap;
   gap: var(--tc-s-5);
   align-items: flex-end;
   justify-content: center;
@@ -769,36 +806,6 @@ body {
   text-transform: uppercase;
 }
 /* The bar's header: whose turn it is, and the shot pips (two shots, then a question). */
-.tc-aim-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--tc-s-3);
-}
-.tc-turn-name {
-  flex: 1 1 auto;
-  min-width: 0;
-  font-family: var(--tc-font-voice-old);
-  font-weight: 400;
-  font-size: var(--tc-fs-lead);
-  letter-spacing: 0;
-  text-transform: none;
-  line-height: var(--tc-lh-tight);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.tc-turn-name::before {
-  content: '\25B6\00A0';
-  font-family: var(--tc-font-voice-new);
-  font-size: var(--tc-text-min);
-}
-.tc-aim[data-team='PAST'] .tc-turn-name {
-  color: var(--tc-purple-300);
-}
-.tc-aim[data-team='FUTURE'] .tc-turn-name {
-  color: var(--tc-pulse);
-}
 .tc-aim .tc-range {
   accent-color: var(--tc-pulse);
 }
@@ -1638,31 +1645,6 @@ body {
 .tc-camp-side {
   white-space: nowrap;
 }
-/* The Coming soon ribbon stays on screen, so the tap is never a silent dead end. */
-.tc-camp-soon {
-  padding: var(--tc-s-1) var(--tc-s-4);
-  border: 3px solid var(--tc-ink-deep);
-  border-radius: var(--tc-r-pill);
-  background: var(--tc-ember);
-  color: var(--tc-ink-deep);
-  font-family: var(--tc-font-voice-new);
-  font-size: var(--tc-text-min);
-  font-weight: var(--tc-fw-new-heavy);
-  letter-spacing: var(--tc-ls-caps);
-  text-transform: uppercase;
-  transform: rotate(-2deg);
-}
-.tc-camp-soon[data-nudge] {
-  animation: tc-camp-nudge 0.6s ease-in-out;
-}
-@keyframes tc-camp-nudge {
-  25% {
-    transform: rotate(-6deg) scale(1.08);
-  }
-  75% {
-    transform: rotate(4deg) scale(1.08);
-  }
-}
 /* The picture moves: flames, sparks, flags, a friendly skirmish. Reduced motion stops it all. */
 .tc-camp-flame {
   transform-box: fill-box;
@@ -1968,7 +1950,8 @@ body {
   cursor: pointer;
   touch-action: manipulation;
 }
-.tc-forge-row[data-state='equipped'] {
+.tc-forge-row[data-state='equipped'],
+.tc-forge-row[data-state='max'] {
   border: 5px solid var(--tc-ink-deep);
   background: var(--tc-ember);
   box-shadow:
@@ -1980,7 +1963,8 @@ body {
   background: var(--tc-ink-deep);
   color: var(--tc-blue-100);
 }
-.tc-forge-row[data-team='FUTURE'][data-state='equipped'] {
+.tc-forge-row[data-team='FUTURE'][data-state='equipped'],
+.tc-forge-row[data-team='FUTURE'][data-state='max'] {
   border-color: var(--tc-ink-deep);
   background: var(--tc-blue-500);
   color: var(--tc-white);
@@ -2188,6 +2172,130 @@ body {
   }
 }
 
+/* Upgrade Base pictures: a stone drops into the broken tower, and the silo hologram flickers and
+   scans. Reduced motion stops it all. */
+.tc-upgrade-holo {
+  animation: tc-upgrade-holo 3.2s steps(1) infinite;
+}
+@keyframes tc-upgrade-holo {
+  0% {
+    opacity: 1;
+  }
+  48% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 0.65;
+  }
+  94%,
+  100% {
+    opacity: 1;
+  }
+}
+.tc-upgrade-scan {
+  animation: tc-upgrade-scan 3s linear infinite;
+}
+@keyframes tc-upgrade-scan {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(700px);
+  }
+}
+.tc-upgrade-glow {
+  animation: tc-upgrade-glow 1.8s ease-in-out infinite alternate;
+}
+@keyframes tc-upgrade-glow {
+  from {
+    opacity: 0.55;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.tc-upgrade-drop {
+  opacity: 0;
+  animation: tc-upgrade-drop 3.6s cubic-bezier(0.6, 0, 0.9, 0.5) infinite;
+}
+@keyframes tc-upgrade-drop {
+  0%,
+  8% {
+    transform: translateY(-300px);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  52% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  80% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  92%,
+  100% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+}
+.tc-upgrade-hole {
+  animation: tc-upgrade-hole 3.6s linear infinite;
+}
+@keyframes tc-upgrade-hole {
+  0%,
+  52% {
+    opacity: 1;
+  }
+  56%,
+  80% {
+    opacity: 0;
+  }
+  92%,
+  100% {
+    opacity: 1;
+  }
+}
+.tc-upgrade-dust {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  opacity: 0;
+  animation: tc-upgrade-dust 3.6s ease-out infinite;
+}
+@keyframes tc-upgrade-dust {
+  0%,
+  52% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  56% {
+    opacity: 0.8;
+  }
+  75%,
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+.tc-upgrade-rope {
+  animation: tc-upgrade-rope 3.6s linear infinite;
+}
+@keyframes tc-upgrade-rope {
+  0%,
+  8% {
+    transform: translateY(-300px);
+  }
+  52%,
+  100% {
+    transform: translateY(0);
+  }
+}
+
 /* ---------- Settings (and other panels) ---------- */
 .tc-settings {
   justify-content: center;
@@ -2243,14 +2351,6 @@ body {
 .tc-reload,
 .tc-pass {
   animation: tc-pop var(--tc-modal-pop) ease-out both;
-}
-@keyframes tc-drop {
-  from {
-    transform: translate(-50%, -150%) rotate(var(--tc-banner-turn-tilt));
-  }
-  to {
-    transform: translate(-50%, 0) rotate(var(--tc-banner-turn-tilt));
-  }
 }
 @keyframes tc-slide {
   from {
@@ -2417,18 +2517,11 @@ body {
     animation: none !important;
     transition: none !important;
   }
-  .tc-banner {
-    transform: translateX(-50%);
-  }
 }
 [data-motion='reduced'],
 [data-motion='reduced'] * {
   animation: none !important;
   transition: none !important;
-}
-[data-motion='reduced'] .tc-banner,
-.tc-banner[data-motion='reduced'] {
-  transform: translateX(-50%);
 }
 
 /* ---------- Smaller screens: iPad portrait ---------- */
@@ -2455,9 +2548,6 @@ body {
     height: auto;
     aspect-ratio: 16 / 9;
     mask-image: linear-gradient(to bottom, transparent, var(--tc-ink) 30%);
-  }
-  .tc-banner {
-    font-size: var(--tc-fs-lead);
   }
   /* Both card headers wrap the same way, so the two cards stay level. */
   .tc-team-home {

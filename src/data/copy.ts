@@ -5,6 +5,7 @@ import { TURN } from '../game/config';
 import type { AwardId } from '../game/awards';
 import { windLevel } from '../game/wind';
 import type { Subject, Team } from '../game/types';
+import type { UpgradeEffect } from '../game/upgrades';
 
 export const GAME_TITLE = 'Time Clash';
 export const GAME_SUBTITLE = 'Past vs. Future';
@@ -34,6 +35,39 @@ export const FORGE_COPY = {
   atTop: 'This weapon is at the top level.',
 } as const;
 
+// ---------- Upgrade Base ----------
+/** What an upgrade does, in words a child can read. `n` is the total at the level shown. */
+export const upgradeEffect = (effect: UpgradeEffect, n: number): string => {
+  switch (effect) {
+    case 'maxHp':
+      return `Base health +${n}`;
+    case 'directCut':
+      return `Direct hits hurt ${n} less`;
+    case 'nearCut':
+      return `Near misses hurt ${n} less`;
+    case 'shieldHits':
+      return n === 1 ? 'Blocks 1 hit each match' : `Blocks ${n} hits each match`;
+    case 'directBonus':
+      return `Your direct hits +${n}`;
+    case 'repair':
+      return `Heals ${n} health each turn`;
+  }
+};
+
+export const UPGRADE_COPY = {
+  title: 'Upgrade Base',
+  back: 'Back',
+  scrap: 'Scrap',
+  pickTeam: 'Choose a team',
+  level: (n: number, max: number): string => `Level ${n} of ${max}`,
+  cost: (cost: number): string => `${cost} Scrap`,
+  topLevel: 'Top level',
+  /** Status lines, read out politely. A short purse is just "not yet". */
+  upgraded: (name: string, level: number): string => `${name} is now level ${level}!`,
+  needMore: (n: number): string => `Not yet. You need ${n} more Scrap.`,
+  atTop: 'This one is at the top level.',
+} as const;
+
 // ---------- Camp ----------
 export const CAMP = {
   heading: 'Camp',
@@ -45,8 +79,6 @@ export const CAMP = {
   start: GAME_TAGLINE,
   /** A small way back to Setup, to change names, grades and subjects. */
   players: 'Change players',
-  soon: 'Coming soon',
-  upgradeSoon: 'Upgrade Base is coming soon.',
 } as const;
 
 export const TEAM_NAMES: Record<Team, string> = { PAST: 'Team Past', FUTURE: 'Team Future' };
@@ -162,7 +194,7 @@ export const HUD = {
   yourTurn: 'Your turn',
   angleValue: (deg: number): string => `${Math.round(deg)}°`,
   powerValue: (p: number): string => `${Math.round(p)}`,
-  hpValue: (hp: number): string => `${Math.round(hp)} / 100`,
+  hpValue: (hp: number, max = 100): string => `${Math.round(hp)} / ${Math.round(max)}`,
   shotsValue: (n: number): string => `${n} of ${TURN.shotsPerTurn}`,
 } as const;
 

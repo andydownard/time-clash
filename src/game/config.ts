@@ -153,8 +153,6 @@ export const TIMING = {
   /** Loading screen waits at least this long so jokes can be read. */
   loadingMinMs: 1500,
   loadingMessageMs: 2500,
-  /** How long the Coming soon ribbon wiggles after a tap on a closed Camp button. */
-  campNudgeMs: 600,
   bannerDropMs: 400,
   bannerHoldMs: 1800,
   modalPopMs: 250,

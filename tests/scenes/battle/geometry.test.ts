@@ -176,3 +176,22 @@ describe('placement', () => {
     }
   });
 });
+
+describe('hpFraction with a raised maximum', () => {
+  it('keeps the old behavior with no maximum (out of 100)', () => {
+    expect(hpFraction(100)).toBe(1);
+    expect(hpFraction(50)).toBe(0.5);
+    expect(hpFraction(0)).toBe(0);
+  });
+  it('is out of the given maximum', () => {
+    expect(hpFraction(62, 124)).toBe(0.5);
+    expect(hpFraction(124, 124)).toBe(1);
+  });
+  it('is 0 for a bad health or a bad maximum, and never above 1', () => {
+    expect(hpFraction(Number.NaN, 100)).toBe(0);
+    expect(hpFraction(50, 0)).toBe(0);
+    expect(hpFraction(50, -10)).toBe(0);
+    expect(hpFraction(50, Number.NaN)).toBe(0);
+    expect(hpFraction(300, 100)).toBe(1);
+  });
+});

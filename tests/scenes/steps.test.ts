@@ -240,20 +240,34 @@ describe('camp step', () => {
     expect(route).toEqual({ key: SCENE_KEYS.setup });
     expect(t.services.session.match).toBeNull();
   });
-  it('stays on the Camp when the closed Upgrade Base button is tapped', async () => {
-    t.services.session.bank = tinyBank;
+  it('opens Upgrade Base, saves what the family does there, and returns to the Camp', async () => {
     t.storage.set('timeclash.players', players);
-    let finished = false;
-    const p = runCampStep(t.services).then((r) => {
-      finished = true;
-      return r;
-    });
+    t.storage.set('timeclash.camp', { ...freshCamp(), scrap: { PAST: 30, FUTURE: 0 } });
+    const p = runCampStep(t.services);
     click(q(TEST_IDS.campUpgrade));
     await flush();
-    expect(finished).toBe(false);
-    expect(q(TEST_IDS.campStart)).not.toBeNull();
+    expect(q(TEST_IDS.upgradeBack)).not.toBeNull();
+    expect(q(TEST_IDS.campStart)).toBeNull();
+    click(q(TEST_IDS.upgradeRow('tower')));
+    expect(loadCamp(t.storage).loadout.PAST.upgrades.tower).toBe(1);
+    click(q(TEST_IDS.upgradeBack));
+    expect(await p).toEqual({ key: SCENE_KEYS.camp });
+  });
+  it('an upgrade bought there is in the next match (more base health)', async () => {
+    t.services.session.bank = tinyBank;
+    t.storage.set('timeclash.players', players);
+    t.storage.set('timeclash.camp', { ...freshCamp(), scrap: { PAST: 40, FUTURE: 0 } });
+    const upgrade = runCampStep(t.services);
+    click(q(TEST_IDS.campUpgrade));
+    await flush();
+    click(q(TEST_IDS.upgradeRow('tower')));
+    click(q(TEST_IDS.upgradeBack));
+    await upgrade;
+    const match = runCampStep(t.services);
     click(q(TEST_IDS.campStart));
-    await p;
+    const data = (await match).data as BattleSceneData;
+    expect(data.match.snapshot().maxBaseHp.PAST).toBe(112);
+    expect(data.match.snapshot().baseHp.PAST).toBe(112);
   });
 });
 
