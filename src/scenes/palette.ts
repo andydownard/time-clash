@@ -1,17 +1,52 @@
-// Phaser wants numbers, not CSS variables. These mirror src/styles/tokens.css, and
-// tests/scenes/backdrop.test.ts fails if one drifts away from that file.
+// Phaser wants numbers, not CSS variables. These mirror the look tokens in src/styles/tokens.css
+// (docs/DESIGN_SYSTEM.md). tests/scenes/battle/palette.test.ts fails if a value here drifts
+// from the CSS var named in TOKEN_VAR, and tests/scenes/backdrop.test.ts checks every value
+// appears in tokens.css. Art-only colors that are not UI tokens live in battle/visual.ts (ART).
 export const PALETTE = {
-  parchment: 0xf3e3c3,
-  stone: 0x8c8a84,
-  bannerRed: 0xb3372b,
-  torchGold: 0xf2b134,
-  wood: 0x6b4423,
-  night: 0x0e1a33,
-  cyan: 0x2ee6ff,
-  magenta: 0xff3dae,
-  mint: 0x7cffc4,
-  steel: 0xb9c4d0,
-  orange: 0xff7a1a,
-  purple: 0x3b2a5e,
+  blue100: 0xe1eaff,
+  blue300: 0x86a9ff,
+  blue500: 0x2f6bff,
+  blue700: 0x1a3fb5,
+  blue900: 0x0a1a4f,
+  purple100: 0xefe6ff,
+  purple300: 0xbc9cff,
+  purple500: 0x8247e8,
+  purple700: 0x5a28b8,
+  purple900: 0x25104f,
+  inkDeep: 0x12102b,
+  parchment: 0xf7ebcb,
+  oak: 0x7a4a24,
+  steelBlue: 0x9aa8bd,
+  ember: 0xffb23e,
+  pulse: 0x4fd8ff,
   white: 0xffffff,
+  /** The page and canvas background. Same color as inkDeep. */
+  night: 0x12102b,
 } as const;
+
+export type PaletteKey = keyof typeof PALETTE;
+
+/** The CSS custom property each palette entry mirrors. The drift test walks this table. */
+export const TOKEN_VAR: Record<PaletteKey, string> = {
+  blue100: '--tc-blue-100',
+  blue300: '--tc-blue-300',
+  blue500: '--tc-blue-500',
+  blue700: '--tc-blue-700',
+  blue900: '--tc-blue-900',
+  purple100: '--tc-purple-100',
+  purple300: '--tc-purple-300',
+  purple500: '--tc-purple-500',
+  purple700: '--tc-purple-700',
+  purple900: '--tc-purple-900',
+  inkDeep: '--tc-ink-deep',
+  parchment: '--tc-parchment-warm',
+  oak: '--tc-oak',
+  steelBlue: '--tc-steel-blue',
+  ember: '--tc-ember',
+  pulse: '--tc-pulse',
+  white: '--tc-white',
+  night: '--tc-ink-deep',
+};
+
+/** 0xrrggbb as a CSS string, for Phaser text styles. */
+export const css = (n: number): string => `#${n.toString(16).padStart(6, '0')}`;

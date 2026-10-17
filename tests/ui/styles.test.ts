@@ -69,9 +69,15 @@ describe('ui.css: text size', () => {
   it.each([...new Set(sizes)])('font-size %s is at least 20px', (v) => {
     const px = /^(\d+(?:\.\d+)?)px$/.exec(v);
     const tokenMul = /^calc\(var\(--tc-text-min\) \* (\d+(?:\.\d+)?)\)$/.exec(v);
+    const token = /^var\((--tc-[\w-]+)\)$/.exec(v);
     if (px) expect(Number(px[1])).toBeGreaterThanOrEqual(UI.textMinPx);
     else if (tokenMul) expect(Number(tokenMul[1])).toBeGreaterThanOrEqual(1);
-    else expect(['var(--tc-text-min)', 'var(--tc-text-young)']).toContain(v);
+    else if (token) {
+      // A size token must itself be a px value of at least 20.
+      const value = /^(\d+(?:\.\d+)?)px$/.exec(vars[token[1] as string] ?? '');
+      expect(value, `${v} is a px token`).not.toBeNull();
+      expect(Number(value![1])).toBeGreaterThanOrEqual(UI.textMinPx);
+    } else expect(v).toBe('unreachable');
   });
 });
 
@@ -91,8 +97,9 @@ describe('ui.css: colors, fonts, network', () => {
   it('every var(--tc-*) used in ui.css is defined in tokens.css', () => {
     const used = new Set([...ui.matchAll(/var\((--tc-[\w-]+)/g)].map((m) => m[1] as string));
     const defined = new Set(Object.keys(parseCssVars(tokens)));
-    // --tc-fast-ms is set per element by the reload modal.
-    const missing = [...used].filter((v) => !defined.has(v) && v !== '--tc-fast-ms');
+    // --tc-fast-ms (reload modal) and --tc-tail-shift (speech bubble) are set per element.
+    const perElement = new Set(['--tc-fast-ms', '--tc-tail-shift']);
+    const missing = [...used].filter((v) => !defined.has(v) && !perElement.has(v));
     expect(missing).toEqual([]);
   });
 
@@ -110,9 +117,13 @@ describe('ui.css: focus and motion', () => {
   it('has a visible focus ring of at least 3px using the focus token', () => {
     const rule = all.find((r) => r.selector.includes(':focus-visible'));
     expect(rule).toBeTruthy();
-    const w = /outline:\s*(\d+)px solid var\(--tc-focus\)/.exec(rule!.body);
-    expect(w).not.toBeNull();
-    expect(Number(w![1])).toBeGreaterThanOrEqual(3);
+    expect(rule!.body).toMatch(
+      /outline:\s*var\(--tc-focus-width\) solid var\(--tc-focus-on-light\)/,
+    );
+    expect(Number.parseFloat(vars['--tc-focus-width']!)).toBeGreaterThanOrEqual(3);
+    // Dark surfaces get the Ember ring.
+    const dark = all.find((r) => r.selector.includes('.tc-screen :focus-visible'));
+    expect(dark?.body).toMatch(/outline-color:\s*var\(--tc-focus-on-dark\)/);
   });
 
   it('never removes the outline', () => {
@@ -184,7 +195,7 @@ describe('ui.css: room for the corner buttons', () => {
     expect(body('.tc-hud-top')).toMatch(/padding-left:\s*var\(--tc-chrome-clear\)/);
   });
   it('full screens keep their content below the corner buttons', () => {
-    expect(body('.tc-screen')).toMatch(/top:\s*var\(--tc-chrome-row\)/);
+    expect(body('.tc-screen')).toMatch(/padding:\s*var\(--tc-chrome-row\)/);
     expect(vars['--tc-chrome-row']).toBeDefined();
   });
   it('the turn banner sits below the HUD cards', () => {

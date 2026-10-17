@@ -3,6 +3,7 @@ import {
   BUTTONS,
   LOADING,
   TAP_TO_START,
+  TEAM_HOMES,
   TEAM_NAMES,
   UI_EXTRA,
   VICTORY,
@@ -12,6 +13,7 @@ import {
 import { pickAwards } from '../game/awards';
 import { TIMING } from '../game/config';
 import { TEAMS, otherTeam } from '../game/types';
+import { chronoFace, loadingScene, loadingTimeline, skyline } from './art';
 import { LOCAL_IDS } from './constants';
 import type { UiCtx } from './ctx';
 import { h } from './dom';
@@ -58,12 +60,18 @@ export function showTapToStart(
     const screen = h(
       doc,
       'section',
-      { class: 'tc-screen tc-tap', 'data-screen': 'tap', 'data-motion': ctx.motion() },
+      { class: 'tc-screen tc-tap tc-split', 'data-screen': 'tap', 'data-motion': ctx.motion() },
+      skyline(doc),
       h(doc, 'div', { class: 'tc-row tc-corner' }, mute, captions),
-      h(doc, 'h1', { class: 'tc-title', text: GAME_TITLE }),
-      h(doc, 'p', { class: 'tc-big', text: GAME_SUBTITLE }),
-      play,
-      h(doc, 'p', { class: 'tc-muted', text: TAP_TO_START.helper }),
+      h(
+        doc,
+        'div',
+        { class: 'tc-hero' },
+        h(doc, 'h1', { class: 'tc-title', text: GAME_TITLE }),
+        h(doc, 'p', { class: 'tc-big tc-subtitle', text: GAME_SUBTITLE }),
+        play,
+        h(doc, 'p', { class: 'tc-muted', text: TAP_TO_START.helper }),
+      ),
     );
     const close = ctx.openScreen(screen);
     play.addEventListener('click', () => {
@@ -85,13 +93,14 @@ export function showLoading(ctx: UiCtx, messages: readonly string[]): LoadingHan
   let pendingRetry: (() => void) | null = null;
 
   const message = h(doc, 'p', {
-    class: 'tc-big',
+    class: 'tc-big tc-loading-message',
     'data-testid': LOCAL_IDS.loadingMessage,
     'aria-live': 'off',
     text: messages[0] ?? '',
   });
-  const fill = h(doc, 'div', { class: 'tc-bar-fill' });
   const percent = h(doc, 'span', { class: 'tc-percent' });
+  const timeline = loadingTimeline(doc);
+  const fill = timeline.querySelector('.tc-bar-fill') as SVGElement;
   const bar = h(
     doc,
     'div',
@@ -103,24 +112,32 @@ export function showLoading(ctx: UiCtx, messages: readonly string[]): LoadingHan
       'aria-valuemax': 100,
       'data-testid': LOCAL_IDS.loadingBar,
     },
-    fill,
+    timeline,
   );
   let errorBox: HTMLElement | null = null;
   const screen = h(
     doc,
     'section',
     { class: 'tc-screen tc-loading', 'data-screen': 'loading', 'data-motion': ctx.motion() },
-    h(doc, 'h1', { class: 'tc-title', text: GAME_TITLE }),
-    message,
-    bar,
-    percent,
+    loadingScene(doc),
+    // The picture is the hero here, so the name is for screen readers only.
+    h(doc, 'h1', { class: 'tc-sr-only', text: GAME_TITLE }),
+    h(
+      doc,
+      'div',
+      { class: 'tc-loading-foot' },
+      bar,
+      h(doc, 'div', { class: 'tc-loading-line' }, message, percent),
+    ),
   );
   const closeScreen = ctx.openScreen(screen);
 
   const paint = (): void => {
     const pct = Math.round(progress * 100);
     bar.setAttribute('aria-valuenow', String(pct));
-    fill.style.width = `${pct}%`;
+    // The path is 100 long, so the dash length is the percent. Nothing shows at 0.
+    fill.setAttribute('stroke-dasharray', `${pct} 100`);
+    fill.setAttribute('visibility', pct === 0 ? 'hidden' : 'visible');
     percent.textContent = LOADING.percent(pct);
   };
   paint();
@@ -187,6 +204,14 @@ export function showLoading(ctx: UiCtx, messages: readonly string[]): LoadingHan
   };
 }
 
+/** The walls turn into bouncy toy blocks. Decorative only, so nothing here is read aloud. */
+function toyBlocks(doc: Document): HTMLElement {
+  const blocks = Array.from({ length: 7 }, (_, i) =>
+    h(doc, 'span', { class: 'tc-block', 'data-block': i + 1 }),
+  );
+  return h(doc, 'div', { class: 'tc-blocks', 'aria-hidden': 'true' }, ...blocks);
+}
+
 export function showVictory(ctx: UiCtx, options: VictoryOptions): Promise<VictoryChoice> {
   const { doc } = ctx;
   const { winner, names, stats } = options;
@@ -208,7 +233,16 @@ export function showVictory(ctx: UiCtx, options: VictoryOptions): Promise<Victor
             doc,
             'div',
             { class: 'tc-award-card', 'data-team': t, 'data-award-team': t },
+            h(doc, 'p', { class: 'tc-team-eyebrow', text: TEAM_NAMES[t] }),
             h(doc, 'h3', { text: names[t] || TEAM_NAMES[t] }),
+            h(doc, 'p', {
+              class: 'tc-brain-stats',
+              'data-role': 'brain-stats',
+              text: `${VICTORY.brainStats}: ${VICTORY.brainStatsValue(
+                stats[t].correctAnswers,
+                stats[t].questionsAnswered,
+              )}`,
+            }),
             h(doc, 'ul', {}, ...awards[t].map((id) => h(doc, 'li', { text: VICTORY.awards[id] }))),
           ),
         ),
@@ -236,14 +270,26 @@ export function showVictory(ctx: UiCtx, options: VictoryOptions): Promise<Victor
         'data-team': winner,
         'data-motion': ctx.motion(),
       },
+      toyBlocks(doc),
+      h(doc, 'p', {
+        class: 'tc-team-eyebrow',
+        'data-role': 'winner-team',
+        text: TEAM_NAMES[winner],
+      }),
       h(doc, 'h1', { class: 'tc-title', text: VICTORY.heading(names[winner]) }),
-      h(doc, 'p', { class: 'tc-big', text: `${names[loser]}: ${VICTORY.wipeout}` }),
+      h(doc, 'p', { class: 'tc-big tc-wipeout', text: VICTORY.wipeoutLine(TEAM_HOMES[loser]) }),
       h(
         doc,
         'div',
         { class: 'tc-chrono-says', 'data-role': 'chrono-says', role: 'status' },
-        h(doc, 'strong', { text: `${UI_EXTRA.chronoName}: ` }),
-        h(doc, 'span', { text: VICTORY.goodSport }),
+        chronoFace(doc),
+        h(
+          doc,
+          'p',
+          {},
+          h(doc, 'strong', { text: `${UI_EXTRA.chronoName}: ` }),
+          h(doc, 'span', { text: VICTORY.goodSport }),
+        ),
       ),
       table,
       h(doc, 'div', { class: 'tc-row' }, rematch, back),

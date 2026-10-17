@@ -1,3 +1,5 @@
+> **Note:** [DESIGN_SYSTEM.md](./DESIGN_SYSTEM.md) supersedes the palette and type sections below. Use its tokens (Chrono Blue, Royal Purple, MedievalSharp, Orbitron). The rest of this brief still stands.
+
 # Time Clash: Claude Design Brief
 
 Paste everything below the line into Claude Design. It is written to stand alone.

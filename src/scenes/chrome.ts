@@ -104,6 +104,8 @@ export function mountChrome(doc: Document, deps: ChromeDeps): Chrome {
     position: 'absolute',
     top: '12px',
     left: '12px',
+    // Above the Settings panel, so the ? and gear stay in view while it is open.
+    zIndex: '2',
     pointerEvents: 'auto',
   });
   const host = h(doc, 'div', { 'data-tc-root': '', 'data-tc-chrome': '' }, row);
@@ -253,21 +255,36 @@ export function mountChrome(doc: Document, deps: ChromeDeps): Chrome {
         'aria-labelledby': 'tc-settings-title',
         'data-testid': CHROME_IDS.panel,
       },
-      h(doc, 'h1', { id: 'tc-settings-title', class: 'tc-title', text: CHROME.settingsTitle }),
-      h(doc, 'div', { class: 'tc-row' }, mute, captions),
-      h(doc, 'div', { class: 'tc-row' }, music, motion),
       h(
         doc,
         'div',
-        { class: 'tc-slider-row' },
-        h(doc, 'label', { for: 'tc-settings-volume', text: BUTTONS.volume }),
-        volume,
-        volumeValue,
+        { class: 'tc-panel' },
+        h(
+          doc,
+          'header',
+          { class: 'tc-panel-head' },
+          h(doc, 'h1', { id: 'tc-settings-title', text: CHROME.settingsTitle }),
+        ),
+        h(
+          doc,
+          'div',
+          { class: 'tc-panel-body' },
+          h(doc, 'div', { class: 'tc-row' }, mute, captions),
+          h(doc, 'div', { class: 'tc-row' }, music, motion),
+          h(
+            doc,
+            'div',
+            { class: 'tc-slider-row' },
+            h(doc, 'label', { for: 'tc-settings-volume', text: BUTTONS.volume }),
+            volume,
+            volumeValue,
+          ),
+          clear,
+          confirm,
+          note,
+          close,
+        ),
       ),
-      clear,
-      confirm,
-      note,
-      close,
     );
     panel.style.pointerEvents = 'auto';
     panel.addEventListener('keydown', (e) => {

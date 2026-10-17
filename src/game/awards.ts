@@ -26,6 +26,17 @@ const CONTESTS: readonly Contest[] = [
   { id: 'scrapCollector', score: (s) => s.scrapEarned },
 ];
 
+// When one team wins every contest, the other team shares the first of these where it scored
+// something. A tie already gives an award to both, so this reads the same way. Brain-based
+// awards come first because learning is the point of the game.
+const SHARE_ORDER: readonly AwardId[] = [
+  'brainPower',
+  'scrapCollector',
+  'sharpestShot',
+  'mostWobbles',
+  'quickestBrain',
+];
+
 export function pickAwards(stats: Record<Team, TeamStats>): Record<Team, AwardId[]> {
   const out: Record<Team, AwardId[]> = { PAST: [], FUTURE: [] };
   for (const c of CONTESTS) {
@@ -36,6 +47,18 @@ export function pickAwards(stats: Record<Team, TeamStats>): Record<Team, AwardId
       if (scores[i] === best) out[t].push(c.id);
     });
   }
-  for (const t of TEAMS) if (out[t].length === 0) out[t].push('goodSport');
+  for (const t of TEAMS) {
+    if (out[t].some((id) => id !== 'goodSport')) continue;
+    for (const id of SHARE_ORDER) {
+      const c = CONTESTS.find((x) => x.id === id) as Contest;
+      const mine = c.score(stats[t]);
+      if (mine !== null && mine > 0) {
+        out[t].push(id);
+        break;
+      }
+    }
+  }
+  // Everyone is a Good Sport. It is never a booby prize, so both teams get it.
+  for (const t of TEAMS) out[t].push('goodSport');
   return out;
 }

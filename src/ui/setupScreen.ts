@@ -1,5 +1,6 @@
 // Player setup: two cards, one per team. Names, grade chips (K to 12), subject chips.
 import {
+  PASS_SCREEN,
   SETUP,
   SUBJECT_LABELS,
   TEAM_HOMES,
@@ -11,6 +12,7 @@ import {
 import { DEFAULT_NAMES, GRADE, NAME } from '../game/config';
 import { TEAMS, type Grade, type Players, type Subject, type Team } from '../game/types';
 import { clearMyData } from '../storage/storage';
+import { skyline } from './art';
 import { LOCAL_IDS } from './constants';
 import type { UiCtx } from './ctx';
 import { h } from './dom';
@@ -38,6 +40,8 @@ export function showSetup(ctx: UiCtx, initial: Players | null): Promise<Players>
     for (const p of initial) state[p.team] = { name: p.name, grade: p.grade, subject: p.subject };
   }
 
+  // Set once the read-back line exists. Every chip pick calls it.
+  let onPick: () => void = () => {};
   const inputs = {} as Record<Team, HTMLInputElement>;
   const errorEls = {} as Record<Team, HTMLElement>;
 
@@ -49,8 +53,10 @@ export function showSetup(ctx: UiCtx, initial: Players | null): Promise<Players>
     current: () => T,
     set: (v: T) => void,
     make: (v: T) => HTMLButtonElement,
+    describedBy?: string,
   ): { el: HTMLElement; chips: HTMLButtonElement[]; paint: () => void } {
     const chips = values.map((v) => make(v));
+    // A radio group is one stop in the Tab order. The arrow keys move inside it.
     const paint = (): void => {
       chips.forEach((c, i) => {
         const on = values[i] === current();
@@ -62,6 +68,7 @@ export function showSetup(ctx: UiCtx, initial: Players | null): Promise<Players>
       chip.addEventListener('click', () => {
         set(values[i] as T);
         paint();
+        onPick();
       });
       chip.addEventListener('keydown', (e) => {
         const move =
@@ -75,13 +82,19 @@ export function showSetup(ctx: UiCtx, initial: Players | null): Promise<Players>
         const to = Math.min(values.length - 1, Math.max(0, i + move));
         set(values[to] as T);
         paint();
+        onPick();
         chips[to]?.focus();
       });
     });
     const el = h(
       doc,
       'div',
-      { class: 'tc-chips', role: 'radiogroup', 'aria-label': `${TEAM_NAMES[team]} ${label}` },
+      {
+        class: 'tc-chips',
+        role: 'radiogroup',
+        'aria-label': `${TEAM_NAMES[team]} ${label}`,
+        'aria-describedby': describedBy,
+      },
       ...chips,
     );
     return { el, chips, paint };
@@ -132,6 +145,7 @@ export function showSetup(ctx: UiCtx, initial: Players | null): Promise<Players>
           'data-testid': TEST_IDS.setupGrade(team, g),
           text: gradeLabel(g),
         }),
+      `tc-grade-help-${lower}`,
     );
     const subjects = chipGroup<Subject>(
       team,
@@ -148,24 +162,60 @@ export function showSetup(ctx: UiCtx, initial: Players | null): Promise<Players>
           text: SUBJECT_LABELS[s],
         }),
     );
+    grades.el.classList.add('tc-chips-grades');
     painters.push(grades.paint, subjects.paint);
 
     return h(
       doc,
-      'fieldset',
-      { class: 'tc-team-card', 'data-team': team },
-      h(doc, 'legend', { text: `${TEAM_NAMES[team]} (${TEAM_HOMES[team]})` }),
-      h(doc, 'label', { for: nameId, text: SETUP.nameLabel }),
+      'div',
+      {
+        class: 'tc-team-card',
+        'data-team': team,
+        role: 'group',
+        'aria-labelledby': `tc-team-title-${lower}`,
+      },
+      h(
+        doc,
+        'h2',
+        { class: 'tc-team-head', id: `tc-team-title-${lower}` },
+        h(doc, 'span', {
+          class: 'tc-team-mark',
+          'aria-hidden': 'true',
+          text: PASS_SCREEN.icon[team],
+        }),
+        h(doc, 'span', { class: 'tc-team-title', text: TEAM_NAMES[team] }),
+        ' ',
+        h(doc, 'span', { class: 'tc-team-home', text: `(${TEAM_HOMES[team]})` }),
+      ),
+      h(doc, 'label', { class: 'tc-label', for: nameId, text: SETUP.nameLabel }),
       input,
       err,
       h(doc, 'p', { class: 'tc-label', text: SETUP.gradeLabel }),
       grades.el,
-      h(doc, 'p', { class: 'tc-muted', text: SETUP.gradeHelper }),
+      // Heard by screen readers on the grade chips. The line everyone sees is under the cards.
+      h(doc, 'p', { class: 'tc-sr-only', id: `tc-grade-help-${lower}`, text: SETUP.gradeHelper }),
       h(doc, 'p', { class: 'tc-label', text: SETUP.subjectLabel }),
       subjects.el,
-      h(doc, 'p', { class: 'tc-muted', text: SETUP.subjectHelper }),
+      h(doc, 'p', { class: 'tc-muted tc-subject-help', text: SETUP.subjectHelper }),
     );
   });
+  // Says the picks in words, so a parent sees the start grade was not skipped.
+  const readBack = h(doc, 'p', {
+    class: 'tc-match-helper',
+    'data-testid': LOCAL_IDS.setupReadBack,
+    'aria-live': 'polite',
+  });
+  const paintReadBack = (): void => {
+    readBack.textContent = TEAMS.map((t) =>
+      SETUP.readBack(
+        TEAM_NAMES[t],
+        gradeChipLabel(state[t].grade),
+        SUBJECT_LABELS[state[t].subject],
+      ),
+    ).join('. ');
+  };
+  onPick = paintReadBack;
+  painters.push(paintReadBack);
   painters.forEach((p) => p());
 
   // ---- Clear my data (asks first) ----
@@ -225,15 +275,33 @@ export function showSetup(ctx: UiCtx, initial: Players | null): Promise<Players>
     doc,
     'form',
     { class: 'tc-setup-form', novalidate: true },
-    h(doc, 'div', { class: 'tc-team-cards' }, ...cards),
+    h(
+      doc,
+      'div',
+      { class: 'tc-team-cards' },
+      cards[0],
+      h(doc, 'div', { class: 'tc-vs', 'aria-hidden': 'true', text: SETUP.versus }),
+      cards[1],
+    ),
+    readBack,
+    h(doc, 'p', { class: 'tc-sr-only', text: SETUP.matchHelper }),
     h(doc, 'div', { class: 'tc-row' }, nextBtn),
-    h(doc, 'div', { class: 'tc-privacy' }, clearBtn, confirmRow, note),
+    h(
+      doc,
+      'div',
+      { class: 'tc-privacy' },
+      h(doc, 'p', { class: 'tc-muted', text: SETUP.namesStay }),
+      clearBtn,
+      confirmRow,
+      note,
+    ),
   );
   const screen = h(
     doc,
     'section',
-    { class: 'tc-screen tc-setup', 'data-screen': 'setup', 'data-motion': ctx.motion() },
-    h(doc, 'h1', { text: SETUP.heading }),
+    { class: 'tc-screen tc-setup tc-split', 'data-screen': 'setup', 'data-motion': ctx.motion() },
+    skyline(doc),
+    h(doc, 'h1', { class: 'tc-setup-title', text: SETUP.heading }),
     form,
   );
   const close = ctx.openScreen(screen);

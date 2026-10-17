@@ -19,9 +19,28 @@ const SUBSTRING = [
   'ergneq',
 ];
 /** Blocked only as a whole word (these letters appear inside many real names). */
-const WHOLE_WORD = ['nff', 'qnza', 'uryy', 'penc', 'cvff', 'qvpx', 'pbpx', 'frk', 'anmv', 'snt'];
+const WHOLE_WORD = [
+  'nff',
+  'qnza',
+  'uryy',
+  'penc',
+  'cvff',
+  'qvpx',
+  'pbpx',
+  'frk',
+  'anmv',
+  'snt',
+  // Also refused by src/game/names.ts. tests/ui/nameBlocklist.test.ts keeps the two in step.
+  'ohgg',
+  'cbbc',
+  'crr',
+  'sneg',
+  'fghcvq',
+  'vqvbg',
+  'qhzo',
+];
 /** Tone words from the project vocabulary. Never a name, because the banner would shout them. */
-const TONE_WORDS = ['kill', 'die', 'dead', 'blood', 'gore', 'defeat'];
+const TONE_WORDS = ['kill', 'killer', 'die', 'dead', 'death', 'blood', 'gore', 'defeat'];
 
 const substring = SUBSTRING.map(rot13);
 const whole = new Set([...WHOLE_WORD.map(rot13), ...TONE_WORDS]);

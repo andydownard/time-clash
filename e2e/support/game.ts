@@ -66,10 +66,13 @@ export async function readyUp(page: Page): Promise<void> {
 /** Waits until the active team can aim shot number `shotsFired + 1`. */
 export async function waitAiming(page: Page, shotsFired: 0 | 1): Promise<void> {
   await expect
-    .poll(async () => {
-      const t = (await snap(page)).turn;
-      return `${t.phase}:${t.shotsFired}`;
-    })
+    .poll(
+      async () => {
+        const t = (await snap(page)).turn;
+        return `${t.phase}:${t.shotsFired}`;
+      },
+      { timeout: 30_000 },
+    )
     .toBe(`AIMING:${shotsFired}`);
   await expect(tid(page, 'fire')).toBeEnabled();
 }

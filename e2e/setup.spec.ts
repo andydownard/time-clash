@@ -42,10 +42,8 @@ test('a rude name is refused, and fixing it lets the match start', async ({ page
   await expect(tid(page, 'pass-screen')).toBeVisible();
 });
 
-// APP BUG (reported, src/ui/nameBlocklist.ts): Setup uses its own list, which lacks words that
-// src/game/names.ts blocks ("poop", "butt", "fart" ...). test.fail() flips to a failure the day
-// someone fixes it, so this note cannot go stale.
-test.fail('Setup refuses every word the game rules also refuse', async ({ page }) => {
+// Setup and src/game/names.ts must refuse the same words ("poop", "butt", "fart" ...).
+test('Setup refuses every word the game rules also refuse', async ({ page }) => {
   await toSetup(page);
   await tid(page, 'setup-name-PAST').fill('Poop');
   await tid(page, 'setup-next').click();

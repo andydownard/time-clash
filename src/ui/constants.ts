@@ -24,5 +24,6 @@ export const LOCAL_IDS = {
   coverMute: 'cover-mute',
   reloadTimer: 'reload-timer',
   reloadPrompt: 'reload-prompt',
+  setupReadBack: 'setup-read-back',
   setupError: (team: string) => `setup-error-${team}`,
 } as const;

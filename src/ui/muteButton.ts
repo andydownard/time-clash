@@ -12,7 +12,10 @@ export function createCoverMute(ctx: UiCtx): { el: HTMLButtonElement; dispose: (
     'data-testid': LOCAL_IDS.coverMute,
   });
   const paint = (): void => {
-    el.textContent = ctx.settings().muted ? BUTTONS.soundOff : BUTTONS.soundOn;
+    const muted = ctx.settings().muted;
+    el.textContent = muted ? BUTTONS.soundOff : BUTTONS.soundOn;
+    // The speaker icon is drawn by CSS from this, so the label text stays exact.
+    el.dataset.muted = String(muted);
   };
   paint();
   el.addEventListener('click', () => {

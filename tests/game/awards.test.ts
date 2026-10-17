@@ -127,3 +127,53 @@ describe('pickAwards', () => {
     }
   });
 });
+
+describe('pickAwards: nobody leaves with a lone consolation prize', () => {
+  const none = {
+    nearHits: 0,
+    directHits: 0,
+    correctAnswers: 0,
+    scrapEarned: 0,
+    fastestAnswerMs: null,
+  };
+  it('both teams always get Good Sport', () => {
+    const a = pickAwards({
+      PAST: stats({ nearHits: 5, directHits: 5, correctAnswers: 5, scrapEarned: 5 }),
+      FUTURE: stats({ nearHits: 1, directHits: 1, correctAnswers: 1, scrapEarned: 1 }),
+    });
+    expect(a.PAST).toContain('goodSport');
+    expect(a.FUTURE).toContain('goodSport');
+  });
+  it('a team that scored something shares one real award, so the sweep is not 4 to 1', () => {
+    const a = pickAwards({
+      PAST: stats({
+        nearHits: 5,
+        directHits: 5,
+        correctAnswers: 5,
+        scrapEarned: 5,
+        fastestAnswerMs: 1000,
+      }),
+      FUTURE: stats({
+        nearHits: 0,
+        directHits: 0,
+        correctAnswers: 1,
+        scrapEarned: 0,
+        fastestAnswerMs: 9000,
+      }),
+    });
+    const real = (l: string[]) => l.filter((id) => id !== 'goodSport');
+    expect(real(a.FUTURE).length).toBeGreaterThanOrEqual(1);
+    expect(a.FUTURE).toContain('brainPower');
+  });
+  it('a team that scored nothing at all still gets only Good Sport, never a made-up prize', () => {
+    const a = pickAwards({
+      PAST: stats({ nearHits: 5, directHits: 5, correctAnswers: 5, scrapEarned: 5 }),
+      FUTURE: stats(none),
+    });
+    expect(a.FUTURE).toEqual(['goodSport']);
+  });
+  it('is repeatable: same numbers, same awards', () => {
+    const s = { PAST: stats({ nearHits: 4 }), FUTURE: stats({ correctAnswers: 0 }) };
+    expect(pickAwards(s)).toEqual(pickAwards(s));
+  });
+});

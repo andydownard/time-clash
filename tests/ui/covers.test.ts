@@ -346,7 +346,8 @@ describe('reload modal', () => {
     expect(ring.style.getPropertyValue('--tc-fast-ms')).toBe(`${RELOAD.fastMs}ms`);
     expect(ring.textContent).toBe('');
     expect(q(TEST_IDS.reloadModal)!.textContent).toContain(RELOAD_COPY.timerLabel);
-    expect(RELOAD_COPY.timerLabel).toBe('Quick answers earn extra scrap. Take your time!');
+    // One idea, led by the word Bonus, so the ring never reads as a penalty or a rush.
+    expect(RELOAD_COPY.timerLabel).toBe('Bonus scrap if you answer fast. No rush!');
   });
 
   it('puts Hint in its own row as a small secondary button, set apart from the answers', () => {

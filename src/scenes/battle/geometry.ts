@@ -1,7 +1,14 @@
 // Pure layout math for the Battle scene. No Phaser, so it is unit tested.
 import { AIM, BASES, DAMAGE, TIMING, TURN, WIND } from '../../game/config';
 import type { AimInput, BattleLayout, Team, Vec2 } from '../../game/types';
-import { BUBBLE_MAX_WORLD_W, BUBBLE_RISE, CHARACTER_OFFSET, DIAL, WIND_ARROW_MAX } from './visual';
+import {
+  BUBBLE_MAX_WORLD_W,
+  BUBBLE_RISE,
+  CHARACTER_OFFSET,
+  DIAL,
+  TAIL_TARGET_RISE,
+  WIND_ARROW_MAX,
+} from './visual';
 
 const clamp = (n: number, lo: number, hi: number): number => Math.min(hi, Math.max(lo, n));
 const RAD = Math.PI / 180;
@@ -80,7 +87,13 @@ export function characterSpot(team: Team, layout: BattleLayout): Vec2 {
     : { x: base.x - CHARACTER_OFFSET, y: groundY };
 }
 
-/** World anchor for the speech bubble tip. */
+/** The point the speech bubble tail aims at: just above the speaker's head. */
+export function bubbleTailTarget(team: Team, layout: BattleLayout): Vec2 {
+  const spot = characterSpot(team, layout);
+  return { x: spot.x, y: spot.y - TAIL_TARGET_RISE };
+}
+
+/** World anchor for the speech bubble body (its center, at the widest the bubble gets). */
 export function bubbleAnchor(team: Team, layout: BattleLayout): Vec2 {
   const spot = characterSpot(team, layout);
   // Step the bubble toward the middle of the field, so it never sits on a base or its health tag.

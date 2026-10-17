@@ -98,6 +98,8 @@ export type BubbleOptions = {
   team: Team;
   /** World coords (1280x720). The overlay maps them onto the canvas rect. */
   anchor: Vec2;
+  /** World point the tail aims at (the speaker). Without it the tail sits at the center. */
+  tailTarget?: Vec2;
   durationMs?: number;
 };
 

@@ -115,14 +115,19 @@ Camp, Deploy, and biomes arrive in Phase 2. In Phase 1 the Future base uses a fi
 - `intro.test.ts`: from NARRATION.md.
 - E2E (Playwright): full game from Setup to Victory with scripted inputs, in Chromium and WebKit, at 1280x800 and 1024x768.
 
+## Look and feel phase: built
+Status: built. The screens use the Claude Design handoff look. The rules and tokens are in `docs/DESIGN_SYSTEM.md`, and the tests in `tests/styles/` and `tests/ui/` pin them. Done so far: Team Past and Team Future labels, the Wipeout title in place of the mock's "Base Destroyed" title (the victory screen shows "Wipeout!" and a bouncy toy block line), self-hosted MedievalSharp and Orbitron fonts in `public/fonts/`, 56px grade chips, and contrast at 4.5:1 for body text and 3:1 for large text. No game rules changed.
+
+The design boards are 1600x900 mockups. We translate their look to 1280x800, 1024x768, and 768x1024. Board names: Main (Camp hub), Loading, Battle, DesignSystem, Setup, Math, Reading, Forge, ForgeFuture, Upgrade, UpgradePast, Destroyed. Phase 2 and 3 boards are not built yet. Phase 2 uses Main. Phase 3 uses Forge, ForgeFuture, Upgrade, and UpgradePast.
+
 ## Phase 2: Camp Hub, base placement, biomes
-- Camp Hub scene per the design: campfire, 4 tents (2 Past, 2 Future), workbenches, buttons [UPGRADE BASE] [FORGE WEAPON] [TWEAK GEAR] [READY FOR BATTLE]. Only READY works at first. The others show "Coming soon".
+- Camp Hub scene per the Main (Camp hub) board in the design handoff: campfire, 4 tents (2 Past, 2 Future), workbenches, buttons [UPGRADE BASE] [FORGE WEAPON] [TWEAK GEAR] [READY FOR BATTLE]. Only READY works at first. The others show "Coming soon".
 - Base Deployment: three Austin spots (skyscraper top, bridge underside, food truck pavilion). The spot changes launch height and cover. Test: each spot has a distinct elevation and a reachable shot path.
 - Parallax biomes: Aspen Forest, Cherry Blossom Forest, Ruined Temple. Selected before battle.
 - Evasion abilities: Hoverboard Dodge (recharges after 2 turns) and Stone Barricade Wall (once per match).
 
 ## Phase 3: Deep crafting and customization
-- Working Camp buttons. Recipes combine Past materials (granite, iron) with Future materials (nanotubes, energy shields).
+- Working Camp buttons. Build the Forge screens from the Forge and ForgeFuture boards, and the Upgrade screens from the Upgrade and UpgradePast boards. Recipes combine Past materials (granite, iron) with Future materials (nanotubes, energy shields).
 - Hybrid weapons: Nanotech Trebuchet, Wrought-Iron Railgun, EMP-shielded Railgun. Each has stats in `src/game/weapons.ts` (damage, blast radius, speed, reload difficulty).
 - Ammo types: confetti explosives, bouncy plasma spheres, heavy iron bowling balls.
 - Scrap economy: earned from fast, correct reloads. Spent only at the Camp. Balance test: no single purchase wins the game alone.

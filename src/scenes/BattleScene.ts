@@ -5,7 +5,7 @@
 import Phaser from 'phaser';
 import { BALLISTICS, TIMING, WORLD } from '../game/config';
 import type { AimInput, BattleLayout, Rect, ShotResult, Team, Vec2 } from '../game/types';
-import { drawBackdrop } from './battle/backdrop';
+import { drawBackdrop, type Backdrop } from './battle/backdrop';
 import { createAimArt, type AimArt } from './battle/aimArt';
 import {
   effectColor,
@@ -18,10 +18,18 @@ import {
 } from './battle/effects';
 import { BattleFlow } from './battle/flow';
 import { characterSpot, sideAlpha } from './battle/geometry';
+import { sceneReducedMotion } from './battle/reducedMotion';
 import { createPauseControl, type PauseControl } from './battle/pauseUi';
-import { createCharacter, drawBase, drawCastle, type Character } from './battle/sprites';
+import {
+  createCharacter,
+  drawBase,
+  drawCastle,
+  type BaseArt,
+  type Character,
+} from './battle/sprites';
 import { createStatusArt, type StatusArt } from './battle/statusArt';
-import { createLabelScaler, type LabelScaler } from './battle/textScale';
+import { createLabelScaler, worldFontPx, type LabelScaler } from './battle/textScale';
+import { preloadCanvasFonts } from './battle/textStyle';
 import { flightDurationMs, pointAtTime } from './battle/trajectory';
 import { tumblePose } from './battle/tumble';
 import {
@@ -52,6 +60,7 @@ export class BattleScene extends Phaser.Scene implements BattleView {
   private resumeWaiters: Array<() => void> = [];
   private paused = false;
   private glowTween: Phaser.Tweens.Tween | null = null;
+  private lastStatus: ViewStatus | null = null;
 
   constructor() {
     super(BATTLE_SCENE_KEY);
@@ -64,7 +73,7 @@ export class BattleScene extends Phaser.Scene implements BattleView {
 
   create(): void {
     const { layout } = this;
-    drawBackdrop(this, layout);
+    const backdrop = drawBackdrop(this, layout);
     // Labels grow as the canvas shrinks, so they stay at the 20px floor on a small iPad.
     this.labels = createLabelScaler(() => this.scale.displaySize.width, WORLD.width);
     this.scale.on(Phaser.Scale.Events.RESIZE, this.refreshLabels, this);
@@ -75,15 +84,23 @@ export class BattleScene extends Phaser.Scene implements BattleView {
       const base: Rect = layout.bases[team];
       const spot = characterSpot(team, layout);
       const glow = this.add
-        .ellipse(base.x + base.w / 2, base.y + base.h, base.w + 60, 40, TEAM_COLOR[team], 0.6)
+        .ellipse(base.x + base.w / 2, base.y + base.h, base.w + 90, 46, TEAM_COLOR[team], 0.6)
         .setVisible(false);
-      const art = team === 'PAST' ? drawCastle(this, base) : drawBase(this, base);
+      const art: BaseArt = team === 'PAST' ? drawCastle(this, base) : drawBase(this, base);
+      this.sway.push(...art.sway);
+      this.pulse.push(...art.pulse);
       const character = createCharacter(this, team, spot.x, spot.y);
-      const side = this.add.container(0, 0, [glow, art, character.container]).setDepth(10);
+      const side = this.add
+        .container(0, 0, [glow, art.container, character.container])
+        .setDepth(10);
       this.sides[team] = side;
       this.glows[team] = glow;
       this.characters[team] = character;
     }
+
+    this.startAmbient(backdrop);
+    // Canvas text draws in the fallback font until MedievalSharp and Orbitron arrive. Redraw then.
+    void preloadCanvasFonts(document.fonts, () => this.refreshLabels());
 
     this.input.on('pointerdown', (p: Phaser.Input.Pointer) => {
       if (this.dragHandler) this.aimArt.pointerDown({ x: p.worldX, y: p.worldY });
@@ -141,6 +158,7 @@ export class BattleScene extends Phaser.Scene implements BattleView {
 
   syncStatus(status: ViewStatus): void {
     this.statusArt.sync(status);
+    this.lastStatus = status;
     this.lastAim = status.aim;
     this.aimArt.show(this.dragHandler ? status.activeTeam : null, status.aim);
   }
@@ -229,7 +247,13 @@ export class BattleScene extends Phaser.Scene implements BattleView {
 
   async playImpact(info: ImpactInfo): Promise<void> {
     const { position, scale } = info;
-    floatLabel(this, { x: position.x, y: Math.max(60, position.y - 50) }, info.label);
+    floatLabel(
+      this,
+      { x: position.x, y: Math.max(60, position.y - 50) },
+      info.label,
+      'hit',
+      this.fontPx,
+    );
     if (this.reduced()) {
       await playFade(this, position, effectColor(info.kind), scale);
       return;
@@ -284,24 +308,73 @@ export class BattleScene extends Phaser.Scene implements BattleView {
 
   showScrapPopup(team: Team, amount: number): void {
     const spot: Vec2 = characterSpot(team, this.layout);
-    floatLabel(this, { x: spot.x, y: spot.y - 150 }, `+${amount}`, '#0b5d3b');
+    floatLabel(this, { x: spot.x, y: spot.y - 150 }, `+${amount}`, 'scrap', this.fontPx);
   }
 
   // ---------- internals ----------
 
   private reduced(): boolean {
     if (this.data0.reducedMotion) return this.data0.reducedMotion();
-    try {
-      return Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches);
-    } catch {
-      return false;
-    }
+    return sceneReducedMotion(this.registry, window);
   }
 
   /** Read by the e2e hook (never in production). */
   labels: LabelScaler | null = null;
 
-  private refreshLabels = (): void => this.labels?.refresh();
+  private refreshLabels = (): void => {
+    this.labels?.refresh();
+    this.statusArt?.relayout();
+    const s = this.lastStatus;
+    if (s) this.aimArt?.show(this.dragHandler ? s.activeTeam : null, this.lastAim);
+  };
+
+  /** A world font size that still draws at the 20px floor on this screen. */
+  private fontPx = (basePx: number): number =>
+    worldFontPx(basePx, this.scale.displaySize.width, WORLD.width);
+
+  /** Parts that sway or twinkle. Skipped when motion is reduced. */
+  private sway: Phaser.GameObjects.Graphics[] = [];
+  private pulse: Phaser.GameObjects.Graphics[] = [];
+
+  private startAmbient(backdrop: Backdrop): void {
+    if (this.reduced()) return;
+    this.tweens.add({
+      targets: backdrop.clouds,
+      x: 40,
+      duration: 16000,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+    });
+    this.tweens.add({
+      targets: backdrop.stars,
+      alpha: 0.45,
+      duration: 2400,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut',
+    });
+    for (const flag of this.sway) {
+      this.tweens.add({
+        targets: flag,
+        scaleX: 0.8,
+        duration: 1100,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+    }
+    for (const o of this.pulse) {
+      this.tweens.add({
+        targets: o,
+        alpha: 0.65,
+        duration: 900,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut',
+      });
+    }
+  }
 
   private cleanup(): void {
     this.scale.off(Phaser.Scale.Events.RESIZE, this.refreshLabels, this);

@@ -1,7 +1,7 @@
 // Battle HUD: base health, scrap, wind, aim sliders, Fire, and the corner buttons.
 // Keyboard: Up/Down = angle, Left/Right = power (Shift = bigger steps), Space = fire.
 import { BUTTONS, HUD, TEAM_NAMES, windLabel } from '../data/copy';
-import { AIM, WIND } from '../game/config';
+import { AIM, TURN, WIND } from '../game/config';
 import { TEAMS, type Team } from '../game/types';
 import { LOCAL_IDS } from './constants';
 import type { UiCtx } from './ctx';
@@ -19,6 +19,7 @@ type Parts = {
   fire: HTMLButtonElement;
   wind: HTMLElement;
   shots: HTMLElement;
+  pips: HTMLElement;
   mute: HTMLButtonElement;
   panel: Record<Team, HTMLElement>;
   name: Record<Team, HTMLElement>;
@@ -98,6 +99,19 @@ export function createHud(ctx: UiCtx) {
     sendAim();
   };
 
+  // One pip per shot (spent ones show a cross) and a last pip: a question comes after shot 2.
+  const paintPips = (el: HTMLElement, shotsLeft: number): void => {
+    el.replaceChildren(
+      ...Array.from({ length: TURN.shotsPerTurn }, (_, i) =>
+        h(doc, 'span', {
+          class: 'tc-pip',
+          'data-used': String(i >= shotsLeft),
+        }),
+      ),
+      h(doc, 'span', { class: 'tc-pip tc-pip-reload', text: HUD.reloadPip }),
+    );
+  };
+
   const muteLabel = (): string => (ctx.settings().muted ? BUTTONS.soundOff : BUTTONS.soundOn);
 
   function build(h_: HudHandlers): Parts {
@@ -152,13 +166,15 @@ export function createHud(ctx: UiCtx) {
     });
     mute.addEventListener('click', () => h_.onMuteToggle());
 
-    const wind = h(doc, 'div', { class: 'tc-wind', 'data-testid': TEST_IDS.wind });
+    // The canvas wind sign is the one sighted readout. This copy stays for screen readers.
+    const wind = h(doc, 'div', { class: 'tc-wind tc-sr-only', 'data-testid': TEST_IDS.wind });
     const windText = h(doc, 'span', { class: 'tc-wind-text' });
     const windFill = h(doc, 'span', { class: 'tc-wind-fill', 'data-dir': 'none' });
     wind.append(
       windText,
       h(doc, 'span', { class: 'tc-wind-bar', 'aria-hidden': 'true' }, windFill),
     );
+    const pips = h(doc, 'div', { class: 'tc-pips', 'aria-hidden': 'true' });
     const shots = h(doc, 'div', {
       class: 'tc-shots',
       'data-testid': TEST_IDS.shotsLeft,
@@ -198,9 +214,8 @@ export function createHud(ctx: UiCtx) {
           doc,
           'div',
           { 'data-testid': TEST_IDS.baseHp(t), class: 'tc-hp' },
-          h(doc, 'span', { class: 'tc-hp-label', text: `${HUD.baseHealth}: ` }),
-          hpText[t],
-          hpMeter[t],
+          h(doc, 'span', { class: 'tc-hp-label', text: HUD.baseHealth }),
+          h(doc, 'div', { class: 'tc-hp-row' }, hpMeter[t], hpText[t]),
         ),
         h(
           doc,
@@ -221,7 +236,7 @@ export function createHud(ctx: UiCtx) {
         'div',
         { class: 'tc-hud-top' },
         ...TEAMS.slice(0, 1).map((t) => panel[t]),
-        h(doc, 'div', { class: 'tc-hud-center' }, wind, shots),
+        h(doc, 'div', { class: 'tc-hud-center' }, wind, shots, pips),
         ...TEAMS.slice(1).map((t) => panel[t]),
         h(doc, 'div', { class: 'tc-hud-corner' }, mute),
       ),
@@ -243,6 +258,7 @@ export function createHud(ctx: UiCtx) {
       fire,
       wind,
       shots,
+      pips,
       mute,
       panel,
       name,
@@ -292,6 +308,7 @@ export function createHud(ctx: UiCtx) {
         fill.setAttribute('data-dir', state.wind > 0 ? 'right' : state.wind < 0 ? 'left' : 'none');
       }
       parts.shots.textContent = `${HUD.shotsLeft}: ${HUD.shotsValue(state.shotsLeft)}`;
+      paintPips(parts.pips, state.shotsLeft);
       for (const t of TEAMS) {
         const hp = clamp(Math.round(state.baseHp[t]), 0, 100);
         parts.name[t].textContent = state.names[t];

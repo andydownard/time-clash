@@ -14,7 +14,7 @@ import { timeCaptions } from '../../data/introScript';
 import { noteMissed, pickQuestion } from '../../questions/pick';
 import type { PickHistory, QuestionBank } from '../../questions/types';
 import type { HudHandlers, HudState, Overlay } from '../../ui/types';
-import { bubbleAnchor } from './geometry';
+import { bubbleAnchor, bubbleTailTarget } from './geometry';
 import { describeImpact } from './impact';
 import { previewDots } from './trajectory';
 import { bubbleText, tumblingTeam } from './tumble';
@@ -177,6 +177,7 @@ export class BattleFlow {
           text,
           team: tumbler,
           anchor: bubbleAnchor(tumbler, match.layout),
+          tailTarget: bubbleTailTarget(tumbler, match.layout),
         });
       }
     }
