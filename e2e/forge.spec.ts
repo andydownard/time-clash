@@ -54,7 +54,6 @@ test('unlocking and equipping a weapon spends Scrap and is remembered after a re
   await toCamp(page);
   await giveScrap(page, 30, 30);
   await page.reload();
-  await tid(page, 'tap-to-play').click();
   await tid(page, 'camp-forge').click();
   await tid(page, 'forge-weapon-elderLongbow').click();
   await expect(tid(page, 'forge-status')).toHaveText('You unlocked Elder Longbow!');
@@ -63,7 +62,6 @@ test('unlocking and equipping a weapon spends Scrap and is remembered after a re
   await expect(tid(page, 'forge-weapon-elderLongbow')).toHaveAttribute('aria-pressed', 'true');
 
   await page.reload();
-  await tid(page, 'tap-to-play').click();
   await tid(page, 'camp-forge').click();
   await expect(tid(page, 'forge-scrap')).toContainText('18');
   await expect(tid(page, 'forge-weapon-elderLongbow')).toHaveAttribute('aria-pressed', 'true');
@@ -73,7 +71,6 @@ test('Team Future has its own forge, Scrap and weapons', async ({ page }) => {
   await toCamp(page);
   await giveScrap(page, 0, 20);
   await page.reload();
-  await tid(page, 'tap-to-play').click();
   await tid(page, 'camp-forge').click();
   await tid(page, 'forge-team-FUTURE').click();
   await expect(tid(page, 'forge-scrap')).toContainText('20');
@@ -87,7 +84,6 @@ test('a forged weapon is used in the next match', async ({ page }) => {
   await toCamp(page);
   await giveScrap(page, 50, 0);
   await page.reload();
-  await tid(page, 'tap-to-play').click();
   await tid(page, 'camp-forge').click();
   await tid(page, 'forge-upgrade').click();
   await tid(page, 'forge-back').click();
@@ -104,7 +100,6 @@ test('the keyboard can use the Forge', async ({ page }) => {
   await toCamp(page);
   await giveScrap(page, 30, 0);
   await page.reload();
-  await tid(page, 'tap-to-play').click();
   await tid(page, 'camp-forge').click();
   await expect(tid(page, 'forge-back')).toBeFocused();
   await tid(page, 'forge-weapon-elderLongbow').focus();

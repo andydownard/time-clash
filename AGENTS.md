@@ -148,6 +148,7 @@ New ideas go in [INBOX.md](./INBOX.md) (raw, 30-day expiry). Triage moves them t
 | Architecture and data shapes | [ARCHITECTURE.md](./ARCHITECTURE.md) |
 | Privacy and child safety | [SECURITY.md](./SECURITY.md) |
 | Original game spec | [docs/GAME_SPEC.md](./docs/GAME_SPEC.md) |
+| Design guidance from the canvas comments | [docs/DESIGN_GUIDANCE.md](./docs/DESIGN_GUIDANCE.md) |
 | Phased build plan and start prompt | [docs/BUILD.md](./docs/BUILD.md) |
 | Text to paste into Claude Design | [docs/DESIGN_BRIEF.md](./docs/DESIGN_BRIEF.md) |
 | Intro voice script and audio plan | [docs/NARRATION.md](./docs/NARRATION.md) |
