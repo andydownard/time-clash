@@ -9,6 +9,7 @@ import {
   loadAssets,
   routeAfterIntro,
   routeAfterLoading,
+  routeAfterSetup,
   routeAfterTap,
   routeAfterVictory,
   victoryFrom,
@@ -60,6 +61,15 @@ export async function runLoadingStep(s: AppServices, data: unknown): Promise<Sce
 export async function runSetupStep(s: AppServices): Promise<SceneRoute> {
   const players = await s.overlay.showSetup(s.storage.get('timeclash.players'));
   s.storage.set('timeclash.players', players);
+  return routeAfterSetup();
+}
+
+/** Camp: the big button starts a fresh match for the players Setup saved. */
+export async function runCampStep(s: AppServices): Promise<SceneRoute> {
+  const players = s.storage.get('timeclash.players');
+  // No saved players (it should not happen) goes back to Setup, never a dead end.
+  if (!players) return { key: SCENE_KEYS.setup };
+  await s.overlay.showCamp();
   const setup = buildMatchSetup(players, s.newSeed());
   // The bank is loaded once, before Setup. If it is somehow missing, load it first.
   if (!s.session.bank) {

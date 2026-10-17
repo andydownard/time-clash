@@ -553,7 +553,7 @@ describe('victory screen', () => {
   it('Rematch is the biggest button on the screen', () => {
     void s.overlay.showVictory(opts);
     expect(q(TEST_IDS.rematch)!.classList.contains('tc-btn-big')).toBe(true);
-    expect(q(TEST_IDS.backToStart)!.classList.contains('tc-btn-big')).toBe(false);
+    expect(q(TEST_IDS.backToCamp)!.classList.contains('tc-btn-big')).toBe(false);
   });
 
   it('Rematch resolves rematch', async () => {
@@ -563,16 +563,16 @@ describe('victory screen', () => {
     expect(q(TEST_IDS.victory)).toBeNull();
   });
 
-  it('Back to Start resolves back-to-start', async () => {
+  it('Back to Camp resolves back-to-camp', async () => {
     const p = s.overlay.showVictory(opts);
-    click(q(TEST_IDS.backToStart));
-    await expect(p).resolves.toBe('back-to-start');
+    click(q(TEST_IDS.backToCamp));
+    await expect(p).resolves.toBe('back-to-camp');
   });
 
   it('button words match the vocabulary table', () => {
     void s.overlay.showVictory(opts);
     expect(q(TEST_IDS.rematch)!.textContent).toBe(VICTORY.rematch);
-    expect(q(TEST_IDS.backToStart)!.textContent).toBe(VICTORY.backToStart);
+    expect(q(TEST_IDS.backToCamp)!.textContent).toBe(VICTORY.backToCamp);
     expect(q(TEST_IDS.victory)!.textContent).not.toMatch(/menu|defeat|retry|play again/i);
   });
 

@@ -36,17 +36,24 @@ export async function fillTeam(page: Page, team: Team, side: Side): Promise<void
 export const PAST_SIDE: Side = { name: 'Alex', grade: 2, subject: 'math' };
 export const FUTURE_SIDE: Side = { name: 'Sam', grade: 3, subject: 'math' };
 
-/** Fills Setup, pins the seed, taps "Let's clash!" and waits for the first pass screen. */
+/**
+ * Fills Setup, pins the seed, taps "Let's clash!", then taps "Time to Clash!" at the Camp and
+ * waits for the first pass screen. `atCamp` runs while the Camp is up (for checks and shots).
+ */
 export async function startMatch(
   page: Page,
   past: Side = PAST_SIDE,
   future: Side = FUTURE_SIDE,
   seed: number = SEED,
+  atCamp?: () => Promise<void>,
 ): Promise<void> {
   await fillTeam(page, 'PAST', past);
   await fillTeam(page, 'FUTURE', future);
   await page.evaluate((s) => window.__timeclash!.setSeed(s), seed);
   await tid(page, 'setup-next').click();
+  await expect(tid(page, 'camp-start')).toBeVisible({ timeout: 10_000 });
+  await atCamp?.();
+  await tid(page, 'camp-start').click();
   await expect(tid(page, 'pass-screen')).toBeVisible({ timeout: 10_000 });
 }
 

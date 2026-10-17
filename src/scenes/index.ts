@@ -1,6 +1,7 @@
 import type { Types } from 'phaser';
 import { BattleScene } from './BattleScene';
 import { BootScene } from './BootScene';
+import { CampScene } from './CampScene';
 import { IntroScene } from './IntroScene';
 import { LoadingScene } from './LoadingScene';
 import { SetupScene } from './SetupScene';
@@ -14,6 +15,7 @@ export const SCENES: Types.Scenes.SceneType[] = [
   IntroScene,
   LoadingScene,
   SetupScene,
+  CampScene,
   BattleScene,
   VictoryScene,
 ];

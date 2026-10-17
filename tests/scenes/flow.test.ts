@@ -8,6 +8,7 @@ import {
   loadAssets,
   routeAfterIntro,
   routeAfterLoading,
+  routeAfterSetup,
   routeAfterTap,
   routeAfterVictory,
   victoryFrom,
@@ -147,6 +148,12 @@ describe('victoryFrom', () => {
   });
 });
 
+describe('routeAfterSetup', () => {
+  it('goes to the Camp, which reads the saved players', () => {
+    expect(routeAfterSetup()).toEqual({ key: SCENE_KEYS.camp });
+  });
+});
+
 describe('routeAfterVictory', () => {
   it('rematch loads, then fights with the rematch options', () => {
     const rematch = { players, seed: 99, firstTeam: 'FUTURE' as const };
@@ -155,8 +162,8 @@ describe('routeAfterVictory', () => {
       data: { next: SCENE_KEYS.battle, setup: rematch },
     });
   });
-  it('back to start returns to the tap screen', () => {
-    expect(routeAfterVictory('back-to-start', { players, seed: 1 }).key).toBe(SCENE_KEYS.tap);
+  it('Back to Camp returns to the Camp', () => {
+    expect(routeAfterVictory('back-to-camp', { players, seed: 1 }).key).toBe(SCENE_KEYS.camp);
   });
 });
 

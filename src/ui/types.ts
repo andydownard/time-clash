@@ -47,6 +47,9 @@ export const TEST_IDS = {
   setupGrade: (team: Team, grade: Grade) => `setup-grade-${team}-${grade}`,
   setupSubject: (team: Team, subject: string) => `setup-subject-${team}-${subject}`,
   setupNext: 'setup-next',
+  campForge: 'camp-forge',
+  campUpgrade: 'camp-upgrade',
+  campStart: 'camp-start',
   turnBanner: 'turn-banner',
   passScreen: 'pass-screen',
   passReady: 'pass-ready',
@@ -64,7 +67,7 @@ export const TEST_IDS = {
   speechBubble: 'speech-bubble',
   victory: 'victory',
   rematch: 'rematch',
-  backToStart: 'back-to-start',
+  backToCamp: 'back-to-camp',
 } as const;
 
 // ---------- Per-call options ----------
@@ -128,7 +131,10 @@ export type VictoryOptions = {
   stats: Record<Team, TeamStats>;
 };
 
-export type VictoryChoice = 'rematch' | 'back-to-start';
+/** The Camp has one way out: the big button that starts the match. */
+export type CampChoice = 'battle';
+
+export type VictoryChoice = 'rematch' | 'back-to-camp';
 
 export type LoadingHandle = {
   /** 0 to 1. */
@@ -163,6 +169,8 @@ export interface Overlay {
   showLoading(messages: readonly string[]): LoadingHandle;
   /** Resolves with validated players (index 0 PAST, 1 FUTURE). */
   showSetup(initial: Players | null): Promise<Players>;
+  /** The Camp hub. Resolves when the big "Time to Clash!" button is tapped. */
+  showCamp(): Promise<CampChoice>;
   showVictory(options: VictoryOptions): Promise<VictoryChoice>;
 
   // Battle HUD (Z.hud)

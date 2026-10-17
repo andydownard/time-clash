@@ -11,6 +11,7 @@ import { createHud } from './hudView';
 import { showIntro } from './introScreen';
 import type { LoadingEnv } from './loadingLogic';
 import { isReducedMotion } from './motion';
+import { showCamp } from './campScreen';
 import { showPassScreen } from './passScreen';
 import { showReloadModal } from './reloadModal';
 import { showSetup } from './setupScreen';
@@ -207,6 +208,7 @@ export const createOverlay: CreateOverlayWithDeps = (
     showIntro: (script, play) => showIntro(ctx, script, play),
     showLoading: (messages) => showLoading(ctx, messages),
     showSetup: (initial) => showSetup(ctx, initial),
+    showCamp: () => showCamp(ctx),
     showVictory: (options) => showVictory(ctx, options),
     showHud: (handlers) => hud.show(handlers),
     updateHud: (state) => hud.update(state),

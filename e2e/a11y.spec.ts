@@ -27,7 +27,7 @@ test('every screen meets the 56px and 20px floors', async ({ page }) => {
   await tid(page, 'intro-skip').click();
   await expect(tid(page, 'setup-next')).toBeVisible({ timeout: 10_000 });
   await expectFloors(page, 'Setup');
-  await startMatch(page);
+  await startMatch(page, undefined, undefined, undefined, () => expectFloors(page, 'Camp'));
   await expectFloors(page, 'Pass screen');
   await readyUp(page);
   await expect(tid(page, 'turn-banner')).toBeHidden({ timeout: 5_000 });

@@ -257,8 +257,8 @@ export function showVictory(ctx: UiCtx, options: VictoryOptions): Promise<Victor
     const back = h(doc, 'button', {
       type: 'button',
       class: 'tc-btn tc-btn-neutral',
-      'data-testid': TEST_IDS.backToStart,
-      text: VICTORY.backToStart,
+      'data-testid': TEST_IDS.backToCamp,
+      text: VICTORY.backToCamp,
     });
     const screen = h(
       doc,
@@ -300,7 +300,7 @@ export function showVictory(ctx: UiCtx, options: VictoryOptions): Promise<Victor
       resolve(choice);
     };
     rematch.addEventListener('click', done('rematch'));
-    back.addEventListener('click', done('back-to-start'));
+    back.addEventListener('click', done('back-to-camp'));
     ctx.sfx('cheer');
     rematch.focus();
   });

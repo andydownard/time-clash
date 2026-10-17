@@ -121,7 +121,7 @@ Status: built. The screens use the Claude Design handoff look. The rules and tok
 The design boards are 1600x900 mockups. We translate their look to 1280x800, 1024x768, and 768x1024. Board names: Main (Camp hub), Loading, Battle, DesignSystem, Setup, Math, Reading, Forge, ForgeFuture, Upgrade, UpgradePast, Destroyed. Phase 2 and 3 boards are not built yet. Phase 2 uses Main. Phase 3 uses Forge, ForgeFuture, Upgrade, and UpgradePast.
 
 ## Phase 2: Camp Hub, base placement, biomes
-- Camp Hub scene per the Main (Camp hub) board in the design handoff: campfire, 4 tents (2 Past, 2 Future), workbenches, buttons [UPGRADE BASE] [FORGE WEAPON] [TWEAK GEAR] [READY FOR BATTLE]. Only READY works at first. The others show "Coming soon".
+- Camp Hub scene per the Main (Camp hub) board in the design handoff. **Built.** The board shows the campfire, both camps, workbenches, and three buttons: [FORGE WEAPON], [UPGRADE BASE] and the big [TIME TO CLASH!]. Only the big one works. The other two show "Coming soon". Tweak Gear is not on the board, so it is not built.
 - Base Deployment: three Austin spots (skyscraper top, bridge underside, food truck pavilion). The spot changes launch height and cover. Test: each spot has a distinct elevation and a reachable shot path.
 - Parallax biomes: Aspen Forest, Cherry Blossom Forest, Ruined Temple. Selected before battle.
 - Evasion abilities: Hoverboard Dodge (recharges after 2 turns) and Stone Barricade Wall (once per match).

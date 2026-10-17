@@ -16,6 +16,7 @@ vi.mock('phaser', () => {
 import { LOADING } from '../../src/data/copy';
 import { SCENE_KEYS, SERVICES_KEY, type SceneKey } from '../../src/scenes/registry';
 import { BootScene } from '../../src/scenes/BootScene';
+import { CampScene } from '../../src/scenes/CampScene';
 import { IntroScene } from '../../src/scenes/IntroScene';
 import { LoadingScene } from '../../src/scenes/LoadingScene';
 import { SetupScene } from '../../src/scenes/SetupScene';
@@ -135,7 +136,7 @@ describe('the whole flow', () => {
     return n;
   };
 
-  it('tap, intro, loading, setup, then battle with a seeded setup', async () => {
+  it('tap, intro, loading, setup, camp, then battle with a seeded setup', async () => {
     launch(TapToStartScene);
     await flush();
     expect(t.audio.unlocked).toBe(false);
@@ -158,6 +159,12 @@ describe('the whole flow', () => {
     expect(t.services.session.bank).not.toBeNull();
     launch(SetupScene);
     click(q(TEST_IDS.setupNext));
+    expect(await next()).toEqual({ key: SCENE_KEYS.camp });
+
+    launch(CampScene);
+    await flush();
+    expect(q(TEST_IDS.campStart)).not.toBeNull();
+    click(q(TEST_IDS.campStart));
     const battle = await next();
     expect(battle.key).toBe(SCENE_KEYS.battle);
     const data = battle.data as BattleSceneData;
@@ -193,11 +200,11 @@ describe('the whole flow', () => {
     expect(snap.turn.team).toBe('FUTURE');
   });
 
-  it('victory, back to start, returns to the tap screen', async () => {
+  it('victory, Back to Camp, returns to the Camp', async () => {
     launch(VictoryScene, { controller: fakeController() });
     await flush();
-    click(q(TEST_IDS.backToStart));
-    expect((await next()).key).toBe(SCENE_KEYS.tap);
+    click(q(TEST_IDS.backToCamp));
+    expect((await next()).key).toBe(SCENE_KEYS.camp);
   });
 
   it('victory with a bad hand-off goes to setup, never a blank screen', async () => {

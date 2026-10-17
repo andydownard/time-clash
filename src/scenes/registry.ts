@@ -15,6 +15,7 @@ export const SCENE_KEYS = {
   intro: 'IntroScene',
   loading: 'LoadingScene',
   setup: 'SetupScene',
+  camp: 'CampScene',
   battle: 'BattleScene',
   victory: 'VictoryScene',
 } as const;

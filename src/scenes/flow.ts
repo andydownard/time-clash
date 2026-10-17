@@ -26,6 +26,11 @@ export function routeAfterIntro(): SceneRoute {
   return toSetup;
 }
 
+/** Setup leads to the Camp. The players are already saved, so the Camp needs no data. */
+export function routeAfterSetup(): SceneRoute {
+  return { key: SCENE_KEYS.camp };
+}
+
 export function buildMatchSetup(players: Players, seed: number): MatchSetup {
   return { players, seed, firstTeam: TURN.firstTeam };
 }
@@ -96,7 +101,7 @@ export function routeAfterVictory(choice: VictoryChoice, rematch: MatchOptions):
     const data: LoadingData = { next: SCENE_KEYS.battle, setup: rematch };
     return { key: SCENE_KEYS.loading, data };
   }
-  return { key: SCENE_KEYS.tap };
+  return { key: SCENE_KEYS.camp };
 }
 
 /**
