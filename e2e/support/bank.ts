@@ -3,6 +3,7 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { Question } from '../../src/questions/types';
+import { toMathSymbols } from '../../src/ui/dom';
 
 const DIR = join(import.meta.dirname, '../../src/questions/bank');
 
@@ -18,7 +19,10 @@ function bank(): Question[] {
 export function rightChoiceIndex(prompt: string, choices: readonly string[]): number {
   const same = (a: readonly string[], b: readonly string[]) =>
     a.length === b.length && a.every((x, i) => x === b[i]);
-  const found = bank().filter((q) => q.prompt === prompt && same(q.choices, choices));
+  // The page draws real minus, times and divide signs. The bank keeps ASCII.
+  const found = bank().filter(
+    (q) => toMathSymbols(q.prompt) === prompt && same(q.choices.map(toMathSymbols), choices),
+  );
   const answers = new Set(found.map((q) => q.answer));
   if (answers.size !== 1) {
     throw new Error(

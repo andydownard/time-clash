@@ -1,16 +1,19 @@
 // Reload modal: the learning moment. A full-viewport cover (the other player cannot see it).
 // A wrong answer shows the right one kindly and still reloads. It never blocks play.
-import { RELOAD as COPY, UI_EXTRA } from '../data/copy';
+import { PASS_SCREEN, RELOAD as COPY, TEAM_NAMES, UI_EXTRA } from '../data/copy';
 import { RELOAD, UI } from '../game/config';
 import { fastWindowMs } from '../game/reload';
 import { spokenSentences, spokenText } from '../questions/spoken';
 import type { UiCtx } from './ctx';
-import { h, renderMath } from './dom';
+import { h, renderMath, toMathSymbols } from './dom';
 import { LOCAL_IDS } from './constants';
 import { createCoverMute } from './muteButton';
 import { TEST_IDS, type ReloadAnswer, type ReloadModalOptions } from './types';
 
 const hasMath = (nodes: Node[]): boolean => nodes.some((n) => n.nodeType === 1);
+
+/** A short equation gets the big Orbitron treatment. A word problem gets a calmer size. */
+const BIG_PROMPT_MAX_CHARS = 24;
 
 function layoutOf(o: ReloadModalOptions): 'math' | 'reading-young' | 'reading' {
   const { subject, grade } = o.question;
@@ -43,7 +46,7 @@ export function showReloadModal(ctx: UiCtx, options: ReloadModalOptions): Promis
       prompt.replaceChildren(...renderMath(doc, question.prompt));
       if (hasMath(promptNodes)) {
         prompt.setAttribute('role', 'math');
-        prompt.setAttribute('aria-label', question.prompt);
+        prompt.setAttribute('aria-label', toMathSymbols(question.prompt));
       }
     };
     paintPrompt();
@@ -55,10 +58,12 @@ export function showReloadModal(ctx: UiCtx, options: ReloadModalOptions): Promis
       const b = h(doc, 'button', {
         type: 'button',
         class: 'tc-choice',
+        // The number badge is drawn by CSS from this. It matches the 1 to 4 keys.
+        'data-key': i + 1,
         'data-testid': TEST_IDS.reloadChoice(i),
       });
       b.append(...nodes);
-      if (hasMath(nodes)) b.setAttribute('aria-label', text);
+      if (hasMath(nodes)) b.setAttribute('aria-label', toMathSymbols(text));
       return b;
     });
 
@@ -98,10 +103,13 @@ export function showReloadModal(ctx: UiCtx, options: ReloadModalOptions): Promis
     // Hear it: every question can be read aloud. The captions are the words already on screen.
     const speakButton = h(doc, 'button', {
       type: 'button',
-      class: 'tc-btn tc-btn-neutral tc-speak-btn',
+      class: 'tc-btn tc-btn-future tc-speak-btn',
       'data-testid': TEST_IDS.reloadSpeak,
-      text: COPY.speak,
     });
+    speakButton.append(
+      h(doc, 'span', { 'aria-hidden': 'true', text: `${COPY.speakIcon} ` }),
+      COPY.speak,
+    );
     speakButton.addEventListener('click', () => {
       try {
         options.speak?.(spokenText(question), spokenSentences(question));
@@ -129,32 +137,53 @@ export function showReloadModal(ctx: UiCtx, options: ReloadModalOptions): Promis
         'header',
         { class: 'tc-reload-head' },
         h(doc, 'h2', { id: 'tc-reload-heading', tabindex: -1, text: COPY.heading }),
-        h(doc, 'p', { class: 'tc-reload-who', text: options.playerName }),
-        h(doc, 'p', { text: COPY.instructions }),
+        // Whose turn it is, in words and a shape, so it is never color alone.
+        h(
+          doc,
+          'div',
+          { class: 'tc-turn-chip', 'data-team': options.team },
+          h(doc, 'span', {
+            class: 'tc-turn-icon',
+            'aria-hidden': 'true',
+            text: PASS_SCREEN.icon[options.team],
+          }),
+          h(doc, 'span', { class: 'tc-turn-team', text: TEAM_NAMES[options.team] }),
+          h(doc, 'span', { class: 'tc-reload-who', text: options.playerName }),
+          h(doc, 'span', { class: 'tc-turn-tag', text: COPY.yourTurn }),
+        ),
       ),
       h(
         doc,
         'div',
-        { class: 'tc-timer' },
-        timer,
-        h(doc, 'p', { class: 'tc-muted', text: COPY.timerLabel }),
+        { class: 'tc-reload-body' },
+        h(
+          doc,
+          'div',
+          { class: 'tc-reload-info' },
+          h(doc, 'p', { class: 'tc-instructions', text: COPY.instructions }),
+          h(
+            doc,
+            'div',
+            { class: 'tc-timer' },
+            timer,
+            h(doc, 'p', { class: 'tc-muted', text: COPY.timerLabel }),
+          ),
+        ),
+        question.passage
+          ? h(doc, 'p', { id: 'tc-reload-passage', class: 'tc-passage', text: question.passage })
+          : null,
+        h(doc, 'div', { class: 'tc-prompt-row' }, prompt, speakButton),
+        h(
+          doc,
+          'div',
+          { class: 'tc-choices', role: 'group', 'aria-label': UI_EXTRA.choicesLabel },
+          ...choiceButtons,
+        ),
+        h(doc, 'div', { class: 'tc-tools' }, hintRow, mute.el),
+        hintArea,
+        feedback,
+        nextSlot,
       ),
-      question.passage
-        ? h(doc, 'p', { id: 'tc-reload-passage', class: 'tc-passage', text: question.passage })
-        : null,
-      prompt,
-      speakButton,
-      h(
-        doc,
-        'div',
-        { class: 'tc-choices', role: 'group', 'aria-label': UI_EXTRA.choicesLabel },
-        ...choiceButtons,
-      ),
-      hintRow,
-      hintArea,
-      feedback,
-      nextSlot,
-      mute.el,
     );
     const el = h(
       doc,
@@ -163,6 +192,8 @@ export function showReloadModal(ctx: UiCtx, options: ReloadModalOptions): Promis
         class: 'tc-reload',
         'data-testid': TEST_IDS.reloadModal,
         'data-layout': layoutOf(options),
+        'data-passage': question.passage ? 'true' : null,
+        'data-prompt': question.prompt.length <= BIG_PROMPT_MAX_CHARS ? 'short' : 'long',
         'data-team': options.team,
         'data-motion': ctx.motion(),
         role: 'dialog',

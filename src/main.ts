@@ -1,6 +1,7 @@
 // Starts the Phaser game, builds the shared services, and installs the e2e hook (only when
 // the URL has ?e2e=1 and the build is not a production build).
 import Phaser from 'phaser';
+import './styles/fonts.css';
 import './styles/index.css';
 import { WORLD } from './game/config';
 import { PALETTE } from './scenes/palette';

@@ -84,7 +84,7 @@ When you find one of these, check the files you touched for every instance:
 4. Missing negative-path tests (illegal turn moves, a third shot, a skipped reload).
 5. Unseeded randomness in game logic.
 6. Phaser imports inside `src/game/`.
-7. Hex colors or fonts that drift from the design system.
+7. Hex colors or fonts that drift from the design system. Tokens and rules are in [docs/DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md).
 8. Unchecked `localStorage` reads (wrap in `try/catch`, it can throw or come back empty).
 9. Words from the banned list in any UI string.
 10. Tap targets under 56px.
@@ -113,9 +113,16 @@ Check this list before coding. If your change touches a listed area, read the ex
 | 8 | Canvas labels drew under 20 px on iPad sizes. | `tests/scenes/battle/textScale.test.ts`, label check in `e2e/layout.spec.ts` and `e2e/portrait.spec.ts`. |
 | 9 | The same tumble line could show twice in a row when the bag refilled. | `tests/game/bag.test.ts`. |
 | 10 | The e2e test hook shipped inside the production bundle. No security headers existed. | `npm run check:dist` in CI. `tests/hardening.test.ts`. |
+| 11 | The battle HUD kept the old look: white cards, a red Past edge, old cyan for Future, counters in system type, wind shown twice, and "Base health: 100 / 100" wrapped to two lines. | `tests/ui/handoffReview.test.ts` (team card tokens, one wind readout, nowrap, reload pip). `tests/ui/contrast.test.ts` (accent tokens). `e2e/layout.spec.ts` (banner clear of cards). |
+| 12 | Orbitron drew 1 as a bar and 7 as a flag, so K to 2 readers mixed up "17 - 9" and the answers. A plain hyphen stood in for minus. | `tests/ui/mathSymbols.test.ts` (every bank question draws real operators). `tests/ui/lookAndFeel.test.ts` and `tests/ui/handoffReview.test.ts` (plain numerals). |
+| 13 | Setup and Victory ran past the screen at 1024x768: "Clear my data" was cut off and Victory scrolled. The Victory awards could leave one team with a lone Good Sport. | `e2e/look.spec.ts` (`fitsOnScreen` for Setup and Victory at every size). `tests/game/awards.test.ts` (shared award, Good Sport for both). |
+| 14 | The ? and gear buttons used the light focus ring (about 2:1 on Ink), so keyboard users could not see them. | `tests/ui/handoffReview.test.ts` (chrome ring uses the Ember token). |
+| 15 | The tumble bubble tail pointed at empty sky, away from the speaker. | `tests/ui/hud.test.ts` (tail shift) and `tests/scenes/battle/geometry.test.ts` (`bubbleTailTarget`). |
 
 ## Current state (2026-10-15)
-Phase 1 is built: Tap to Play, How to Play (5 cards, captions, Skip, Replay, Mute), Loading, Setup, Battle (2 shots, then reload), Victory and Rematch. Sound is made in code with WebAudio: cannon boom for Team Past, laser pew for Team Future, and one original music loop in two flavors. Test runs are silent (`tests/setup/silent.ts` and `e2e/support/silent.ts` fail a test that starts real sound). Question bank has 40 questions per grade per subject (1,040 total, checked by `npm run check:questions`). Last full unit run: 58 files, 1,394 tests passing (`npm test`). Intro voice audio files are not recorded yet, so the browser's speech voice is used. Open polish and content items are in `BACKLOG.md`. Phase 2 (Camp Hub) follows `docs/BUILD.md`.
+Phase 1 is built: Tap to Play, How to Play (5 cards, captions, Skip, Replay, Mute), Loading, Setup, Battle (2 shots, then reload), Victory and Rematch. Sound is made in code with WebAudio: cannon boom for Team Past, laser pew for Team Future, and one original music loop in two flavors. Test runs are silent (`tests/setup/silent.ts` and `e2e/support/silent.ts` fail a test that starts real sound). Question bank has 40 questions per grade per subject (1,040 total, checked by `npm run check:questions`). Intro voice audio files are not recorded yet, so the browser's speech voice is used.
+
+The look and feel phase is built from the Claude Design handoff. Tokens are in `src/styles/tokens.css`, and the rules are in [docs/DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md). MedievalSharp and Orbitron are self-hosted in `public/fonts/`. Grade chips are 56px or more. Contrast meets 4.5:1 for body text and 3:1 for large text. The labels are Team Past and Team Future, and the Wipeout screen replaces the mock's destroyed-base screen. Open polish and content items are in `BACKLOG.md`. Phase 2 (Camp Hub) follows `docs/BUILD.md` and the Main (Camp hub) board. The Camp, Forge, and Upgrade boards are for Phases 2 and 3 and are not built yet.
 
 ## Pre-merge checklist
 1. `npm test`, `npm run lint`, `npm run typecheck`, `npm run build` pass with zero failures.

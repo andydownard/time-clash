@@ -13,6 +13,7 @@ import {
 } from '../../../src/game/config';
 import {
   aimFromDrag,
+  bubbleTailTarget,
   aimVector,
   bubbleAnchor,
   characterSpot,
@@ -152,6 +153,17 @@ describe('placement', () => {
         const b = BASES[t];
         expect(right <= b.x || left >= b.x + b.w, `${team} bubble vs ${t} base`).toBe(true);
       }
+    }
+  });
+  it('aims the bubble tail at the speaker, with the bubble still clear of both bases', () => {
+    for (const team of ['PAST', 'FUTURE'] as const) {
+      const spot = characterSpot(team, PHASE1_LAYOUT);
+      const t = bubbleTailTarget(team, PHASE1_LAYOUT);
+      expect(t.x).toBe(spot.x);
+      expect(t.y).toBeLessThan(spot.y);
+      // Close enough that the tail visibly points at the character, not at empty sky.
+      const a = bubbleAnchor(team, PHASE1_LAYOUT);
+      expect(Math.abs(t.x - a.x)).toBeLessThanOrEqual(BUBBLE_MAX_WORLD_W / 2);
     }
   });
   it('puts the speech bubble above the character, inside the world', () => {

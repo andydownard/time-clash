@@ -3,6 +3,7 @@
 import type { SpeakOptions, SpeechHandle, VoiceLine } from '../audio/types';
 import { INTRO, UI_EXTRA } from '../data/copy';
 import type { IntroScript } from '../data/types';
+import { chronoFace, introArt } from './art';
 import { LOCAL_IDS } from './constants';
 import type { UiCtx } from './ctx';
 import { h } from './dom';
@@ -70,9 +71,10 @@ export function showIntro(
 
   const button = (testid: string, label: string, cls = 'tc-btn tc-btn-neutral') =>
     h(doc, 'button', { type: 'button', class: cls, 'data-testid': testid, text: label });
-  const skip = button(TEST_IDS.introSkip, INTRO.skip, 'tc-btn tc-btn-primary');
+  // Gold primary marks the forward step (Next), not the way out. Skip stays one clear tap away.
+  const skip = button(TEST_IDS.introSkip, INTRO.skip);
   const replay = button(TEST_IDS.introReplay, INTRO.replay);
-  const next = button(LOCAL_IDS.introNext, INTRO.next);
+  const next = button(LOCAL_IDS.introNext, INTRO.next, 'tc-btn tc-btn-primary');
   const mute = button(LOCAL_IDS.introMute, INTRO.mute);
   const isMuted = (): boolean => (audio ? audio.muted : ctx.settings().muted);
   const paintMute = (): void => void (mute.textContent = isMuted() ? INTRO.unmute : INTRO.mute);
@@ -86,6 +88,7 @@ export function showIntro(
       doc,
       'header',
       { class: 'tc-intro-head' },
+      chronoFace(doc),
       h(doc, 'span', { class: 'tc-chrono', text: UI_EXTRA.chronoName }),
       h(doc, 'h1', { text: INTRO.heading }),
     ),
@@ -117,7 +120,12 @@ export function showIntro(
           },
           h(doc, 'p', { class: 'tc-muted', text: INTRO.cardOf(i + 1, total) }),
           h(doc, 'h2', { 'data-role': 'title', text: card.title }),
-          h(doc, 'div', { class: 'tc-art', 'data-art': card.art, 'aria-hidden': 'true' }),
+          h(
+            doc,
+            'div',
+            { class: 'tc-art', 'data-art': card.art, 'aria-hidden': 'true' },
+            introArt(doc, card.art),
+          ),
         );
         cardHolder.replaceChildren(el);
         dotEls.forEach((d, k) => {

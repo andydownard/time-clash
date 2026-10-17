@@ -1,5 +1,5 @@
 // Pass-the-mouse cover. Opaque and full viewport. It never holds question text.
-import { PASS_SCREEN } from '../data/copy';
+import { PASS_SCREEN, TEAM_NAMES } from '../data/copy';
 import type { UiCtx } from './ctx';
 import { h } from './dom';
 import { createCoverMute } from './muteButton';
@@ -30,13 +30,14 @@ export function showPassScreen(ctx: UiCtx, options: PassScreenOptions): Promise<
       h(
         doc,
         'div',
-        { class: 'tc-cover-card' },
+        { class: 'tc-cover-card tc-pass-card' },
         h(doc, 'p', {
           class: 'tc-team-icon',
           'data-role': 'team-icon',
           'aria-hidden': 'true',
           text: PASS_SCREEN.icon[options.nextTeam],
         }),
+        h(doc, 'p', { class: 'tc-team-tag', text: TEAM_NAMES[options.nextTeam] }),
         h(doc, 'h2', { id: 'tc-pass-heading', text: PASS_SCREEN.heading }),
         h(doc, 'p', { class: 'tc-big', text: PASS_SCREEN.upNext(options.nextName) }),
         h(doc, 'p', { text: PASS_SCREEN.noPeeking }),

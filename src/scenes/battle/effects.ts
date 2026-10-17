@@ -5,21 +5,24 @@ import Phaser from 'phaser';
 import { createRng } from '../../game/rng';
 import type { Rect, Vec2 } from '../../game/types';
 import type { EffectKind } from './types';
-import { FONT, PALETTE, REDUCED_FADE_MS, TEXT_MIN_PX } from './visual';
+import { TEXT_ROLES, textStyle, type TextRole } from './textStyle';
+import { PALETTE, REDUCED_FADE_MS } from './visual';
 
-const CONFETTI = [
+/** Confetti and toy blocks use both teams' colors, so a hit looks like a party, not a loss. */
+export const CONFETTI = [
   PALETTE.past.gold,
   PALETTE.past.banner,
-  PALETTE.future.cyan,
-  PALETTE.future.magenta,
-  PALETTE.future.mint,
-];
-const BLOCK_COLORS = [
+  PALETTE.future.glow,
+  PALETTE.future.neon,
+  PALETTE.future.pink,
+  PALETTE.past.parchment,
+] as const;
+export const BLOCK_COLORS = [
   PALETTE.past.banner,
   PALETTE.past.gold,
-  PALETTE.future.cyan,
-  PALETTE.future.magenta,
-];
+  PALETTE.future.glow,
+  PALETTE.future.neon,
+] as const;
 
 const tweenDone = (
   scene: Phaser.Scene,
@@ -73,7 +76,7 @@ export function playConfetti(scene: Phaser.Scene, pos: Vec2, scale: number): Pro
 }
 
 export function playPlasmaRing(scene: Phaser.Scene, pos: Vec2, scale: number): Promise<void> {
-  const rings = [PALETTE.future.cyan, PALETTE.future.magenta].map((color, i) => {
+  const rings = [PALETTE.future.glow, PALETTE.future.neon].map((color, i) => {
     const ring = scene.add.circle(pos.x, pos.y, 12).setStrokeStyle(6, color, 1).setDepth(40);
     return tweenDone(scene, {
       targets: ring,
@@ -146,7 +149,7 @@ export function effectColor(kind: EffectKind): number {
     case 'confetti':
       return PALETTE.past.gold;
     case 'plasma':
-      return PALETTE.future.cyan;
+      return PALETTE.future.glow;
     case 'blocks':
       return PALETTE.past.banner;
     default:
@@ -154,16 +157,24 @@ export function effectColor(kind: EffectKind): number {
   }
 }
 
-/** Floating caption such as "Direct hit!" or "+2 scrap". */
-export function floatLabel(scene: Phaser.Scene, pos: Vec2, text: string, color = '#1b1b26'): void {
+/**
+ * Floating caption such as "Direct hit!" or "+2". Words use the old voice (MedievalSharp).
+ * Numbers use the new voice (Orbitron), so pass role 'scrap' for those.
+ */
+export function floatLabel(
+  scene: Phaser.Scene,
+  pos: Vec2,
+  text: string,
+  role: TextRole = 'hit',
+  /** Grows the size on a small screen so the label stays at the 20px floor (see textScale.ts). */
+  scaleFont: (basePx: number) => number = (px) => px,
+): void {
+  const style = textStyle(role);
   const t = scene.add
     .text(pos.x, pos.y, text, {
-      fontFamily: FONT,
-      fontSize: `${TEXT_MIN_PX + 8}px`,
-      fontStyle: 'bold',
-      color,
-      backgroundColor: '#ffffff',
-      padding: { x: 12, y: 6 },
+      ...style,
+      fontSize: `${scaleFont(TEXT_ROLES[role].basePx)}px`,
+      padding: { x: 14, y: 6 },
     })
     .setOrigin(0.5)
     .setDepth(50);

@@ -82,6 +82,11 @@ export function showSpeechBubble(
   el.style.position = 'absolute';
   el.style.left = `${x}px`;
   el.style.top = `${y}px`;
+  if (options.tailTarget) {
+    // How far the speaker is from the bubble center, in screen pixels. CSS slides the tail by it.
+    const dx = ((options.tailTarget.x - options.anchor.x) / WORLD.width) * box.width;
+    el.style.setProperty('--tc-tail-shift', `${Math.round(dx * 100) / 100}px`);
+  }
   ctx.layer.bubble.append(el);
   const timer = env.setTimeout(
     () => {

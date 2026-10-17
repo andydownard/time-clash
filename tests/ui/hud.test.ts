@@ -520,3 +520,37 @@ describe('layers', () => {
     expect(z('cover')).toBe(Z.cover);
   });
 });
+
+describe('speech bubble tail', () => {
+  const box = () =>
+    vi.spyOn(s.canvas, 'getBoundingClientRect').mockReturnValue({
+      left: 100,
+      top: 50,
+      width: 640,
+      height: 360,
+      right: 740,
+      bottom: 410,
+      x: 100,
+      y: 50,
+      toJSON: () => ({}),
+    });
+
+  it('points the tail at the speaker: the shift is the speaker offset from the bubble center', () => {
+    box();
+    s.overlay.showSpeechBubble({
+      text: 'Boing!',
+      team: 'PAST',
+      anchor: { x: 640, y: 360 },
+      tailTarget: { x: 500, y: 600 },
+    });
+    const b = q(TEST_IDS.speechBubble)!;
+    // 140 world units left of the bubble center, drawn at half scale (640 / 1280).
+    expect(b.style.getPropertyValue('--tc-tail-shift')).toBe('-70px');
+  });
+
+  it('keeps the old centered tail when no target is given', () => {
+    box();
+    s.overlay.showSpeechBubble({ text: 'Hi', team: 'FUTURE', anchor: { x: 640, y: 360 } });
+    expect(q(TEST_IDS.speechBubble)!.style.getPropertyValue('--tc-tail-shift')).toBe('');
+  });
+});

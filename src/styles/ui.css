@@ -1,10 +1,17 @@
 /* Time Clash UI styles. Colors come from tokens.css only. No external fonts, images, or URLs.
-   Floors (AGENTS.md): tap targets 56px, text 20px, visible focus, reduced motion. */
+   Look and feel: docs/DESIGN_SYSTEM.md. Floors (AGENTS.md): tap targets 56px, text 20px,
+   visible focus, reduced motion. tests/ui/styles.test.ts and tests/ui/lookAndFeel.test.ts pin them. */
 
+/* The page behind the canvas is Ink, so no white strip shows when the picture is letterboxed. */
+html,
+body {
+  margin: 0;
+  background: var(--tc-ink-deep);
+}
 [data-tc-root] {
   font-family: var(--tc-font);
-  font-size: var(--tc-text-min);
-  line-height: 1.4;
+  font-size: var(--tc-fs-body);
+  line-height: var(--tc-lh-body);
   color: var(--tc-text);
 }
 [data-tc-root] * {
@@ -12,38 +19,72 @@
 }
 [data-tc-root] p,
 [data-tc-root] h1,
-[data-tc-root] h2 {
-  margin: 0 0 12px;
+[data-tc-root] h2,
+[data-tc-root] h3 {
+  margin: 0 0 var(--tc-s-3);
 }
+/* The old voice: titles and jokes. Never numbers, never tight buttons. */
 [data-tc-root] h1,
 [data-tc-root] h2,
+[data-tc-root] h3,
 .tc-title,
 .tc-big {
-  font-family: var(--tc-font-display);
+  font-family: var(--tc-font-voice-old);
+  font-weight: 400;
+  line-height: var(--tc-lh-tight);
 }
 [data-tc-root] h1 {
-  font-size: calc(var(--tc-text-min) * 2);
+  font-size: var(--tc-fs-title);
 }
 [data-tc-root] h2 {
-  font-size: calc(var(--tc-text-min) * 1.5);
+  font-size: var(--tc-fs-heading);
+}
+[data-tc-root] h3 {
+  font-size: var(--tc-fs-lead);
 }
 .tc-title {
-  font-size: calc(var(--tc-text-min) * 3);
-  margin: 0 0 8px;
+  font-size: var(--tc-fs-hero);
+  margin: 0 0 var(--tc-s-2);
 }
 .tc-big {
-  font-size: calc(var(--tc-text-min) * 1.4);
-  font-weight: 700;
+  font-size: var(--tc-fs-lead);
 }
+/* Muted only means "less shouting". The color is inherited, so contrast follows the surface. */
 .tc-muted {
-  color: var(--tc-muted-text);
-  font-size: var(--tc-text-min);
+  color: inherit;
+  font-size: var(--tc-fs-label);
+}
+.tc-subtitle {
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new);
+  letter-spacing: var(--tc-ls-caps-wide);
+  text-transform: uppercase;
+  color: var(--tc-ember);
 }
 
-/* ---------- Focus (every control) ---------- */
-[data-tc-root] :focus-visible {
-  outline: 4px solid var(--tc-focus);
-  outline-offset: 3px;
+/* ---------- Focus (every control) ----------
+   One ring color cannot reach 3:1 on both light and dark, so there are two. */
+[data-tc-root] :focus-visible,
+[data-tc-pause] :focus-visible {
+  outline: var(--tc-focus-width) solid var(--tc-focus-on-light);
+  outline-offset: var(--tc-focus-offset);
+}
+.tc-screen :focus-visible,
+.tc-cover :focus-visible,
+.tc-caption :focus-visible,
+[data-tc-pause] :focus-visible {
+  outline-color: var(--tc-focus-on-dark);
+}
+/* The ? and gear buttons live in a fixed host over the dark screens and the Battle picture, outside
+   .tc-screen. Blue 700 on Ink is about 2:1, so they get the Ember ring too. */
+[data-tc-chrome] :focus-visible {
+  outline-color: var(--tc-focus-on-dark);
+}
+/* Parchment panels sit inside the dark screens and covers. */
+.tc-panel :focus-visible,
+.tc-reload-card :focus-visible,
+.tc-intro-card :focus-visible {
+  outline-color: var(--tc-focus-on-light);
 }
 
 /* ---------- Buttons and controls (56px floor) ---------- */
@@ -54,25 +95,35 @@
 .tc-icon-btn,
 .tc-range {
   min-height: var(--tc-tap);
-  font-family: var(--tc-font);
-  font-size: var(--tc-text-min);
+  font-family: var(--tc-font-voice-new);
+  font-size: var(--tc-fs-label);
 }
 .tc-btn,
 .tc-chip,
 .tc-choice,
 .tc-icon-btn {
   min-width: var(--tc-tap);
-  padding: 8px 20px;
+  padding: var(--tc-s-2) var(--tc-s-5);
   border: 3px solid var(--tc-border);
-  border-radius: var(--tc-radius);
+  border-radius: var(--tc-r-button);
   cursor: pointer;
-  font-weight: 700;
+  font-weight: var(--tc-fw-new);
   touch-action: manipulation;
+}
+.tc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tc-s-2);
+  text-align: center;
+  line-height: var(--tc-lh-tight);
+  letter-spacing: var(--tc-ls-caps);
+  text-transform: uppercase;
 }
 .tc-btn:hover,
 .tc-chip:hover,
 .tc-choice:hover {
-  filter: brightness(1.06);
+  filter: brightness(1.08);
 }
 .tc-btn:active,
 .tc-chip:active,
@@ -84,24 +135,54 @@
   opacity: 0.65;
   cursor: not-allowed;
 }
-.tc-btn-primary,
+/* Neutral: ink with a cream edge. Settings, mute, hint. */
+.tc-btn-neutral {
+  background: var(--tc-btn-neutral-bg);
+  color: var(--tc-btn-neutral-text);
+  border: var(--tc-btn-neutral-border);
+}
+/* Wood (Team Past). MedievalSharp on a short label, so it stays off tight buttons. */
 .tc-btn-past {
-  background: var(--tc-past-btn-bg);
-  color: var(--tc-past-btn-text);
+  min-height: 64px;
+  padding: var(--tc-s-2) var(--tc-s-6);
+  font-family: var(--tc-font-voice-old);
+  font-size: var(--tc-fs-button-lg);
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+  background: var(--tc-btn-wood-bg);
+  color: var(--tc-btn-wood-text);
+  border: var(--tc-btn-wood-border);
+  box-shadow: var(--tc-shadow-wood);
+  text-shadow: var(--tc-btn-wood-text-shadow);
 }
+/* Neon (Team Future) */
 .tc-btn-future {
-  background: var(--tc-future-btn-bg);
-  color: var(--tc-future-btn-text);
+  min-height: 64px;
+  padding: var(--tc-s-2) var(--tc-s-6);
+  font-size: var(--tc-fs-button);
+  background: var(--tc-btn-neon-bg);
+  color: var(--tc-btn-neon-text);
+  border: var(--tc-btn-neon-border);
+  box-shadow: var(--tc-glow-neon);
+  text-shadow: var(--tc-btn-neon-text-shadow);
 }
-.tc-btn-neutral,
-.tc-icon-btn {
-  background: var(--tc-neutral-btn-bg);
-  color: var(--tc-neutral-btn-text);
+/* Primary (READY style): gold border, purple to blue. One per screen. */
+.tc-btn-primary,
+.tc-btn-fire {
+  min-height: 64px;
+  padding: var(--tc-s-2) var(--tc-s-6);
+  font-size: var(--tc-fs-button);
+  font-weight: var(--tc-fw-new-heavy);
+  border-radius: var(--tc-r-button-lg);
+  background: var(--tc-btn-primary-bg);
+  color: var(--tc-btn-primary-text);
+  border: var(--tc-btn-primary-border);
+  box-shadow: var(--tc-glow-ready);
+  text-shadow: var(--tc-btn-primary-text-shadow);
 }
 .tc-btn-fire {
-  background: var(--tc-past-btn-bg);
-  color: var(--tc-past-btn-text);
-  font-size: calc(var(--tc-text-min) * 1.4);
+  font-size: var(--tc-fs-button-lg);
   min-width: 160px;
 }
 .tc-btn-huge {
@@ -109,58 +190,148 @@
   min-height: 96px;
   min-width: 320px;
 }
+.tc-btn-big {
+  min-height: 72px;
+  min-width: 220px;
+  font-size: var(--tc-fs-button-lg);
+}
 .tc-icon-btn {
+  background: var(--tc-btn-neutral-bg);
+  color: var(--tc-btn-neutral-text);
+  border: var(--tc-btn-neutral-border);
+  font-family: var(--tc-font-voice-new);
   border-radius: 50%;
   padding: 0;
   width: var(--tc-tap);
+  box-shadow: var(--tc-shadow-card);
 }
 .tc-input {
   width: 100%;
-  padding: 8px 14px;
-  border: 3px solid var(--tc-border);
-  border-radius: var(--tc-radius);
-  background: var(--tc-card);
-  color: var(--tc-text);
+  padding: var(--tc-s-2) var(--tc-s-4);
+  border: var(--tc-input-border);
+  border-radius: var(--tc-r-button);
+  background: var(--tc-input-bg);
+  color: var(--tc-input-text);
+  font-weight: var(--tc-fw-new);
+  font-size: var(--tc-fs-button);
+  letter-spacing: 0.05em;
+  min-height: var(--tc-input-min-h);
+}
+.tc-input::placeholder {
+  color: var(--tc-muted-text);
+  opacity: 1;
 }
 .tc-range {
   width: 100%;
-  accent-color: var(--tc-ring);
+  accent-color: var(--tc-blue-700);
 }
+/* Chips: grade and subject pickers. The chosen chip also shows a check mark. */
 .tc-chip {
-  background: var(--tc-card);
-  color: var(--tc-text);
-  padding: 8px 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tc-s-1);
+  background: var(--tc-chip-bg);
+  color: var(--tc-chip-text);
+  border: var(--tc-chip-border);
+  border-radius: var(--tc-r-chip);
+  min-width: var(--tc-chip-min);
+  padding: var(--tc-s-2) var(--tc-s-3);
+  letter-spacing: var(--tc-ls-caps);
 }
 .tc-chip-wide {
-  min-width: 120px;
+  flex: 1 1 auto;
+  min-width: 96px;
+  letter-spacing: 0.02em;
 }
-/* The chosen chip shows a thick border and a check mark, not color alone. */
 .tc-chip[aria-checked='true'] {
-  background: var(--tc-neutral-btn-bg);
-  color: var(--tc-neutral-btn-text);
-  border-width: 5px;
+  background: var(--tc-chip-on-bg);
+  color: var(--tc-chip-on-text);
+  border: var(--tc-chip-on-border);
+  font-weight: var(--tc-fw-new-heavy);
+  box-shadow: 0 0 0 3px var(--tc-parchment-warm);
 }
 .tc-chip[aria-checked='true']::before {
-  content: '\2713 ';
+  content: '\2713';
+  margin-right: var(--tc-s-1);
 }
+/* On a team card (setup board): the chip is see-through with the team's edge and cream text.
+   The chosen chip is Ember with an Ink border and a check mark. */
+.tc-team-card .tc-chip {
+  background: transparent;
+  color: var(--tc-on-dark);
+  border: 3px solid var(--tc-chip-past-edge);
+}
+.tc-team-card[data-team='FUTURE'] .tc-chip {
+  border-color: var(--tc-chip-future-edge);
+}
+.tc-team-card .tc-chip[aria-checked='true'] {
+  background: var(--tc-chip-picked-bg);
+  color: var(--tc-chip-picked-text);
+  border: 4px solid var(--tc-chip-picked-edge);
+}
+/* Grade numbers use plain letters. Orbitron draws 1 as a bar and 7 as a flag. */
+.tc-chips-grades .tc-chip {
+  font-family: var(--tc-font);
+  font-weight: 800;
+  padding-inline: var(--tc-s-1);
+}
+/* Answer tiles. A number badge (from data-key) matches the 1 to 4 keys. */
 .tc-choice {
-  background: var(--tc-choice-bg);
-  color: var(--tc-text);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
-  text-align: center;
-  font-size: calc(var(--tc-text-min) * 1.4);
+  min-height: 88px;
+  padding: var(--tc-s-2) var(--tc-s-5) var(--tc-s-2) 76px;
+  background: var(--tc-tile-bg);
+  color: var(--tc-tile-text);
+  border: var(--tc-tile-border);
+  border-radius: var(--tc-r-card);
+  text-align: left;
+  font-size: var(--tc-fs-heading);
+  font-weight: var(--tc-fw-new-heavy);
 }
+.tc-choice::before {
+  content: attr(data-key);
+  position: absolute;
+  left: var(--tc-s-3);
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--tc-tile-key-bg);
+  color: var(--tc-tile-key-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--tc-fs-label);
+}
+.tc-choice .tc-choice-text,
+.tc-choice {
+  overflow-wrap: anywhere;
+}
+/* The right answer gets a mark and a thick border. A near miss gets a dashed border. */
 .tc-choice[data-state='right'] {
-  background: var(--tc-good-bg);
-  color: var(--tc-good-text);
-  border-width: 6px;
+  background: var(--tc-ember);
+  color: var(--tc-ink-deep);
+  border: 6px solid var(--tc-ink-deep);
+  box-shadow: 0 0 0 4px var(--tc-purple-700);
 }
 .tc-choice[data-state='right']::after {
-  content: ' \2713';
+  content: '\2713';
+  margin-left: var(--tc-s-3);
 }
 .tc-choice[data-state='tried'] {
-  background: var(--tc-oops-bg);
-  color: var(--tc-oops-text);
+  background: var(--tc-tile-bg);
+  color: var(--tc-tile-text);
+  border: 4px dashed var(--tc-ink-deep);
+}
+.tc-choice[data-state='tried']::after {
+  content: '\2026';
+  margin-left: var(--tc-s-3);
 }
 .tc-choice[aria-disabled='true'] {
   cursor: default;
@@ -170,52 +341,126 @@
 .tc-screen {
   position: absolute;
   inset: 0;
-  /* Start below the fixed ? and gear row, and paint the strip above in the page color. */
-  top: var(--tc-chrome-row);
-  box-shadow: 0 calc(-1 * var(--tc-chrome-row)) 0 var(--tc-page);
+  /* Content starts below the fixed ? and gear row. The background still fills the screen. */
+  padding: var(--tc-chrome-row) var(--tc-s-6) var(--tc-s-5);
   overflow: auto;
-  padding: 24px 32px;
-  background: var(--tc-page);
-  color: var(--tc-text);
+  background: var(--tc-screen-dark-bg);
+  color: var(--tc-on-dark);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: var(--tc-s-4);
+}
+.tc-split {
+  background: var(--tc-screen-split-bg);
+}
+.tc-skyline {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.tc-screen > * {
+  position: relative;
+}
+.tc-screen > .tc-skyline,
+.tc-screen > .tc-loading-art {
+  position: absolute;
 }
 .tc-cover {
   display: flex;
-  align-items: center;
-  justify-content: center;
   overflow: auto;
-  padding: 24px;
+  padding: var(--tc-s-5);
   color: var(--tc-cover-text);
   font-family: var(--tc-font);
-  font-size: var(--tc-text-min);
+  font-size: var(--tc-fs-body);
+  background-image: var(--tc-screen-dark-bg);
 }
 .tc-cover[data-team='PAST'] {
-  box-shadow: inset 0 0 0 12px var(--tc-past-accent);
+  box-shadow: inset 0 0 0 12px var(--tc-purple-500);
+  background-image: var(--tc-cover-past-bg);
 }
 .tc-cover[data-team='FUTURE'] {
-  box-shadow: inset 0 0 0 12px var(--tc-future-accent);
+  box-shadow: inset 0 0 0 12px var(--tc-blue-500);
+  background-image: var(--tc-cover-future-bg);
 }
-.tc-pass .tc-btn {
-  min-height: 64px;
-  margin-top: 16px;
-  font-size: calc(var(--tc-text-min) * 1.2);
-}
-.tc-team-icon {
-  font-size: 64px;
-  line-height: 1;
-  margin: 0;
+/* margin: auto centers the card when it fits and lets a tall card scroll from its top. */
+.tc-cover > * {
+  margin: auto;
 }
 .tc-cover-card {
   width: min(900px, 100%);
   text-align: center;
+  color: var(--tc-on-dark);
+}
+.tc-cover-card h2 {
+  font-family: var(--tc-font-voice-old);
+}
+
+/* Pass the mouse */
+.tc-pass .tc-btn {
+  min-height: 64px;
+  margin-top: var(--tc-s-4);
+}
+/* Wood on a purple cover needs a cream edge, or the button melts into the background. */
+.tc-pass .tc-btn-past {
+  border-color: var(--tc-parchment-warm);
+}
+.tc-pass-card {
+  display: grid;
+  justify-items: center;
+  gap: var(--tc-s-2);
+}
+.tc-pass-card > * {
+  margin: 0;
+}
+.tc-team-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 6px solid var(--tc-parchment-warm);
+  background: var(--tc-ink-deep);
+  font-size: var(--tc-fs-hero);
+  line-height: 1;
+}
+.tc-pass[data-team='PAST'] .tc-team-icon {
+  box-shadow: 0 0 0 6px var(--tc-purple-500);
+}
+.tc-pass[data-team='FUTURE'] .tc-team-icon {
+  box-shadow:
+    0 0 0 6px var(--tc-blue-500),
+    var(--tc-glow-neon);
+}
+.tc-team-tag {
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  letter-spacing: var(--tc-ls-caps-wide);
+  text-transform: uppercase;
+}
+.tc-pass[data-team='PAST'] .tc-team-tag {
+  color: var(--tc-eyebrow-past);
+}
+.tc-pass[data-team='FUTURE'] .tc-team-tag {
+  color: var(--tc-eyebrow-future);
+}
+.tc-pass h2 {
+  font-size: var(--tc-fs-title);
+}
+.tc-pass .tc-big {
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new);
+  letter-spacing: var(--tc-ls-caps);
+  font-size: var(--tc-fs-button-lg);
+  color: var(--tc-ember);
 }
 .tc-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: var(--tc-s-3);
   justify-content: center;
   align-items: center;
 }
@@ -223,9 +468,10 @@
   align-self: flex-end;
 }
 .tc-error {
-  min-height: 1.4em;
-  color: var(--tc-error-text);
-  font-weight: 700;
+  min-height: 0;
+  color: var(--tc-ember);
+  font-weight: var(--tc-fw-new);
+  font-size: var(--tc-fs-label);
 }
 
 /* ---------- Banner, bubble, caption ---------- */
@@ -233,46 +479,70 @@
   position: absolute;
   top: var(--tc-hud-row);
   left: 50%;
-  transform: translateX(-50%);
-  padding: 12px 28px;
-  border: 4px solid var(--tc-white);
-  border-radius: var(--tc-radius);
-  color: var(--tc-banner-text);
-  font-family: var(--tc-font-display);
+  transform: translateX(-50%) rotate(var(--tc-banner-turn-tilt));
+  padding: var(--tc-s-3) var(--tc-s-5);
+  border: var(--tc-banner-turn-border);
+  border-radius: var(--tc-r-button);
+  background: var(--tc-banner-turn-bg);
+  color: var(--tc-banner-turn-text);
+  box-shadow: var(--tc-shadow-banner);
+  font-family: var(--tc-font-voice-new);
   font-size: calc(var(--tc-text-min) * 1.5);
-  font-weight: 800;
+  font-weight: var(--tc-fw-new-heavy);
+  letter-spacing: var(--tc-ls-caps);
   text-align: center;
+  /* One line when it fits. A long name wraps rather than running off the screen. */
+  width: max-content;
   max-width: 94vw;
   animation: tc-drop var(--tc-banner-drop) cubic-bezier(0.3, 1.6, 0.5, 1) both;
 }
-.tc-banner[data-team='PAST'] {
-  background: var(--tc-past-banner-bg);
+/* The team shows as a shape too, not by color. */
+.tc-banner[data-team='PAST']::before {
+  content: '\1F3F0  ';
 }
-.tc-banner[data-team='FUTURE'] {
-  background: var(--tc-future-banner-bg);
-  border-color: var(--tc-future-accent);
+.tc-banner[data-team='FUTURE']::before {
+  content: '\1F6F8  ';
 }
 .tc-bubble {
-  max-width: min(320px, 28vw);
-  padding: 10px 16px;
-  border: 3px solid var(--tc-ink);
-  border-radius: var(--tc-radius);
-  background: var(--tc-white);
-  color: var(--tc-ink);
-  font-weight: 700;
-  transform: translate(-50%, -100%);
+  position: relative;
+  max-width: min(360px, 28vw);
+  min-width: min(240px, 22vw);
+  padding: var(--tc-s-3) var(--tc-s-4);
+  border: var(--tc-bubble-border);
+  border-radius: var(--tc-r-bubble);
+  background: var(--tc-bubble-bg);
+  color: var(--tc-bubble-text);
+  font-family: var(--tc-font-voice-old);
+  font-size: var(--tc-fs-button-lg);
+  line-height: var(--tc-lh-tight);
+  /* The tail is 22px tall and its tip sits on the anchor point. */
+  transform: translate(-50%, calc(-100% - 22px));
+}
+/* The tail slides toward the speaker (--tc-tail-shift) but stays inside the bubble's edges. */
+.tc-bubble::after {
+  content: '';
+  position: absolute;
+  left: clamp(36px, calc(50% + var(--tc-tail-shift, 0px)), calc(100% - 36px));
+  top: 100%;
+  margin-left: -12px;
+  border: 12px solid transparent;
+  border-top: 22px solid var(--tc-ink-deep);
+  border-bottom: 0;
 }
 .tc-caption {
   position: absolute;
   left: 50%;
-  bottom: 16px;
+  bottom: var(--tc-s-4);
   transform: translateX(-50%);
   max-width: min(960px, 94vw);
-  padding: 10px 20px;
-  border-radius: var(--tc-radius);
-  background: var(--tc-caption-bg);
-  color: var(--tc-caption-text);
-  font-size: calc(var(--tc-text-min) * 1.2);
+  padding: var(--tc-s-3) var(--tc-s-5);
+  border: var(--tc-caption-bar-border);
+  border-radius: var(--tc-r-button);
+  background: var(--tc-caption-bar-bg);
+  color: var(--tc-caption-bar-text);
+  font-family: var(--tc-font-voice-old);
+  font-size: var(--tc-fs-lead);
+  line-height: var(--tc-lh-body);
   text-align: center;
 }
 /* An author display rule (like .tc-row) must never beat the hidden attribute. */
@@ -308,18 +578,70 @@
 .tc-hud-top {
   display: flex;
   gap: 12px;
-  align-items: flex-start;
+  align-items: stretch;
   justify-content: space-between;
   padding: 12px;
   padding-left: var(--tc-chrome-clear);
 }
+/* Shots and wind. Wind is drawn once, on the canvas sign (the DOM copy is for screen readers). */
 .tc-hud-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex: none;
   text-align: center;
-  background: var(--tc-card);
-  border: 3px solid var(--tc-border);
+  background: var(--tc-surface-dark);
+  color: var(--tc-on-dark);
+  border: 3px solid var(--tc-steel-blue);
   border-radius: var(--tc-radius);
   padding: 6px 14px;
-  font-weight: 700;
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new);
+  letter-spacing: var(--tc-ls-caps);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.tc-shots {
+  font-size: var(--tc-fs-label);
+}
+/* Two shot pips, then a third "Reload" pip: a question comes after shot 2. */
+.tc-pips {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.tc-pip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 3px solid var(--tc-ember);
+  background: var(--tc-ember);
+  color: var(--tc-ink-deep);
+  font-size: var(--tc-fs-label);
+  line-height: 1;
+}
+.tc-pip[data-used='true'] {
+  background: transparent;
+  color: var(--tc-ember);
+}
+.tc-pip[data-used='true']::after {
+  content: '\00D7';
+}
+.tc-pip-reload {
+  width: auto;
+  padding: 0 10px;
+  border-radius: var(--tc-r-pill);
+  border-color: var(--tc-pulse);
+  background: var(--tc-blue-900);
+  color: var(--tc-pulse);
+}
+.tc-pip-reload::before {
+  content: '\1F4D6\00A0';
 }
 .tc-wind-bar {
   display: block;
@@ -335,51 +657,105 @@
   height: 100%;
   background: var(--tc-wood);
 }
+/* Sound sits low and left, Pause low and right: one bar of helpers under the picture. */
 .tc-hud-corner {
+  position: absolute;
+  left: var(--tc-s-4);
+  bottom: var(--tc-s-4);
   display: flex;
   gap: 8px;
 }
+.tc-hud-corner .tc-btn {
+  padding-inline: var(--tc-s-4);
+  white-space: nowrap;
+}
+/* Team cards. Past is purple, Future is blue with a Pulse glow. The active card also shows a
+   marker and a thicker edge, so the turn is never shown by color alone. */
 .tc-team-panel {
-  background: var(--tc-card);
-  border: 3px solid var(--tc-border);
+  flex: 1 1 0;
+  min-width: 250px;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  border: 4px solid var(--tc-card-past-edge);
   border-radius: var(--tc-radius);
   padding: 8px 14px;
-  min-width: 220px;
+  background: var(--tc-card-past-bg);
+  color: var(--tc-on-dark);
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new);
+  line-height: var(--tc-lh-tight);
+  letter-spacing: var(--tc-ls-caps);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.tc-team-panel[data-team='PAST'] {
+  border-color: var(--tc-card-past-edge);
+  background: var(--tc-card-past-bg);
+}
+.tc-team-panel[data-team='FUTURE'] {
+  border-color: var(--tc-card-future-edge);
+  background: var(--tc-card-future-bg);
+  color: var(--tc-on-future);
 }
 .tc-team-panel[data-team='PAST'][data-active='true'] {
-  border-color: var(--tc-past-accent);
-  border-width: 6px;
+  border-color: var(--tc-parchment-warm);
+  box-shadow:
+    0 0 0 4px var(--tc-purple-500),
+    0 6px 0 4px var(--tc-purple-700);
 }
 .tc-team-panel[data-team='FUTURE'][data-active='true'] {
-  border-color: var(--tc-future-accent);
-  border-width: 6px;
-  background: var(--tc-future-banner-bg);
-  color: var(--tc-white);
+  border-color: var(--tc-pulse);
+  box-shadow: var(--tc-glow-neon);
 }
-.tc-team-panel[data-active='false'] {
-  opacity: 0.8;
+.tc-team-panel {
+  position: relative;
 }
+/* The turn marker sits in the card's corner, so it costs no row. */
 .tc-active-mark {
   visibility: hidden;
-  margin-right: 6px;
+  position: absolute;
+  top: 8px;
+  right: 14px;
 }
 .tc-team-panel[data-active='true'] .tc-active-mark {
   visibility: visible;
 }
 .tc-team-name {
-  font-weight: 800;
+  font-family: var(--tc-font-voice-old);
+  font-weight: 400;
+  font-size: var(--tc-fs-lead);
+  letter-spacing: 0;
+  text-transform: none;
+  line-height: var(--tc-lh-tight);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tc-hp-label,
+.tc-scrap-row {
+  display: block;
+  font-size: var(--tc-fs-label);
+}
+.tc-hp-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 .tc-hp-meter {
-  height: 20px;
-  border: 2px solid var(--tc-border);
-  border-radius: 10px;
-  background: var(--tc-white);
+  flex: 1 1 auto;
+  min-width: 60px;
+  height: var(--tc-bar-h);
+  border: 3px solid var(--tc-bar-edge);
+  border-radius: 13px;
+  background: var(--tc-bar-track);
   overflow: hidden;
 }
 .tc-hp-fill {
   display: block;
   height: 100%;
-  background: var(--tc-torch-gold);
+  background: var(--tc-bar-fill);
   transition: width 300ms ease;
 }
 /* The aim controls sit between the two bases (they fill 0 to 20% and 80% to 100% of the width),
@@ -390,7 +766,7 @@
   right: 20%;
   bottom: 72px;
   display: flex;
-  gap: 16px;
+  gap: var(--tc-s-5);
   align-items: flex-end;
   justify-content: center;
   padding: 0 12px;
@@ -401,15 +777,23 @@
 .tc-aim {
   display: grid;
   gap: 6px;
-  background: var(--tc-card);
-  border: 3px solid var(--tc-border);
+  background: var(--tc-surface-dark);
+  color: var(--tc-on-dark);
+  border: 3px solid var(--tc-steel-blue);
   border-radius: var(--tc-radius);
   padding: 8px 14px;
   min-width: 340px;
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new);
+  letter-spacing: var(--tc-ls-caps);
+  text-transform: uppercase;
+}
+.tc-aim .tc-range {
+  accent-color: var(--tc-pulse);
 }
 .tc-slider-row {
   display: grid;
-  grid-template-columns: 90px 1fr 70px;
+  grid-template-columns: 110px 1fr 70px;
   gap: 10px;
   align-items: center;
 }
@@ -417,180 +801,544 @@
   display: none;
   position: absolute;
   top: 100%;
-  left: 0;
-  right: 0;
+  left: 50%;
+  transform: translateX(-50%);
   width: max-content;
-  margin: 8px auto 0;
+  margin: 8px 0 0;
   font-size: var(--tc-text-min);
 }
 @media (hover: hover) and (pointer: fine) {
   .tc-hint {
     display: block;
-    background: var(--tc-card);
+    background: var(--tc-surface-dark);
+    color: var(--tc-on-dark);
+    border: 2px solid var(--tc-steel-blue);
     border-radius: var(--tc-radius);
     padding: 4px 12px;
   }
 }
 
+/* ---------- Tap to Start ---------- */
+.tc-hero {
+  margin-block: auto;
+  display: grid;
+  justify-items: center;
+  gap: var(--tc-s-4);
+  text-align: center;
+}
+.tc-hero > * {
+  margin: 0;
+}
+[data-tc-root] .tc-hero .tc-title {
+  font-size: var(--tc-fs-hero);
+  color: var(--tc-parchment-warm);
+  text-shadow:
+    0 4px 0 var(--tc-purple-700),
+    0 0 28px var(--tc-blue-500);
+}
+.tc-tap .tc-btn-huge {
+  margin-block: var(--tc-s-3);
+}
+
 /* ---------- Setup ---------- */
+.tc-setup {
+  padding-top: var(--tc-s-3);
+  padding-bottom: var(--tc-s-3);
+  gap: var(--tc-s-2);
+}
+/* The heading shares a row with the ? and gear buttons (it is centered, they sit at the left),
+   so the cards start higher and every button fits on a 1024x768 screen. */
+[data-tc-root] .tc-setup-title {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  min-height: var(--tc-tap);
+  font-size: var(--tc-fs-heading);
+  text-align: center;
+  text-shadow: 0 3px 0 var(--tc-ink-deep);
+}
 .tc-setup-form {
-  width: min(1100px, 100%);
+  width: min(1180px, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--tc-s-2);
+  margin-bottom: auto;
 }
 .tc-team-cards {
+  position: relative;
+  width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  gap: var(--tc-s-4);
+}
+.tc-vs {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: var(--tc-s-1);
+  transform: translateX(-50%);
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 4px solid var(--tc-ink-deep);
+  background: var(--tc-ember);
+  color: var(--tc-ink-deep);
+  box-shadow:
+    0 0 0 4px var(--tc-parchment-warm),
+    0 0 24px var(--tc-ember);
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: var(--tc-fs-button);
 }
 .tc-team-card {
-  background: var(--tc-card);
+  display: flex;
+  flex-direction: column;
+  gap: var(--tc-s-1);
+  padding: var(--tc-s-3) var(--tc-s-4);
   border: 4px solid var(--tc-border);
-  border-radius: var(--tc-radius);
-  padding: 16px;
+  border-radius: calc(var(--tc-r-card) + 4px);
+  color: var(--tc-on-dark);
 }
 .tc-team-card[data-team='PAST'] {
-  border-color: var(--tc-past-accent);
+  background: var(--tc-card-past-bg);
+  border-color: var(--tc-card-past-edge);
 }
 .tc-team-card[data-team='FUTURE'] {
-  border-color: var(--tc-night);
+  background: var(--tc-card-future-bg);
+  border-color: var(--tc-card-future-edge);
+  color: var(--tc-on-future);
 }
-.tc-team-card legend {
-  font-family: var(--tc-font-display);
-  font-weight: 800;
-  padding: 0 8px;
+[data-tc-root] .tc-team-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tc-s-1) var(--tc-s-2);
+  margin: 0;
+  font-family: var(--tc-font-voice-new);
+  font-size: var(--tc-fs-label);
+  font-weight: var(--tc-fw-new);
+  letter-spacing: var(--tc-ls-caps);
+  text-transform: uppercase;
+}
+.tc-team-card[data-team='PAST'] .tc-team-title {
+  color: var(--tc-eyebrow-past);
+}
+.tc-team-card[data-team='FUTURE'] .tc-team-title {
+  color: var(--tc-eyebrow-future);
+}
+.tc-team-home {
+  text-transform: none;
+  letter-spacing: 0;
+  font-family: var(--tc-font-voice-old);
+  font-weight: 400;
+}
+.tc-label {
+  display: block;
+  margin: 6px 0 0;
+  font-family: var(--tc-font-voice-new);
+  font-size: var(--tc-fs-label);
+  font-weight: var(--tc-fw-new);
+  letter-spacing: var(--tc-ls-caps);
+  text-transform: uppercase;
 }
 .tc-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--tc-s-2);
 }
-.tc-label {
-  font-weight: 800;
-  margin: 12px 0 4px;
+/* K to 12 in tidy rows: as many 56px columns as fit, sharing the leftover width. */
+.tc-chips-grades {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(var(--tc-chip-min), 1fr));
+  gap: 6px;
+}
+.tc-subject-help {
+  margin: 0;
+}
+.tc-match-helper {
+  margin: 0;
+  font-family: var(--tc-font-voice-old);
+  font-size: var(--tc-fs-lead);
+  text-align: center;
+}
+.tc-setup-form .tc-row .tc-btn-primary {
+  min-height: 72px;
+  min-width: 280px;
+  font-size: var(--tc-fs-button-lg);
 }
 .tc-privacy {
-  margin-top: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tc-s-2) var(--tc-s-4);
   text-align: center;
+}
+.tc-privacy > * {
+  margin: 0;
 }
 
 /* ---------- Intro ---------- */
+.tc-intro-head {
+  margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tc-s-3);
+}
+[data-tc-root] .tc-intro-head h1 {
+  margin: 0;
+  font-size: var(--tc-fs-heading);
+}
+.tc-chrono-face {
+  width: 56px;
+  height: 60px;
+}
 .tc-chrono {
   display: inline-block;
-  padding: 4px 16px;
-  border-radius: 999px;
-  background: var(--tc-purple);
-  color: var(--tc-white);
-  font-weight: 800;
-  margin-right: 12px;
+  padding: var(--tc-s-1) var(--tc-s-4);
+  border: 3px solid var(--tc-ink-deep);
+  border-radius: var(--tc-r-pill);
+  background: var(--tc-ember);
+  color: var(--tc-ink-deep);
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  letter-spacing: var(--tc-ls-caps);
+  text-transform: uppercase;
+}
+.tc-intro-stage {
+  width: min(760px, 100%);
 }
 .tc-intro-card {
-  width: min(760px, 100%);
-  background: var(--tc-card);
-  border: 4px solid var(--tc-border);
-  border-radius: var(--tc-radius);
-  padding: 20px;
+  width: 100%;
+  background: var(--tc-bubble-bg);
+  color: var(--tc-bubble-text);
+  border: var(--tc-bubble-border);
+  border-radius: var(--tc-r-bubble);
+  box-shadow: var(--tc-shadow-card);
+  padding: var(--tc-s-4) var(--tc-s-5);
   text-align: center;
 }
+.tc-intro-card > p {
+  margin: 0 0 var(--tc-s-1);
+}
+[data-tc-root] .tc-intro-card h2 {
+  margin: 0 0 var(--tc-s-2);
+}
 .tc-art {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   height: 160px;
-  border-radius: var(--tc-radius);
-  background: var(--tc-parchment);
-  border: 3px dashed var(--tc-stone);
+  border-radius: var(--tc-r-card);
+  background: var(--tc-purple-100);
+  border: 3px solid var(--tc-purple-700);
+}
+.tc-art-svg {
+  height: 100%;
+  width: auto;
+  max-width: 100%;
 }
 .tc-dots {
   display: flex;
-  gap: 14px;
+  gap: var(--tc-s-4);
 }
 .tc-dot {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  border: 3px solid var(--tc-border);
-  background: var(--tc-card);
+  border: 3px solid var(--tc-parchment-warm);
+  background: var(--tc-ink-deep);
 }
+/* The current step is bigger and filled, so it is not color alone. */
 .tc-dot[aria-current='step'] {
-  background: var(--tc-neutral-btn-bg);
-  transform: scale(1.4);
+  background: var(--tc-ember);
+  transform: scale(1.5);
+}
+.tc-intro > .tc-row {
+  margin-bottom: auto;
 }
 
 /* ---------- Loading ---------- */
-.tc-bar {
-  width: min(720px, 100%);
-  height: 28px;
-  border: 3px solid var(--tc-border);
-  border-radius: 14px;
-  background: var(--tc-card);
-  overflow: hidden;
+.tc-loading {
+  background: var(--tc-blue-700);
 }
-.tc-bar-fill {
+.tc-loading-art {
+  inset: 0;
+  width: 100%;
   height: 100%;
-  width: 0;
-  background: var(--tc-torch-gold);
-  transition: width 200ms ease;
+  pointer-events: none;
+}
+.tc-loading-foot {
+  margin-top: auto;
+  width: min(960px, 100%);
+  display: grid;
+  justify-items: center;
+  gap: var(--tc-s-2);
+}
+.tc-bar {
+  width: 100%;
+}
+.tc-timeline {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.tc-loading-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tc-s-1) var(--tc-s-4);
+  max-width: 100%;
+  padding: var(--tc-s-2) var(--tc-s-5);
+  border: var(--tc-bubble-border);
+  border-radius: var(--tc-r-bubble);
+  background: var(--tc-bubble-bg);
+  color: var(--tc-bubble-text);
+  text-align: center;
+}
+.tc-loading-message {
+  margin: 0;
+}
+.tc-percent {
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: var(--tc-fs-button-lg);
+  letter-spacing: var(--tc-ls-caps);
+  color: var(--tc-blue-900);
+}
+.tc-screen > .tc-loading-error {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(560px, 92%);
+  display: grid;
+  justify-items: center;
+  gap: var(--tc-s-2);
+  padding: var(--tc-s-5);
+  border: var(--tc-panel-border);
+  border-radius: 28px;
+  background: var(--tc-panel-bg);
+  color: var(--tc-panel-text);
+  box-shadow: var(--tc-panel-ring);
+  text-align: center;
+}
+.tc-loading-error > * {
+  margin: 0;
+}
+.tc-loading-error :focus-visible {
+  outline-color: var(--tc-focus-on-light);
 }
 
 /* ---------- Reload ---------- */
 .tc-reload-card {
-  display: grid;
-  gap: 12px;
+  width: min(1100px, 100%);
+  overflow: hidden;
+  border: var(--tc-panel-border);
+  border-radius: 28px;
+  background: var(--tc-panel-bg);
+  color: var(--tc-panel-text);
+  box-shadow: var(--tc-panel-ring);
+  text-align: center;
 }
-.tc-reload-who {
-  font-weight: 800;
+.tc-reload-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--tc-s-2) var(--tc-s-4);
+  min-height: 80px;
+  padding: var(--tc-s-3) var(--tc-s-6);
+  background: var(--tc-strip-bg);
+  color: var(--tc-strip-text);
+}
+[data-tc-root] .tc-reload-head h2 {
+  margin: 0;
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: var(--tc-fs-heading);
+  letter-spacing: var(--tc-ls-caps);
+  text-transform: uppercase;
+}
+/* Whose turn it is: a shape, the team name, the child's name, and words. */
+.tc-turn-chip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--tc-s-1) var(--tc-s-2);
+  padding: var(--tc-s-1) var(--tc-s-3);
+  border: 3px solid var(--tc-ink-deep);
+  border-radius: 10px;
+  background: var(--tc-ember);
+  color: var(--tc-ink-deep);
+  box-shadow: 0 0 0 3px var(--tc-parchment-warm);
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: var(--tc-fs-label);
+  letter-spacing: var(--tc-ls-caps);
+  text-transform: uppercase;
+}
+.tc-reload-who::before,
+.tc-turn-tag::before {
+  content: '\00B7';
+  margin-right: var(--tc-s-2);
+}
+.tc-reload-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tc-s-3);
+  padding: var(--tc-s-4) var(--tc-s-6) var(--tc-s-4);
+}
+.tc-reload-body > * {
+  margin: 0;
+}
+.tc-reload-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--tc-s-1) var(--tc-s-5);
+}
+.tc-instructions {
+  margin: 0;
+  font-family: var(--tc-font-voice-old);
+  font-size: var(--tc-fs-lead);
+}
+.tc-timer {
+  display: flex;
+  gap: var(--tc-s-3);
+  align-items: center;
+  justify-content: center;
+}
+.tc-timer .tc-muted {
+  margin: 0;
+}
+/* A friendly ring that fills over the fast-answer time. Nothing is lost when it ends. */
+.tc-timer-ring {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 6px solid var(--tc-oak);
+  border-top-color: var(--tc-purple-700);
+  animation: tc-spin var(--tc-fast-ms) linear 1 both;
+}
+.tc-prompt-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tc-s-4);
 }
 .tc-prompt {
-  font-family: var(--tc-font-display);
-  font-weight: 800;
-  font-size: calc(var(--tc-text-min) * 1.8);
+  font-family: var(--tc-font);
+  font-weight: 700;
+  font-size: calc(var(--tc-text-min) * 1.4);
+  line-height: var(--tc-lh-tight);
+  overflow-wrap: anywhere;
 }
+/* Math: a big equation in plain rounded letters. Orbitron draws 1 as a bar and 7 as a flag, which
+   young readers mix up, so questions, answers and grade chips keep an open numeral face. */
+.tc-reload[data-layout='math'] .tc-prompt {
+  font-family: var(--tc-font);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: var(--tc-fs-heading);
+  letter-spacing: 0.04em;
+}
+.tc-reload[data-layout='math'][data-prompt='short'] .tc-prompt {
+  font-size: var(--tc-fs-hero);
+}
+.tc-reload[data-layout='math'] .tc-choice {
+  font-family: var(--tc-font);
+  font-size: var(--tc-fs-title);
+  font-weight: var(--tc-fw-new-heavy);
+}
+/* Reading: a large word and a speaker button. System letters, easy to read. */
 .tc-reload[data-layout='reading-young'] .tc-prompt {
-  font-size: var(--tc-text-young);
+  font-size: calc(var(--tc-text-min) * 2);
+}
+.tc-reload[data-layout^='reading'] .tc-choice {
+  font-family: var(--tc-font);
+  font-weight: 700;
+  font-size: calc(var(--tc-text-min) * 1.4);
+}
+.tc-reload[data-layout='reading-young'] .tc-choice {
+  font-size: var(--tc-fs-title);
+}
+.tc-reload[data-layout='reading'] .tc-choice {
+  justify-content: flex-start;
+}
+.tc-speak-btn {
+  flex: none;
 }
 .tc-passage {
-  background: var(--tc-card);
-  color: var(--tc-text);
-  border-radius: var(--tc-radius);
-  padding: 12px 16px;
+  padding: var(--tc-s-4) var(--tc-s-5);
+  border: var(--tc-tile-border);
+  border-radius: var(--tc-r-card);
+  background: var(--tc-tile-bg);
+  color: var(--tc-tile-text);
+  font-size: var(--tc-fs-lead);
+  line-height: 1.5;
   text-align: left;
 }
 .tc-choices {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  gap: var(--tc-s-4);
 }
-.tc-reload[data-layout='reading-young'] .tc-choice {
-  font-size: var(--tc-text-young);
+.tc-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tc-s-3);
 }
-.tc-feedback {
-  min-height: 3.2em;
-}
-.tc-feedback[data-state='right'] {
-  background: var(--tc-good-bg);
-  color: var(--tc-good-text);
-  border-radius: var(--tc-radius);
-  padding: 8px;
-}
-.tc-feedback[data-state='oops'] {
-  background: var(--tc-oops-bg);
-  color: var(--tc-oops-text);
-  border-radius: var(--tc-radius);
-  padding: 8px;
-}
-.tc-why {
-  font-weight: 700;
-  color: inherit;
-}
-/* Hint is a small helper, apart from the four answers. */
 .tc-hint-row {
   display: flex;
   justify-content: center;
-  margin-top: 8px;
-  padding-top: 12px;
-  border-top: 2px dashed var(--tc-stone);
 }
 .tc-hint-btn {
   width: auto;
 }
-.tc-speak-btn {
-  justify-self: center;
+.tc-hint-text {
+  margin: 0;
+  padding: var(--tc-s-2) var(--tc-s-4);
+  border: 3px solid var(--tc-purple-700);
+  border-radius: var(--tc-r-button);
+  background: var(--tc-purple-100);
+  color: var(--tc-ink-deep);
+  font-weight: 700;
+}
+.tc-feedback {
+  min-height: 0;
+  border-radius: var(--tc-r-card);
+}
+.tc-feedback[data-state] {
+  padding: var(--tc-s-3) var(--tc-s-4);
+  border: 4px solid var(--tc-ink-deep);
+}
+.tc-feedback[data-state='right'] {
+  background: var(--tc-good-bg);
+  color: var(--tc-good-text);
+}
+.tc-feedback[data-state='oops'] {
+  background: var(--tc-oops-bg);
+  color: var(--tc-oops-text);
+}
+.tc-feedback p {
+  margin: 0;
+}
+.tc-why {
+  font-weight: 700;
+  color: inherit;
 }
 .tc-next-row {
   display: flex;
@@ -599,30 +1347,22 @@
 .tc-cover-mute {
   justify-self: center;
 }
-.tc-hint-text {
-  color: var(--tc-cover-text);
-  font-weight: 700;
+.tc-cover-mute::before {
+  content: '\1F50A';
+  margin-right: var(--tc-s-2);
 }
-/* A friendly ring that fills over the fast-answer time. Nothing is lost when it ends. */
-.tc-timer {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  justify-content: center;
+.tc-cover-mute[data-muted='true']::before {
+  content: '\1F507';
 }
-.tc-timer .tc-muted {
-  color: var(--tc-cover-text);
-  margin: 0;
+/* Hear It is the main help for a pre-reader, so it is bigger than Hint and Sound. */
+.tc-speak-btn {
+  min-height: 72px;
+  font-size: var(--tc-fs-button);
 }
-.tc-timer-ring {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: 6px solid var(--tc-steel);
-  border-top-color: var(--tc-torch-gold);
-  animation: tc-spin var(--tc-fast-ms) linear 1 both;
+/* Empty live regions and the Next slot reserve no space until they have something to say. */
+.tc-reload-body > :empty {
+  margin-top: calc(-1 * var(--tc-s-3));
 }
-
 /* Math: stacked fractions and raised exponents */
 .tc-frac {
   display: inline-flex;
@@ -640,36 +1380,229 @@
   padding: 0 4px;
 }
 
-/* ---------- Stats table ---------- */
-.tc-awards h2,
-.tc-award-card h3 {
-  margin: 0 0 8px;
+/* ---------- Wipeout (end of match) ---------- */
+.tc-victory {
+  gap: var(--tc-s-2);
+  /* Content is centered, so it needs no room for the ? and gear row. That keeps it on one screen. */
+  padding-top: var(--tc-s-3);
+  padding-bottom: var(--tc-s-3);
 }
-.tc-award-card {
-  min-width: 220px;
-  padding: 12px 20px;
-  background: var(--tc-card);
-  border: 3px solid var(--tc-border);
-  border-radius: var(--tc-radius);
-}
-.tc-award-card ul {
+[data-tc-root] .tc-victory .tc-title {
   margin: 0;
-  padding-left: 24px;
-  text-align: left;
-  font-weight: 700;
+  font-size: var(--tc-fs-title);
+  text-shadow: 0 4px 0 var(--tc-purple-700);
+  text-align: center;
+}
+.tc-wipeout {
+  margin: 0;
+  color: var(--tc-ember);
+  text-align: center;
+}
+/* The walls turn into bouncy toy blocks. Nothing is hurt. */
+.tc-blocks {
+  margin-top: auto;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: var(--tc-s-2);
+  height: 72px;
+}
+.tc-block {
+  width: 56px;
+  height: 56px;
+  border: 4px solid var(--tc-ink-deep);
+  border-radius: 10px;
+  background: var(--tc-purple-500);
+  animation: tc-bounce 1.2s ease-in-out infinite;
+}
+.tc-block:nth-child(2) {
+  background: var(--tc-blue-500);
+  height: 46px;
+  animation-delay: -0.2s;
+}
+.tc-block:nth-child(3) {
+  background: var(--tc-ember);
+  height: 62px;
+  animation-delay: -0.4s;
+}
+.tc-block:nth-child(4) {
+  background: var(--tc-pulse);
+  animation-delay: -0.6s;
+}
+.tc-block:nth-child(5) {
+  background: var(--tc-purple-300);
+  height: 42px;
+  animation-delay: -0.8s;
+}
+.tc-block:nth-child(6) {
+  background: var(--tc-blue-300);
+  height: 58px;
+  animation-delay: -1s;
+}
+.tc-block:nth-child(7) {
+  background: var(--tc-ember);
+  height: 50px;
+  animation-delay: -0.1s;
 }
 .tc-chrono-says {
-  max-width: 640px;
-  padding: 10px 18px;
-  background: var(--tc-white);
-  color: var(--tc-ink);
-  border: 3px solid var(--tc-ink);
-  border-radius: var(--tc-radius);
+  display: flex;
+  align-items: center;
+  gap: var(--tc-s-3);
+  max-width: 880px;
+  padding: var(--tc-s-2) var(--tc-s-5);
+  background: var(--tc-bubble-bg);
+  color: var(--tc-bubble-text);
+  border: var(--tc-bubble-border);
+  border-radius: var(--tc-r-bubble);
+  font-family: var(--tc-font-voice-old);
+  font-size: var(--tc-fs-lead);
 }
-.tc-btn-big {
-  min-height: 72px;
-  min-width: 220px;
-  font-size: calc(var(--tc-text-min) * 1.3);
+.tc-chrono-says p {
+  margin: 0;
+}
+.tc-chrono-says .tc-chrono-face {
+  flex: none;
+}
+.tc-awards {
+  text-align: center;
+}
+.tc-awards h2,
+.tc-award-card h3 {
+  margin: 0 0 var(--tc-s-2);
+}
+/* Both cards share one width and one height. Each wears its team's edge and shadow. */
+.tc-awards > .tc-row {
+  align-items: stretch;
+  gap: var(--tc-s-5);
+}
+.tc-team-eyebrow {
+  margin: 0;
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: var(--tc-fs-label);
+  letter-spacing: var(--tc-ls-caps-wide);
+  text-transform: uppercase;
+}
+.tc-victory[data-team='PAST'] > .tc-team-eyebrow {
+  color: var(--tc-eyebrow-past);
+}
+.tc-victory[data-team='FUTURE'] > .tc-team-eyebrow {
+  color: var(--tc-eyebrow-future);
+}
+.tc-brain-stats {
+  margin: 0 0 var(--tc-s-2);
+  font-size: var(--tc-fs-label);
+  font-weight: 700;
+}
+.tc-award-card[data-team='PAST'] {
+  border-color: var(--tc-purple-700);
+  box-shadow: 0 8px 0 var(--tc-purple-700);
+}
+.tc-award-card[data-team='PAST'] .tc-team-eyebrow {
+  color: var(--tc-purple-700);
+}
+.tc-award-card[data-team='FUTURE'] {
+  border-color: var(--tc-blue-700);
+  box-shadow:
+    0 8px 0 var(--tc-blue-700),
+    0 0 24px var(--tc-pulse);
+}
+.tc-award-card[data-team='FUTURE'] .tc-team-eyebrow {
+  color: var(--tc-blue-700);
+}
+.tc-award-card {
+  flex: 1 1 260px;
+  max-width: 420px;
+  padding: var(--tc-s-3) var(--tc-s-4);
+  background: var(--tc-panel-bg);
+  color: var(--tc-panel-text);
+  border: 4px solid var(--tc-ink-deep);
+  border-radius: var(--tc-r-card);
+  box-shadow: var(--tc-shadow-card);
+}
+.tc-award-card ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--tc-s-1) var(--tc-s-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-weight: 700;
+}
+.tc-award-card li {
+  padding: 2px var(--tc-s-3);
+  border: 2px solid currentcolor;
+  border-radius: var(--tc-r-pill);
+}
+.tc-victory > .tc-row:last-child {
+  margin-top: var(--tc-s-3);
+  margin-bottom: auto;
+}
+
+/* Short screens (1024x768, 1280x800): the decorative toy blocks step aside and the award cards
+   tighten, so Victory fits whatever mix of awards a match earns. */
+@media (max-height: 820px) {
+  .tc-blocks {
+    display: none;
+  }
+  .tc-award-card {
+    padding: var(--tc-s-2) var(--tc-s-3);
+  }
+  .tc-award-card li {
+    padding-block: 0;
+  }
+  .tc-victory > .tc-row:last-child {
+    margin-top: var(--tc-s-2);
+  }
+}
+
+/* ---------- Settings (and other panels) ---------- */
+.tc-settings {
+  justify-content: center;
+}
+.tc-panel {
+  width: min(640px, 100%);
+  margin-block: auto;
+  overflow: hidden;
+  border: var(--tc-panel-border);
+  border-radius: 28px;
+  background: var(--tc-panel-bg);
+  color: var(--tc-panel-text);
+  box-shadow: var(--tc-panel-ring);
+}
+.tc-panel-head {
+  padding: var(--tc-s-3) var(--tc-s-6);
+  background: var(--tc-strip-bg);
+  color: var(--tc-strip-text);
+}
+[data-tc-root] .tc-panel-head h1 {
+  margin: 0;
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: var(--tc-fs-heading);
+  letter-spacing: var(--tc-ls-caps);
+  text-transform: uppercase;
+}
+.tc-panel-body {
+  display: grid;
+  gap: var(--tc-s-3);
+  justify-items: center;
+  padding: var(--tc-s-5) var(--tc-s-6);
+}
+.tc-panel-body > * {
+  margin: 0;
+}
+.tc-panel-body .tc-slider-row {
+  width: 100%;
+}
+.tc-readout {
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new);
+}
+/* The pause panel is built outside the app root, so give its card the same look. */
+[data-tc-pause] .tc-cover-card h2 {
+  font-size: var(--tc-fs-title);
 }
 
 /* ---------- Motion ---------- */
@@ -682,20 +1615,18 @@
 }
 @keyframes tc-drop {
   from {
-    transform: translate(-50%, -150%);
+    transform: translate(-50%, -150%) rotate(var(--tc-banner-turn-tilt));
   }
   to {
-    transform: translate(-50%, 0);
+    transform: translate(-50%, 0) rotate(var(--tc-banner-turn-tilt));
   }
 }
 @keyframes tc-slide {
   from {
     transform: translateX(60px);
-    opacity: 0;
   }
   to {
     transform: translateX(0);
-    opacity: 1;
   }
 }
 @keyframes tc-pop {
@@ -711,8 +1642,143 @@
     transform: rotate(360deg);
   }
 }
+@keyframes tc-bounce {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-6deg);
+  }
+  50% {
+    transform: translateY(-18px) rotate(8deg);
+  }
+}
 
-/* Reduced motion: no slides, drops, pops, or spins. Fades only. */
+/* Loading scene: the wobbling hoverboard, swinging arms, and the confused bot. */
+.tc-ld-board {
+  animation: tc-ld-wob 1.3s ease-in-out infinite alternate;
+}
+.tc-ld-knight {
+  animation: tc-ld-knight 1.3s ease-in-out infinite alternate;
+}
+.tc-ld-arm-l {
+  transform-box: view-box;
+  transform-origin: -44px -160px;
+  animation: tc-ld-arm 0.65s ease-in-out infinite alternate;
+}
+.tc-ld-arm-r {
+  transform-box: view-box;
+  transform-origin: 44px -160px;
+  animation: tc-ld-arm 0.65s ease-in-out infinite alternate-reverse;
+}
+.tc-ld-leg-a {
+  transform-origin: -24px -92px;
+  animation: tc-ld-leg 0.65s ease-in-out infinite alternate;
+}
+.tc-ld-leg-b {
+  transform-origin: 24px -92px;
+  animation: tc-ld-leg 0.65s ease-in-out infinite alternate-reverse;
+}
+.tc-ld-plume {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: tc-ld-plume 0.7s ease-in-out infinite alternate;
+}
+.tc-ld-bot {
+  animation: tc-ld-bot 3s ease-in-out infinite;
+}
+.tc-ld-head {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: tc-ld-tilt 2.4s ease-in-out infinite alternate;
+}
+.tc-ld-flame {
+  transform-box: fill-box;
+  transform-origin: 50% 0;
+  animation: tc-ld-flame 0.15s ease-in-out infinite alternate;
+}
+.tc-ld-twinkle {
+  animation: tc-ld-twinkle 2.4s ease-in-out infinite;
+}
+.tc-ld-sweat {
+  animation: tc-ld-sweat 1.4s ease-in infinite;
+}
+@keyframes tc-ld-wob {
+  from {
+    transform: rotate(-13deg) translateY(6px);
+  }
+  to {
+    transform: rotate(13deg) translateY(-8px);
+  }
+}
+@keyframes tc-ld-knight {
+  from {
+    transform: rotate(9deg);
+  }
+  to {
+    transform: rotate(-9deg);
+  }
+}
+@keyframes tc-ld-arm {
+  from {
+    transform: rotate(-16deg);
+  }
+  to {
+    transform: rotate(16deg);
+  }
+}
+@keyframes tc-ld-leg {
+  from {
+    transform: rotate(-5deg);
+  }
+  to {
+    transform: rotate(5deg);
+  }
+}
+@keyframes tc-ld-plume {
+  from {
+    transform: rotate(-12deg);
+  }
+  to {
+    transform: rotate(14deg);
+  }
+}
+@keyframes tc-ld-bot {
+  50% {
+    transform: translate(0, -14px);
+  }
+}
+@keyframes tc-ld-tilt {
+  from {
+    transform: rotate(-10deg);
+  }
+  to {
+    transform: rotate(10deg);
+  }
+}
+@keyframes tc-ld-flame {
+  from {
+    transform: scaleY(0.8);
+  }
+  to {
+    transform: scaleY(1.2);
+  }
+}
+@keyframes tc-ld-twinkle {
+  50% {
+    opacity: 0.2;
+  }
+}
+@keyframes tc-ld-sweat {
+  0% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-14px, 40px);
+    opacity: 0;
+  }
+}
+
+/* Reduced motion: no slides, drops, pops, bounces, or spins. Glows stay still. No banner tilt. */
 @media (prefers-reduced-motion: reduce) {
   [data-tc-root] *,
   [data-tc-root] *::before,
@@ -720,33 +1786,71 @@
     animation: none !important;
     transition: none !important;
   }
+  .tc-banner {
+    transform: translateX(-50%);
+  }
 }
 [data-motion='reduced'],
 [data-motion='reduced'] * {
   animation: none !important;
   transition: none !important;
 }
+[data-motion='reduced'] .tc-banner,
+.tc-banner[data-motion='reduced'] {
+  transform: translateX(-50%);
+}
 
 /* ---------- Smaller screens: iPad portrait ---------- */
 @media (max-width: 900px) {
-  .tc-team-cards {
-    grid-template-columns: 1fr;
+  .tc-banner {
+    font-size: var(--tc-fs-lead);
   }
-  /* Two fixed rows (wind and mute, then both team cards), so font width cannot change the height. */
+  /* Both card headers wrap the same way, so the two cards stay level. */
+  .tc-team-home {
+    flex-basis: 100%;
+    text-align: center;
+  }
+  .tc-screen {
+    padding-inline: var(--tc-s-4);
+  }
+  .tc-setup {
+    padding-top: var(--tc-s-3);
+  }
+  .tc-team-cards {
+    gap: var(--tc-s-3);
+  }
+  .tc-team-card {
+    padding: var(--tc-s-3);
+  }
+  /* 13 grades fit 5 across inside a half-width card. */
+  .tc-chips-grades {
+    grid-template-columns: repeat(5, minmax(var(--tc-chip-min), 1fr));
+  }
+  /* Portrait: a fixed grid. Row 0 clears the ? and gear, row 1 holds both team cards, row 2 the
+     shots. Sound lives low and left, so nothing floats over the picture. */
   .tc-hud-top {
     display: grid;
-    grid-template-columns: 1fr 1fr auto;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      'past future'
+      'center center';
+    padding: var(--tc-chrome-row) 12px 12px;
   }
-  .tc-hud-center {
-    grid-column: 1 / 3;
-    order: -2;
+  .tc-hud-top > [data-team='PAST'] {
+    grid-area: past;
   }
-  .tc-hud-corner {
-    grid-column: 3;
-    order: -1;
+  .tc-hud-top > [data-team='FUTURE'] {
+    grid-area: future;
+  }
+  .tc-hud-top > .tc-hud-center {
+    grid-area: center;
+    flex-direction: row;
+    justify-content: center;
+    gap: var(--tc-s-4);
   }
   .tc-team-panel {
     min-width: 0;
+    max-width: none;
   }
   /* Portrait: aim panel and Fire share one row in the band below the picture. */
   .tc-hud-bottom {
@@ -759,9 +1863,74 @@
     flex: 1;
     min-width: 0;
   }
+  /* The keyboard hint rides above the controls here, clear of Sound and Pause. */
+  .tc-hint {
+    top: auto;
+    bottom: 100%;
+    margin: 0 0 8px;
+  }
+  .tc-reload-body {
+    padding-inline: var(--tc-s-4);
+  }
+  .tc-reload-head {
+    padding-inline: var(--tc-s-4);
+  }
+  .tc-cover {
+    padding: var(--tc-s-3);
+  }
+}
+/* Instructions and the bonus ring share one row on wide screens. */
+@media (min-width: 901px) {
+  .tc-reload-info {
+    flex-wrap: nowrap;
+  }
 }
 @media (max-width: 760px) {
   .tc-choices {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Reading with a story: the story on the left, the question on the right (wide screens). */
+@media (min-width: 901px) {
+  .tc-reload[data-passage='true'] .tc-reload-body {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    column-gap: var(--tc-s-5);
+    row-gap: var(--tc-s-2);
+    align-items: start;
+  }
+  .tc-reload[data-passage='true'] .tc-reload-body > * {
+    grid-column: 2;
+  }
+  .tc-reload[data-passage='true'] .tc-reload-body > .tc-reload-info {
+    grid-column: 1 / -1;
+    flex-wrap: nowrap;
+  }
+  .tc-reload[data-passage='true'] .tc-instructions {
+    white-space: nowrap;
+  }
+  .tc-reload[data-passage='true'] .tc-timer .tc-muted {
+    text-align: left;
+  }
+  .tc-reload[data-passage='true'] .tc-reload-body > .tc-passage {
+    grid-column: 1;
+    grid-row: 2 / span 8;
+  }
+  .tc-reload[data-passage='true'] .tc-choices {
+    grid-template-columns: 1fr;
+    gap: var(--tc-s-3);
+  }
+  .tc-reload[data-passage='true'] .tc-choice {
+    min-height: 64px;
+    font-size: var(--tc-fs-lead);
+  }
+  .tc-reload[data-passage='true'] .tc-prompt-row {
+    flex-wrap: nowrap;
+    justify-content: space-between;
+  }
+  .tc-reload[data-passage='true'] .tc-prompt {
+    flex: 1 1 0;
+    text-align: left;
   }
 }

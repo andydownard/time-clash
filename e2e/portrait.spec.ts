@@ -37,8 +37,6 @@ test('portrait: setup, battle, pass screen and reload all fit', async ({ page, b
   await fits(page, ['tap-to-play'], 'Tap to Start');
   await toSetup(page);
   await fits(page, ['setup-name-PAST', 'setup-name-FUTURE'], 'Setup');
-  // The start button may sit below the fold (see the test.fail note below), so scroll to it.
-  await tid(page, 'setup-next').scrollIntoViewIfNeeded();
   await expect(tid(page, 'setup-next')).toBeInViewport();
   await saveShot(page, browserName, 'setup');
   await startMatch(page);
@@ -67,10 +65,8 @@ test('portrait: setup, battle, pass screen and reload all fit', async ({ page, b
   await waitPassScreen(page);
 });
 
-// APP FINDING (reported): on iPad portrait the "Let's clash!" button is below the fold on
-// Setup. The UI rule wants the primary action above the fold. test.fail() flips to a failure
-// the day it is fixed, so this note cannot go stale.
-test.fail('portrait: the start button is visible without scrolling', async ({ page }) => {
+// The UI rule wants the primary action above the fold. Setup must show "Let's clash!" with no scrolling.
+test('portrait: the start button is visible without scrolling', async ({ page }) => {
   await toSetup(page);
   await fits(page, ['setup-next'], 'Setup');
 });

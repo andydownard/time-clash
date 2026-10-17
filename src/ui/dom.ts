@@ -64,8 +64,21 @@ export function trapTab(container: HTMLElement): void {
   });
 }
 
+/**
+ * Real operator symbols for display. A spaced hyphen between numbers becomes a minus sign, a spaced
+ * x becomes a times sign, and a spaced slash becomes a divide sign. Fractions (3/4), negatives and
+ * variables (2x) stay as written. The answer key keeps ASCII; only what is drawn changes.
+ */
+export function toMathSymbols(text: string): string {
+  return text
+    .replace(/(?<=[\d)])\s-\s(?=[\d(])/g, ' \u2212 ')
+    .replace(/(?<=[\d)])\s[xX]\s(?=[\d(])/g, ' \u00D7 ')
+    .replace(/(?<=[\d)])\s\/\s(?=[\d(])/g, ' \u00F7 ');
+}
+
 /** Renders `x^2` as x with a raised 2, and `3/4` as a stacked fraction. Plain text stays plain. */
-export function renderMath(doc: Document, text: string): Node[] {
+export function renderMath(doc: Document, raw: string): Node[] {
+  const text = toMathSymbols(raw);
   const out: Node[] = [];
   const re = /(\d+)\/(\d+)|\^(-?\d+|\([^)]*\))/g;
   let last = 0;

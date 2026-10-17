@@ -65,6 +65,8 @@ async function expectCover(page: import('@playwright/test').Page, testId: string
 }
 
 test('plays a full match: aim, fire, reload, pass, win, rematch', async ({ page, browserName }) => {
+  // A whole match under busy workers can pass 3 minutes. Triple the limit, no sleeps.
+  test.slow();
   await toSetup(page);
   await saveShot(page, browserName, 'setup');
   await startMatch(page, PAST_SIDE, FUTURE_SIDE, SEED);
@@ -114,7 +116,7 @@ test('plays a full match: aim, fire, reload, pass, win, rematch', async ({ page,
   await expectCover(page, 'reload-modal');
   await saveShot(page, browserName, 'reload-modal');
   const modalText = await tid(page, 'reload-modal').innerText();
-  expect(modalText).toContain('Reload time!');
+  expect(modalText.toLowerCase()).toContain('reload time!');
   // (Space and Enter are left out: on a focused answer button they are a real answer.)
   await page.keyboard.press('Escape');
   await page.keyboard.press('ArrowUp');

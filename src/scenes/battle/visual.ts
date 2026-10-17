@@ -1,38 +1,95 @@
-// Drawing-only constants and the colors from docs/DESIGN_BRIEF.md.
+// Drawing-only constants and the colors from docs/DESIGN_SYSTEM.md.
 // Balance numbers (damage, timing, aim limits) stay in src/game/config.ts.
 import type { Team } from '../../game/types';
+import { PALETTE as TOKENS } from '../palette';
 
+/**
+ * Art-only colors from the Battle board (illustration shades, not UI tokens). Text and
+ * interface colors always come from PALETTE in ../palette.ts so they match tokens.css.
+ */
+export const ART = {
+  stone: 0x8c84a8,
+  stoneLine: 0x5f5880,
+  stoneEdge: 0x3b3560,
+  grassTop: 0x4a9468,
+  grassMid: 0x2f7050,
+  grassLow: 0x1b4538,
+  soilTop: 0x5b6b88,
+  hull: 0x5d6c8c,
+  hullDark: 0x1d2744,
+  visor: 0xcfd9ee,
+  skin: 0xf5c9a0,
+  pink: 0xff5fb0,
+  flame: 0xff7a2e,
+  shadow: 0x05061a,
+  skyTop: 0x0c1a52,
+  skyMid: 0x2f2a9c,
+  skyLow: 0x9a4fc4,
+  skyHorizon: 0xee7fa0,
+  skyGlow: 0xffb877,
+} as const;
+
+/** Colors the drawing code leans on, grouped by team. Every UI color is a design token. */
 export const PALETTE = {
   past: {
-    parchment: 0xf3e3c3,
-    stone: 0x8c8a84,
-    banner: 0xb3372b,
-    gold: 0xf2b134,
-    wood: 0x6b4423,
+    parchment: TOKENS.parchment,
+    stone: ART.stone,
+    stoneLine: ART.stoneLine,
+    banner: TOKENS.purple500,
+    bannerDark: TOKENS.purple700,
+    deep: TOKENS.purple900,
+    gold: TOKENS.ember,
+    light: TOKENS.purple300,
+    wood: TOKENS.oak,
   },
   future: {
-    night: 0x0e1a33,
-    cyan: 0x2ee6ff,
-    magenta: 0xff3dae,
-    mint: 0x7cffc4,
-    steel: 0xb9c4d0,
+    night: TOKENS.blue900,
+    glow: TOKENS.pulse,
+    neon: TOKENS.blue500,
+    edge: TOKENS.blue700,
+    pale: TOKENS.blue100,
+    steel: TOKENS.steelBlue,
+    hull: ART.hull,
+    hullDark: ART.hullDark,
+    visor: ART.visor,
+    pink: ART.pink,
   },
   shared: {
-    campfire: 0xff7a1a,
-    twilight: 0x3b2a5e,
-    white: 0xffffff,
-    ink: 0x1b1b26,
+    campfire: ART.flame,
+    twilight: TOKENS.purple700,
+    white: TOKENS.white,
+    ink: TOKENS.inkDeep,
+    ember: TOKENS.ember,
+    pulse: TOKENS.pulse,
+    shadow: ART.shadow,
   },
 } as const;
 
 /** The color each side's glow, projectile and bars lean on. */
 export const TEAM_COLOR: Record<Team, number> = {
   PAST: PALETTE.past.gold,
-  FUTURE: PALETTE.future.cyan,
+  FUTURE: PALETTE.future.glow,
 };
 
-/** Aim dial: the handle sits between these distances from the launcher. */
-export const DIAL = { minRadius: 40, maxRadius: 150, handleRadius: 18 } as const;
+/**
+ * Aim dial: the handle sits between these distances from the launcher. grabRadius is how close a
+ * pointer must land to pick the handle up: 2 x 48 x (768 / 1280) = 57.6 screen px on portrait iPad.
+ */
+export const DIAL = { minRadius: 40, maxRadius: 150, handleRadius: 22, grabRadius: 48 } as const;
+
+/**
+ * Panel geometry in world px. The strip below the ground line (y 620 to 720) holds the panels.
+ * The panels end at y 680 on purpose: the fixed Pause button in the bottom right corner starts
+ * at about y 685 once the canvas fills a 1280x800 screen, and the panel must stay above it.
+ */
+export const PANEL = {
+  y: 626,
+  h: 54,
+  edge: 16,
+  pad: 10,
+  gap: 10,
+  iconW: 30,
+} as const;
 
 /** Longest wind arrow, in world px. */
 export const WIND_ARROW_MAX = 120;
@@ -46,6 +103,8 @@ export const PREVIEW_MIN_ALPHA = 0.15;
 export const CHARACTER_OFFSET = 40;
 /** The speech bubble tip sits this far above the character's feet. */
 export const BUBBLE_RISE = 130;
+/** The bubble tail aims this far above the character's feet (about head height). */
+export const TAIL_TARGET_RISE = 90;
 /** Widest a speech bubble gets, in world units. It is centered on the bubble anchor. */
 export const BUBBLE_MAX_WORLD_W = 360;
 
@@ -60,5 +119,4 @@ export const REDUCED_FADE_MS = 250;
 
 export const IMPACT_SCALE = { direct: 1.4, near: 1, miss: 0.6 } as const;
 
-export const FONT = 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif';
 export const TEXT_MIN_PX = 20;

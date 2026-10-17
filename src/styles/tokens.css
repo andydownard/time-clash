@@ -44,8 +44,8 @@
   --tc-oops-text: #6b3a00;
 
   /* Team accents. Each team owns one. */
-  --tc-past-accent: var(--tc-banner-red);
-  --tc-future-accent: var(--tc-cyan);
+  --tc-past-accent: var(--tc-purple-500);
+  --tc-future-accent: var(--tc-pulse);
   --tc-past-btn-bg: var(--tc-banner-red);
   --tc-past-btn-text: var(--tc-white);
   --tc-future-btn-bg: var(--tc-cyan);
@@ -82,4 +82,196 @@
   :root {
     --tc-hud-row: 300px;
   }
+}
+
+/* ------------------------------------------------------------------
+   Look and feel tokens. Source of truth: docs/DESIGN_SYSTEM.md.
+   Names below are new. The older names above stay until screens move over.
+   tests/styles/design-tokens.test.ts pins values, contrast, and sizes.
+   ------------------------------------------------------------------ */
+:root {
+  /* Chrono Blue: the future. Pods, neon, interface glow. */
+  --tc-blue-100: #e1eaff;
+  --tc-blue-300: #86a9ff;
+  --tc-blue-500: #2f6bff;
+  --tc-blue-700: #1a3fb5;
+  --tc-blue-900: #0a1a4f;
+  /* Royal Purple: the past. Pavilions, banners, wax seals. */
+  --tc-purple-100: #efe6ff;
+  --tc-purple-300: #bc9cff;
+  --tc-purple-500: #8247e8;
+  --tc-purple-700: #5a28b8;
+  --tc-purple-900: #25104f;
+  /* Support colors. Ember and Pulse are the only lights. */
+  --tc-ink-deep: #12102b;
+  --tc-parchment-warm: #f7ebcb;
+  --tc-oak: #7a4a24;
+  --tc-steel-blue: #9aa8bd;
+  --tc-ember: #ffb23e;
+  --tc-pulse: #4fd8ff;
+
+  /* Meaning tokens for the new look */
+  --tc-surface-light: var(--tc-parchment-warm);
+  --tc-surface-dark: var(--tc-ink-deep);
+  --tc-surface-past: var(--tc-purple-900);
+  --tc-surface-future: var(--tc-blue-900);
+  --tc-on-light: var(--tc-ink-deep);
+  --tc-on-dark: var(--tc-parchment-warm);
+  --tc-on-future: var(--tc-blue-100);
+  --tc-eyebrow-past: var(--tc-purple-300);
+  --tc-eyebrow-future: var(--tc-blue-300);
+  --tc-line-past: var(--tc-purple-700);
+  --tc-line-future: var(--tc-blue-700);
+  /* Focus ring needs 3:1 on its own surface, so there is one per surface kind. */
+  --tc-focus-on-light: var(--tc-blue-700);
+  --tc-focus-on-dark: var(--tc-ember);
+  --tc-focus-width: 4px;
+  --tc-focus-offset: 3px;
+
+  /* Type families. Fonts are served from /fonts (see fonts.css). Fallbacks are system fonts. */
+  --tc-font-voice-old: 'MedievalSharp', 'Palatino Linotype', Palatino, Georgia, serif;
+  --tc-font-voice-new: 'Orbitron', 'Arial Black', 'Helvetica Neue', Arial, sans-serif;
+  /* Type sizes. Nothing is under 20px. Mock sizes of 14 to 18px were raised to 20px. */
+  --tc-fs-label: 20px;
+  --tc-fs-body: 20px;
+  --tc-fs-lead: 24px;
+  --tc-fs-button: 24px;
+  --tc-fs-button-lg: 28px;
+  --tc-fs-heading: 32px;
+  --tc-fs-title: 48px;
+  --tc-fs-hero: 64px;
+  --tc-ls-caps: 0.08em;
+  --tc-ls-caps-wide: 0.14em;
+  --tc-lh-tight: 1.1;
+  --tc-lh-body: 1.3;
+  --tc-fw-new: 800;
+  --tc-fw-new-heavy: 900;
+
+  /* Radii */
+  --tc-r-chip: 14px;
+  --tc-r-button: 16px;
+  --tc-r-button-lg: 20px;
+  --tc-r-card: 18px;
+  --tc-r-bubble: 26px;
+  --tc-r-pill: 999px;
+
+  /* Spacing scale (4px base) */
+  --tc-s-1: 4px;
+  --tc-s-2: 8px;
+  --tc-s-3: 12px;
+  --tc-s-4: 16px;
+  --tc-s-5: 24px;
+  --tc-s-6: 32px;
+  --tc-s-7: 48px;
+  --tc-s-8: 64px;
+
+  /* Shadows and glows */
+  --tc-shadow-wood: 0 6px 0 var(--tc-purple-900), inset 0 3px 0 rgb(255 255 255 / 25%);
+  --tc-shadow-card: 0 8px 0 var(--tc-purple-700);
+  --tc-shadow-banner: 0 0 0 4px var(--tc-parchment-warm), 0 8px 0 var(--tc-purple-700);
+  --tc-glow-neon:
+    0 0 0 3px rgb(79 216 255 / 25%), 0 0 26px var(--tc-blue-500),
+    inset 0 0 16px rgb(79 216 255 / 40%);
+  --tc-glow-ready:
+    0 0 0 4px rgb(255 178 62 / 35%), 0 0 30px rgb(255 178 62 / 70%), 0 8px 0 var(--tc-purple-900);
+
+  /* Button recipe: wood (Team Past). Gradient runs Purple 700 to 900 so cream text keeps 4.5:1. */
+  --tc-btn-wood-bg:
+    repeating-linear-gradient(92deg, rgb(0 0 0 / 10%) 0 3px, transparent 3px 9px),
+    linear-gradient(var(--tc-purple-700), var(--tc-purple-900));
+  --tc-btn-wood-text: var(--tc-parchment-warm);
+  --tc-btn-wood-border: 4px solid var(--tc-purple-900);
+  --tc-btn-wood-text-shadow: 0 3px 0 var(--tc-purple-900);
+  /* Button recipe: neon (Team Future) */
+  --tc-btn-neon-bg: linear-gradient(var(--tc-blue-700), var(--tc-blue-900));
+  --tc-btn-neon-text: var(--tc-blue-100);
+  --tc-btn-neon-border: 3px solid var(--tc-pulse);
+  --tc-btn-neon-text-shadow: 0 0 10px var(--tc-pulse);
+  /* Button recipe: primary, gold border (READY style). The text sits on Purple 700 to Blue 900. */
+  --tc-btn-primary-bg: linear-gradient(
+    100deg,
+    var(--tc-purple-700) 0%,
+    var(--tc-purple-700) 46%,
+    var(--tc-blue-700) 54%,
+    var(--tc-blue-900) 100%
+  );
+  --tc-btn-primary-text: var(--tc-parchment-warm);
+  --tc-btn-primary-border: 5px solid var(--tc-ember);
+  --tc-btn-primary-text-shadow: 0 3px 0 var(--tc-ink-deep);
+
+  /* Component recipes */
+  --tc-bar-track: var(--tc-blue-900);
+  --tc-bar-edge: var(--tc-pulse);
+  --tc-bar-fill: linear-gradient(90deg, var(--tc-blue-500), var(--tc-purple-500));
+  --tc-bar-h: 26px;
+  --tc-banner-turn-bg: var(--tc-ember);
+  --tc-banner-turn-text: var(--tc-ink-deep);
+  --tc-banner-turn-border: 4px solid var(--tc-ink-deep);
+  --tc-banner-turn-tilt: -2deg;
+  --tc-bubble-bg: var(--tc-parchment-warm);
+  --tc-bubble-text: var(--tc-ink-deep);
+  --tc-bubble-border: 4px solid var(--tc-ink-deep);
+  --tc-chip-bg: var(--tc-parchment-warm);
+  --tc-chip-text: var(--tc-ink-deep);
+  --tc-chip-border: 3px solid var(--tc-oak);
+  --tc-chip-on-bg: var(--tc-blue-700);
+  --tc-chip-on-text: var(--tc-white);
+  --tc-chip-on-border: 3px solid var(--tc-ember);
+  --tc-chip-min: 56px;
+  /* Chips on a team card (Setup board): see-through with the team edge. Picked = Ember on Ink. */
+  --tc-chip-past-edge: var(--tc-purple-300);
+  --tc-chip-future-edge: var(--tc-blue-300);
+  --tc-chip-picked-bg: var(--tc-ember);
+  --tc-chip-picked-text: var(--tc-ink-deep);
+  --tc-chip-picked-edge: var(--tc-ink-deep);
+  --tc-input-bg: var(--tc-white);
+  --tc-input-text: var(--tc-ink-deep);
+  --tc-input-border: 3px solid var(--tc-oak);
+  --tc-input-min-h: 56px;
+}
+
+/* ------------------------------------------------------------------
+   Screen and panel tokens (UI track, additive). They only point at the palette above, so no
+   new color is introduced here. Pairs are pinned by tests/ui/lookAndFeel.test.ts.
+   ------------------------------------------------------------------ */
+:root {
+  /* Full-screen backgrounds. Past is purple on the left, Future is blue on the right. */
+  --tc-screen-split-bg: linear-gradient(
+    90deg,
+    var(--tc-purple-900) 0%,
+    var(--tc-purple-900) 46%,
+    var(--tc-ink-deep) 50%,
+    var(--tc-blue-900) 54%,
+    var(--tc-blue-900) 100%
+  );
+  --tc-screen-dark-bg: linear-gradient(var(--tc-ink-deep), var(--tc-purple-900));
+  --tc-cover-past-bg: linear-gradient(var(--tc-purple-900), var(--tc-ink-deep));
+  --tc-cover-future-bg: linear-gradient(var(--tc-blue-900), var(--tc-ink-deep));
+  /* Team cards on the dark screens */
+  --tc-card-past-bg: var(--tc-purple-900);
+  --tc-card-past-edge: var(--tc-purple-300);
+  --tc-card-future-bg: var(--tc-blue-900);
+  --tc-card-future-edge: var(--tc-blue-300);
+  /* Neutral button: ink with a cream edge. Works on dark and on parchment. */
+  --tc-btn-neutral-bg: var(--tc-ink-deep);
+  --tc-btn-neutral-text: var(--tc-parchment-warm);
+  --tc-btn-neutral-border: 3px solid var(--tc-parchment-warm);
+  /* Header strip on the question card and settings card */
+  --tc-strip-bg: linear-gradient(100deg, var(--tc-purple-700), var(--tc-blue-700));
+  --tc-strip-text: var(--tc-parchment-warm);
+  /* Panels (settings, question, awards) */
+  --tc-panel-bg: var(--tc-parchment-warm);
+  --tc-panel-text: var(--tc-ink-deep);
+  --tc-panel-border: 6px solid var(--tc-ink-deep);
+  --tc-panel-ring: 0 0 0 6px var(--tc-ember), 0 0 40px var(--tc-ember);
+  /* Answer tiles */
+  --tc-tile-bg: var(--tc-white);
+  --tc-tile-text: var(--tc-ink-deep);
+  --tc-tile-border: 4px solid var(--tc-purple-700);
+  --tc-tile-key-bg: var(--tc-purple-700);
+  --tc-tile-key-text: var(--tc-parchment-warm);
+  /* Caption bar */
+  --tc-caption-bar-bg: var(--tc-ink-deep);
+  --tc-caption-bar-text: var(--tc-parchment-warm);
+  --tc-caption-bar-border: 3px solid var(--tc-ember);
 }

@@ -39,12 +39,12 @@ export default defineConfig({
     ]),
     {
       name: `chromium-${portrait.name}`,
-      testMatch: /portrait\.spec\.ts/,
+      testMatch: /(portrait|look)\.spec\.ts/,
       use: { ...devices['Desktop Chrome'], viewport: portrait.viewport, ...quiet },
     },
     {
       name: `webkit-${portrait.name}`,
-      testMatch: /portrait\.spec\.ts/,
+      testMatch: /(portrait|look)\.spec\.ts/,
       use: { ...devices['Desktop Safari'], viewport: portrait.viewport },
     },
   ],
