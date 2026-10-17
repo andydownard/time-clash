@@ -4,6 +4,7 @@ import { freshCamp, freshLoadout, type CampState, type TeamLoadout } from '../ga
 import type { Grade, Player, Players, Subject, Team } from '../game/types';
 import { FORGE, WEAPONS, type WeaponId } from '../game/weapons';
 import { UPGRADES, UPGRADE_MAX_LEVEL, type UpgradeId } from '../game/upgrades';
+import { CALIBRATION, type CalibrationState, type Levels } from '../questions/calibration';
 import type { PickHistory, QuestionSubject } from '../questions/types';
 import {
   STORAGE_KEYS,
@@ -139,6 +140,35 @@ export function loadCamp(storage: TypedStorage): CampState {
   return storage.get('timeclash.camp') ?? freshCamp();
 }
 
+function parseCalibration(v: unknown): CalibrationState | null {
+  if (!isObject(v)) return null;
+  const offset = wholeBetween(v.offset, -CALIBRATION.maxOffset, CALIBRATION.maxOffset);
+  if (offset === null) return null;
+  if (!Array.isArray(v.recent) || v.recent.length > CALIBRATION.window) return null;
+  if (!v.recent.every((a) => typeof a === 'boolean')) return null;
+  return { offset, recent: [...(v.recent as boolean[])] };
+}
+
+function parseLevels(v: unknown): Levels | null {
+  if (!isObject(v)) return null;
+  const out: Levels = {};
+  for (const [name, rec] of Object.entries(v)) {
+    if (!isObject(rec)) continue;
+    const reading = parseCalibration(rec.reading);
+    const math = parseCalibration(rec.math);
+    if (!reading && !math) continue;
+    out[name] = { ...(reading ? { reading } : {}), ...(math ? { math } : {}) };
+  }
+  const keys = Object.keys(out);
+  for (const k of keys.slice(0, Math.max(0, keys.length - CALIBRATION.maxNames))) delete out[k];
+  return out;
+}
+
+/** Saved level nudges, or an empty record. Never throws. */
+export function loadLevels(storage: TypedStorage): Levels {
+  return storage.get('timeclash.levels') ?? {};
+}
+
 /** Each key has a shape guard. It returns the clean value, or null if the shape is wrong. */
 const GUARDS: { [K in StorageKey]: (v: unknown) => StorageSchema[K] | null } = {
   'timeclash.players': parsePlayers,
@@ -146,6 +176,7 @@ const GUARDS: { [K in StorageKey]: (v: unknown) => StorageSchema[K] | null } = {
   'timeclash.settings': parseSettings,
   'timeclash.history': parseHistory,
   'timeclash.camp': parseCamp,
+  'timeclash.levels': parseLevels,
 };
 
 function defaultBacking(): BackingStore | null {

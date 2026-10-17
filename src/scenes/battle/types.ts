@@ -11,6 +11,7 @@ import type {
   TeamStats,
   Vec2,
 } from '../../game/types';
+import type { Levels } from '../../questions/calibration';
 import type { PickHistory, QuestionBank } from '../../questions/types';
 import type { Overlay } from '../../ui/types';
 
@@ -87,6 +88,9 @@ export type BattleSceneData = {
   history: PickHistory;
   /** Called with the new history after every question, so main.ts can save it. */
   onHistory?: (history: PickHistory) => void;
+  /** Quiet level nudges per player name. Saved by main.ts. Never shown to a child. */
+  levels?: Levels;
+  onLevels?: (levels: Levels) => void;
   onMuteToggle?: () => void;
   /** True when big motion should become fades. Default: asks the browser. */
   reducedMotion?: () => boolean;

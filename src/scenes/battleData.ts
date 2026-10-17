@@ -3,6 +3,7 @@ import { createMatch } from '../game/match';
 import { EMPTY_HISTORY, type QuestionBank } from '../questions/types';
 import type { BattleSceneData } from './battle/types';
 import type { AppServices, MatchSetup } from './registry';
+import { loadLevels } from '../storage/storage';
 import { toggleMute } from './settingsActions';
 
 export function buildBattleData(
@@ -18,6 +19,8 @@ export function buildBattleData(
     audio: s.audio,
     bank,
     history: s.storage.get('timeclash.history') ?? EMPTY_HISTORY,
+    levels: loadLevels(s.storage),
+    onLevels: (levels) => void s.storage.set('timeclash.levels', levels),
     onHistory: (history) => void s.storage.set('timeclash.history', history),
     onMuteToggle: () => void toggleMute(s.audio, s.storage),
     onLeave: () => {

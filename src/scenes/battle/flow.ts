@@ -11,7 +11,15 @@ import { createRng } from '../../game/rng';
 import type { AimInput, MatchController, Rng, Team } from '../../game/types';
 import { HIT_LINES, RELOAD as RELOAD_COPY, RELOAD_QUIPS } from '../../data/copy';
 import { timeCaptions } from '../../data/introScript';
-import { noteMissed, pickQuestion } from '../../questions/pick';
+import {
+  effectiveGrade,
+  levelOffset,
+  recordAnswer,
+  recordFor,
+  withRecord,
+  type Levels,
+} from '../../questions/calibration';
+import { noteMissed, pickQuestion, pickSubject } from '../../questions/pick';
 import type { PickHistory, QuestionBank } from '../../questions/types';
 import type { HudHandlers, HudState, Overlay } from '../../ui/types';
 import { bubbleAnchor, bubbleTailTarget } from './geometry';
@@ -40,6 +48,9 @@ export type FlowDeps = {
   bank: QuestionBank;
   history: PickHistory;
   onHistory?: (history: PickHistory) => void;
+  /** Quiet level nudges per player name. Never shown to a child. */
+  levels?: Levels;
+  onLevels?: (levels: Levels) => void;
   onMuteToggle?: () => void;
   onFinished: (result: BattleResult) => void;
   /** Resolves after ms. The scene uses a real timer; tests resolve at once. */
@@ -54,6 +65,7 @@ class Stopped extends Error {}
 export class BattleFlow {
   private stopped = false;
   private history: PickHistory;
+  private levels: Levels;
   private readonly questionRng: Rng;
   private readonly hitBags: Record<'direct' | 'near' | 'miss', { next(): number }>;
   private readonly quipBags: Record<'fast' | 'slow' | 'wrong', { next(): number }>;
@@ -61,6 +73,7 @@ export class BattleFlow {
 
   constructor(private readonly deps: FlowDeps) {
     this.history = deps.history;
+    this.levels = deps.levels ?? {};
     this.questionRng = createRng(deps.match.snapshot().seed ^ RNG_SALT.questions);
     // Jokes come from seeded shuffle bags, so a match repeats and no line shows twice in a row.
     const lineRng = createRng((deps.match.snapshot().seed ^ RNG_SALT.lines) >>> 0);
@@ -207,9 +220,19 @@ export class BattleFlow {
     let answer: { correct: boolean; elapsedMs: number } = { correct: false, elapsedMs: Infinity };
     let asked: { kind: string; grade: number } | null = null;
     try {
-      const pick = pickQuestion(
+      // Ask at this player's own level nudge for the subject actually asked.
+      const subject = pickSubject(
         bank,
         { subject: player.subject, grade: player.grade, who: team },
+        this.history,
+      );
+      const grade = effectiveGrade(
+        player.grade,
+        levelOffset(recordFor(this.levels, player.name, subject)),
+      );
+      const pick = pickQuestion(
+        bank,
+        { subject, grade, who: team },
         this.history,
         this.questionRng,
       );
@@ -236,6 +259,13 @@ export class BattleFlow {
         },
       });
       this.live();
+      this.levels = withRecord(
+        this.levels,
+        player.name,
+        pick.subjectUsed,
+        recordAnswer(recordFor(this.levels, player.name, pick.subjectUsed), answer.correct),
+      );
+      this.deps.onLevels?.(this.levels);
       if (!answer.correct) {
         this.history = noteMissed(this.history, pick.question.id);
         this.deps.onHistory?.(this.history);

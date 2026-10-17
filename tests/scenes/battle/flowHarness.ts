@@ -12,6 +12,7 @@ import type {
   Team,
 } from '../../../src/game/types';
 import { windForTurn } from '../../../src/game/wind';
+import type { Levels } from '../../../src/questions/calibration';
 import { BANK } from '../../../src/questions/bank';
 import { EMPTY_HISTORY, type PickHistory, type Question } from '../../../src/questions/types';
 import { BattleFlow, type FlowDeps } from '../../../src/scenes/battle/flow';
@@ -40,6 +41,8 @@ export function makeWorld(
     waitIfPaused?: () => Promise<void>;
     bank?: FlowDeps['bank'];
     matchOptions?: Partial<MatchOptions>;
+    levels?: Levels;
+    players?: Players;
   } = {},
 ) {
   const log: Log = [];
@@ -56,6 +59,7 @@ export function makeWorld(
   const statuses: ViewStatus[] = [];
   const previews: Array<{ team: Team; dots: readonly PreviewDot[] | null }> = [];
   const histories: PickHistory[] = [];
+  const levelsSaved: Levels[] = [];
   const results: BattleResult[] = [];
   let cover: 'pass' | 'reload' | null = null;
   const coverViolations: string[] = [];
@@ -65,7 +69,7 @@ export function makeWorld(
   const answers = [...(opts.answers ?? [])];
 
   const match: MatchController = createMatch({
-    players: PLAYERS,
+    players: opts.players ?? PLAYERS,
     seed: opts.seed ?? 7,
     ...opts.matchOptions,
   });
@@ -170,6 +174,8 @@ export function makeWorld(
     bank: opts.bank ?? BANK,
     history: EMPTY_HISTORY,
     onHistory: (h) => histories.push(h),
+    levels: opts.levels,
+    onLevels: (l) => levelsSaved.push(l),
     onFinished: (r) => {
       log.push('finished');
       results.push(r);
@@ -196,6 +202,7 @@ export function makeWorld(
     statuses,
     previews,
     histories,
+    levelsSaved,
     results,
     coverViolations,
     handlers: () => handlers,
