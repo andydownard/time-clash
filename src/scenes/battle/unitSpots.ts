@@ -9,17 +9,29 @@ export type LocalBox = { l: number; r: number; t: number; b: number };
 
 /** How far each drawing reaches from its muzzle, facing right. t is up (negative), b is down. */
 export const UNIT_BOXES: Record<UnitRole, LocalBox> = {
-  balloon: { l: -58, r: 6, t: -104, b: 16 },
-  archer: { l: -34, r: 8, t: -14, b: 48 },
-  cannon: { l: -66, r: 6, t: -22, b: 34 },
-  catapult: { l: -52, r: 14, t: -52, b: 22 },
-  spear: { l: -52, r: 8, t: -42, b: 22 },
-  tank: { l: -62, r: 12, t: -36, b: 22 },
-  helicopter: { l: -62, r: 8, t: -44, b: 26 },
-  bunker: { l: -42, r: 42, t: -48, b: 22 },
-  saber: { l: -52, r: 6, t: -42, b: 22 },
-  laserGun: { l: -34, r: 8, t: -14, b: 52 },
+  balloon: { l: -70, r: 4, t: -144, b: 16 },
+  archer: { l: -72, r: 8, t: -44, b: 48 },
+  cannon: { l: -78, r: 6, t: -54, b: 40 },
+  catapult: { l: -58, r: 8, t: -74, b: 22 },
+  spear: { l: -76, r: 6, t: -84, b: 22 },
+  tank: { l: -74, r: 4, t: -24, b: 24 },
+  helicopter: { l: -90, r: 8, t: -36, b: 18 },
+  bunker: { l: -48, r: 48, t: -54, b: 22 },
+  saber: { l: -56, r: 22, t: -84, b: 22 },
+  laserGun: { l: -49, r: 4, t: -48, b: 52 },
 };
+
+/** Chrono is drawn at this size beside each base, so it fits between a base and its fighters. */
+export const CHRONO_SCALE = 0.55;
+/** Chrono at full size reaches this far to each side, and this high above its feet. */
+export const CHRONO_FULL = { halfWidth: 26, height: 106 } as const;
+
+/** The space Chrono fills, in world space, standing at feet. */
+export function chronoBox(feet: { x: number; y: number }): Rect {
+  const hw = CHRONO_FULL.halfWidth * CHRONO_SCALE;
+  const h = CHRONO_FULL.height * CHRONO_SCALE;
+  return { x: feet.x - hw, y: feet.y - h, w: hw * 2, h };
+}
 
 /** The round letter or number token. Every fighter uses the same size. */
 export const TOKEN_RADIUS = 17;

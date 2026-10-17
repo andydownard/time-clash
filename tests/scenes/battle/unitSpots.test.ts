@@ -1,8 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { BASES, WORLD } from '../../../src/game/config';
+import { BASES, PHASE1_LAYOUT, WORLD } from '../../../src/game/config';
 import { UNITS } from '../../../src/game/units';
+import { characterSpot } from '../../../src/scenes/battle/geometry';
 import {
+  CHRONO_SCALE,
   TOKEN_RADIUS,
+  chronoBox,
   overlapShare,
   rectsOverlap,
   unitSpot,
@@ -89,5 +92,39 @@ describe('unit spots', () => {
     const c = unitSpot(UNITS.find((u) => u.id === '1')!);
     expect(c.box.x + c.box.w).toBeGreaterThan(c.x);
     expect(c.box.x).toBeLessThan(c.x);
+  });
+
+  it('keeps Chrono small and clear of every fighter and token (Chrono covered D and 3 before)', () => {
+    expect(CHRONO_SCALE).toBeLessThan(0.7);
+    for (const team of ['PAST', 'FUTURE'] as const) {
+      const box = chronoBox(characterSpot(team, PHASE1_LAYOUT));
+      for (const s of spots) {
+        expect(rectsOverlap(box, s.box), `Chrono ${team} / ${s.id}`).toBe(false);
+        const t = s.token;
+        const tokenBox = { x: t.x - t.r, y: t.y - t.r, w: 2 * t.r, h: 2 * t.r };
+        expect(rectsOverlap(box, tokenBox), `Chrono ${team} / token ${s.id}`).toBe(false);
+      }
+      expect(rectsOverlap(box, BASES[team]), `Chrono ${team} / own base`).toBe(false);
+    }
+  });
+
+  it('draws every fighter big enough to read (at least 50 wide and 46 tall, the big ones 70 tall)', () => {
+    for (const s of spots) {
+      expect(s.box.w, s.id).toBeGreaterThanOrEqual(50);
+      expect(s.box.h, s.id).toBeGreaterThanOrEqual(46);
+    }
+    for (const id of ['E', '4', '5', 'A']) {
+      expect(spots.find((p) => p.id === id)!.box.h, id).toBeGreaterThanOrEqual(70);
+    }
+  });
+
+  it('puts the cannon knight on the castle wall, below the tower roof tip', () => {
+    const c = spots.find((p) => p.id === 'C')!;
+    // The wall top is 30 px under the base top (see drawCastle). Feet land at the box bottom.
+    const feet = c.box.y + c.box.h;
+    expect(feet).toBeGreaterThan(BASES.PAST.y + 10);
+    expect(feet).toBeLessThanOrEqual(BASES.PAST.y + 30);
+    expect(c.x).toBe(220);
+    expect(c.y).toBe(450);
   });
 });

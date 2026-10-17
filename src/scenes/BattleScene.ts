@@ -18,6 +18,7 @@ import {
 } from './battle/effects';
 import { BattleFlow } from './battle/flow';
 import { characterSpot, sideAlpha } from './battle/geometry';
+import { CHRONO_SCALE } from './battle/unitSpots';
 import { sceneReducedMotion } from './battle/reducedMotion';
 import { createPauseControl, type PauseControl } from './battle/pauseUi';
 import {
@@ -95,7 +96,7 @@ export class BattleScene extends Phaser.Scene implements BattleView {
       const art: BaseArt = team === 'PAST' ? drawCastle(this, base) : drawBase(this, base);
       this.sway.push(...art.sway);
       this.pulse.push(...art.pulse);
-      const character = createCharacter(this, team, spot.x, spot.y);
+      const character = createCharacter(this, team, spot.x, spot.y, CHRONO_SCALE);
       const side = this.add
         .container(0, 0, [glow, art.container, character.container])
         .setDepth(10);

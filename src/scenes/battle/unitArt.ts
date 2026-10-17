@@ -3,7 +3,7 @@
 // Friendly shapes only. Nothing scary, nothing that looks hurt.
 import type Phaser from 'phaser';
 import { UNITS, type UnitId, type UnitRole } from '../../game/units';
-import { unitSpot, type UnitSpot } from './unitSpots';
+import { UNIT_BOXES, unitSpot, type UnitSpot } from './unitSpots';
 import { FONT_FAMILY } from './textStyle';
 import type { LabelScaler } from './textScale';
 import { ART, PALETTE } from './visual';
@@ -14,6 +14,11 @@ const P = PALETTE.past;
 const F = PALETTE.future;
 
 type G = Phaser.GameObjects.Graphics;
+
+/** Fliers float, so only fighters standing on something get a shadow. */
+const role_has_shadow = (role: UnitRole): boolean => role !== 'balloon' && role !== 'helicopter';
+
+type Pt = { x: number; y: number };
 
 /** A filled rounded box with an ink outline. */
 function rr(g: G, x: number, y: number, w: number, h: number, fill: number, r = 3): void {
@@ -30,56 +35,105 @@ function disc(g: G, x: number, y: number, r: number, fill: number): void {
   g.strokeCircle(x, y, r);
 }
 
-/** A knight standing with feet at feetY: purple tunic, round helmet, friendly face. */
-function knight(g: G, cx: number, feetY: number): void {
-  rr(g, cx - 9, feetY - 12, 7, 12, P.deep, 2);
-  rr(g, cx + 2, feetY - 12, 7, 12, P.deep, 2);
-  rr(g, cx - 11, feetY - 38, 22, 28, P.banner, 5);
-  g.fillStyle(P.gold, 1);
-  g.fillRect(cx - 11, feetY - 20, 22, 4);
-  disc(g, cx, feetY - 46, 10, ART.skin);
-  g.fillStyle(P.bannerDark, 1);
-  g.fillRoundedRect(cx - 11, feetY - 58, 22, 12, { tl: 10, tr: 10, bl: 0, br: 0 });
+/** A filled polygon with an ink outline. */
+function poly(g: G, pts: Pt[], fill: number): void {
+  g.fillStyle(fill, 1);
+  g.fillPoints(pts, true);
   g.lineStyle(2, INK, 1);
-  g.strokeRoundedRect(cx - 11, feetY - 58, 22, 12, { tl: 10, tr: 10, bl: 0, br: 0 });
-  g.fillStyle(INK, 1);
-  g.fillCircle(cx + 4, feetY - 45, 1.6);
+  g.strokePoints(pts, true);
 }
 
-/** A robot: blue body with a division sign on the shirt, square head, visor. */
-function robot(g: G, cx: number, feetY: number): void {
-  rr(g, cx - 10, feetY - 12, 8, 12, F.hullDark, 2);
-  rr(g, cx + 2, feetY - 12, 8, 12, F.hullDark, 2);
-  rr(g, cx - 12, feetY - 38, 24, 28, F.neon, 4);
-  // The division sign: a bar with a dot above and a dot below.
-  g.fillStyle(F.pale, 1);
-  g.fillRect(cx - 7, feetY - 25, 14, 3);
-  g.fillCircle(cx, feetY - 31, 2.4);
-  g.fillCircle(cx, feetY - 17, 2.4);
-  rr(g, cx - 10, feetY - 58, 20, 18, F.steel, 4);
-  g.fillStyle(F.glow, 1);
-  g.fillRoundedRect(cx - 6, feetY - 52, 12, 6, 2);
-  g.lineStyle(2, INK, 1);
-  g.lineBetween(cx, feetY - 58, cx, feetY - 64);
-  g.fillStyle(F.pink, 1);
-  g.fillCircle(cx, feetY - 65, 3);
+/** A straight bar with an ink edge: a thick ink line with a thinner colored line on top. */
+function bar(g: G, a: Pt, b: Pt, width: number, fill: number): void {
+  g.lineStyle(width + 3, INK, 1);
+  g.lineBetween(a.x, a.y, b.x, b.y);
+  g.lineStyle(width, fill, 1);
+  g.lineBetween(a.x, a.y, b.x, b.y);
 }
 
-/** A purple shield with an open book on it. */
-function bookShield(g: G, x: number, y: number): void {
-  g.fillStyle(P.banner, 1);
-  g.fillRoundedRect(x - 10, y - 16, 20, 30, { tl: 4, tr: 4, bl: 10, br: 10 });
-  g.lineStyle(2.5, P.deep, 1);
-  g.strokeRoundedRect(x - 10, y - 16, 20, 30, { tl: 4, tr: 4, bl: 10, br: 10 });
-  g.fillStyle(ART.cream, 1);
-  g.fillTriangle(x - 8, y - 6, x, y - 4, x, y + 6);
-  g.fillTriangle(x - 8, y - 6, x - 8, y + 4, x, y + 6);
-  g.fillTriangle(x + 8, y - 6, x, y - 4, x, y + 6);
-  g.fillTriangle(x + 8, y - 6, x + 8, y + 4, x, y + 6);
-  g.lineStyle(1.5, INK, 1);
-  g.lineBetween(x, y - 4, x, y + 6);
-  g.lineBetween(x - 8, y - 6, x - 8, y + 4);
-  g.lineBetween(x + 8, y - 6, x + 8, y + 4);
+/** Draws `fn` in its own space, moved to (x, y) and scaled by s. */
+function at(g: G, x: number, y: number, s: number, fn: () => void): void {
+  g.save();
+  g.translateCanvas(x, y);
+  g.scaleCanvas(s, s);
+  fn();
+  g.restore();
+}
+
+/**
+ * One standing fighter, feet at 0,0, facing right, about 114 tall with the plume. Knights have a
+ * silver round helmet, a friendly face, an orange plume and a purple tunic. Robots have a silver
+ * helmet with a glowing visor, a blue plume and a blue body with a division sign on the shirt.
+ */
+function figure(g: G, kind: 'knight' | 'robot'): void {
+  const knight = kind === 'knight';
+  const limb = knight ? ART.knightSteel : ART.visor;
+  const legs = knight ? ART.knightSteel : F.edge;
+  rr(g, -11, -26, 9, 26, legs, 4);
+  rr(g, 2, -26, 9, 26, legs, 4);
+  rr(g, -27, -62, 9, 30, limb, 4);
+  rr(g, 18, -62, 9, 30, limb, 4);
+  poly(
+    g,
+    [
+      { x: -17, y: -64 },
+      { x: 17, y: -64 },
+      { x: 20, y: -24 },
+      { x: -20, y: -24 },
+    ],
+    knight ? P.banner : F.neon,
+  );
+  // The plume goes behind the helmet.
+  poly(
+    g,
+    [
+      { x: -7, y: -96 },
+      { x: 5, y: -99 },
+      { x: 22, y: -106 },
+      { x: 32, y: -118 },
+      { x: 14, y: -116 },
+      { x: 0, y: -108 },
+    ],
+    knight ? P.gold : F.glow,
+  );
+  disc(g, 0, -82, 17, knight ? ART.knightSteel : ART.visor);
+  if (knight) {
+    g.fillStyle(ART.skin, 1);
+    g.fillCircle(0, -81, 10.5);
+    g.fillStyle(INK, 1);
+    g.fillCircle(-4, -82, 1.8);
+    g.fillCircle(4, -82, 1.8);
+  } else {
+    g.fillStyle(F.night, 1);
+    g.fillEllipse(0, -81, 25, 20);
+    g.fillStyle(F.glow, 1);
+    g.fillEllipse(0, -81, 17, 12);
+    // The division sign: a bar with a dot above and a dot below.
+    g.fillStyle(F.pale, 1);
+    g.fillRect(-8, -45.5, 16, 3);
+    g.fillCircle(0, -52, 2.8);
+    g.fillCircle(0, -37, 2.8);
+  }
+}
+
+/** A purple shield with an open book on it, centered on x, y. About 26 wide and 34 tall. */
+function bookShield(g: G, x: number, y: number, s = 1): void {
+  at(g, x, y, s, () => {
+    g.fillStyle(P.banner, 1);
+    g.fillRoundedRect(-13, -17, 26, 34, { tl: 4, tr: 4, bl: 13, br: 13 });
+    g.lineStyle(3, P.deep, 1);
+    g.strokeRoundedRect(-13, -17, 26, 34, { tl: 4, tr: 4, bl: 13, br: 13 });
+    // Inside is the cream page of an open book.
+    g.fillStyle(ART.cream, 1);
+    g.fillRoundedRect(-9, -9, 18, 15, 2);
+    g.lineStyle(1.5, P.deep, 1);
+    g.strokeRoundedRect(-9, -9, 18, 15, 2);
+    g.lineBetween(0, -9, 0, 6);
+    g.lineBetween(-6, -4, -2, -4);
+    g.lineBetween(-6, 0, -2, 0);
+    g.lineBetween(2, -4, 6, -4);
+    g.lineBetween(2, 0, 6, 0);
+  });
 }
 
 function wheel(g: G, x: number, y: number, r: number): void {
@@ -87,152 +141,228 @@ function wheel(g: G, x: number, y: number, r: number): void {
   g.lineStyle(2, INK, 1);
   g.lineBetween(x - r, y, x + r, y);
   g.lineBetween(x, y - r, x, y + r);
+  g.fillStyle(INK, 1);
+  g.fillCircle(x, y, 2);
 }
 
 const steelTube = (g: G, x: number, y: number, w: number, h: number): void =>
-  rr(g, x, y, w, h, ART.metal, 3);
+  rr(g, x, y, w, h, ART.metalDark, 3);
 
 const DRAW: Record<UnitRole, (g: G) => void> = {
   balloon(g) {
-    // Ropes, basket, a small cannon on the front, then the striped envelope on top.
+    // Striped envelope on top, ropes, a wooden basket with a small knight and a cannon.
     g.lineStyle(2, INK, 1);
-    g.lineBetween(-36, -30, -34, -8);
-    g.lineBetween(-2, -30, -6, -8);
-    rr(g, -38, -8, 34, 22, P.wood, 4);
-    steelTube(g, -8, -5, 14, 9);
-    disc(g, -19, -62, 40, P.banner);
-    g.fillStyle(ART.cream, 1);
-    g.fillEllipse(-19, -62, 26, 76);
+    g.lineBetween(-44, -48, -44, -8);
+    g.lineBetween(-12, -48, -12, -8);
+    rr(g, -48, -8, 40, 22, P.wood, 4);
+    g.lineStyle(2, INK, 1);
+    g.lineBetween(-48, 0, -8, 0);
+    at(g, -28, -8, 0.32, () => figure(g, 'knight'));
+    steelTube(g, -22, -5, 22, 10);
+    g.fillStyle(INK, 1);
+    g.fillCircle(-1, 0, 3);
     g.fillStyle(P.banner, 1);
-    g.fillEllipse(-19, -62, 8, 76);
-    g.lineStyle(2, INK, 1);
-    g.strokeCircle(-19, -62, 40);
-    g.strokeEllipse(-19, -62, 26, 76);
+    g.fillEllipse(-28, -94, 84, 100);
+    g.lineStyle(8, ART.cream, 1);
+    g.strokeEllipse(-28, -94, 46, 98);
+    g.lineStyle(2.5, INK, 1);
+    g.strokeEllipse(-28, -94, 84, 100);
   },
   archer(g) {
-    knight(g, -22, 46);
-    g.lineStyle(3, P.wood, 1);
+    at(g, -50, 46, 0.78, () => figure(g, 'knight'));
+    bar(g, { x: -34, y: 4 }, { x: -18, y: 0 }, 5, ART.knightSteel);
+    g.lineStyle(4, P.wood, 1);
     g.beginPath();
-    g.arc(-14, 4, 20, -1.1, 1.1, false);
+    g.arc(-20, 0, 22, -1.1, 1.1, false);
     g.strokePath();
     g.lineStyle(1.5, INK, 1);
-    g.lineBetween(
-      -14 + 20 * Math.cos(-1.1),
-      4 + 20 * Math.sin(-1.1),
-      -14 + 20 * Math.cos(1.1),
-      4 + 20 * Math.sin(1.1),
+    g.lineBetween(-20 + 22 * Math.cos(-1.1), -19.6, -20 + 22 * Math.cos(1.1), 19.6);
+    // The arrow is nocked on the string. Its tip is the launch point.
+    g.lineStyle(3, P.wood, 1);
+    g.lineBetween(-34, 0, -6, 0);
+    g.lineStyle(2, ART.pink, 1);
+    g.lineBetween(-36, -4, -31, 0);
+    g.lineBetween(-36, 4, -31, 0);
+    poly(
+      g,
+      [
+        { x: 0, y: 0 },
+        { x: -9, y: -4.5 },
+        { x: -9, y: 4.5 },
+      ],
+      ART.knightSteel,
     );
-    g.lineStyle(2, P.wood, 1);
-    g.lineBetween(-14, 4, 0, 4);
-    g.fillStyle(ART.metal, 1);
-    g.fillTriangle(-3, 0, 3, 4, -3, 8);
   },
   cannon(g) {
-    knight(g, -50, 34);
-    wheel(g, -20, 24, 10);
-    rr(g, -42, 3, 18, 12, P.wood, 3);
-    steelTube(g, -36, -6, 42, 12);
+    // The knight stands on the castle wall behind a cannon aimed up and out.
+    at(g, -56, 38, 0.8, () => figure(g, 'knight'));
+    poly(
+      g,
+      [
+        { x: -43, y: 12 },
+        { x: -39, y: 22 },
+        { x: -2, y: 7 },
+        { x: -3, y: -6 },
+      ],
+      ART.metalDark,
+    );
     g.fillStyle(INK, 1);
-    g.fillCircle(6, 0, 3);
-    bookShield(g, -64, 8);
+    g.fillEllipse(-2, 0.5, 6, 13);
+    rr(g, -42, 22, 30, 7, P.wood, 2);
+    wheel(g, -24, 28, 10);
+    bookShield(g, -34, 12, 0.85);
   },
   catapult(g) {
-    wheel(g, -36, 14, 8);
-    wheel(g, -12, 14, 8);
-    rr(g, -48, 4, 44, 8, P.wood, 2);
-    g.fillStyle(P.wood, 1);
-    g.fillTriangle(-30, 6, -20, 6, -25, -26);
-    g.lineStyle(2, INK, 1);
-    g.strokeTriangle(-30, 6, -20, 6, -25, -26);
-    // The arm swings forward and down; the cup sits at the launch point.
-    g.lineStyle(6, P.wood, 1);
-    g.lineBetween(-44, -34, -25, -24);
-    g.lineBetween(-25, -24, -4, -6);
-    disc(g, 0, 0, 7, P.wood);
+    wheel(g, -44, 9, 11);
+    wheel(g, -14, 9, 11);
+    rr(g, -58, -4, 60, 10, P.wood, 2);
+    poly(
+      g,
+      [
+        { x: -46, y: -4 },
+        { x: -20, y: -4 },
+        { x: -33, y: -46 },
+      ],
+      P.wood,
+    );
+    // The arm swings forward and down. The stone weight rides on the back end.
+    bar(g, { x: -44, y: -64 }, { x: -33, y: -40 }, 6, P.wood);
+    bar(g, { x: -33, y: -40 }, { x: -8, y: -6 }, 6, P.wood);
+    rr(g, -52, -74, 14, 12, ART.metal, 3);
+    disc(g, 0, 0, 8, P.wood);
     g.fillStyle(ART.stone, 1);
-    g.fillCircle(0, -3, 4);
+    g.fillCircle(0, -3, 4.5);
   },
   spear(g) {
-    knight(g, -34, 20);
-    g.lineStyle(4, P.wood, 1);
-    g.lineBetween(-52, -8, -4, -8);
-    g.fillStyle(ART.metal, 1);
-    g.fillTriangle(-6, -14, 8, -8, -6, -2);
-    g.lineStyle(2, INK, 1);
-    g.strokeTriangle(-6, -14, 8, -8, -6, -2);
-    bookShield(g, -12, 2);
+    at(g, -52, 20, 0.9, () => figure(g, 'knight'));
+    // The spear goes behind the shield. Its tip is the launch point.
+    bar(g, { x: -70, y: -38 }, { x: -10, y: -7 }, 4, P.wood);
+    poly(
+      g,
+      [
+        { x: 4, y: 0.5 },
+        { x: -12.9, y: -1.5 },
+        { x: -7.5, y: -12.1 },
+      ],
+      ART.knightSteel,
+    );
+    bookShield(g, -26, -4, 0.95);
   },
   tank(g) {
-    rr(g, -56, 6, 62, 16, F.hullDark, 8);
-    for (const x of [-46, -30, -14, 0]) disc(g, x, 15, 4, F.steel);
-    rr(g, -54, -6, 56, 14, F.hull, 4);
-    rr(g, -44, -22, 32, 18, F.steel, 6);
+    rr(g, -72, 10, 76, 14, F.hullDark, 7);
+    for (const x of [-62, -49, -36, -23, -10]) disc(g, x, 17, 4, F.steel);
+    // The barrel sits behind the dome, then the hull and the dome with its cyan light.
+    rr(g, -30, -8, 32, 12, F.steel, 3);
+    g.fillStyle(F.steel, 1);
+    g.fillEllipse(-36, -2, 34, 40);
+    g.lineStyle(2, INK, 1);
+    g.strokeEllipse(-36, -2, 34, 40);
+    poly(
+      g,
+      [
+        { x: -66, y: 10 },
+        { x: -6, y: 10 },
+        { x: -14, y: -2 },
+        { x: -58, y: -2 },
+      ],
+      F.hull,
+    );
     g.fillStyle(F.glow, 1);
-    g.fillRoundedRect(-36, -18, 14, 6, 2);
-    rr(g, -14, -6, 26, 12, F.hullDark, 3);
-    g.fillStyle(F.glow, 1);
-    g.fillCircle(8, 0, 3);
+    g.fillRoundedRect(-52, 2, 32, 4, 2);
+    g.fillCircle(-36, -10, 4);
   },
   helicopter(g) {
-    // Rotor on top, blue body, tail boom, skids.
-    g.lineStyle(4, INK, 1);
-    g.lineBetween(-60, -34, 0, -34);
-    g.lineBetween(-30, -34, -30, -26);
-    rr(g, -52, -26, 46, 32, F.neon, 14);
-    g.fillStyle(F.visor, 1);
-    g.fillRoundedRect(-18, -20, 18, 14, { tl: 6, tr: 8, bl: 2, br: 8 });
-    rr(g, -62, -16, 16, 8, F.edge, 3);
+    // A thin tail boom, a round body with a cyan windshield, skids, and a rotor on top.
+    poly(
+      g,
+      [
+        { x: -50, y: -10 },
+        { x: -88, y: -18 },
+        { x: -90, y: -8 },
+        { x: -50, y: 2 },
+      ],
+      F.edge,
+    );
+    bar(g, { x: -88, y: -24 }, { x: -88, y: -4 }, 3, ART.visor);
     g.lineStyle(3, INK, 1);
-    g.lineBetween(-56, -26, -56, -10);
-    g.lineBetween(-46, 14, 4, 14);
-    g.lineBetween(-36, 6, -38, 14);
-    g.lineBetween(-12, 6, -10, 14);
-    steelTube(g, -8, -2, 14, 6);
+    g.lineBetween(-60, 16, 0, 16);
+    g.lineBetween(-44, 8, -46, 16);
+    g.lineBetween(-16, 8, -14, 16);
+    g.fillStyle(F.hullDark, 1);
+    g.fillEllipse(-30, -6, 62, 38);
+    g.lineStyle(2, INK, 1);
+    g.strokeEllipse(-30, -6, 62, 38);
+    g.fillStyle(F.glow, 1);
+    g.fillEllipse(-12, -10, 24, 20);
+    g.lineStyle(2, INK, 1);
+    g.strokeEllipse(-12, -10, 24, 20);
+    g.fillStyle(F.pale, 0.6);
+    g.fillEllipse(-16, -14, 8, 6);
+    bar(g, { x: -30, y: -26 }, { x: -30, y: -32 }, 4, ART.metalDark);
+    bar(g, { x: -68, y: -34 }, { x: 8, y: -34 }, 3, ART.visor);
+    steelTube(g, -10, -3, 14, 6);
   },
   bunker(g) {
-    // Low dome with a missile standing up. The launch point is the base of the missile.
+    // A missile stands in the hatch on top of a low steel dome. Its base is the launch point.
+    rr(g, -6, -36, 12, 36, ART.cream, 5);
+    poly(
+      g,
+      [
+        { x: -6, y: -34 },
+        { x: 6, y: -34 },
+        { x: 0, y: -54 },
+      ],
+      F.pink,
+    );
+    poly(
+      g,
+      [
+        { x: -6, y: -6 },
+        { x: -14, y: 0 },
+        { x: -6, y: 0 },
+      ],
+      F.neon,
+    );
+    poly(
+      g,
+      [
+        { x: 6, y: -6 },
+        { x: 14, y: 0 },
+        { x: 6, y: 0 },
+      ],
+      F.neon,
+    );
     g.fillStyle(F.hull, 1);
-    g.beginPath();
-    g.arc(0, 20, 40, Math.PI, 0, false);
-    g.closePath();
-    g.fillPath();
+    g.fillRoundedRect(-48, -4, 96, 26, { tl: 22, tr: 22, bl: 0, br: 0 });
     g.lineStyle(2, INK, 1);
-    g.strokePath();
-    rr(g, -42, 16, 84, 6, F.hullDark, 3);
+    g.strokeRoundedRect(-48, -4, 96, 26, { tl: 22, tr: 22, bl: 0, br: 0 });
     g.fillStyle(F.glow, 1);
-    g.fillRoundedRect(-30, 10, 10, 5, 2);
-    g.fillRoundedRect(20, 10, 10, 5, 2);
-    rr(g, -6, -30, 12, 32, ART.cream, 5);
-    g.fillStyle(F.pink, 1);
-    g.fillTriangle(-6, -28, 6, -28, 0, -46);
-    g.lineStyle(2, INK, 1);
-    g.strokeTriangle(-6, -28, 6, -28, 0, -46);
-    g.fillStyle(F.neon, 1);
-    g.fillTriangle(-6, 2, -14, 2, -6, -10);
-    g.fillTriangle(6, 2, 14, 2, 6, -10);
+    g.fillRoundedRect(-30, 1, 60, 5, 2);
+    g.fillStyle(F.hullDark, 1);
+    g.fillRect(-47, 14, 94, 7);
   },
   saber(g) {
-    robot(g, -34, 20);
-    // Glowing saber held forward, tip at the launch point.
-    g.lineStyle(10, F.glow, 0.35);
-    g.lineBetween(-26, -6, 6, -6);
-    g.lineStyle(5, F.glow, 1);
-    g.lineBetween(-26, -6, 6, -6);
-    g.lineStyle(2, F.pale, 1);
-    g.lineBetween(-26, -6, 4, -6);
-    rr(g, -34, -10, 10, 8, ART.metalDark, 2);
-    // Round shield on the back arm.
-    disc(g, -50, -6, 11, F.edge);
-    g.fillStyle(F.glow, 1);
-    g.fillCircle(-50, -6, 4);
+    at(g, -32, 20, 0.9, () => figure(g, 'robot'));
+    // The glowing saber is held up and forward from the hand at the launch point.
+    const tip = { x: 15, y: -50 };
+    g.lineStyle(13, F.glow, 0.3);
+    g.lineBetween(0, -2, tip.x, tip.y);
+    g.lineStyle(7, F.glow, 1);
+    g.lineBetween(0, -2, tip.x, tip.y);
+    g.lineStyle(2.5, F.pale, 1);
+    g.lineBetween(0, -4, tip.x - 1, tip.y + 3);
+    bar(g, { x: -14, y: -16 }, { x: -4, y: 0 }, 5, ART.visor);
+    rr(g, -6, -3, 10, 7, ART.metalDark, 2);
   },
   laserGun(g) {
-    robot(g, -22, 50);
-    // Pink laser gun held forward, muzzle at the launch point.
-    rr(g, -20, 6, 20, 10, ART.metalDark, 3);
-    rr(g, -6, 3, 12, 6, F.pink, 2);
-    g.fillStyle(F.pink, 1);
-    g.fillCircle(6, 6, 3);
+    at(g, -26, 50, 0.85, () => figure(g, 'robot'));
+    // The pink laser gun is held forward. Its muzzle is the launch point.
+    rr(g, -26, -7, 26, 14, F.pink, 4);
+    g.fillStyle(ART.metalDark, 1);
+    g.fillRoundedRect(-22, -4, 16, 5, 2);
+    g.fillStyle(F.glow, 1);
+    g.fillCircle(-2, 0, 3);
+    disc(g, -22, 6, 5, ART.visor);
   },
 };
 
@@ -254,7 +384,9 @@ function drawOne(
   const body = scene.add.graphics();
   // A soft shadow so ground fighters sit on the grass.
   body.fillStyle(ART.shadow, 0.28);
-  body.fillEllipse(-20, spot.box.y + spot.box.h - spot.y, 70, 8);
+  const local = UNIT_BOXES[spot.role];
+  if (role_has_shadow(spot.role))
+    body.fillEllipse((local.l + local.r) / 2, local.b - 1, (local.r - local.l) * 0.9, 8);
   DRAW[spot.role](body);
   const bodyBox = scene.add.container(spot.x, spot.y, [body]);
   bodyBox.setScale(spot.facing, 1);
