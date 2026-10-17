@@ -2,7 +2,7 @@
 // instead of hand-drawn keyframes. Each one climbs, slows, peaks and falls onto its target, and
 // turns its nose the way it is flying. Lasers are not here: a laser does not fall, so its straight
 // line stays a plain animation. With reduced motion nothing flies.
-import { poseAt, flightTransform, type Flight } from './flightPhysics';
+import { poseAt, flightTransform, hawkPose, type Flight } from './flightPhysics';
 
 /** A picture to fly: which shapes, how they fly, and which way they point when drawn. */
 export type FlightSpec = {
@@ -76,5 +76,38 @@ export function startFlights(
     stopped = true;
     if (handle !== null) scheduler.cancel(handle);
     for (const f of flights) hide(f.el);
+  };
+}
+
+/**
+ * Makes the hawk circle on a true oval. The picture nests three groups: `.tc-camp-hawk` moves it,
+ * `.tc-camp-hawk-flip` turns it to face the way it flies, and `.tc-camp-hawk-bank` tilts it.
+ * With reduced motion the hawk stays where the picture draws it. Returns a function that stops it.
+ */
+export function startHawk(
+  root: ParentNode,
+  scheduler: Scheduler,
+  options: { reduced: boolean },
+): () => void {
+  const move = root.querySelector<SVGElement>('.tc-camp-hawk');
+  const flip = root.querySelector<SVGElement>('.tc-camp-hawk-flip');
+  const bank = root.querySelector<SVGElement>('.tc-camp-hawk-bank');
+  if (options.reduced || !move || !flip || !bank) return () => undefined;
+  const began = scheduler.now();
+  let stopped = false;
+  let handle: unknown = null;
+  const frame = (): void => {
+    if (stopped) return;
+    const pose = hawkPose((scheduler.now() - began) / 1000);
+    move.setAttribute('transform', `translate(${pose.x} ${pose.y})`);
+    flip.setAttribute('transform', `scale(${pose.scaleX} 1)`);
+    bank.setAttribute('transform', `rotate(${pose.tilt})`);
+    handle = scheduler.next(frame);
+  };
+  handle = scheduler.next(frame);
+  return () => {
+    stopped = true;
+    if (handle !== null) scheduler.cancel(handle);
+    for (const el of [move, flip, bank]) el.removeAttribute('transform');
   };
 }

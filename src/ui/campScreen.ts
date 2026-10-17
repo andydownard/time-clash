@@ -3,6 +3,7 @@
 // Change players goes back to Setup.
 import { CAMP, GAME_TITLE } from '../data/copy';
 import { campScene } from './campArt';
+import { campScheduler, flyOverCamp } from './campFlights';
 import type { UiCtx } from './ctx';
 import { h } from './dom';
 import { TEST_IDS, type CampChoice } from './types';
@@ -60,7 +61,17 @@ export function showCamp(ctx: UiCtx): Promise<CampChoice> {
       ),
       players,
     );
-    const close = ctx.openScreen(screen);
+    const closeScreen = ctx.openScreen(screen);
+    // Arrows, the cannonball, the missile and the hawk fly on real physics while the Camp is open.
+    const stopFlying = flyOverCamp(
+      screen,
+      campScheduler(doc.defaultView, ctx.env, () => screen.isConnected),
+      { reduced: ctx.reduced() },
+    );
+    const close = (): void => {
+      stopFlying();
+      closeScreen();
+    };
     start.addEventListener('click', () => {
       close();
       resolve('battle');
