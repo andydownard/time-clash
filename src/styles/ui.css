@@ -1540,17 +1540,17 @@ body {
   margin-bottom: auto;
 }
 
-/* Short screens (1024x768, 1280x800): the toy blocks shrink and the cards tighten, so Victory
-   fits whatever mix of awards a match earns. */
+/* Short screens (1024x768, 1280x800): the decorative toy blocks step aside and the award cards
+   tighten, so Victory fits whatever mix of awards a match earns. */
 @media (max-height: 820px) {
   .tc-blocks {
-    height: 44px;
-  }
-  .tc-block {
-    zoom: 0.65;
+    display: none;
   }
   .tc-award-card {
     padding: var(--tc-s-2) var(--tc-s-3);
+  }
+  .tc-award-card li {
+    padding-block: 0;
   }
   .tc-victory > .tc-row:last-child {
     margin-top: var(--tc-s-2);
