@@ -28,6 +28,8 @@ async function floors(page: Page, where: string): Promise<void> {
 
 /** A whole screen fits: it does not scroll, and every button is fully inside the window. */
 async function fitsOnScreen(page: Page, screen: string, where: string): Promise<void> {
+  // A fallback font is taller than the real one, so measure only after the fonts are in.
+  await page.evaluate(() => document.fonts.ready);
   const r = await page.evaluate((sel) => {
     const el = document.querySelector<HTMLElement>(`[data-screen="${sel}"]`)!;
     const buttons = [...el.querySelectorAll<HTMLElement>('button')].filter(
