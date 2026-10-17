@@ -817,7 +817,8 @@ body {
   border-radius: var(--tc-r-card);
   box-shadow: 0 3px 0 var(--tc-purple-900);
   padding: 4px 14px;
-  flex: 0 1 460px;
+  flex: 1 1 340px;
+  max-width: 460px;
   min-width: 340px;
   font-family: var(--tc-font-voice-new);
   font-weight: var(--tc-fw-new);
@@ -3465,15 +3466,19 @@ button.tc-forge-row[aria-disabled='true'],
 
 /* Fighter selector (Pick one). Basic on purpose: the HUD band restyles around these classes. */
 .tc-units {
-  display: flex;
-  flex-wrap: wrap;
+  /* Label on the left; the five tokens, then the fighter's name, to its right. About 360px wide,
+     so the selector, the sliders and Fire share one row under the turn strip. */
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: auto auto;
   align-items: center;
-  gap: 10px;
+  column-gap: 6px;
+  row-gap: 18px;
   background: var(--tc-ink-deep);
   color: var(--tc-on-dark);
   border: 4px solid var(--tc-ember);
   border-radius: var(--tc-r-card);
-  padding: 6px 14px;
+  padding: 6px 10px;
   font-family: var(--tc-font-voice-new);
   font-weight: var(--tc-fw-new);
   letter-spacing: var(--tc-ls-caps);
@@ -3483,10 +3488,18 @@ button.tc-forge-row[aria-disabled='true'],
 .tc-unit-name {
   font-size: 20px;
 }
+.tc-units-label {
+  grid-row: 1 / span 2;
+  grid-column: 1;
+}
 .tc-unit-name {
+  grid-row: 2;
+  grid-column: 2 / span 5;
+  white-space: nowrap;
   color: var(--tc-parchment-warm);
 }
 .tc-unit {
+  grid-row: 1;
   width: 56px;
   height: 56px;
   min-width: 56px;
