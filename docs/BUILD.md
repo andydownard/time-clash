@@ -123,6 +123,7 @@ The design boards are 1600x900 mockups. We translate their look to 1280x800, 102
 ## Phase 2: Camp Hub, base placement, biomes
 - Camp Hub scene per the Main (Camp hub) board in the design handoff. **Built.** The board shows the campfire, both camps, workbenches, and three buttons: [FORGE WEAPON], [UPGRADE BASE] and the big [TIME TO CLASH!]. The big one starts the match. Forge Weapon and Upgrade Base open their own screens. Tweak Gear is not on the board, so it is not built.
 - Base Deployment: three Austin spots (skyscraper top, bridge underside, food truck pavilion). The spot changes launch height and cover. Test: each spot has a distinct elevation and a reachable shot path.
+  - **Rules built, no screen yet**: `src/game/spots.ts` and the `SPOTS` block in `src/game/config.ts`. `layoutForSpot(null)` is exactly the Phase 1 layout. Launch height (y): skyscraper 310, food truck 470, bridge 530. The bridge deck blocks flat shots, so players lob. `shiftForSpot` moves the Future fighters with their base. Tests: `tests/game/spots.test.ts`.
 - Parallax biomes: Aspen Forest, Cherry Blossom Forest, Ruined Temple. Selected before battle.
 - Evasion abilities: Hoverboard Dodge (recharges after 2 turns) and Stone Barricade Wall (once per match).
 

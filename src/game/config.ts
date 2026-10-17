@@ -148,6 +148,52 @@ export const PHASE1_LAYOUT: BattleLayout = {
   launchOrigins: LAUNCH_ORIGINS,
 };
 
+// ---------- Base deployment spots (Phase 2, Team Future only) ----------
+/** Austin spots for Team Future's base. `null` (no spot picked) is the Phase 1 layout, unchanged. */
+export const SPOT_IDS = ['skyscraper', 'bridge', 'foodTruck'] as const;
+
+export type SpotConfig = {
+  /** How far the base (and so every Future fighter) moves from its Phase 1 place. */
+  shift: Vec2;
+  /** The base rectangle after the move. */
+  base: Rect;
+  /** Where Future shots start. Outside the base, above the ground. */
+  launchOrigin: Vec2;
+  /** Extra solid shapes: the tower, the bridge deck, the low wall. */
+  obstacles: readonly Polygon[];
+};
+
+const rectToPolygon = (r: Rect): Polygon => [
+  { x: r.x, y: r.y },
+  { x: r.x + r.w, y: r.y },
+  { x: r.x + r.w, y: r.y + r.h },
+  { x: r.x, y: r.y + r.h },
+];
+
+export const SPOTS: Record<(typeof SPOT_IDS)[number], SpotConfig> = {
+  /** High on a tower. The best view, and no cover. The tower is solid, so low shots thud into it. */
+  skyscraper: {
+    shift: { x: 0, y: -160 },
+    base: { x: 1040, y: 330, w: 160, h: 130 },
+    launchOrigin: { x: 1060, y: 310 },
+    obstacles: [rectToPolygon({ x: 1040, y: 460, w: 160, h: GROUND_Y - 460 })],
+  },
+  /** Low, under a bridge deck. The deck stops flat shots, so players must lob. */
+  bridge: {
+    shift: { x: 0, y: 60 },
+    base: { x: 1040, y: 550, w: 160, h: 70 },
+    launchOrigin: { x: 1060, y: 530 },
+    obstacles: [rectToPolygon({ x: 880, y: 410, w: 210, h: 60 })],
+  },
+  /** On the ground at the pavilion, behind a low wall. */
+  foodTruck: {
+    shift: { x: 0, y: 0 },
+    base: { x: 1040, y: 490, w: 160, h: 130 },
+    launchOrigin: { x: 1060, y: 470 },
+    obstacles: [rectToPolygon({ x: 960, y: 540, w: 30, h: GROUND_Y - 540 })],
+  },
+};
+
 // ---------- Timing (ms) ----------
 export const TIMING = {
   /** Loading screen waits at least this long so jokes can be read. */
