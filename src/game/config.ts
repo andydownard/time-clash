@@ -152,6 +152,8 @@ export const PHASE1_LAYOUT: BattleLayout = {
 export const TIMING = {
   /** Loading screen waits at least this long so jokes can be read. */
   loadingMinMs: 1500,
+  /** A new family sees the longer, funnier load once. Returning families use loadingMinMs. */
+  loadingFirstMinMs: 4000,
   loadingMessageMs: 2500,
   bannerDropMs: 400,
   bannerHoldMs: 1800,

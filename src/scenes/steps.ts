@@ -6,7 +6,7 @@ import { TEAMS, type Players, type Team } from '../game/types';
 import { matchEffectsFor, type CampState } from '../game/loadout';
 import { loadCamp } from '../storage/storage';
 import type { QuestionBank } from '../questions/types';
-import { runLoading } from '../ui/loadingLogic';
+import { loadingMinFor, runLoading } from '../ui/loadingLogic';
 import { buildBattleData } from './battleData';
 import {
   buildMatchSetup,
@@ -50,6 +50,8 @@ export async function runLoadingStep(s: AppServices, data: unknown): Promise<Sce
   await runLoading({
     handle,
     env: s.env,
+    // A family with no saved players is new. The intro already marks introSeen before Loading.
+    minMs: loadingMinFor(s.storage.get('timeclash.players') == null),
     load: async (report) => {
       loaded.bank = await loadAssets(s.loadBank, report);
     },

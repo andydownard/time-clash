@@ -89,7 +89,7 @@ describe('loading step', () => {
     await flush();
     expect(document.querySelector('[data-screen="loading"]')).not.toBeNull();
     expect(done).toBe(false);
-    t.clock.advance(1600);
+    t.clock.advance(4100);
     await flush();
     t.clock.advance(200);
     const route = await p;
@@ -120,9 +120,9 @@ describe('loading step', () => {
     expect(document.body.textContent).toContain(LOADING.errorTitle);
     click(q(TEST_IDS.loadingRetry));
     await flush();
-    s.clock.advance(2000);
+    s.clock.advance(4100);
     await flush();
-    s.clock.advance(2000);
+    s.clock.advance(4100);
     const route = await p;
     expect(calls).toBe(2);
     expect(route.key).toBe(SCENE_KEYS.setup);
@@ -130,7 +130,7 @@ describe('loading step', () => {
   it('bad data still ends at Setup', async () => {
     const p = runLoadingStep(t.services, undefined);
     await flush();
-    t.clock.advance(1600);
+    t.clock.advance(4100);
     await flush();
     t.clock.advance(300);
     expect((await p).key).toBe(SCENE_KEYS.setup);
@@ -502,7 +502,7 @@ describe('battle data', () => {
     const setup = { players, seed: 3, firstTeam: 'PAST' as const };
     const p = runLoadingStep(t.services, { next: SCENE_KEYS.battle, setup });
     await flush();
-    t.clock.advance(1600);
+    t.clock.advance(4100);
     await flush();
     t.clock.advance(300);
     return (await p).data as BattleSceneData;

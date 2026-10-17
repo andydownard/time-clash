@@ -167,7 +167,7 @@ describe('the whole flow', () => {
 
     launch(LoadingScene, afterIntro.data);
     await flush();
-    t.clock.advance(1600);
+    t.clock.advance(4100);
     await flush();
     t.clock.advance(300);
     expect((await next()).key).toBe(SCENE_KEYS.setup);
@@ -206,7 +206,7 @@ describe('the whole flow', () => {
 
     launch(LoadingScene, loading.data);
     await flush();
-    t.clock.advance(1600);
+    t.clock.advance(4100);
     await flush();
     t.clock.advance(300);
     const battle = await next();
@@ -251,7 +251,7 @@ describe('the whole flow', () => {
     expect(started).toEqual([]);
     click(q(TEST_IDS.loadingRetry));
     await flush();
-    t.clock.advance(1700);
+    t.clock.advance(4100);
     await flush();
     t.clock.advance(300);
     expect((await next()).key).toBe(SCENE_KEYS.setup);

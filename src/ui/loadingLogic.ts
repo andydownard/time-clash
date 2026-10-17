@@ -18,6 +18,10 @@ export type RunLoadingOptions = {
   tickMs?: number;
 };
 
+/** A new family waits for the full funny load. A returning family is never kept waiting. */
+export const loadingMinFor = (firstTime: boolean): number =>
+  firstTime ? TIMING.loadingFirstMinMs : TIMING.loadingMinMs;
+
 /** Progress shown while waiting. It never claims 100% until the load is done. */
 const WAITING_CEILING = 0.95;
 
