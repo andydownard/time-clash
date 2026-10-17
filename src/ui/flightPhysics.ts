@@ -74,3 +74,42 @@ export function flightTransform(flight: Flight, pose: FlightPose, faces: number)
   const dy = round(pose.y - flight.from.y);
   return `translate(${dx} ${dy}) rotate(${round(pose.heading - faces)})`;
 }
+
+/** The oval the hawk circles on, in picture units, around where the picture draws it. */
+export type Orbit = { rx: number; ry: number; seconds: number };
+export const HAWK_ORBIT: Orbit = { rx: 340, ry: 60, seconds: 16 };
+
+export type HawkPose = {
+  /** Offset from where the picture draws the hawk. */
+  x: number;
+  y: number;
+  /** Width flip: 1 faces right, -1 faces left. It narrows through 0 as the hawk banks at each end. */
+  scaleX: number;
+  /** Tilt in degrees in the hawk's own drawing: positive dips the nose, negative lifts it. */
+  tilt: number;
+};
+
+/** The thinnest the hawk gets while it turns, so it never vanishes edge-on. */
+const MIN_TURN_WIDTH = 0.18;
+/** How much of its climb or dive shows as tilt, and the most it ever tilts. */
+const TILT_FRACTION = 0.5;
+const MAX_TILT = 16;
+
+/**
+ * Where the hawk is `t` seconds in. It travels a true oval (clockwise, along the top first),
+ * faces the way it flies, narrows as it banks round each end, and tilts with its climb or dive.
+ */
+export function hawkPose(t: number, orbit: Orbit = HAWK_ORBIT): HawkPose {
+  const turn = Number.isFinite(t) && orbit.seconds > 0 ? (2 * Math.PI * t) / orbit.seconds : 0;
+  const x = orbit.rx * Math.sin(turn);
+  const y = -orbit.ry * Math.cos(turn);
+  const vx = orbit.rx * Math.cos(turn);
+  const vy = orbit.ry * Math.sin(turn);
+  const width = vx / orbit.rx;
+  const scaleX = Math.abs(width) < MIN_TURN_WIDTH ? (width < 0 ? -1 : 1) * MIN_TURN_WIDTH : width;
+  const raw = ((Math.atan2(vy, Math.abs(vx)) * 180) / Math.PI) * TILT_FRACTION;
+  const tilt = Math.max(-MAX_TILT, Math.min(MAX_TILT, raw));
+  // Adding 0 turns -0 into 0, so a lap compares equal to its start.
+  const round = (n: number): number => Math.round(n * 100) / 100 + 0;
+  return { x: round(x), y: round(y), scaleX: round(scaleX), tilt: round(tilt) };
+}

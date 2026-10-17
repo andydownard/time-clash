@@ -1778,60 +1778,19 @@ body {
     opacity: 1;
   }
 }
-.tc-camp-arrow {
+/* Arrows, the cannonball and missiles fly with real physics from ambientFlights.ts. They stay
+   hidden until the script moves them, and forever when motion is reduced. The hawk is moved by the
+   same script; its three groups need no style of their own. */
+.tc-camp-arrow,
+.tc-camp-ball,
+.tc-camp-miss {
   opacity: 0;
-  animation: tc-camp-arrow 4s ease-out infinite;
 }
-@keyframes tc-camp-arrow {
-  0% {
-    transform: translate(0, 0);
-    opacity: 0;
-  }
-  4% {
-    opacity: 1;
-  }
-  18% {
-    transform: translate(430px, -230px);
-    opacity: 1;
-  }
-  40% {
-    transform: translate(1000px, -90px);
-    opacity: 1;
-  }
-  46% {
-    transform: translate(1060px, -60px);
-    opacity: 0;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-.tc-camp-ball {
-  opacity: 0;
-  animation: tc-camp-ball 4s ease-out infinite;
-}
-@keyframes tc-camp-ball {
-  0% {
-    transform: translate(0, 0);
-    opacity: 0;
-  }
-  4% {
-    opacity: 1;
-  }
-  22% {
-    transform: translate(480px, -260px);
-  }
-  44% {
-    transform: translate(920px, -100px);
-    opacity: 1;
-  }
-  50% {
-    transform: translate(960px, -70px);
-    opacity: 0;
-  }
-  100% {
-    opacity: 0;
-  }
+.tc-camp-hawk,
+.tc-camp-hawk-y,
+.tc-camp-hawk-flip,
+.tc-camp-hawk-bank {
+  will-change: transform;
 }
 .tc-camp-puff {
   transform-box: fill-box;
@@ -1873,34 +1832,6 @@ body {
   }
   46% {
     transform: translate(-860px, -30px);
-    opacity: 0;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-.tc-camp-miss {
-  opacity: 0;
-  animation: tc-camp-miss 4s ease-out infinite;
-}
-@keyframes tc-camp-miss {
-  0% {
-    transform: translate(0, 0);
-    opacity: 0;
-  }
-  4% {
-    opacity: 1;
-  }
-  20% {
-    transform: translate(-420px, -260px);
-    opacity: 1;
-  }
-  44% {
-    transform: translate(-1080px, -110px);
-    opacity: 1;
-  }
-  50% {
-    transform: translate(-1120px, -80px);
     opacity: 0;
   }
   100% {
