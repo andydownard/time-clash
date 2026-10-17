@@ -129,6 +129,15 @@ export const IMPACT_BEAT_MS = 700;
 /** Shorter fade used when motion is reduced (ms). */
 export const REDUCED_FADE_MS = 250;
 
+/** Awkward tumble: fly away, land, wobble or lie, then topple. All in ms and px. */
+export const FALL_MS = 1500;
+export const FALL_DX = 110;
+export const FALL_HEIGHT = 120;
+/** The vanish puff after the tumble. */
+export const VANISH_MS = 700;
+/** Base blast timing. */
+export const BLAST_MS = 900;
+
 export const IMPACT_SCALE = { direct: 1.4, near: 1, miss: 0.6 } as const;
 
 export const TEXT_MIN_PX = 20;
