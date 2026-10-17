@@ -554,3 +554,67 @@ describe('speech bubble tail', () => {
     expect(q(TEST_IDS.speechBubble)!.style.getPropertyValue('--tc-tail-shift')).toBe('');
   });
 });
+
+describe('HUD bar header and coach line', () => {
+  it('names whose turn it is in the bar, with the team on the bar', () => {
+    s.overlay.showHud(handlers());
+    s.overlay.updateHud(state({ activeTeam: 'PAST' }));
+    const bar = document.querySelector('.tc-aim')!;
+    expect(bar.querySelector('.tc-turn-name')!.textContent).toBe('Alex');
+    expect(bar.getAttribute('data-team')).toBe('PAST');
+    s.overlay.updateHud(state({ activeTeam: 'FUTURE' }));
+    expect(bar.querySelector('.tc-turn-name')!.textContent).toBe('Sam');
+    expect(bar.getAttribute('data-team')).toBe('FUTURE');
+  });
+
+  it('keeps the shot pips in the bar header and no separate shots panel', () => {
+    s.overlay.showHud(handlers());
+    s.overlay.updateHud(state());
+    expect(document.querySelector('.tc-aim-head .tc-pips')).not.toBeNull();
+    expect(document.querySelector('.tc-hud-center')).toBeNull();
+    // The shot count is still read out for assistive tech.
+    expect(q(TEST_IDS.shotsLeft)!.classList.contains('tc-sr-only')).toBe(true);
+  });
+
+  it('shows a coach line that teaches the sliders, and keeps the key help for screen readers', () => {
+    s.overlay.showHud(handlers());
+    s.overlay.updateHud(state());
+    const hint = document.querySelector<HTMLElement>('.tc-hint')!;
+    expect(hint.hidden).toBe(false);
+    expect(hint.textContent).toContain(HUD.coach);
+    expect(hint.textContent).toContain(HUD.keyboardHint);
+    expect(hint.querySelector('.tc-sr-only')!.textContent).toContain(HUD.keyboardHint);
+    expect(HUD.coach).toBe('Slide Angle and Power. Then press Fire!');
+  });
+
+  it('hides the coach line after the first Fire tap, and keeps it hidden next turn', () => {
+    const h = handlers();
+    s.overlay.showHud(h);
+    s.overlay.updateHud(state());
+    click(q(TEST_IDS.fireButton));
+    expect(h.calls).toEqual(['fire']);
+    expect(document.querySelector<HTMLElement>('.tc-hint')!.hidden).toBe(true);
+    s.overlay.hideHud();
+    s.overlay.showHud(h);
+    s.overlay.updateHud(state());
+    expect(document.querySelector<HTMLElement>('.tc-hint')!.hidden).toBe(true);
+  });
+
+  it('hides the coach line after the first Space fire too', () => {
+    const h = handlers();
+    s.overlay.showHud(h);
+    s.overlay.updateHud(state());
+    key(document.body, ' ');
+    expect(h.calls).toEqual(['fire']);
+    expect(document.querySelector<HTMLElement>('.tc-hint')!.hidden).toBe(true);
+  });
+
+  it('keeps the coach line when a fire is refused (not allowed to fire yet)', () => {
+    const h = handlers();
+    s.overlay.showHud(h);
+    s.overlay.updateHud(state({ canFire: false }));
+    key(document.body, ' ');
+    expect(h.calls).toEqual([]);
+    expect(document.querySelector<HTMLElement>('.tc-hint')!.hidden).toBe(false);
+  });
+});

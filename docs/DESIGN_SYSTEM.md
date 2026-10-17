@@ -133,6 +133,7 @@ Computed from the token values by `tests/styles/designPairs.ts` (WCAG 2.1 relati
 | Labels and eyebrows at 14, 16, 18px | 20px | Text floor. |
 | Chip on a team card: see-through, team edge (Purple 300 or Blue 300), cream text. Picked chip: Ember fill, Ink text and border, parchment ring | Same as the board, with a check mark added | The board is already accessible (Ink on Ember is 10.30:1). The check mark means the pick is never shown by color alone. Chips off a team card use Blue 700 with white text (8.66:1). |
 | Chip digits in Orbitron | Grade chips, question numbers and answer numbers use the plain rounded system stack | Orbitron draws 1 as a bar and 7 as a flag, which young readers mix up. Titles and counters keep Orbitron. |
+| A separate shots panel in the middle of the HUD | One control bar at the bottom. Its header names whose turn it is and shows the shot pips (two shots, then Reload) | The Battle board has one bar: badge, Angle, Power, Fire. The banner and the bar already say "shot 1 of 2". |
 | Wind drawn twice (card and sign) | One wind sign, on the canvas. The HUD copy is for screen readers | Two readouts in two type voices confused the top row. |
 | Team card edge in red or old cyan | Past: Purple. Future: Blue with a Pulse glow when active | Red and old cyan are not in the palette. |
 | Focus ring (none shown) | Blue 700 on light, Ember on dark | A ring needs 3:1 against the surface under it. |

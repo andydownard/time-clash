@@ -116,11 +116,16 @@ describe('HUD readouts', () => {
     expect(q(TEST_IDS.shotsLeft)!.textContent).toContain(HUD.shotsValue(0));
     expect(qa('.tc-pips')[0]!.getAttribute('aria-hidden')).toBe('true');
   });
-  it('the aim panel and hint wear the dark HUD look', () => {
-    expect(bodyOf('.tc-aim')).toContain('--tc-surface-dark');
+  it('the aim bar wears the Ink look with an Ember edge, like the Battle board', () => {
+    expect(bodyOf('.tc-aim')).toContain('--tc-ink-deep');
+    expect(bodyOf('.tc-aim')).toMatch(/border:\s*4px solid var\(--tc-ember\)/);
     expect(bodyOf('.tc-aim')).toMatch(/font-family:\s*var\(--tc-font-voice-new\)/);
     expect(bodyOf('.tc-aim .tc-range')).toContain('--tc-pulse');
-    expect(bodyOf('.tc-hud-center')).toContain('--tc-surface-dark');
+    expect(bodyOf('.tc-aim #tc-aim-power')).toContain('--tc-ember');
+    expect(bodyOf('.tc-hint')).toContain('--tc-surface-dark');
+  });
+  it('has no separate shots panel: the bar header holds the turn name and the pips', () => {
+    expect(css).not.toContain('.tc-hud-center');
   });
   it('Sound sits low and left, like Pause low and right, and uses the shared button font', () => {
     const corner = bodyOf('.tc-hud-corner');
@@ -129,7 +134,7 @@ describe('HUD readouts', () => {
     expect(bodyOf('.tc-hud-corner .tc-btn')).not.toMatch(/font-family/);
   });
   it('portrait lays the HUD out as a grid with cards side by side', () => {
-    expect(css).toMatch(/grid-template-areas:\s*'past future'\s*'center center'/);
+    expect(css).toMatch(/grid-template-areas:\s*'past future';/);
   });
 });
 
