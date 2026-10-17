@@ -4,6 +4,7 @@
 import Phaser from 'phaser';
 import type { BattleLayout, Polygon } from '../../game/types';
 import { aspenLayers, type AspenLayer } from './aspens';
+import { BATTLE_BAND } from '../../game/config';
 import { ART, PALETTE } from './visual';
 
 const CLOUDS = [
@@ -98,6 +99,11 @@ export function drawBackdrop(scene: Phaser.Scene, layout: BattleLayout): Backdro
   g.fillRect(0, horizon, width / 2, height - horizon);
   g.fillGradientStyle(ART.soilTop, ART.soilTop, ART.hullDark, ART.hullDark, 1);
   g.fillRect(width / 2, horizon, width / 2, height - horizon);
+  // The band under the battlefield holds the controls. It carries on as ground, never black.
+  g.fillStyle(ART.grassLow, 1);
+  g.fillRect(0, height, width / 2, BATTLE_BAND);
+  g.fillStyle(ART.hullDark, 1);
+  g.fillRect(width / 2, height, width / 2, BATTLE_BAND);
   for (const o of layout.terrain.obstacles) {
     g.fillStyle(ART.stone, 1);
     g.fillPoints(toPoints(o), true);

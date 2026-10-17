@@ -46,7 +46,7 @@ test('portrait: setup, battle, pass screen and reload all fit', async ({ page, b
   await expectBannerClear(page, 'portrait banner');
   await fits(
     page,
-    ['fire', 'aim-angle', 'aim-power', 'wind', 'base-hp-PAST', 'base-hp-FUTURE'],
+    ['fire', 'aim-angle', 'aim-power', 'wind', 'base-hp-PAST', 'base-hp-FUTURE', 'hud-mute', 'pause'],
     'Battle',
   );
   expect(await smallTargets(page), 'targets in Battle').toEqual([]);

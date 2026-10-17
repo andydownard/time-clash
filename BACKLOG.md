@@ -17,7 +17,6 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 - Miss, near-miss, and wrong-answer lines are plain. Chrono has no label or quip on the reload card. "My dignity needs a rematch" shows even when it does not fit.
 
 ## P2
-- The aim panel still sits over the ground strip at 1024x768. Moving the controls below the picture means a new canvas layout.
 - Tumble bubble: a squash, spin or block-bounce animation for the speaker (the tail now points at them).
 - Reload card: an optional "hide the bonus ring" setting for slow readers.
 - Victory awards: the winner can still hold five awards. Consider a cap if it stings.

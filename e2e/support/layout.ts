@@ -1,6 +1,6 @@
 // Layout checks that need a real browser: nothing may sit on top of the team cards.
 import type { Page } from '@playwright/test';
-import { BASES, WORLD } from '../../src/game/config';
+import { BASES, BATTLE_BAND, TERRAIN, WORLD } from '../../src/game/config';
 import { expect } from '../fixtures';
 import { tid } from './game';
 
@@ -8,12 +8,14 @@ type Box = { x: number; y: number; width: number; height: number };
 const overlaps = (a: Box, b: Box): boolean =>
   a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
 
-/** The ? and gear buttons, and the turn banner, must not cover a team card. */
+/** The ? and gear buttons, Sound and Pause must not cover a team card. */
 export async function expectHudClear(page: Page, where: string): Promise<void> {
   await expect(tid(page, 'how-to-play'), `${where}: exactly one ? button`).toHaveCount(1);
   const chrome = [
     await tid(page, 'how-to-play').boundingBox(),
     await tid(page, 'settings-button').boundingBox(),
+    await tid(page, 'hud-mute').boundingBox(),
+    await tid(page, 'pause').boundingBox(),
   ];
   const cards = [
     await tid(page, 'base-hp-PAST').locator('xpath=ancestor::*[@data-team][1]').boundingBox(),
@@ -53,7 +55,11 @@ export async function recordBannerBox(page: Page): Promise<void> {
   });
 }
 
-/** The aim panel must not sit on top of either base, so a child can see what they aim from. */
+/**
+ * The control bar sits in the band under the picture, so it must clear the whole battlefield:
+ * both bases, and the ground line the fighters stand on. The canvas has one uniform scale
+ * (width / WORLD.width) and is taller than the world by BATTLE_BAND.
+ */
 export async function expectAimPanelClearOfBases(page: Page, where: string): Promise<void> {
   const canvas = await page.locator('#game canvas').boundingBox();
   const panel = await tid(page, 'aim-angle')
@@ -62,6 +68,16 @@ export async function expectAimPanelClearOfBases(page: Page, where: string): Pro
   expect(canvas, `${where}: canvas`).not.toBeNull();
   expect(panel, `${where}: aim panel`).not.toBeNull();
   const k = canvas!.width / WORLD.width;
+  expect(canvas!.height / k, `${where}: canvas is world plus band`).toBeCloseTo(
+    WORLD.height + BATTLE_BAND,
+    0,
+  );
+  const bar = await page.locator('.tc-hud-bottom').boundingBox();
+  expect(bar, `${where}: control bar`).not.toBeNull();
+  expect(
+    bar!.y + 0.5,
+    `${where}: control bar starts below the fighters' ground line`,
+  ).toBeGreaterThanOrEqual(canvas!.y + TERRAIN.groundY * k);
   for (const team of ['PAST', 'FUTURE'] as const) {
     const b = BASES[team];
     const box = { x: canvas!.x + b.x * k, y: canvas!.y + b.y * k, width: b.w * k, height: b.h * k };

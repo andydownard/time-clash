@@ -127,9 +127,10 @@ describe('HUD readouts', () => {
   it('has no separate shots panel: the bar header holds the turn name and the pips', () => {
     expect(css).not.toContain('.tc-hud-center');
   });
-  it('Sound sits low and left, like Pause low and right, and uses the shared button font', () => {
+  it('Sound sits top left under the ? and gear, and uses the shared button font', () => {
     const corner = bodyOf('.tc-hud-corner');
-    expect(corner).toMatch(/bottom:/);
+    expect(corner).toMatch(/top:/);
+    expect(corner).not.toMatch(/bottom:/);
     expect(corner).toMatch(/left:/);
     expect(bodyOf('.tc-hud-corner .tc-btn')).not.toMatch(/font-family/);
   });
