@@ -37,7 +37,7 @@ Question and intro shapes are in [docs/BUILD.md](./docs/BUILD.md) and [docs/NARR
 Wind, question order, and speech bubble choice use a seeded RNG (`src/game/rng.ts`). Physics uses a fixed 1/60 s step. The same seed and inputs give the same match.
 
 ## Storage keys (localStorage)
-`timeclash.players`, `timeclash.introSeen`, `timeclash.settings` (mute, volume, captions, music, reduced motion), `timeclash.history` (questions used, plus a short list of missed questions to ask again). No personal data beyond first names the family types in. Nothing is sent anywhere.
+`timeclash.players`, `timeclash.introSeen`, `timeclash.settings` (mute, volume, captions, music, reduced motion), `timeclash.history` (questions used, plus a short list of missed questions to ask again), `timeclash.camp` (Scrap, weapons and upgrades for each team, plus the seed of the last match whose Scrap was added). No personal data beyond first names the family types in. Nothing is sent anywhere.
 
 ## Phase 4 (iPad play)
 A small Node relay (`ws`) pairs two clients by a 4-letter room code. The server owns turn order and checks every move. Clients send inputs only. See Phase 4 in [docs/BUILD.md](./docs/BUILD.md).

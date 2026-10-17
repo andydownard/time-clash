@@ -2,6 +2,8 @@
 // Coordinates: world pixels, origin top-left, y grows DOWN (same as Phaser, so no conversion).
 // See docs/CONTRACTS.md for the reasons behind each choice.
 
+import type { MatchEffects } from './loadout';
+
 // ---------- Basics ----------
 
 export type Team = 'PAST' | 'FUTURE';
@@ -83,6 +85,8 @@ export type ShotInput = AimInput & {
   /** Horizontal acceleration in px/s². Positive pushes toward +x. */
   wind: number;
   layout: BattleLayout;
+  /** Multiplies the launch speed (a longer-range weapon). Default 1. */
+  speedScale?: number;
 };
 
 export type CollisionHit =
@@ -165,8 +169,10 @@ export type BlastOutcome = {
   result: BlastResult;
   /** The base the blast was scored against (always the opponent; no self damage). */
   target: Team;
-  /** 25, 10, or 0 (from config DAMAGE). */
+  /** Damage dealt to the target's base. The default weapon gives 25, 10, or 0 (config DAMAGE). */
   damage: number;
+  /** True when the target's force field stopped a hit that would have done damage. */
+  blocked?: boolean;
   /** True on 'near'. The scene plays the Awkward Tumble and a bubble. */
   tumble: boolean;
   /** Index into copy TUMBLE_LINES when tumble is true, else null. Chosen by a seeded shuffle bag. */
@@ -239,6 +245,8 @@ export type Match = {
   /** Wind for the current turn, from windForTurn(seed, turn.turnNumber). */
   readonly wind: number;
   readonly baseHp: Record<Team, number>;
+  /** Each base's full health. 100 unless an upgrade raised it. */
+  readonly maxBaseHp: Record<Team, number>;
   readonly scrap: Record<Team, number>;
   /** Each team's aim is remembered between its turns. */
   readonly aim: Record<Team, AimInput>;
@@ -253,6 +261,8 @@ export type MatchOptions = {
   firstTeam?: Team;
   /** Default: the Phase 1 layout from config. */
   layout?: BattleLayout;
+  /** Weapons and upgrades for each team. Default: the starter weapons, no upgrades (Phase 1). */
+  effects?: MatchEffects;
 };
 
 export class MatchOverError extends Error {

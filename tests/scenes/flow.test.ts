@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { DEFAULT_EFFECTS } from '../../src/game/loadout';
 import { createStorage } from '../../src/storage/storage';
 import { SCENE_KEYS } from '../../src/scenes/registry';
 import {
@@ -78,6 +79,13 @@ describe('routeAfterIntro', () => {
 describe('buildMatchSetup', () => {
   it('keeps both players, the seed, and Team Past first', () => {
     expect(buildMatchSetup(players, 42)).toEqual({ players, seed: 42, firstTeam: 'PAST' });
+  });
+  it('has no effects by default, so a fresh game is Phase 1', () => {
+    expect(buildMatchSetup(players, 5)).toEqual({ players, seed: 5, firstTeam: 'PAST' });
+  });
+  it('carries the weapons and upgrades when given', () => {
+    const setup = buildMatchSetup(players, 5, DEFAULT_EFFECTS);
+    expect(setup.effects).toBe(DEFAULT_EFFECTS);
   });
   it('builds something createMatch accepts', () => {
     const m = createMatch(buildMatchSetup(players, 42));

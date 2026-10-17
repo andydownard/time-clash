@@ -41,6 +41,7 @@ export function fakeController(
     turn: { phase: 'RELOAD', team: 'PAST', turnNumber: 3, shotsFired: 2 },
     wind: 0,
     baseHp: { PAST: 50, FUTURE: 0 },
+    maxBaseHp: { PAST: 100, FUTURE: 100 },
     scrap: { PAST: 3, FUTURE: 1 },
     aim: { PAST: { angleDeg: 45, power: 60 }, FUTURE: { angleDeg: 45, power: 60 } },
     stats: { PAST: stats(), FUTURE: stats({ directHits: 0, fastestAnswerMs: null }) },

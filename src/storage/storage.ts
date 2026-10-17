@@ -1,6 +1,9 @@
 // Typed, never-throwing wrapper around localStorage. Nothing here leaves the device.
 import { DEFAULT_SETTINGS, GRADE } from '../game/config';
+import { freshCamp, freshLoadout, type CampState, type TeamLoadout } from '../game/loadout';
 import type { Grade, Player, Players, Subject, Team } from '../game/types';
+import { FORGE, WEAPONS, type WeaponId } from '../game/weapons';
+import { UPGRADES, UPGRADE_MAX_LEVEL, type UpgradeId } from '../game/upgrades';
 import type { PickHistory, QuestionSubject } from '../questions/types';
 import {
   STORAGE_KEYS,
@@ -84,12 +87,65 @@ function parseHistory(v: unknown): PickHistory | null {
   return retry.length > 0 ? { used, lastSubject, retry } : { used, lastSubject };
 }
 
+/** The most scrap we keep. A bad or edited value is capped, so the Camp never shows a silly number. */
+const SCRAP_CAP = 99999;
+
+const wholeBetween = (v: unknown, lo: number, hi: number): number | null =>
+  typeof v === 'number' && Number.isInteger(v) && v >= lo && v <= hi ? v : null;
+
+/** One team's loadout, cleaned. Anything wrong is dropped, and the starter is always owned. */
+function parseLoadout(v: unknown, team: Team): TeamLoadout {
+  const fresh = freshLoadout(team);
+  if (!isObject(v)) return fresh;
+  const owned: Partial<Record<WeaponId, number>> = { ...fresh.owned };
+  if (isObject(v.owned)) {
+    for (const w of WEAPONS.filter((x) => x.team === team)) {
+      const level = wholeBetween(v.owned[w.id], 1, FORGE.maxLevel);
+      if (level !== null) owned[w.id] = level;
+    }
+  }
+  const wanted = WEAPONS.find((w) => w.id === v.weapon && w.team === team);
+  const weapon = wanted && owned[wanted.id] ? wanted.id : fresh.weapon;
+  const upgrades: Partial<Record<UpgradeId, number>> = {};
+  if (isObject(v.upgrades)) {
+    for (const u of UPGRADES.filter((x) => x.team === team)) {
+      const level = wholeBetween(v.upgrades[u.id], 1, UPGRADE_MAX_LEVEL);
+      if (level !== null) upgrades[u.id] = level;
+    }
+  }
+  return { weapon, owned, upgrades };
+}
+
+function parseCamp(v: unknown): CampState | null {
+  if (!isObject(v)) return null;
+  const scrapOf = (team: Team): number => {
+    const raw = isObject(v.scrap) ? v.scrap[team] : null;
+    return wholeBetween(raw, 0, SCRAP_CAP) ?? 0;
+  };
+  const loadout = isObject(v.loadout) ? v.loadout : {};
+  const seed = v.creditedSeed;
+  return {
+    scrap: { PAST: scrapOf('PAST'), FUTURE: scrapOf('FUTURE') },
+    loadout: {
+      PAST: parseLoadout(loadout.PAST, 'PAST'),
+      FUTURE: parseLoadout(loadout.FUTURE, 'FUTURE'),
+    },
+    creditedSeed: typeof seed === 'number' && Number.isFinite(seed) ? seed : null,
+  };
+}
+
+/** The saved camp, or a fresh one. Never throws and never returns null. */
+export function loadCamp(storage: TypedStorage): CampState {
+  return storage.get('timeclash.camp') ?? freshCamp();
+}
+
 /** Each key has a shape guard. It returns the clean value, or null if the shape is wrong. */
 const GUARDS: { [K in StorageKey]: (v: unknown) => StorageSchema[K] | null } = {
   'timeclash.players': parsePlayers,
   'timeclash.introSeen': (v) => (typeof v === 'boolean' ? v : null),
   'timeclash.settings': parseSettings,
   'timeclash.history': parseHistory,
+  'timeclash.camp': parseCamp,
 };
 
 function defaultBacking(): BackingStore | null {
