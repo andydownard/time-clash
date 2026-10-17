@@ -55,6 +55,13 @@ export function showCamp(ctx: UiCtx): Promise<CampChoice> {
       text: CAMP.start,
     });
 
+    const players = h(doc, 'button', {
+      type: 'button',
+      class: 'tc-btn tc-btn-neutral tc-camp-players',
+      'data-testid': TEST_IDS.campPlayers,
+      text: CAMP.players,
+    });
+
     const screen = h(
       doc,
       'section',
@@ -78,12 +85,17 @@ export function showCamp(ctx: UiCtx): Promise<CampChoice> {
         comingSoon(TEST_IDS.campForge, CAMP.forge, 'past', CAMP.forgeSoon),
         comingSoon(TEST_IDS.campUpgrade, CAMP.upgrade, 'future', CAMP.upgradeSoon),
       ),
+      players,
       status,
     );
     const close = ctx.openScreen(screen);
     start.addEventListener('click', () => {
       close();
       resolve('battle');
+    });
+    players.addEventListener('click', () => {
+      close();
+      resolve('players');
     });
     start.focus();
   });

@@ -32,10 +32,15 @@ describe('Camp screen', () => {
     expect(art.querySelector('[id^="tcCamp"]')).not.toBeNull();
   });
 
-  it('has three real buttons with the right words', () => {
+  it('has four real buttons with the right words', () => {
     void s.overlay.showCamp();
     const buttons = qa('[data-screen="camp"] button');
-    expect(buttons.map((b) => b.textContent)).toEqual([CAMP.start, CAMP.forge, CAMP.upgrade]);
+    expect(buttons.map((b) => b.textContent)).toEqual([
+      CAMP.start,
+      CAMP.forge,
+      CAMP.upgrade,
+      CAMP.players,
+    ]);
     for (const b of buttons) expect(b.getAttribute('type')).toBe('button');
   });
 
@@ -58,6 +63,23 @@ describe('Camp screen', () => {
     click(q(TEST_IDS.campStart));
     await expect(p).resolves.toBe('battle');
     expect(q(TEST_IDS.campStart)).toBeNull();
+  });
+});
+
+describe('Camp Change players', () => {
+  it('resolves with players and closes, so Setup can open', async () => {
+    const p = s.overlay.showCamp();
+    click(q(TEST_IDS.campPlayers));
+    await expect(p).resolves.toBe('players');
+    expect(q(TEST_IDS.campStart)).toBeNull();
+  });
+  it('is a real, 56px-class neutral button that Tab can reach', () => {
+    void s.overlay.showCamp();
+    const b = q<HTMLButtonElement>(TEST_IDS.campPlayers)!;
+    expect(b.classList.contains('tc-btn')).toBe(true);
+    expect(b.disabled).toBe(false);
+    b.focus();
+    expect(document.activeElement).toBe(b);
   });
 });
 

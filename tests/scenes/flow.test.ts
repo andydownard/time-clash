@@ -25,6 +25,17 @@ describe('routeAfterTap', () => {
     s.set('timeclash.introSeen', true);
     expect(routeAfterTap(s)).toEqual({ key: SCENE_KEYS.loading, data: { next: SCENE_KEYS.setup } });
   });
+  it('goes to the Camp, through Loading, when the players are already saved', () => {
+    const s = createStorage(null);
+    s.set('timeclash.introSeen', true);
+    s.set('timeclash.players', players);
+    expect(routeAfterTap(s)).toEqual({ key: SCENE_KEYS.loading, data: { next: SCENE_KEYS.camp } });
+  });
+  it('still shows the intro first on a first visit, even with saved players', () => {
+    const s = createStorage(null);
+    s.set('timeclash.players', players);
+    expect(routeAfterTap(s).key).toBe(SCENE_KEYS.intro);
+  });
   it('treats introSeen=false as unseen', () => {
     const s = createStorage(null);
     s.set('timeclash.introSeen', false);
@@ -41,6 +52,17 @@ describe('routeAfterTap', () => {
       removeItem: () => undefined,
     };
     expect(routeAfterTap(createStorage(throwing)).key).toBe(SCENE_KEYS.intro);
+  });
+});
+
+describe('routeAfterIntro with saved players', () => {
+  it('goes to the Camp, through Loading', () => {
+    const s = createStorage(null);
+    s.set('timeclash.players', players);
+    expect(routeAfterIntro(s)).toEqual({
+      key: SCENE_KEYS.loading,
+      data: { next: SCENE_KEYS.camp },
+    });
   });
 });
 
@@ -73,6 +95,9 @@ describe('routeAfterLoading', () => {
   });
   it('goes to Setup when told to', () => {
     expect(routeAfterLoading({ next: SCENE_KEYS.setup }).key).toBe(SCENE_KEYS.setup);
+  });
+  it('goes to the Camp when told to', () => {
+    expect(routeAfterLoading({ next: SCENE_KEYS.camp })).toEqual({ key: SCENE_KEYS.camp });
   });
   it.each([undefined, null, 7, 'x', {}, { next: 'Nope' }, { next: SCENE_KEYS.battle }])(
     'falls back to Setup for bad data %#',

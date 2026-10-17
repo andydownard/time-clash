@@ -33,7 +33,7 @@ export async function runTapStep(s: AppServices): Promise<SceneRoute> {
 
 export async function runIntroStep(s: AppServices): Promise<SceneRoute> {
   await s.howTo.open();
-  return routeAfterIntro();
+  return routeAfterIntro(s.storage);
 }
 
 /**
@@ -69,7 +69,8 @@ export async function runCampStep(s: AppServices): Promise<SceneRoute> {
   const players = s.storage.get('timeclash.players');
   // No saved players (it should not happen) goes back to Setup, never a dead end.
   if (!players) return { key: SCENE_KEYS.setup };
-  await s.overlay.showCamp();
+  const choice = await s.overlay.showCamp();
+  if (choice === 'players') return { key: SCENE_KEYS.setup };
   const setup = buildMatchSetup(players, s.newSeed());
   // The bank is loaded once, before Setup. If it is somehow missing, load it first.
   if (!s.session.bank) {

@@ -12,18 +12,23 @@ import {
   type VictoryData,
 } from './registry';
 
-const toSetup: SceneRoute = {
-  key: SCENE_KEYS.loading,
-  data: { next: SCENE_KEYS.setup } satisfies LoadingData,
-};
+/**
+ * Loading, then home. Home is the Camp once Setup has saved the players, so a returning family
+ * lands there. A new family has no players yet, so it goes to Setup first.
+ */
+function toHome(storage?: TypedStorage): SceneRoute {
+  const known = storage?.get('timeclash.players') != null;
+  const data: LoadingData = { next: known ? SCENE_KEYS.camp : SCENE_KEYS.setup };
+  return { key: SCENE_KEYS.loading, data };
+}
 
 /** After the first tap: the intro on a first visit, otherwise straight to Loading. */
 export function routeAfterTap(storage: TypedStorage): SceneRoute {
-  return storage.get('timeclash.introSeen') === true ? toSetup : { key: SCENE_KEYS.intro };
+  return storage.get('timeclash.introSeen') === true ? toHome(storage) : { key: SCENE_KEYS.intro };
 }
 
-export function routeAfterIntro(): SceneRoute {
-  return toSetup;
+export function routeAfterIntro(storage?: TypedStorage): SceneRoute {
+  return toHome(storage);
 }
 
 /** Setup leads to the Camp. The players are already saved, so the Camp needs no data. */
@@ -37,8 +42,9 @@ export function buildMatchSetup(players: Players, seed: number): MatchSetup {
 
 const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null;
 
-/** Loading hands off to Battle or Setup. Bad data goes to Setup, never a dead end. */
+/** Loading hands off to Battle, the Camp or Setup. Bad data goes to Setup, never a dead end. */
 export function routeAfterLoading(data: unknown): SceneRoute {
+  if (isRecord(data) && data.next === SCENE_KEYS.camp) return { key: SCENE_KEYS.camp };
   if (isRecord(data) && data.next === SCENE_KEYS.battle && isRecord(data.setup)) {
     return { key: SCENE_KEYS.battle, data: data.setup };
   }

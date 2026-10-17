@@ -20,6 +20,8 @@ export const CAMP = {
   upgrade: 'Upgrade Base',
   /** The big button. It starts the match. */
   start: GAME_TAGLINE,
+  /** A small way back to Setup, to change names, grades and subjects. */
+  players: 'Change players',
   soon: 'Coming soon',
   forgeSoon: 'Forge Weapon is coming soon.',
   upgradeSoon: 'Upgrade Base is coming soon.',

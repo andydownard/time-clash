@@ -204,6 +204,15 @@ describe('camp step', () => {
     expect(route.key).toBe(SCENE_KEYS.setup);
     expect(q(TEST_IDS.campStart)).toBeNull();
   });
+  it('goes to Setup when Change players is tapped, and starts no match', async () => {
+    t.services.session.bank = tinyBank;
+    t.storage.set('timeclash.players', players);
+    const p = runCampStep(t.services);
+    click(q(TEST_IDS.campPlayers));
+    const route = await p;
+    expect(route).toEqual({ key: SCENE_KEYS.setup });
+    expect(t.services.session.match).toBeNull();
+  });
   it('stays on the Camp when a closed button is tapped', async () => {
     t.services.session.bank = tinyBank;
     t.storage.set('timeclash.players', players);
