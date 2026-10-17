@@ -4,6 +4,8 @@ Status: plan only. Nothing here is built. Items marked **Andy's call** need his 
 
 > **Update 2026-10-17.** Andy's canvas comments and chat now answer some open questions below. See [DESIGN_GUIDANCE.md](./DESIGN_GUIDANCE.md). In short: five units at most per side (A to E, 1 to 5), not four. One unit acts at a time (rule 2 stands). A right answer should earn an extra turn with more powerful damage (a change to the protected turn shape, to be sized before any code). This plan has not been rewritten yet. Until it is, treat the crew tables in section 3 as out of date.
 
+> **Built so far (rules only).** Five fighters per side with per-fighter origin, range and damage scales, `selectUnit`, and `selected` in the match snapshot. See the Fighters section of [ARCHITECTURE.md](../ARCHITECTURE.md). No screens, Dash, Fly, or extra turns yet.
+
 Read with: [AGENTS.md](../AGENTS.md), [GAME_SPEC.md](./GAME_SPEC.md), [BUILD.md](./BUILD.md), [CONTRACTS.md](./CONTRACTS.md).
 
 ## 1. Goal and the "super simple" rules
