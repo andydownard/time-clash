@@ -3,6 +3,7 @@
 import { BUTTONS, HUD, TEAM_NAMES, turnBanner, windLabel } from '../data/copy';
 import { AIM, TIMING, TURN, WIND } from '../game/config';
 import { TEAMS, type Team } from '../game/types';
+import type { UnitId } from '../game/units';
 import { LOCAL_IDS } from './constants';
 import type { UiCtx } from './ctx';
 import { h } from './dom';
@@ -22,6 +23,8 @@ type Parts = {
   pips: HTMLElement;
   aimPanel: HTMLElement;
   strip: HTMLElement;
+  units: HTMLElement;
+  unitName: HTMLElement;
   turnText: HTMLElement;
   hint: HTMLElement;
   mute: HTMLButtonElement;
@@ -42,6 +45,8 @@ export function createHud(ctx: UiCtx) {
     power: AIM.defaultPower,
   };
   let canFire = false;
+  /** The active team's fighter ids, as last drawn. Keys outside this list do nothing. */
+  let unitIds: UnitId[] = [];
   /** The coach line stays until the first shot of the session, so a new player learns the controls. */
   let hasFired = false;
   let unsubscribe: (() => void) | null = null;
@@ -65,6 +70,18 @@ export function createHud(ctx: UiCtx) {
     if (ctx.coverKind() !== null) return;
     if (doc.body.dataset.paused) return;
     const target = e.target as Element | null;
+    // A fighter's letter or number picks it (only the active team's five). Not while typing.
+    const typing =
+      target &&
+      'closest' in target &&
+      target.closest('textarea, select, [contenteditable], input:not([type="range"])');
+    if (e.key.length === 1 && !typing) {
+      const id = unitIds.find((u) => u.toLowerCase() === e.key.toLowerCase());
+      if (id) {
+        if (canFire) handlers.onSelect(id);
+        return;
+      }
+    }
     const onControl =
       target &&
       'closest' in target &&
@@ -116,6 +133,41 @@ export function createHud(ctx: UiCtx) {
       ),
       h(doc, 'span', { class: 'tc-pip tc-pip-reload', text: HUD.reloadPip }),
     );
+  };
+
+  // Rebuild the tokens only when the roster changes. Otherwise just move the selection.
+  const paintUnits = (state: HudState): void => {
+    if (!parts) return;
+    const ids = state.units.map((u) => u.id);
+    if (ids.join('') !== unitIds.join('')) {
+      unitIds = ids;
+      const tokens = state.units.map((u) => {
+        const b = h(doc, 'button', {
+          type: 'button',
+          role: 'radio',
+          class: 'tc-unit',
+          'data-unit': u.id,
+          'data-testid': TEST_IDS.unit(u.id),
+          'aria-label': HUD.unitLabel(u.name, u.id),
+          text: u.id,
+        });
+        b.addEventListener('click', () => {
+          if (canFire) handlers?.onSelect(u.id);
+        });
+        return b;
+      });
+      parts.units.replaceChildren(
+        h(doc, 'span', { class: 'tc-units-label', text: HUD.pickOne }),
+        ...tokens,
+        parts.unitName,
+      );
+    }
+    parts.units.setAttribute('data-team', state.activeTeam ?? 'none');
+    for (const b of parts.units.querySelectorAll<HTMLElement>('.tc-unit')) {
+      b.setAttribute('aria-checked', String(b.dataset.unit === state.selected));
+      b.setAttribute('aria-disabled', String(!canFire));
+    }
+    parts.unitName.textContent = state.units.find((u) => u.id === state.selected)?.name ?? '';
   };
 
   const fireNow = (h_: HudHandlers): void => {
@@ -255,6 +307,15 @@ export function createHud(ctx: UiCtx) {
       pips,
     );
     const aimPanel = h(doc, 'div', { class: 'tc-aim' }, a.row, p.row);
+    // Fighter selector: one round token per fighter, drawn in update().
+    const unitName = h(doc, 'span', { class: 'tc-unit-name', 'aria-live': 'polite' });
+    const units = h(
+      doc,
+      'div',
+      { class: 'tc-units', role: 'radiogroup', 'aria-label': HUD.pickOne },
+      h(doc, 'span', { class: 'tc-units-label', text: HUD.pickOne }),
+      unitName,
+    );
     // Wind is drawn once, on the canvas sign. This copy and the shot count are for screen readers.
     const hint = h(
       doc,
@@ -276,7 +337,7 @@ export function createHud(ctx: UiCtx) {
         ...TEAMS.slice(1).map((t) => panel[t]),
         h(doc, 'div', { class: 'tc-hud-corner' }, mute),
       ),
-      h(doc, 'div', { class: 'tc-hud-bottom' }, strip, aimPanel, fire, hint, wind, shots),
+      h(doc, 'div', { class: 'tc-hud-bottom' }, strip, units, aimPanel, fire, hint, wind, shots),
     );
     return {
       root,
@@ -290,6 +351,8 @@ export function createHud(ctx: UiCtx) {
       pips,
       aimPanel,
       strip,
+      units,
+      unitName,
       turnText,
       hint,
       mute,
@@ -323,6 +386,7 @@ export function createHud(ctx: UiCtx) {
       parts.angle.disabled = !canFire;
       parts.power.disabled = !canFire;
       parts.fire.disabled = !canFire;
+      paintUnits(state);
       // A disabled control drops focus to the page. Keep it inside the HUD instead.
       const active = doc.activeElement;
       if (
@@ -383,6 +447,7 @@ export function createHud(ctx: UiCtx) {
       parts = null;
       handlers = null;
       canFire = false;
+      unitIds = [];
     },
   };
 }

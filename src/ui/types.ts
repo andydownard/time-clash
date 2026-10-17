@@ -3,6 +3,7 @@
 // Phaser draws only the world (backdrop, bases, shots, tumbles).
 import type { CampState } from '../game/loadout';
 import type { Grade, Players, Team, TeamStats, Vec2 } from '../game/types';
+import type { UnitId } from '../game/units';
 import type { Question } from '../questions/types';
 import type { Settings } from '../storage/types';
 import type { IntroScript } from '../data/types';
@@ -75,6 +76,7 @@ export const TEST_IDS = {
   angleControl: 'aim-angle',
   powerControl: 'aim-power',
   fireButton: 'fire',
+  unit: (id: string) => `unit-${id}`,
   wind: 'wind',
   baseHp: (team: Team) => `base-hp-${team}`,
   shotsLeft: 'shots-left',
@@ -133,11 +135,16 @@ export type HudState = {
   shotsLeft: 0 | 1 | 2;
   /** False while a shot flies or a cover is up. */
   canFire: boolean;
+  /** The fighter chosen by the active team. */
+  selected: UnitId;
+  /** The active team's five fighters. Empty when no team is up. */
+  units: ReadonlyArray<{ id: UnitId; name: string }>;
 };
 
 export type HudHandlers = {
   onAim: (aim: { angleDeg: number; power: number }) => void;
   onFire: () => void;
+  onSelect: (id: UnitId) => void;
   onMuteToggle: () => void;
 };
 
