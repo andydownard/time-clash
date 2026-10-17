@@ -147,6 +147,8 @@ export class BattleScene extends Phaser.Scene implements BattleView {
       onHistory: this.data0.onHistory,
       onMuteToggle: this.data0.onMuteToggle,
       ...(this.data0.scrapBase ? { scrapBase: this.data0.scrapBase } : {}),
+      ...(this.data0.levels ? { levels: this.data0.levels } : {}),
+      ...(this.data0.onLevels ? { onLevels: this.data0.onLevels } : {}),
       onFinished: (result) => {
         if (this.data0.onFinished) this.data0.onFinished(result);
         else this.scene.start(VICTORY_SCENE_KEY, result);
@@ -234,10 +236,7 @@ export class BattleScene extends Phaser.Scene implements BattleView {
           const t = tween.getValue() ?? 0;
           const p = pointAtTime(result.path, t);
           shot.container.setPosition(p.x, p.y);
-          shot.update(
-            headingDegrees(result.path, t / (BALLISTICS.stepSeconds * 1000)),
-            t,
-          );
+          shot.update(headingDegrees(result.path, t / (BALLISTICS.stepSeconds * 1000)), t);
           if (!reduced && t - lastTrail > 50) {
             lastTrail = t;
             const dot = this.add.circle(p.x, p.y, 4, TEAM_COLOR[shooter], 0.7).setDepth(29);
