@@ -398,5 +398,7 @@ export class BattleScene extends Phaser.Scene implements BattleView {
     this.input.off('pointerupoutside');
     this.resumeWaiters.forEach((fn) => fn());
     this.resumeWaiters = [];
+    // Leaving a game while paused must not leave the next match paused (Phaser reuses this scene).
+    this.paused = false;
   }
 }
