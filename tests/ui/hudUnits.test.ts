@@ -23,6 +23,7 @@ const state = (over: Partial<HudState> = {}): HudState => ({
   power: 60,
   shotsLeft: 2,
   canFire: true,
+  bonus: false,
   selected: 'C',
   units: roster('PAST'),
   ...over,

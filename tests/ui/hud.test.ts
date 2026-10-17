@@ -171,7 +171,12 @@ describe('HUD', () => {
   });
 
   it('shows a third gold star pip and Power Shot text only while the bonus is up', () => {
-    s.overlay.showHud({ onAim: () => {}, onFire: () => {}, onMuteToggle: () => {} });
+    s.overlay.showHud({
+      onAim: () => {},
+      onFire: () => {},
+      onSelect: () => {},
+      onMuteToggle: () => {},
+    });
     s.overlay.updateHud(state({ shotsLeft: 0, bonus: true }));
     expect(q(TEST_IDS.shotsLeft)!.textContent).toContain(HUD.powerShot);
     expect(document.querySelectorAll('.tc-pip-bonus')).toHaveLength(1);
