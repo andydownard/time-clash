@@ -1,5 +1,6 @@
 // Where each screen leads. Pure functions, no Phaser and no DOM, so every route is unit tested.
 import { TURN } from '../game/config';
+import type { MatchEffects } from '../game/loadout';
 import type { MatchController, MatchOptions, Players } from '../game/types';
 import type { QuestionBank } from '../questions/types';
 import type { TypedStorage } from '../storage/types';
@@ -36,8 +37,12 @@ export function routeAfterSetup(): SceneRoute {
   return { key: SCENE_KEYS.camp };
 }
 
-export function buildMatchSetup(players: Players, seed: number): MatchSetup {
-  return { players, seed, firstTeam: TURN.firstTeam };
+export function buildMatchSetup(
+  players: Players,
+  seed: number,
+  effects?: MatchEffects,
+): MatchSetup {
+  return { players, seed, firstTeam: TURN.firstTeam, ...(effects ? { effects } : {}) };
 }
 
 const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null;

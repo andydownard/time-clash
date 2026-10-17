@@ -13,6 +13,8 @@ import {
 import { TEST_IDS } from '../../src/ui/types';
 import type { BattleSceneData } from '../../src/scenes/battle/types';
 import { click, flush, q } from '../ui/helpers';
+import { freshCamp, freshLoadout } from '../../src/game/loadout';
+import { loadCamp } from '../../src/storage/storage';
 import { fakeController, makeServices, players, tinyBank } from './fakes';
 import { loadSettings } from '../../src/storage/storage';
 
@@ -228,6 +230,83 @@ describe('camp step', () => {
     expect(q(TEST_IDS.campStart)).not.toBeNull();
     click(q(TEST_IDS.campStart));
     await p;
+  });
+});
+
+describe('camp step: weapons and upgrades', () => {
+  it('puts the saved weapons and upgrades into the new match', async () => {
+    t.services.session.bank = tinyBank;
+    t.storage.set('timeclash.players', players);
+    t.storage.set('timeclash.camp', {
+      ...freshCamp(),
+      loadout: {
+        PAST: { weapon: 'royalSword', owned: { royalSword: 1 }, upgrades: { tower: 2 } },
+        FUTURE: freshLoadout('FUTURE'),
+      },
+    });
+    const p = runCampStep(t.services);
+    click(q(TEST_IDS.campStart));
+    const data = (await p).data as BattleSceneData;
+    expect(data.match.snapshot().maxBaseHp.PAST).toBe(100 + 2 * 12);
+    expect(data.match.snapshot().maxBaseHp.FUTURE).toBe(100);
+  });
+  it('plays a fresh game with Phase 1 numbers when nothing was bought', async () => {
+    t.services.session.bank = tinyBank;
+    t.storage.set('timeclash.players', players);
+    const p = runCampStep(t.services);
+    click(q(TEST_IDS.campStart));
+    const data = (await p).data as BattleSceneData;
+    expect(data.match.snapshot().maxBaseHp).toEqual({ PAST: 100, FUTURE: 100 });
+  });
+  it('carries the same effects into the rematch', async () => {
+    t.services.session.bank = tinyBank;
+    t.storage.set('timeclash.players', players);
+    t.storage.set('timeclash.camp', {
+      ...freshCamp(),
+      loadout: {
+        PAST: freshLoadout('PAST'),
+        FUTURE: { ...freshLoadout('FUTURE'), upgrades: { forceField: 1 } },
+      },
+    });
+    const p = runCampStep(t.services);
+    click(q(TEST_IDS.campStart));
+    const data = (await p).data as BattleSceneData;
+    expect(data.match.rematchOptions().effects?.FUTURE.shieldHits).toBe(1);
+  });
+});
+
+describe('victory step: scrap goes to the camp', () => {
+  it('adds each team scrap earned in the match', async () => {
+    const p = runVictoryStep(t.services, fakeController());
+    click(q(TEST_IDS.rematch));
+    await p;
+    const camp = loadCamp(t.storage);
+    expect(camp.scrap).toEqual({ PAST: 3, FUTURE: 3 });
+    expect(camp.creditedSeed).toBe(7);
+  });
+  it('adds it only once if the same match is shown again', async () => {
+    for (let i = 0; i < 2; i++) {
+      const p = runVictoryStep(t.services, fakeController());
+      click(q(TEST_IDS.rematch));
+      await p;
+    }
+    expect(loadCamp(t.storage).scrap).toEqual({ PAST: 3, FUTURE: 3 });
+  });
+  it('adds a rematch again (it has the next seed)', async () => {
+    const p = runVictoryStep(t.services, fakeController());
+    click(q(TEST_IDS.rematch));
+    await p;
+    const next = runVictoryStep(
+      t.services,
+      fakeController({ seed: 8 }, { players, seed: 9, firstTeam: 'PAST' }),
+    );
+    click(q(TEST_IDS.rematch));
+    await next;
+    expect(loadCamp(t.storage).scrap).toEqual({ PAST: 6, FUTURE: 6 });
+  });
+  it('adds nothing for a bad hand-off (no victory screen)', async () => {
+    await runVictoryStep(t.services, undefined);
+    expect(loadCamp(t.storage).scrap).toEqual({ PAST: 0, FUTURE: 0 });
   });
 });
 

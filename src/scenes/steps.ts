@@ -1,6 +1,9 @@
 // One async step per screen. Each shows its DOM screen, waits for a tap, saves what needs
 // saving, and returns where to go next. Phaser scenes just run a step and follow the route.
 import { LOADING } from '../data/copy';
+import { creditMatch } from '../game/economy';
+import { matchEffectsFor } from '../game/loadout';
+import { loadCamp } from '../storage/storage';
 import type { QuestionBank } from '../questions/types';
 import { runLoading } from '../ui/loadingLogic';
 import { buildBattleData } from './battleData';
@@ -71,7 +74,9 @@ export async function runCampStep(s: AppServices): Promise<SceneRoute> {
   if (!players) return { key: SCENE_KEYS.setup };
   const choice = await s.overlay.showCamp();
   if (choice === 'players') return { key: SCENE_KEYS.setup };
-  const setup = buildMatchSetup(players, s.newSeed());
+  // The weapons and upgrades the family chose at the Camp go into the match.
+  const effects = matchEffectsFor(loadCamp(s.storage));
+  const setup = buildMatchSetup(players, s.newSeed(), effects);
   // The bank is loaded once, before Setup. If it is somehow missing, load it first.
   if (!s.session.bank) {
     const data: LoadingData = { next: SCENE_KEYS.battle, setup };
@@ -85,6 +90,12 @@ export async function runVictoryStep(s: AppServices, data: unknown): Promise<Sce
   if (!plan) return { key: SCENE_KEYS.setup };
   s.overlay.hideHud();
   s.session.match = null;
+  // Scrap earned in this match goes to the Camp once. A rematch has the next seed, so it counts again.
+  const earned = {
+    PAST: plan.options.stats.PAST.scrapEarned,
+    FUTURE: plan.options.stats.FUTURE.scrapEarned,
+  };
+  s.storage.set('timeclash.camp', creditMatch(loadCamp(s.storage), plan.rematch.seed - 1, earned));
   const choice = await s.overlay.showVictory(plan.options);
   return routeAfterVictory(choice, plan.rematch);
 }

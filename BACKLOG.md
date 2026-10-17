@@ -29,8 +29,8 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 - Wood plank and neon pod card skins, bigger castle and rocket pictures on Setup cards, brighter Tap to Play silhouettes with a visual gag, and bouncing victory blocks are new art.
 - Phase 2 base placement, biomes, and evasion abilities (docs/BUILD.md). The Camp Hub is built.
 - Camp scrap counter and saved scrap between matches. The Main board has no scrap counter, so it waits for Phase 3 and the Forge.
-- Phase 3 Forge: build from the Forge and ForgeFuture boards in the design handoff.
-- Phase 3 Upgrade: build from the Upgrade and UpgradePast boards in the design handoff.
+- Phase 3 Forge screen: build from the Forge and ForgeFuture boards in the design handoff. The rules are built. Use Scrap only (not Gold or Credits), and the label "Forge Weapon".
+- Phase 3 Upgrade screen: build from the Upgrade and UpgradePast boards in the design handoff. The rules are built. The label is "Upgrade Base", never "Build". The HUD health meter and base pills must show the raised maximum health (`maxBaseHp`) once Upgrade Base is playable.
 - There are about 40 items per grade and subject. Families who play many rematches will see repeats. K-1 reading is all sight words.
 - There is no way to end a match early and no setting for match length.
 - Parents must re-pick grades every time (Clear my data now fits on screen with a privacy line).

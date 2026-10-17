@@ -1,14 +1,7 @@
 import { clampAim, simulateShot } from './ballistics';
-import {
-  AIM,
-  DAMAGE,
-  PHASE1_LAYOUT,
-  RNG_SALT,
-  SCRAP,
-  TEAM_FACING,
-  TUMBLE_LINE_COUNT,
-} from './config';
-import { applyBlast, blastDamage, classifyBlast, winnerOf } from './damage';
+import { AIM, PHASE1_LAYOUT, RNG_SALT, SCRAP, TEAM_FACING, TUMBLE_LINE_COUNT } from './config';
+import { classifyBlast, winnerOf } from './damage';
+import { DEFAULT_EFFECTS } from './loadout';
 import { scoreReload } from './reload';
 import { createShuffleBag } from './bag';
 import { createRng } from './rng';
@@ -52,7 +45,17 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
   let wind = windForTurn(seed, 0);
   let status: Match['status'] = 'PLAYING';
   let winner: Team | null = null;
-  let baseHp: Record<Team, number> = perTeam(() => DAMAGE.startingBaseHp);
+  const effects = options.effects ?? DEFAULT_EFFECTS;
+  const maxHp: Record<Team, number> = {
+    PAST: effects.PAST.maxHp,
+    FUTURE: effects.FUTURE.maxHp,
+  };
+  let baseHp: Record<Team, number> = { ...maxHp };
+  /** Hits each base's force field can still block this match. */
+  const shield: Record<Team, number> = {
+    PAST: effects.PAST.shieldHits,
+    FUTURE: effects.FUTURE.shieldHits,
+  };
   const scrap: Record<Team, number> = perTeam(() => SCRAP.starting);
   const aim: Record<Team, AimInput> = perTeam(() => ({
     angleDeg: AIM.defaultAngleDeg,
@@ -84,6 +87,7 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       turn: { ...turn },
       wind,
       baseHp: { ...baseHp },
+      maxBaseHp: { ...maxHp },
       scrap: { ...scrap },
       aim: { PAST: { ...aim.PAST }, FUTURE: { ...aim.FUTURE } },
       stats: { PAST: { ...stats.PAST }, FUTURE: { ...stats.FUTURE } },
@@ -114,6 +118,7 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
         facing: TEAM_FACING[team],
         wind,
         layout,
+        speedScale: effects[team].speedScale,
       });
       inFlight = result;
       lastShot = { angleDeg, power, team, wind, turnNumber: turn.turnNumber };
@@ -133,7 +138,23 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
         ? 'miss'
         : classifyBlast(flight.landing, layout.bases[target]);
       const tumble = result === 'near';
-      baseHp = applyBlast(baseHp, target, result);
+      const shooter = effects[team];
+      const defender = effects[target];
+      // A hit's damage: the shooter's weapon, less the defender's walls, never below 1.
+      let damage = 0;
+      if (result === 'direct') {
+        damage = Math.max(1, shooter.direct + shooter.directBonus - defender.directCut);
+      } else if (result === 'near') {
+        damage = Math.max(1, shooter.near - defender.nearCut);
+      }
+      // A force field blocks the first hits that would have done damage.
+      let blocked = false;
+      if (damage > 0 && shield[target] > 0) {
+        shield[target] -= 1;
+        damage = 0;
+        blocked = true;
+      }
+      baseHp = { ...baseHp, [target]: Math.max(0, baseHp[target] - damage) };
       if (result === 'direct') stats[team].directHits += 1;
       if (result === 'near') stats[team].nearHits += 1;
       const won = winnerOf(baseHp);
@@ -144,7 +165,8 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       return {
         result,
         target,
-        damage: blastDamage(result),
+        damage,
+        ...(blocked ? { blocked: true } : {}),
         tumble,
         bubbleIndex: tumble ? nextBubble() : null,
       };
@@ -173,7 +195,13 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
 
     pass(): void {
       guard('pass');
+      const ending = turn.team;
       step({ type: 'PASS' });
+      // The squad patches up the base of the team whose turn just ended.
+      const repair = effects[ending].repair;
+      if (repair > 0) {
+        baseHp = { ...baseHp, [ending]: Math.min(maxHp[ending], baseHp[ending] + repair) };
+      }
       wind = windForTurn(seed, turn.turnNumber);
     },
 
@@ -182,6 +210,7 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       seed: seed + 1,
       firstTeam: otherTeam(firstTeam),
       layout,
+      effects,
     }),
   };
 };

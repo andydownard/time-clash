@@ -60,7 +60,7 @@ type Solid = { poly: Polygon; hit: CollisionHit };
 
 /** Pure and deterministic. Semi-implicit Euler at BALLISTICS.stepSeconds. */
 export const simulateShot: SimulateShot = (input) => {
-  const { origin, facing, layout } = input;
+  const { origin, facing, layout, speedScale } = input;
   const aim = clampAim(input);
   const wind = Number.isFinite(input.wind) ? input.wind : 0;
   const dt = BALLISTICS.stepSeconds;
@@ -89,7 +89,9 @@ export const simulateShot: SimulateShot = (input) => {
   const buried = solids.find((s) => inside(start, s.poly));
   if (buried) return finish(buried.hit, start);
 
-  const speed = (aim.power / 100) * BALLISTICS.maxLaunchSpeed;
+  const scale =
+    Number.isFinite(speedScale) && (speedScale as number) > 0 ? (speedScale as number) : 1;
+  const speed = (aim.power / 100) * BALLISTICS.maxLaunchSpeed * scale;
   const rad = (aim.angleDeg * Math.PI) / 180;
   let vx = facing * speed * Math.cos(rad);
   let vy = -speed * Math.sin(rad);
