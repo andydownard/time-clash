@@ -13,7 +13,8 @@ import { installTestHook, type ActiveScene, type TimeClashHook } from './scenes/
 const { services, seeds, faults } = createServices({ doc: document, win: window });
 
 const game = new Phaser.Game({
-  type: Phaser.AUTO,
+  // The e2e build draws on a 2D canvas: CI has no GPU, and software WebGL is far slower.
+  type: import.meta.env.MODE === 'e2e' ? Phaser.CANVAS : Phaser.AUTO,
   // No console banner, and so no third-party address in the bundle's start-up path.
   banner: false,
   parent: 'game',
