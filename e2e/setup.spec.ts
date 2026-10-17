@@ -72,7 +72,6 @@ test('names, grades and subjects are remembered after a reload', async ({ page }
   await expect(tid(page, 'camp-start')).toBeVisible();
 
   await page.reload();
-  await tid(page, 'tap-to-play').click();
   await expect(tid(page, 'camp-start')).toBeVisible({ timeout: 10_000 });
   await tid(page, 'camp-players').click();
   await expect(tid(page, 'setup-next')).toBeVisible();

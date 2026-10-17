@@ -23,6 +23,17 @@ function toHome(storage?: TypedStorage): SceneRoute {
   return { key: SCENE_KEYS.loading, data };
 }
 
+/**
+ * Where the app goes first. A returning family (intro seen, players saved) skips the Tap to Play
+ * screen and goes through Loading to the Camp. A new family sees the front door first, which
+ * unlocks sound and starts the spoken How to Play.
+ */
+export function routeAtBoot(storage: TypedStorage): SceneRoute {
+  const returning =
+    storage.get('timeclash.introSeen') === true && storage.get('timeclash.players') != null;
+  return returning ? toHome(storage) : { key: SCENE_KEYS.tap };
+}
+
 /** After the first tap: the intro on a first visit, otherwise straight to Loading. */
 export function routeAfterTap(storage: TypedStorage): SceneRoute {
   return storage.get('timeclash.introSeen') === true ? toHome(storage) : { key: SCENE_KEYS.intro };

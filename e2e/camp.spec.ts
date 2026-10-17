@@ -34,11 +34,12 @@ test('Upgrade Base stays on the Camp and says it is coming soon', async ({ page 
   await expect(tid(page, 'pass-screen')).toHaveCount(0);
 });
 
-test('a returning family lands on the Camp after Tap to Play', async ({ page }) => {
+test('a returning family lands on the Camp with no Tap to Play screen', async ({ page }) => {
   await toCamp(page);
   await page.reload();
-  await tid(page, 'tap-to-play').click();
+  // A returning family goes straight to the Camp: there is no Tap to Play screen.
   await expect(tid(page, 'camp-start')).toBeVisible({ timeout: 10_000 });
+  await expect(tid(page, 'tap-to-play')).toHaveCount(0);
   await expect(tid(page, 'setup-next')).toHaveCount(0);
 });
 

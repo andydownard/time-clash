@@ -1,5 +1,6 @@
 // Player setup: two cards, one per team. Names, grade chips (K to 12), subject chips.
 import {
+  BUTTONS,
   PASS_SCREEN,
   SETUP,
   SUBJECT_LABELS,
@@ -28,7 +29,17 @@ const SUBJECTS: readonly Subject[] = ['reading', 'math', 'both'];
 
 type TeamState = { name: string; grade: Grade; subject: Subject };
 
-export function showSetup(ctx: UiCtx, initial: Players | null): Promise<Players> {
+export function showSetup(ctx: UiCtx, initial: Players | null): Promise<Players>;
+export function showSetup(
+  ctx: UiCtx,
+  initial: Players | null,
+  options: { back: true },
+): Promise<Players | null>;
+export function showSetup(
+  ctx: UiCtx,
+  initial: Players | null,
+  options?: { back: true },
+): Promise<Players | null> {
   const { doc } = ctx;
 
   const defaults = (): Record<Team, TeamState> => ({
@@ -271,6 +282,15 @@ export function showSetup(ctx: UiCtx, initial: Players | null): Promise<Players>
     'data-testid': TEST_IDS.setupNext,
     text: SETUP.start,
   });
+  // Back leaves without saving. It is only there when there is somewhere to go back to.
+  const backBtn = options?.back
+    ? h(doc, 'button', {
+        type: 'button',
+        class: 'tc-btn tc-btn-neutral',
+        'data-testid': TEST_IDS.setupBack,
+        text: `← ${BUTTONS.back}`,
+      })
+    : null;
   const form = h(
     doc,
     'form',
@@ -285,7 +305,7 @@ export function showSetup(ctx: UiCtx, initial: Players | null): Promise<Players>
     ),
     readBack,
     h(doc, 'p', { class: 'tc-sr-only', text: SETUP.matchHelper }),
-    h(doc, 'div', { class: 'tc-row' }, nextBtn),
+    h(doc, 'div', { class: 'tc-row' }, ...(backBtn ? [backBtn] : []), nextBtn),
     h(
       doc,
       'div',
@@ -306,7 +326,12 @@ export function showSetup(ctx: UiCtx, initial: Players | null): Promise<Players>
   );
   const close = ctx.openScreen(screen);
 
-  return new Promise<Players>((resolve) => {
+  return new Promise<Players | null>((resolve) => {
+    backBtn?.addEventListener('click', () => {
+      ctx.sfx('click');
+      close();
+      resolve(null);
+    });
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       const result = validateSetup({

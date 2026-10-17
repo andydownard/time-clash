@@ -137,3 +137,75 @@ describe('pause control', () => {
     );
   });
 });
+
+describe('Leave game', () => {
+  const open = (onLeave?: () => void) => {
+    const onResume = vi.fn();
+    const c = createPauseControl(document, {
+      onPause: vi.fn(),
+      onResume,
+      ...(onLeave ? { onLeave } : {}),
+    });
+    c.pause();
+    return { c, onResume };
+  };
+
+  it('is not offered when nothing can handle it', () => {
+    open();
+    expect(q('pause-leave')).toBeNull();
+    expect(q('pause-resume')).not.toBeNull();
+  });
+
+  it('is offered next to Keep playing when it can be handled', () => {
+    open(vi.fn());
+    expect(q('pause-resume')).not.toBeNull();
+    expect(q('pause-leave')).not.toBeNull();
+    expect(q('pause-leave')!.textContent).toBe('Leave game');
+  });
+
+  it('asks first, and focuses the safe choice (Stay), so a stray key cannot end the game', () => {
+    const onLeave = vi.fn();
+    open(onLeave);
+    (q('pause-leave') as HTMLElement).click();
+    expect(onLeave).not.toHaveBeenCalled();
+    expect(document.querySelector('#tc-pause-heading')!.textContent).toBe('Leave this game?');
+    expect(document.body.textContent).toContain('Your match will end.');
+    expect(document.activeElement).toBe(q('pause-stay'));
+  });
+
+  it('Stay goes back to the pause choices and leaves nothing', () => {
+    const onLeave = vi.fn();
+    open(onLeave);
+    (q('pause-leave') as HTMLElement).click();
+    (q('pause-stay') as HTMLElement).click();
+    expect(onLeave).not.toHaveBeenCalled();
+    expect(document.querySelector('#tc-pause-heading')!.textContent).toBe('Pause');
+    expect(q('pause-resume')).not.toBeNull();
+    expect(document.activeElement).toBe(q('pause-resume'));
+  });
+
+  it('Leave game on the question leaves, once', () => {
+    const onLeave = vi.fn();
+    open(onLeave);
+    (q('pause-leave') as HTMLElement).click();
+    (q('pause-leave-yes') as HTMLElement).click();
+    expect(onLeave).toHaveBeenCalledTimes(1);
+  });
+
+  it('every button is a real button of at least 56px', () => {
+    open(vi.fn());
+    (q('pause-leave') as HTMLElement).click();
+    for (const id of ['pause-stay', 'pause-leave-yes']) {
+      const b = q(id) as HTMLButtonElement;
+      expect(b.tagName).toBe('BUTTON');
+      expect(parseInt(b.style.minHeight, 10)).toBeGreaterThanOrEqual(56);
+    }
+  });
+
+  it('Keep playing still resumes the match', () => {
+    const { onResume } = open(vi.fn());
+    (q('pause-resume') as HTMLElement).click();
+    expect(onResume).toHaveBeenCalledTimes(1);
+    expect(q('pause-panel')).toBeNull();
+  });
+});

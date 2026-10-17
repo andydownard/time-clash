@@ -48,6 +48,7 @@ export const TEST_IDS = {
   setupGrade: (team: Team, grade: Grade) => `setup-grade-${team}-${grade}`,
   setupSubject: (team: Team, subject: string) => `setup-subject-${team}-${subject}`,
   setupNext: 'setup-next',
+  setupBack: 'setup-back',
   campForge: 'camp-forge',
   campUpgrade: 'camp-upgrade',
   campStart: 'camp-start',
@@ -184,6 +185,8 @@ export interface Overlay {
   showLoading(messages: readonly string[]): LoadingHandle;
   /** Resolves with validated players (index 0 PAST, 1 FUTURE). */
   showSetup(initial: Players | null): Promise<Players>;
+  /** With a Back button. Resolves null when Back is tapped, and saves nothing. */
+  showSetup(initial: Players | null, options: { back: true }): Promise<Players | null>;
   /** The Camp hub. Resolves when the big "Time to Clash!" button is tapped. */
   showCamp(): Promise<CampChoice>;
   /** Forge Weapon. Changes go through `save`. Resolves when Back is tapped. */

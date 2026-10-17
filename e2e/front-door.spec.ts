@@ -50,7 +50,6 @@ test('Setup keeps two different sides and remembers them after a reload', async 
   await expect(id(page, 'setup-next')).toBeHidden();
 
   await page.reload();
-  await id(page, 'tap-to-play').click();
   // The intro was seen and the players are saved, so Loading then the Camp follow the tap.
   await expect(id(page, 'camp-start')).toBeVisible({ timeout: 10_000 });
   await id(page, 'camp-players').click();

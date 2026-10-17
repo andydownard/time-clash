@@ -17,6 +17,8 @@ import type { Overlay } from '../../ui/types';
 export const BATTLE_SCENE_KEY = 'BattleScene';
 /** Where Battle hands off when a team wins. The Victory scene owner must register this key. */
 export const VICTORY_SCENE_KEY = 'VictoryScene';
+/** Where Leave game goes. Same value as SCENE_KEYS.camp. */
+export const CAMP_SCENE_KEY = 'CampScene';
 
 export type EffectKind = 'blocks' | 'confetti' | 'plasma' | 'puff';
 
@@ -90,4 +92,6 @@ export type BattleSceneData = {
   reducedMotion?: () => boolean;
   /** Default: starts VICTORY_SCENE_KEY with the result. */
   onFinished?: (result: BattleResult) => void;
+  /** Runs when the family leaves a game from the pause panel. */
+  onLeave?: () => void;
 };

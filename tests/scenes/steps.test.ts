@@ -132,6 +132,31 @@ describe('loading step', () => {
   });
 });
 
+describe('setup step: Back', () => {
+  it('has no Back button for a new family', async () => {
+    const p = runSetupStep(t.services);
+    expect(q(TEST_IDS.setupBack)).toBeNull();
+    click(q(TEST_IDS.setupNext));
+    await p;
+  });
+  it('goes back to the Camp without saving when Back is tapped', async () => {
+    t.storage.set('timeclash.players', players);
+    const p = runSetupStep(t.services);
+    expect(q(TEST_IDS.setupBack)).not.toBeNull();
+    click(q(TEST_IDS.setupGrade('PAST', 9)));
+    click(q(TEST_IDS.setupBack));
+    expect(await p).toEqual({ key: SCENE_KEYS.camp });
+    expect(t.storage.get('timeclash.players')).toEqual(players);
+    expect(q(TEST_IDS.setupNext)).toBeNull();
+  });
+  it("still saves and goes to the Camp when Let's clash is tapped", async () => {
+    t.storage.set('timeclash.players', players);
+    const p = runSetupStep(t.services);
+    click(q(TEST_IDS.setupNext));
+    expect(await p).toEqual({ key: SCENE_KEYS.camp });
+  });
+});
+
 describe('setup step', () => {
   it('saves both players and goes to the Camp', async () => {
     t.services.session.bank = tinyBank;

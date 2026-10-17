@@ -20,5 +20,8 @@ export function buildBattleData(
     history: s.storage.get('timeclash.history') ?? EMPTY_HISTORY,
     onHistory: (history) => void s.storage.set('timeclash.history', history),
     onMuteToggle: () => void toggleMute(s.audio, s.storage),
+    onLeave: () => {
+      s.session.match = null;
+    },
   };
 }

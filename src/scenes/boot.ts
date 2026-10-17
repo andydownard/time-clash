@@ -19,9 +19,10 @@ export function bootApp(
 
   // The browser can pause sound without telling us (a lock screen, a call, a hidden tab).
   doc.addEventListener('visibilitychange', () => services.audio.setPageHidden(doc.hidden));
-  // Wake it on the next tap or key press. Never before the first tap: sound starts only then.
+  // Unlock (or wake) it inside the first tap or key press, wherever that is. Nothing makes sound
+  // before then, so a family that skips the Tap to Play screen still never hears sound uninvited.
   const wake = (): void => {
-    if (services.audio.unlocked) void services.audio.unlock();
+    void services.audio.unlock();
   };
   doc.addEventListener('pointerdown', wake, true);
   doc.addEventListener('keydown', wake, true);

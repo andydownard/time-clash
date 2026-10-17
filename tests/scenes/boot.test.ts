@@ -34,13 +34,23 @@ describe('bootApp: sound keeps working', () => {
     expect(unlock).toHaveBeenCalledTimes(1);
   });
 
-  it('but a tap before the first tap does not start any sound', () => {
+  it('the first tap or key press anywhere unlocks the sound, so no Tap to Play screen is needed', () => {
     const t = makeServices();
     const unlock = vi.fn(() => Promise.resolve());
     t.services.audio.unlock = unlock;
     bootApp(t.services, document, document.querySelector('canvas'));
     document.dispatchEvent(new Event('pointerdown', { bubbles: true }));
+    expect(unlock).toHaveBeenCalledTimes(1);
     document.dispatchEvent(new KeyboardEvent('keydown', { key: ' ' }));
+    expect(unlock).toHaveBeenCalledTimes(2);
+  });
+
+  it('but with no tap or key press, nothing unlocks and no sound can start', () => {
+    const t = makeServices();
+    const unlock = vi.fn(() => Promise.resolve());
+    t.services.audio.unlock = unlock;
+    bootApp(t.services, document, document.querySelector('canvas'));
     expect(unlock).not.toHaveBeenCalled();
+    expect(t.audio.unlocked).toBe(false);
   });
 });

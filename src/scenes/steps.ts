@@ -62,7 +62,12 @@ export async function runLoadingStep(s: AppServices, data: unknown): Promise<Sce
 }
 
 export async function runSetupStep(s: AppServices): Promise<SceneRoute> {
-  const players = await s.overlay.showSetup(s.storage.get('timeclash.players'));
+  const saved = s.storage.get('timeclash.players');
+  // A family that has played before can go Back to the Camp. A new family has nowhere to go back to.
+  const players = saved
+    ? await s.overlay.showSetup(saved, { back: true })
+    : await s.overlay.showSetup(null);
+  if (players === null) return { key: SCENE_KEYS.camp };
   s.storage.set('timeclash.players', players);
   return routeAfterSetup();
 }
