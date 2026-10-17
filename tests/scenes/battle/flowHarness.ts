@@ -23,6 +23,7 @@ import type {
   PreviewDot,
   ViewStatus,
 } from '../../../src/scenes/battle/types';
+import type { UnitId } from '../../../src/game/units';
 import type { SfxName } from '../../../src/audio/types';
 import type { HudHandlers, HudState, ReloadAnswer } from '../../../src/ui/types';
 
@@ -57,6 +58,8 @@ export function makeWorld(
   const captions: Array<string | null> = [];
   const hudStates: HudState[] = [];
   const statuses: ViewStatus[] = [];
+  const selections: Array<{ team: Team; id: UnitId }> = [];
+  const shots: Array<{ team: Team; kind: string | undefined; start: { x: number; y: number } }> = [];
   const previews: Array<{ team: Team; dots: readonly PreviewDot[] | null }> = [];
   const histories: PickHistory[] = [];
   const levelsSaved: Levels[] = [];
@@ -88,8 +91,10 @@ export function makeWorld(
     setAimDragHandler: (h) => {
       dragHandler = h;
     },
-    animateShot: async (shooter) => {
+    setSelectedUnit: (team, id) => void selections.push({ team, id }),
+    animateShot: async (shooter, result, kind) => {
       guard('animateShot');
+      shots.push({ team: shooter, kind, start: { ...result.path[0]! } });
       log.push(`fly:${shooter}`);
     },
     playImpact: async (info) => {
@@ -201,6 +206,8 @@ export function makeWorld(
     hudStates,
     statuses,
     previews,
+    selections,
+    shots,
     histories,
     levelsSaved,
     results,

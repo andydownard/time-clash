@@ -40,9 +40,13 @@ const state = (over: Partial<HudState> = {}): HudState => ({
   power: 60,
   shotsLeft: 2,
   canFire: true,
+  selected: 'C',
+  units: [],
   ...over,
 });
-const handlers = (): HudHandlers => ({ onAim: () => {}, onFire: () => {}, onMuteToggle: () => {} });
+const handlers = (): HudHandlers => ({ onAim: () => {}, onFire: () => {}, onMuteToggle: () => {},
+  onSelect: () => {},
+});
 
 describe('team accents are in the palette', () => {
   it('Past is Purple and Future is Pulse, never the old red or cyan', () => {

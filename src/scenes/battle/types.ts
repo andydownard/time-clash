@@ -11,6 +11,7 @@ import type {
   TeamStats,
   Vec2,
 } from '../../game/types';
+import type { UnitId } from '../../game/units';
 import type { Levels } from '../../questions/calibration';
 import type { PickHistory, QuestionBank } from '../../questions/types';
 import type { Overlay } from '../../ui/types';
@@ -70,6 +71,8 @@ export interface BattleView {
   playImpact(info: ImpactInfo): Promise<void>;
   /** Awkward Tumble for that team's character. Resolves when it springs back up. */
   playTumble(team: Team): Promise<void>;
+  /** Show which fighter is up for that team. */
+  setSelectedUnit(team: Team, id: UnitId): void;
   showScrapPopup(team: Team, amount: number): void;
 }
 

@@ -4,6 +4,8 @@
 //   pass screen -> ready() -> banner -> setAim/fire() -> animate path -> shotLanded()
 //   -> (tumble, bubble) -> ... -> pickQuestion -> showReloadModal -> reloadDone() -> pass()
 import type { AudioManager } from '../../audio/types';
+import { DEFAULT_UNIT, unitById, unitsOf, type UnitId } from '../../game/units';
+import { kindForRole } from './projectileKinds';
 import { RNG_SALT, TEAM_FACING, TURN } from '../../game/config';
 import { simulateShot } from '../../game/ballistics';
 import { createShuffleBag } from '../../game/bag';
@@ -169,7 +171,8 @@ export class BattleFlow {
     const result = match.fire();
     audio?.playSfx(team === 'PAST' ? 'cannonBoom' : 'laserPew');
     this.pushStatus(false);
-    await view.animateShot(team, result);
+    const unit = unitById(match.snapshot().selected[team]);
+    await view.animateShot(team, result, unit ? kindForRole(unit.role) : undefined);
     this.live();
 
     const outcome = match.shotLanded();
@@ -302,8 +305,23 @@ export class BattleFlow {
         this.awaitingFire = null;
         go();
       },
+      onSelect: (id) => this.selectUnit(id),
       onMuteToggle: () => this.deps.onMuteToggle?.(),
     };
+  }
+
+  private selectUnit(id: UnitId): void {
+    if (!this.awaitingFire || this.stopped) return;
+    const { match, view } = this.deps;
+    try {
+      match.selectUnit(id);
+    } catch {
+      return; // wrong phase, wrong team or unknown fighter; ignore
+    }
+    const team = match.snapshot().turn.team;
+    this.drawPreview(team);
+    view.setSelectedUnit(team, id);
+    this.pushStatus(true);
   }
 
   private setAim(aim: AimInput): void {
@@ -345,6 +363,8 @@ export class BattleFlow {
       power: aim.power,
       shotsLeft,
       canFire,
+      selected: s.selected[team],
+      units: unitsOf(team).map((u) => ({ id: u.id, name: u.name })),
     };
     overlay.updateHud(hud);
     const status: ViewStatus = {
@@ -366,12 +386,19 @@ export class BattleFlow {
     const aim = s.aim[team];
     const sim = simulateShot({
       ...aim,
-      origin: match.layout.launchOrigins[team],
+      origin: this.originFor(team),
       facing: TEAM_FACING[team],
       wind: s.wind,
       layout: match.layout,
     });
     view.showPreview(team, previewDots(sim.path));
+  }
+
+  /** Same rule as match.fire(): the default fighter keeps the layout launcher. */
+  private originFor(team: Team) {
+    const { match } = this.deps;
+    const unit = unitById(match.snapshot().selected[team]);
+    return !unit || unit.id === DEFAULT_UNIT[team] ? match.layout.launchOrigins[team] : unit.origin;
   }
 
   // ---------- helpers ----------

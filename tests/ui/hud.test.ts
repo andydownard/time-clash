@@ -21,6 +21,8 @@ const state = (over: Partial<HudState> = {}): HudState => ({
   power: 60,
   shotsLeft: 2,
   canFire: true,
+  selected: 'C',
+  units: [],
   ...over,
 });
 
@@ -36,6 +38,7 @@ const handlers = (): HudHandlers & {
     onAim: (a) => aims.push(a),
     onFire: () => calls.push('fire'),
     onMuteToggle: () => calls.push('mute'),
+    onSelect: () => {},
   };
 };
 

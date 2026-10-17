@@ -188,7 +188,9 @@ export const HUD = {
   scrap: 'Scrap',
   shotsLeft: 'Shots left',
   reloadPip: 'Reload',
-  keyboardHint: 'Arrow keys aim. Space fires.',
+  keyboardHint: 'Arrow keys aim. Space fires. Press a fighter\'s letter or number to pick it.',
+  pickOne: 'Pick one',
+  unitLabel: (name: string, id: string): string => `${name} ${id}`,
   /** The coach line: it teaches the two sliders and shows until the first shot is fired. */
   coach: 'Slide Angle and Power. Then press Fire!',
   yourTurn: 'Your turn',

@@ -477,6 +477,7 @@ describe('victory step', () => {
   });
   it('hides the battle HUD first', async () => {
     t.overlay.showHud({
+      onSelect: () => undefined,
       onAim: () => undefined,
       onFire: () => undefined,
       onMuteToggle: () => undefined,
