@@ -11,6 +11,8 @@ import {
 import { TEAMS, otherTeam, type Team } from '../../src/game/types';
 import { UPGRADES, UPGRADE_MAX_LEVEL } from '../../src/game/upgrades';
 import { FORGE, WEAPONS } from '../../src/game/weapons';
+import { AMMO, scaleDamage } from '../../src/game/ammo';
+import { DAMAGE } from '../../src/game/config';
 
 /** Direct hits needed to wipe out `defender`, ignoring misses and repair. */
 function hitsToWipe(shooter: TeamEffects, defender: TeamEffects): number {
@@ -123,5 +125,49 @@ describe('balance: everything bought on both sides', () => {
     // A match is still short: about a handful of direct hits, never a grind.
     expect(Math.max(pastWins, futureWins)).toBeLessThanOrEqual(8);
     expect(Math.min(pastWins, futureWins)).toBeGreaterThanOrEqual(3);
+  });
+});
+
+describe('balance: ammo', () => {
+  const special = AMMO.filter((a) => a.id !== 'standard');
+  const bestWeapon = (team: Team) => WEAPONS.filter((w) => w.team === team).at(-1)!;
+
+  it('no ammo lifts one hit past one and a half times the baseline direct damage', () => {
+    for (const a of AMMO) {
+      expect(a.damageScale).toBeLessThanOrEqual(1.5);
+      for (const w of WEAPONS) {
+        const top = w.direct + (FORGE.maxLevel - 1) * FORGE.directPerLevel;
+        expect(scaleDamage(top, a.id), `${w.id} with ${a.id}`).toBeLessThanOrEqual(
+          Math.round(top * 1.5),
+        );
+      }
+      expect(scaleDamage(DAMAGE.direct, a.id)).toBeLessThanOrEqual(DAMAGE.direct * 1.5);
+    }
+  });
+
+  it('a starter weapon with any special ammo still takes at least 3 direct hits', () => {
+    for (const a of special) {
+      const hits = Math.ceil(DAMAGE.startingBaseHp / scaleDamage(DAMAGE.direct, a.id));
+      expect(hits, a.id).toBeGreaterThanOrEqual(3);
+    }
+  });
+
+  it('keeps the special kinds a choice: limited uses, and a price near a weapon', () => {
+    for (const a of special) {
+      expect(a.uses).toBeGreaterThan(0);
+      expect(a.uses).toBeLessThanOrEqual(3);
+      expect(a.cost).toBeGreaterThanOrEqual(8);
+      expect(a.cost).toBeLessThanOrEqual(bestWeapon('PAST').cost);
+    }
+  });
+
+  it('unlocking all ammo costs less than all weapons plus forge levels, and one kind cannot win alone', () => {
+    const ammoTotal = special.reduce((sum, a) => sum + a.cost, 0);
+    const weaponTotal = WEAPONS.filter((w) => w.team === 'PAST').reduce((s, w) => s + w.cost, 0);
+    const forgeTotal = FORGE.upgradeCost.reduce((s, c) => s + c, 0);
+    expect(ammoTotal).toBeLessThan(weaponTotal + forgeTotal);
+    for (const a of special) {
+      expect(a.uses * scaleDamage(DAMAGE.direct, a.id)).toBeLessThan(DAMAGE.startingBaseHp);
+    }
   });
 });

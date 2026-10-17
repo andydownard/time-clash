@@ -1,11 +1,12 @@
+import { resolveAmmo } from './ammo';
 import { AIM, BALLISTICS } from './config';
 import type {
   ClampAim,
   CollisionHit,
   Polygon,
   Rect,
+  ShotInput,
   ShotResult,
-  SimulateShot,
   Team,
   Vec2,
 } from './types';
@@ -58,9 +59,18 @@ const inside = (pt: Vec2, poly: Polygon): boolean => {
 
 type Solid = { poly: Polygon; hit: CollisionHit };
 
+/** A shot may name its ammo (an AmmoId). Missing or unknown counts as Standard. */
+export type AmmoShotInput = ShotInput & { ammo?: string };
+/** `bounced` is only present when the ammo bounces: true if it did bounce. */
+export type AmmoShotResult = ShotResult & { bounced?: boolean };
+
+/** Lift off the ground after a bounce so the next step does not start on the edge. */
+const BOUNCE_LIFT = 0.01;
+
 /** Pure and deterministic. Semi-implicit Euler at BALLISTICS.stepSeconds. */
-export const simulateShot: SimulateShot = (input) => {
+export const simulateShot = (input: AmmoShotInput): AmmoShotResult => {
   const { origin, facing, layout, speedScale } = input;
+  const ammo = resolveAmmo(input.ammo);
   const aim = clampAim(input);
   const wind = Number.isFinite(input.wind) ? input.wind : 0;
   const dt = BALLISTICS.stepSeconds;
@@ -79,11 +89,13 @@ export const simulateShot: SimulateShot = (input) => {
 
   const start: Vec2 = { x: origin.x, y: origin.y };
   const path: Vec2[] = [start];
-  const finish = (hit: CollisionHit, landing: Vec2): ShotResult => ({
+  let bounced = false;
+  const finish = (hit: CollisionHit, landing: Vec2): AmmoShotResult => ({
     path,
     landing,
     hit,
     steps: path.length - 1,
+    ...(ammo.bounces > 0 ? { bounced } : {}),
   });
 
   const buried = solids.find((s) => inside(start, s.poly));
@@ -91,14 +103,16 @@ export const simulateShot: SimulateShot = (input) => {
 
   const scale =
     Number.isFinite(speedScale) && (speedScale as number) > 0 ? (speedScale as number) : 1;
-  const speed = (aim.power / 100) * BALLISTICS.maxLaunchSpeed * scale;
+  const speed = (aim.power / 100) * BALLISTICS.maxLaunchSpeed * scale * ammo.speedScale;
   const rad = (aim.angleDeg * Math.PI) / 180;
   let vx = facing * speed * Math.cos(rad);
   let vy = -speed * Math.sin(rad);
   let pos = start;
+  let bouncesLeft = ammo.bounces;
+  const windPush = wind * ammo.windScale;
 
   for (let step = 0; step < BALLISTICS.maxSteps; step++) {
-    vx += wind * dt;
+    vx += windPush * dt;
     vy += BALLISTICS.gravity * dt;
     const next: Vec2 = { x: pos.x + vx * dt, y: pos.y + vy * dt };
 
@@ -114,6 +128,14 @@ export const simulateShot: SimulateShot = (input) => {
     if (bestT !== null && bestHit) {
       const contact = { x: pos.x + (next.x - pos.x) * bestT, y: pos.y + (next.y - pos.y) * bestT };
       path.push(contact);
+      if (bestHit.kind === 'ground' && bouncesLeft > 0) {
+        // A real bounce: the ball turns around and keeps a share of its vertical speed.
+        bouncesLeft -= 1;
+        bounced = true;
+        vy = -vy * ammo.restitution;
+        pos = { x: contact.x, y: contact.y - BOUNCE_LIFT };
+        continue;
+      }
       return finish(bestHit, contact);
     }
     if (next.x < 0 || next.x > layout.width || next.y > layout.height) {
