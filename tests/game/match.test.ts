@@ -190,6 +190,7 @@ describe('turn flow through the controller', () => {
       team: 'PAST',
       wind: s.wind,
       turnNumber: 0,
+      unit: 'C',
     });
     expect(s.stats.PAST.shotsFired).toBe(1);
     expect(s.stats.FUTURE.shotsFired).toBe(0);

@@ -3,6 +3,7 @@
 // See docs/CONTRACTS.md for the reasons behind each choice.
 
 import type { MatchEffects } from './loadout';
+import type { UnitId } from './units';
 
 // ---------- Basics ----------
 
@@ -76,7 +77,7 @@ export type AimInput = {
 };
 
 /** One fired shot, enough to replay it exactly. Wind is fixed per turn. */
-export type Shot = AimInput & { team: Team; wind: number; turnNumber: number };
+export type Shot = AimInput & { team: Team; wind: number; turnNumber: number; unit: UnitId };
 
 export type ShotInput = AimInput & {
   origin: Vec2;
@@ -250,6 +251,8 @@ export type Match = {
   readonly scrap: Record<Team, number>;
   /** Each team's aim is remembered between its turns. */
   readonly aim: Record<Team, AimInput>;
+  /** The fighter each team will shoot with next. Remembered between turns. */
+  readonly selected: Record<Team, UnitId>;
   readonly stats: Record<Team, TeamStats>;
   readonly lastShot: Shot | null;
 };
@@ -286,6 +289,11 @@ export interface MatchController {
   ready(): void;
   /** Only in AIMING. Clamps and stores the active team's aim. Returns the clamped aim. */
   setAim(aim: AimInput): AimInput;
+  /**
+   * Only in AIMING. Picks which of the active team's fighters takes the next shot. Free (not a shot).
+   * Another team's fighter or an unknown id throws RangeError.
+   */
+  selectUnit(id: UnitId): void;
   /** AIMING -> SHOT_n. Runs the full flight now. The scene animates result.path. */
   fire(): ShotResult;
   /**
