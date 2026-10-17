@@ -20,6 +20,9 @@ type Parts = {
   wind: HTMLElement;
   shots: HTMLElement;
   pips: HTMLElement;
+  aimPanel: HTMLElement;
+  turnName: HTMLElement;
+  hint: HTMLElement;
   mute: HTMLButtonElement;
   panel: Record<Team, HTMLElement>;
   name: Record<Team, HTMLElement>;
@@ -38,6 +41,8 @@ export function createHud(ctx: UiCtx) {
     power: AIM.defaultPower,
   };
   let canFire = false;
+  /** The coach line stays until the first shot of the session, so a new player learns the controls. */
+  let hasFired = false;
   let unsubscribe: (() => void) | null = null;
 
   const record = <T>(make: (t: Team) => T): Record<Team, T> =>
@@ -70,7 +75,7 @@ export function createHud(ctx: UiCtx) {
     switch (e.key) {
       case ' ':
         e.preventDefault();
-        if (canFire) handlers.onFire();
+        if (canFire) fireNow(handlers);
         return;
       case 'ArrowUp':
       case 'ArrowDown':
@@ -110,6 +115,12 @@ export function createHud(ctx: UiCtx) {
       ),
       h(doc, 'span', { class: 'tc-pip tc-pip-reload', text: HUD.reloadPip }),
     );
+  };
+
+  const fireNow = (h_: HudHandlers): void => {
+    hasFired = true;
+    if (parts) parts.hint.hidden = true;
+    h_.onFire();
   };
 
   const muteLabel = (): string => (ctx.settings().muted ? BUTTONS.soundOff : BUTTONS.soundOn);
@@ -155,7 +166,7 @@ export function createHud(ctx: UiCtx) {
       text: HUD.fire,
     });
     fire.addEventListener('click', () => {
-      if (canFire) h_.onFire();
+      if (canFire) fireNow(h_);
     });
 
     const mute = h(doc, 'button', {
@@ -176,7 +187,7 @@ export function createHud(ctx: UiCtx) {
     );
     const pips = h(doc, 'div', { class: 'tc-pips', 'aria-hidden': 'true' });
     const shots = h(doc, 'div', {
-      class: 'tc-shots',
+      class: 'tc-shots tc-sr-only',
       'data-testid': TEST_IDS.shotsLeft,
       'aria-live': 'polite',
     });
@@ -214,7 +225,7 @@ export function createHud(ctx: UiCtx) {
           doc,
           'div',
           { 'data-testid': TEST_IDS.baseHp(t), class: 'tc-hp' },
-          h(doc, 'span', { class: 'tc-hp-label', text: HUD.baseHealth }),
+          h(doc, 'span', { class: 'tc-hp-label tc-sr-only', text: HUD.baseHealth }),
           h(doc, 'div', { class: 'tc-hp-row' }, hpMeter[t], hpText[t]),
         ),
         h(
@@ -227,6 +238,25 @@ export function createHud(ctx: UiCtx) {
       ),
     );
 
+    // The bar's header says whose turn it is and how many shots are left, in words and shapes.
+    const turnName = h(doc, 'span', { class: 'tc-turn-name' });
+    const aimPanel = h(
+      doc,
+      'div',
+      { class: 'tc-aim' },
+      h(doc, 'div', { class: 'tc-aim-head' }, turnName, pips),
+      a.row,
+      p.row,
+    );
+    // Wind is drawn once, on the canvas sign. This copy and the shot count are for screen readers.
+    const hint = h(
+      doc,
+      'p',
+      { class: 'tc-hint', hidden: hasFired },
+      h(doc, 'span', { text: HUD.coach }),
+      h(doc, 'span', { class: 'tc-sr-only', text: ` ${HUD.keyboardHint}` }),
+    );
+
     const root = h(
       doc,
       'div',
@@ -236,18 +266,10 @@ export function createHud(ctx: UiCtx) {
         'div',
         { class: 'tc-hud-top' },
         ...TEAMS.slice(0, 1).map((t) => panel[t]),
-        h(doc, 'div', { class: 'tc-hud-center' }, wind, shots, pips),
         ...TEAMS.slice(1).map((t) => panel[t]),
         h(doc, 'div', { class: 'tc-hud-corner' }, mute),
       ),
-      h(
-        doc,
-        'div',
-        { class: 'tc-hud-bottom' },
-        h(doc, 'div', { class: 'tc-aim' }, a.row, p.row),
-        fire,
-        h(doc, 'p', { class: 'tc-hint', text: HUD.keyboardHint }),
-      ),
+      h(doc, 'div', { class: 'tc-hud-bottom' }, aimPanel, fire, hint, wind, shots),
     );
     return {
       root,
@@ -259,6 +281,9 @@ export function createHud(ctx: UiCtx) {
       wind,
       shots,
       pips,
+      aimPanel,
+      turnName,
+      hint,
       mute,
       panel,
       name,
@@ -308,6 +333,9 @@ export function createHud(ctx: UiCtx) {
         fill.setAttribute('data-dir', state.wind > 0 ? 'right' : state.wind < 0 ? 'left' : 'none');
       }
       parts.shots.textContent = `${HUD.shotsLeft}: ${HUD.shotsValue(state.shotsLeft)}`;
+      const who = state.activeTeam;
+      parts.aimPanel.setAttribute('data-team', who ?? 'none');
+      parts.turnName.textContent = who ? state.names[who] : '';
       paintPips(parts.pips, state.shotsLeft);
       for (const t of TEAMS) {
         const hp = clamp(Math.round(state.baseHp[t]), 0, 100);

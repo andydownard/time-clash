@@ -124,8 +124,10 @@ export const HUD = {
   baseHealth: 'Base health',
   scrap: 'Scrap',
   shotsLeft: 'Shots left',
-  reloadPip: 'Then reload',
+  reloadPip: 'Reload',
   keyboardHint: 'Arrow keys aim. Space fires.',
+  /** The coach line: it teaches the two sliders and shows until the first shot is fired. */
+  coach: 'Slide Angle and Power. Then press Fire!',
   yourTurn: 'Your turn',
   angleValue: (deg: number): string => `${Math.round(deg)}°`,
   powerValue: (p: number): string => `${Math.round(p)}`,

@@ -34,6 +34,7 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 - There are about 40 items per grade and subject. Families who play many rematches will see repeats. K-1 reading is all sight words.
 - There is no way to end a match early and no setting for match length.
 - Parents must re-pick grades every time (Clear my data now fits on screen with a privacy line).
+- P2: Battle simplification, next steps. Health shows in both the top chips and the base pills, so one of them can go. The richer scenery and the unit picker on the Battle board belong to Phase 5 (Squads).
 
 ## P3
 - Phase 3 crafting. Phase 4 iPad play with room codes.

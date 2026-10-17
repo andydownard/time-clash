@@ -584,29 +584,6 @@ body {
   padding: 12px;
   padding-left: var(--tc-chrome-clear);
 }
-/* Shots and wind. Wind is drawn once, on the canvas sign (the DOM copy is for screen readers). */
-.tc-hud-center {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  flex: none;
-  text-align: center;
-  background: var(--tc-surface-dark);
-  color: var(--tc-on-dark);
-  border: 3px solid var(--tc-steel-blue);
-  border-radius: var(--tc-radius);
-  padding: 6px 14px;
-  font-family: var(--tc-font-voice-new);
-  font-weight: var(--tc-fw-new);
-  letter-spacing: var(--tc-ls-caps);
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-.tc-shots {
-  font-size: var(--tc-fs-label);
-}
 /* Two shot pips, then a third "Reload" pip: a question comes after shot 2. */
 .tc-pips {
   display: flex;
@@ -682,7 +659,7 @@ body {
   gap: 2px;
   border: 4px solid var(--tc-card-past-edge);
   border-radius: var(--tc-radius);
-  padding: 8px 14px;
+  padding: 4px 14px 6px;
   background: var(--tc-card-past-bg);
   color: var(--tc-on-dark);
   font-family: var(--tc-font-voice-new);
@@ -778,19 +755,59 @@ body {
 .tc-aim {
   display: grid;
   gap: 6px;
-  background: var(--tc-surface-dark);
+  background: var(--tc-ink-deep);
   color: var(--tc-on-dark);
-  border: 3px solid var(--tc-steel-blue);
-  border-radius: var(--tc-radius);
-  padding: 8px 14px;
+  border: 4px solid var(--tc-ember);
+  border-radius: var(--tc-r-card);
+  box-shadow: 0 6px 0 var(--tc-purple-900);
+  padding: 6px 14px 8px;
   min-width: 340px;
   font-family: var(--tc-font-voice-new);
   font-weight: var(--tc-fw-new);
   letter-spacing: var(--tc-ls-caps);
   text-transform: uppercase;
 }
+/* The bar's header: whose turn it is, and the shot pips (two shots, then a question). */
+.tc-aim-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--tc-s-3);
+}
+.tc-turn-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-family: var(--tc-font-voice-old);
+  font-weight: 400;
+  font-size: var(--tc-fs-lead);
+  letter-spacing: 0;
+  text-transform: none;
+  line-height: var(--tc-lh-tight);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tc-turn-name::before {
+  content: '\25B6\00A0';
+  font-family: var(--tc-font-voice-new);
+  font-size: var(--tc-text-min);
+}
+.tc-aim[data-team='PAST'] .tc-turn-name {
+  color: var(--tc-purple-300);
+}
+.tc-aim[data-team='FUTURE'] .tc-turn-name {
+  color: var(--tc-pulse);
+}
 .tc-aim .tc-range {
   accent-color: var(--tc-pulse);
+}
+.tc-aim #tc-aim-power {
+  accent-color: var(--tc-ember);
+}
+.tc-aim .tc-readout {
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  color: var(--tc-parchment-warm);
 }
 .tc-slider-row {
   display: grid;
@@ -799,24 +816,20 @@ body {
   align-items: center;
 }
 .tc-hint {
-  display: none;
   position: absolute;
   top: 100%;
   left: 50%;
   transform: translateX(-50%);
   width: max-content;
+  max-width: 100%;
   margin: 8px 0 0;
+  padding: 4px 12px;
   font-size: var(--tc-text-min);
-}
-@media (hover: hover) and (pointer: fine) {
-  .tc-hint {
-    display: block;
-    background: var(--tc-surface-dark);
-    color: var(--tc-on-dark);
-    border: 2px solid var(--tc-steel-blue);
-    border-radius: var(--tc-radius);
-    padding: 4px 12px;
-  }
+  text-align: center;
+  background: var(--tc-surface-dark);
+  color: var(--tc-on-dark);
+  border: 2px solid var(--tc-steel-blue);
+  border-radius: var(--tc-radius);
 }
 
 /* ---------- Tap to Start ---------- */
@@ -2151,9 +2164,7 @@ body {
   .tc-hud-top {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-areas:
-      'past future'
-      'center center';
+    grid-template-areas: 'past future';
     padding: var(--tc-chrome-row) 12px 12px;
   }
   .tc-hud-top > [data-team='PAST'] {
@@ -2161,12 +2172,6 @@ body {
   }
   .tc-hud-top > [data-team='FUTURE'] {
     grid-area: future;
-  }
-  .tc-hud-top > .tc-hud-center {
-    grid-area: center;
-    flex-direction: row;
-    justify-content: center;
-    gap: var(--tc-s-4);
   }
   .tc-team-panel {
     min-width: 0;
