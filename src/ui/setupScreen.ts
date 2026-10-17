@@ -322,6 +322,7 @@ export function showSetup(
     { class: 'tc-screen tc-setup tc-split', 'data-screen': 'setup', 'data-motion': ctx.motion() },
     skyline(doc),
     h(doc, 'h1', { class: 'tc-setup-title', text: SETUP.heading }),
+    h(doc, 'p', { class: 'tc-setup-sub', text: SETUP.subtitle }),
     form,
   );
   const close = ctx.openScreen(screen);
