@@ -1,6 +1,6 @@
 // The Camp hub: the home base between Setup and Battle. A sunset field with both camps, a
 // campfire in the middle, and three buttons. Time to Clash! starts the match. Forge Weapon and
-// Upgrade Base are not open yet, so they say so and change nothing.
+// Upgrade Base is not open yet, so it says so and changes nothing. Forge Weapon opens the Forge.
 import { CAMP, GAME_TITLE } from '../data/copy';
 import { TIMING } from '../game/config';
 import { campScene } from './campArt';
@@ -48,6 +48,16 @@ export function showCamp(ctx: UiCtx): Promise<CampChoice> {
       return h(doc, 'div', { class: 'tc-camp-slot', 'data-kind': kind }, ribbon, button);
     };
 
+    /** A side button that works. It leaves the Camp for its own screen. */
+    const openSide = (testId: string, label: string, kind: 'past' | 'future'): HTMLButtonElement =>
+      h(doc, 'button', {
+        type: 'button',
+        class: `tc-btn tc-btn-${kind} tc-camp-side`,
+        'data-testid': testId,
+        text: label,
+      });
+    const forge = openSide(TEST_IDS.campForge, CAMP.forge, 'past');
+
     const start = h(doc, 'button', {
       type: 'button',
       class: 'tc-btn tc-btn-primary tc-btn-big tc-camp-start',
@@ -82,7 +92,7 @@ export function showCamp(ctx: UiCtx): Promise<CampChoice> {
         doc,
         'div',
         { class: 'tc-camp-sides' },
-        comingSoon(TEST_IDS.campForge, CAMP.forge, 'past', CAMP.forgeSoon),
+        h(doc, 'div', { class: 'tc-camp-slot', 'data-kind': 'past' }, forge),
         comingSoon(TEST_IDS.campUpgrade, CAMP.upgrade, 'future', CAMP.upgradeSoon),
       ),
       players,
@@ -92,6 +102,10 @@ export function showCamp(ctx: UiCtx): Promise<CampChoice> {
     start.addEventListener('click', () => {
       close();
       resolve('battle');
+    });
+    forge.addEventListener('click', () => {
+      close();
+      resolve('forge');
     });
     players.addEventListener('click', () => {
       close();

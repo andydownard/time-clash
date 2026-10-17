@@ -74,6 +74,14 @@ export async function runCampStep(s: AppServices): Promise<SceneRoute> {
   if (!players) return { key: SCENE_KEYS.setup };
   const choice = await s.overlay.showCamp();
   if (choice === 'players') return { key: SCENE_KEYS.setup };
+  if (choice === 'forge') {
+    await s.overlay.showForge({
+      camp: loadCamp(s.storage),
+      save: (next) => void s.storage.set('timeclash.camp', next),
+    });
+    // Back from the Forge: the Camp again, which shows what the family now has.
+    return { key: SCENE_KEYS.camp };
+  }
   // The weapons and upgrades the family chose at the Camp go into the match.
   const effects = matchEffectsFor(loadCamp(s.storage));
   const setup = buildMatchSetup(players, s.newSeed(), effects);

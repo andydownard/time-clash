@@ -11,6 +11,29 @@ export const GAME_SUBTITLE = 'Past vs. Future';
 /** The slogan. It is never the name: the game is called Time Clash. */
 export const GAME_TAGLINE = 'Time to Clash!';
 
+// ---------- Forge Weapon ----------
+export const FORGE_COPY = {
+  title: 'Forge Weapon',
+  back: 'Back',
+  scrap: 'Scrap',
+  pickTeam: 'Choose a team',
+  damage: 'Damage',
+  range: 'Range',
+  level: 'Level',
+  rangeNames: { short: 'Short', long: 'Long', far: 'Far' } as const,
+  equipped: 'Equipped',
+  owned: 'Owned',
+  unlockCost: (cost: number): string => `${cost} Scrap`,
+  upgrade: (cost: number): string => `Forge upgrade · ${cost} Scrap`,
+  upgradeMax: 'Top level',
+  /** Status lines, read out politely. Never shaming: a short purse is just "not yet". */
+  equippedNow: (name: string): string => `${name} is equipped.`,
+  unlocked: (name: string): string => `You unlocked ${name}!`,
+  forged: (name: string, level: number): string => `${name} is now level ${level}!`,
+  needMore: (n: number): string => `Not yet. You need ${n} more Scrap.`,
+  atTop: 'This weapon is at the top level.',
+} as const;
+
 // ---------- Camp ----------
 export const CAMP = {
   heading: 'Camp',
@@ -23,7 +46,6 @@ export const CAMP = {
   /** A small way back to Setup, to change names, grades and subjects. */
   players: 'Change players',
   soon: 'Coming soon',
-  forgeSoon: 'Forge Weapon is coming soon.',
   upgradeSoon: 'Upgrade Base is coming soon.',
 } as const;
 

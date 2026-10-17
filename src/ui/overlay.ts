@@ -12,6 +12,7 @@ import { showIntro } from './introScreen';
 import type { LoadingEnv } from './loadingLogic';
 import { isReducedMotion } from './motion';
 import { showCamp } from './campScreen';
+import { showForge } from './forgeScreen';
 import { showPassScreen } from './passScreen';
 import { showReloadModal } from './reloadModal';
 import { showSetup } from './setupScreen';
@@ -209,6 +210,7 @@ export const createOverlay: CreateOverlayWithDeps = (
     showLoading: (messages) => showLoading(ctx, messages),
     showSetup: (initial) => showSetup(ctx, initial),
     showCamp: () => showCamp(ctx),
+    showForge: (options) => showForge(ctx, options),
     showVictory: (options) => showVictory(ctx, options),
     showHud: (handlers) => hud.show(handlers),
     updateHud: (state) => hud.update(state),

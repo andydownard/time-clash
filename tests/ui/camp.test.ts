@@ -83,26 +83,36 @@ describe('Camp Change players', () => {
   });
 });
 
-describe('Camp closed buttons', () => {
-  it('show a Coming soon ribbon in words, not only by dimming', () => {
+describe('Camp Forge Weapon', () => {
+  it('is a working button with no Coming soon ribbon', () => {
     void s.overlay.showCamp();
-    const slots = qa('.tc-camp-slot');
-    expect(slots).toHaveLength(2);
-    for (const slot of slots) {
-      expect(slot.querySelector('.tc-camp-soon')!.textContent).toBe(CAMP.soon);
-      const button = slot.querySelector('button')!;
-      expect(button.getAttribute('aria-disabled')).toBe('true');
-      expect(button.hasAttribute('disabled')).toBe(false);
-    }
+    const forge = q<HTMLButtonElement>(TEST_IDS.campForge)!;
+    expect(forge.getAttribute('aria-disabled')).toBeNull();
+    expect(forge.parentElement!.querySelector('.tc-camp-soon')).toBeNull();
+  });
+  it('resolves with forge and closes, so the Forge can open', async () => {
+    const p = s.overlay.showCamp();
+    click(q(TEST_IDS.campForge));
+    await expect(p).resolves.toBe('forge');
+    expect(q(TEST_IDS.campStart)).toBeNull();
+  });
+});
+
+describe('Camp closed button (Upgrade Base)', () => {
+  it('shows a Coming soon ribbon in words, not only by dimming', () => {
+    void s.overlay.showCamp();
+    const slot = q(TEST_IDS.campUpgrade)!.parentElement!;
+    expect(slot.querySelector('.tc-camp-soon')!.textContent).toBe(CAMP.soon);
+    const button = slot.querySelector('button')!;
+    expect(button.getAttribute('aria-disabled')).toBe('true');
+    expect(button.hasAttribute('disabled')).toBe(false);
   });
 
-  it('stay on the Camp when tapped, and say why in a polite status line', async () => {
+  it('stays on the Camp when tapped, and says why in a polite status line', async () => {
     let done = false;
     void s.overlay.showCamp().then(() => (done = true));
     const status = q(LOCAL_IDS.campStatus)!;
     expect(status.getAttribute('role')).toBe('status');
-    click(q(TEST_IDS.campForge));
-    expect(status.textContent).toBe(CAMP.forgeSoon);
     click(q(TEST_IDS.campUpgrade));
     expect(status.textContent).toBe(CAMP.upgradeSoon);
     await flush();
@@ -110,20 +120,18 @@ describe('Camp closed buttons', () => {
     expect(q(TEST_IDS.campStart)).not.toBeNull();
   });
 
-  it('wiggle the ribbon on a tap, so a child can see something heard them', () => {
+  it('wiggles the ribbon on a tap, so a child can see something heard them', () => {
     void s.overlay.showCamp();
-    const ribbon = q(TEST_IDS.campForge)!.parentElement!.querySelector('.tc-camp-soon')!;
+    const ribbon = q(TEST_IDS.campUpgrade)!.parentElement!.querySelector('.tc-camp-soon')!;
     expect(ribbon.hasAttribute('data-nudge')).toBe(false);
-    click(q(TEST_IDS.campForge));
+    click(q(TEST_IDS.campUpgrade));
     expect(ribbon.hasAttribute('data-nudge')).toBe(true);
   });
 
   it('can be reached with the keyboard (aria-disabled, not disabled)', () => {
     void s.overlay.showCamp();
-    for (const id of [TEST_IDS.campForge, TEST_IDS.campUpgrade]) {
-      const b = q<HTMLButtonElement>(id)!;
-      b.focus();
-      expect(document.activeElement).toBe(b);
-    }
+    const b = q<HTMLButtonElement>(TEST_IDS.campUpgrade)!;
+    b.focus();
+    expect(document.activeElement).toBe(b);
   });
 });
