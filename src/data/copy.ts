@@ -151,12 +151,18 @@ export const INTRO = {
 export const LOADING = {
   /** From docs/DESIGN_BRIEF.md. Rotates every TIMING.loadingMessageMs. */
   messages: [
-    'Charging the laser cannon with a potato...',
+    'Convincing the hoverboard that math is good for it...',
     'Teaching the catapult how to do long division...',
     'Telling the knights what Wi-Fi is...',
     'Warming up the dad jokes...',
     'Buffing out dignity scratches from the last fall...',
     "Looking for Austin's secret base behind a taco truck...",
+  ],
+  /** What each balloon rider says after the landing, one set of lines per rider. Short and silly. */
+  riderLines: [
+    ['I meant to do that', 'on purpose! I was', 'testing gravity.'],
+    ['Rude! I was only', 'admiring your sword.', "It's very pointy."],
+    ['Note to self: take', 'the bus next time.', "Buses don't pop."],
   ],
   percent: (p: number): string => `${Math.round(p)}%`,
   errorTitle: 'Oops! Some pieces got lost in time.',
