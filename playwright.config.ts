@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 // The e2e build uses vite's "e2e" mode (not "production"), because the ?e2e=1 test hook is
 // switched off in production builds. It goes to node_modules/.e2e-dist (ignored by git and eslint), never to dist/.
-const PORT = 4173;
+const PORT = Number(process.env.E2E_PORT ?? 4173);
 
 const sizes = [
   { name: '1280x800', viewport: { width: 1280, height: 800 } },

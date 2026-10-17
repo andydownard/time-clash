@@ -22,5 +22,30 @@ jobs:
       - run: npm run build
       - run: npm run check:dist
       - run: npm audit --omit=dev
-      - run: npx playwright install --with-deps chromium webkit
-      - run: npm run e2e
+  # One job per browser and screen size, so the slow browser tests run side by side.
+  e2e:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        project:
+          - chromium-1280x800
+          - chromium-1024x768
+          - chromium-768x1024
+          - webkit-1280x800
+          - webkit-1024x768
+          - webkit-768x1024
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Cache browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+      - run: npx playwright install --with-deps ${{ startsWith(matrix.project, 'webkit') && 'webkit' || 'chromium' }}
+      - run: npx playwright test --project=${{ matrix.project }}

@@ -86,15 +86,24 @@ test('names, grades and subjects are remembered after a reload', async ({ page }
 test('Loading shows for at least 1.5 seconds before Setup', async ({ page }) => {
   await page.goto('/');
   await tid(page, 'tap-to-play').click();
+  // Stamp the two moments inside the page, so a slow test runner cannot shorten the gap.
+  await page.evaluate(() => {
+    const w = window as unknown as { __loadingAt?: number; __setupAt?: number };
+    new MutationObserver(() => {
+      if (w.__loadingAt === undefined && document.querySelector('[data-screen="loading"]'))
+        w.__loadingAt = performance.now();
+      if (w.__setupAt === undefined && document.querySelector('[data-testid="setup-next"]'))
+        w.__setupAt = performance.now();
+    }).observe(document.body, { childList: true, subtree: true, attributes: true });
+  });
   await tid(page, 'intro-skip').click();
-  const loading = page.locator('[data-screen="loading"]');
-  await expect(loading).toBeVisible();
-  const shownAt = await page.evaluate(() => performance.now());
   await expect(tid(page, 'setup-next')).toBeVisible({ timeout: 10_000 });
-  const doneAt = await page.evaluate(() => performance.now());
-  // The check starts a moment after Loading opened, so allow a small margin.
-  expect(doneAt - shownAt).toBeGreaterThan(1_200);
-  await expect(loading).toBeHidden();
+  const gap = await page.evaluate(() => {
+    const w = window as unknown as { __loadingAt?: number; __setupAt?: number };
+    return (w.__setupAt ?? 0) - (w.__loadingAt ?? 0);
+  });
+  expect(gap).toBeGreaterThanOrEqual(1_500);
+  await expect(page.locator('[data-screen="loading"]')).toBeHidden();
 });
 
 test('the clear-data confirm buttons stay hidden until Clear my data is tapped', async ({
