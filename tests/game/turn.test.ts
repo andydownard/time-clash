@@ -13,11 +13,13 @@ const st = (
   shotsFired: 0 | 1 | 2,
   team: 'PAST' | 'FUTURE' = 'PAST',
   turnNumber = 0,
+  bonus = false,
 ): TurnState => ({
   phase,
   team,
   turnNumber,
   shotsFired,
+  bonus,
 });
 
 /** Every state in a real turn, with the one event that is allowed there. */
@@ -28,6 +30,16 @@ const LEGAL: { from: TurnState; event: TurnEventType; to: TurnState }[] = [
   { from: st('AIMING', 1), event: 'FIRE', to: st('SHOT_2', 2) },
   { from: st('SHOT_2', 2), event: 'SHOT_LANDED', to: st('RELOAD', 2) },
   { from: st('RELOAD', 2), event: 'RELOAD_DONE', to: st('NEXT_PLAYER', 2) },
+  {
+    from: st('BONUS_AIMING', 2, 'PAST', 0, true),
+    event: 'FIRE',
+    to: st('BONUS_SHOT', 2, 'PAST', 0, true),
+  },
+  {
+    from: st('BONUS_SHOT', 2, 'PAST', 0, true),
+    event: 'SHOT_LANDED',
+    to: st('NEXT_PLAYER', 2, 'PAST', 0, true),
+  },
   { from: st('NEXT_PLAYER', 2), event: 'PASS', to: st('PASS_SCREEN', 0, 'FUTURE', 1) },
 ];
 
@@ -65,6 +77,8 @@ describe('transition: every other state x event pair throws', () => {
     st('SHOT_2', 2),
     st('RELOAD', 2),
     st('NEXT_PLAYER', 2),
+    st('BONUS_AIMING', 2, 'PAST', 0, true),
+    st('BONUS_SHOT', 2, 'PAST', 0, true),
   ];
   const illegal = allStates.flatMap((from) =>
     EVENTS.filter((e) => !legalKeys.has(`${from.phase}:${from.shotsFired}:${e}`)).map((e) => ({
@@ -73,8 +87,8 @@ describe('transition: every other state x event pair throws', () => {
     })),
   );
 
-  it('covers 7 states x 5 events minus 7 legal = 28 illegal pairs', () => {
-    expect(illegal).toHaveLength(28);
+  it('covers 9 states x 5 events minus 9 legal = 36 illegal pairs', () => {
+    expect(illegal).toHaveLength(36);
   });
 
   it.each(illegal)(
@@ -175,5 +189,41 @@ describe('transition: a turn has exactly 2 shots and cannot be skipped', () => {
       }
     }
     expect(fires).toBe(12);
+  });
+});
+
+describe('transition: the Power Shot', () => {
+  const ev2 = (correct: boolean): TurnEvent => ({ type: 'RELOAD_DONE', correct });
+
+  it('a right answer goes RELOAD -> BONUS_AIMING and sets the bonus flag', () => {
+    expect(transition(st('RELOAD', 2), ev2(true))).toEqual(st('BONUS_AIMING', 2, 'PAST', 0, true));
+  });
+  it('a wrong answer, or no answer given, goes straight to NEXT_PLAYER', () => {
+    expect(transition(st('RELOAD', 2), ev2(false))).toEqual(st('NEXT_PLAYER', 2));
+    expect(transition(st('RELOAD', 2), ev('RELOAD_DONE'))).toEqual(st('NEXT_PLAYER', 2));
+  });
+  it('the Power Shot is not shot 3: shotsFired stays 2 the whole way', () => {
+    let s = transition(st('RELOAD', 2), ev2(true));
+    s = transition(s, ev('FIRE'));
+    expect(s).toMatchObject({ phase: 'BONUS_SHOT', shotsFired: 2, bonus: true });
+    s = transition(s, ev('SHOT_LANDED'));
+    expect(s).toMatchObject({ phase: 'NEXT_PLAYER', shotsFired: 2 });
+    expect(transition(s, ev('PASS'))).toEqual(st('PASS_SCREEN', 0, 'FUTURE', 1));
+  });
+  it('cannot skip the bonus aiming into PASS, nor fire twice', () => {
+    const aiming = st('BONUS_AIMING', 2, 'PAST', 0, true);
+    expect(() => transition(aiming, ev('PASS'))).toThrow(IllegalTransitionError);
+    expect(() => transition(aiming, ev2(true))).toThrow(IllegalTransitionError);
+    const flying = transition(aiming, ev('FIRE'));
+    expect(() => transition(flying, ev('FIRE'))).toThrow(IllegalTransitionError);
+    const landed = transition(flying, ev('SHOT_LANDED'));
+    expect(() => transition(landed, ev('FIRE'))).toThrow(IllegalTransitionError);
+  });
+  it('a right answer outside RELOAD is illegal', () => {
+    expect(() => transition(st('AIMING', 1), ev2(true))).toThrow(IllegalTransitionError);
+    expect(() => transition(st('NEXT_PLAYER', 2), ev2(true))).toThrow(IllegalTransitionError);
+  });
+  it('the strip says POWER SHOT', () => {
+    expect(turnBanner('Alex', 'POWER')).toBe('ALEX, POWER SHOT!');
   });
 });

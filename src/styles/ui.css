@@ -658,6 +658,11 @@ body {
 .tc-pip-reload::before {
   content: '\1F4D6\00A0';
 }
+.tc-pip-bonus {
+  border-color: var(--tc-torch-gold);
+  background: var(--tc-torch-gold);
+  color: var(--tc-ink-deep);
+}
 .tc-wind-bar {
   display: block;
   height: 10px;

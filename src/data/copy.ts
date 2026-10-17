@@ -188,6 +188,8 @@ export const HUD = {
   scrap: 'Scrap',
   shotsLeft: 'Shots left',
   reloadPip: 'Reload',
+  /** The gold star pip and screen-reader text while the Power Shot is up. */
+  powerShot: 'Power Shot!',
   keyboardHint: 'Arrow keys aim. Space fires.',
   /** The coach line: it teaches the two sliders and shows until the first shot is fired. */
   coach: 'Slide Angle and Power. Then press Fire!',
@@ -215,8 +217,10 @@ export const windLabel = (wind: number): string => {
 };
 
 // ---------- Turn banner and pass screen ----------
-export const turnBanner = (name: string, shot: number): string =>
-  `${String(name).toUpperCase()}, YOUR TURN! (SHOT ${shot} OF ${TURN.shotsPerTurn})`;
+export const turnBanner = (name: string, shot: number | 'POWER'): string =>
+  shot === 'POWER'
+    ? `${String(name).toUpperCase()}, POWER SHOT!`
+    : `${String(name).toUpperCase()}, YOUR TURN! (SHOT ${shot} OF ${TURN.shotsPerTurn})`;
 
 export const PASS_SCREEN = {
   heading: 'Pass the screen!',

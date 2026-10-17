@@ -21,7 +21,8 @@ const PLAYERS: Players = [
   { name: 'Sam', team: 'FUTURE', grade: 2, subject: 'reading' },
 ];
 const make = (seed = 3): MatchController => createMatch({ players: PLAYERS, seed });
-const FAST = { correct: true, elapsedMs: 1000 };
+/** A wrong answer: no Power Shot, so these tests keep their exact numbers. */
+const FAST = { correct: false, elapsedMs: 1000 };
 
 /** Brute-force an aim that scores `want` from the fighter now selected. */
 function findAim(c: MatchController, want: BlastResult): AimInput {

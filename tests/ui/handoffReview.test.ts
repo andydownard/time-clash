@@ -39,6 +39,7 @@ const state = (over: Partial<HudState> = {}): HudState => ({
   angleDeg: 45,
   power: 60,
   shotsLeft: 2,
+  bonus: false,
   canFire: true,
   ...over,
 });

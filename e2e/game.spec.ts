@@ -21,10 +21,12 @@ import {
   readyUp,
   snap,
   startMatch,
+  takeBonusShot,
   takeShot,
   tid,
   toSetup,
   waitAiming,
+  waitBonusAiming,
   tapGotIt,
   waitPassScreen,
 } from './support/game';
@@ -135,11 +137,20 @@ test('plays a full match: aim, fire, reload, pass, win, rematch', async ({ page,
   // Right and fast: +2 scrap.
   const first = await answerReload(page, 'right-fast');
   await expect(tid(page, 'reload-feedback')).toContainText('+2 scrap! Super fast!');
+  // ----- A right answer earns one Power Shot (not a question, not shot 3) -----
+  await watchBanner(page);
+  await waitBonusAiming(page);
+  await expect.poll(() => bannerSeen(page)).toContain('POWER SHOT!');
+  await expect(tid(page, 'shots-left')).toContainText('Power Shot!');
+  expect((await snap(page)).turn).toMatchObject({ phase: 'BONUS_AIMING', shotsFired: 2 });
+  await takeBonusShot(page, 'miss');
   await waitPassScreen(page);
   m = await snap(page);
   expect(m.scrap.PAST).toBe(2);
   expect(m.stats.PAST.fastestAnswerMs).toBeLessThan(8000);
   expect(m.turn).toMatchObject({ phase: 'PASS_SCREEN', team: 'FUTURE' });
+  // The Power Shot happened: a third shot, with turn.shotsFired still 2.
+  expect(m.stats.PAST.shotsFired).toBe(3);
 
   // ----- Pass screen hides the board and the last question -----
   await expectCover(page, 'pass-screen');

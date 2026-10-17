@@ -136,7 +136,7 @@ export function makeWorld(
         );
     },
     hideHud: () => {},
-    showTurnBanner: async (o: { name: string; shot: 1 | 2 }) => {
+    showTurnBanner: async (o: { name: string; shot: 1 | 2 | 'POWER' }) => {
       log.push(`banner:${o.name}:${o.shot}`);
     },
     showPassScreen: async (o: { nextName: string; nextTeam: Team }) => {
@@ -152,7 +152,7 @@ export function makeWorld(
       log.push(`reload:${o.team}`);
       await Promise.resolve();
       cover = null;
-      const kind = answers.shift() ?? 'right';
+      const kind = answers.shift() ?? 'wrong';
       return kind === 'right'
         ? { correct: true, elapsedMs: 1000, choice: o.question.answer }
         : { correct: false, elapsedMs: 9000, choice: 'nope' };

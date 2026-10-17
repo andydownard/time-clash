@@ -85,6 +85,12 @@ export const SCRAP = {
   wrong: 0,
 } as const;
 
+/** The Power Shot: one extra shot after a right reload answer. It has no question of its own. */
+export const BONUS = {
+  /** Multiplies the hit's damage (rounded). Walls and force fields still apply. */
+  damageMultiplier: 1.5,
+} as const;
+
 export const TURN = {
   shotsPerTurn: 2,
   /** Team Past starts the first match. Each rematch flips who starts. */

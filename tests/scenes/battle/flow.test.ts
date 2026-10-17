@@ -75,7 +75,7 @@ describe('BattleFlow: one turn', () => {
 
   it('saves the question history after every question', async () => {
     const miss = findAim(SEED, 0, 'PAST', 'miss');
-    const w = makeWorld({ seed: SEED, script: [miss, miss] });
+    const w = makeWorld({ seed: SEED, script: [miss, miss, miss], answers: ['right'] });
     void w.flow.run();
     await settle();
     expect(w.histories).toHaveLength(1);

@@ -69,7 +69,7 @@ Camp, Deploy, and biomes arrive in Phase 2. In Phase 1 the Future base uses a fi
 3. **Loading screen.** Rotating messages (list in DESIGN_BRIEF.md), timeline-shaped progress bar. It is real: it waits for assets to load, with a minimum of 1.5 seconds so jokes can be read. Done when: a failed asset shows a friendly error with Retry.
 4. **Setup screen.** Names, grade (K to 12), and subject (Reading, Math, Both) for each side. Validate: names 1 to 12 characters, trimmed, no profanity list match. Done when: values persist in localStorage and the two sides may differ.
 5. **Battle: ballistics.** 2D projectile with angle (0 to 90 degrees), power (0 to 100), gravity, and wind. Terrain and obstacles as simple polygons. Fixed time step (1/60 s). Done when: the same inputs and seed always give the same landing point (golden test).
-6. **Turn state machine.** States: `PASS_SCREEN → AIMING → SHOT_1 → AIMING → SHOT_2 → RELOAD → NEXT_PLAYER`. A turn always has exactly 2 shots. Done when: tests prove illegal transitions throw and a turn cannot be skipped.
+6. **Turn state machine.** States: `PASS_SCREEN → AIMING → SHOT_1 → AIMING → SHOT_2 → RELOAD → NEXT_PLAYER`. A turn always has exactly 2 shots. A right answer adds `RELOAD → BONUS_AIMING → BONUS_SHOT → NEXT_PLAYER`: one Power Shot (`turn.bonus`, not shot 3, `BONUS.damageMultiplier` in `src/game/config.ts`). Done when: tests prove illegal transitions throw and a turn cannot be skipped.
 7. **Turn indicators.** Massive banner with horn ("ALEX, YOUR TURN! (SHOT 1 OF 2)"), active-side glow, waiting side dims, and the Pass-the-Mouse cover between turns. Done when: the cover fully hides the board and any question text.
 8. **Reload modal.** Appears right after shot 2. Reading and math question from the bank by grade band. Wrong answers show the right answer and still reload. Fast answers earn +2 scrap, others +1. The fast limit depends on the question kind (for example 8 seconds for a math fact, 20 seconds for a main idea passage, and 4 seconds more in grades K and 1), see `RELOAD.fastMsByKind` in `src/game/config.ts`. A wrong answer waits for Got it, with a 20 second cap. Done when: the other player's view never shows the question (the whole board is covered while the modal is up).
 9. **Base health and tumble.** Each base has 100 HP. A direct hit deals 25. A near miss within the blast radius deals 10 and triggers the Awkward Tumble animation plus a random speech bubble. First base at 0 HP loses. No gore. Walls turn into bouncy blocks. Done when: the damage table is unit tested, and the tumble plays with each of the 12 bubble lines.
@@ -106,7 +106,7 @@ Camp, Deploy, and biomes arrive in Phase 2. In Phase 1 the Future base uses a fi
 
 ### Tests for Phase 1 (write first)
 - `ballistics.test.ts`: golden trajectories, wind effect, angle limits.
-- `turn.test.ts`: legal and illegal transitions, exactly 2 shots.
+- `turn.test.ts`: legal and illegal transitions, exactly 2 shots. `bonus.test.ts`: the Power Shot rules.
 - `damage.test.ts`: direct hit, near miss, miss, win condition.
 - `reload.test.ts`: bonus scrap rule, wrong answer path.
 - `pick.test.ts`: grade selection, no repeats, fallback grade.

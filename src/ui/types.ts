@@ -86,7 +86,7 @@ export const TEST_IDS = {
 
 // ---------- Per-call options ----------
 
-export type BannerOptions = { name: string; team: Team; shot: 1 | 2 };
+export type BannerOptions = { name: string; team: Team; shot: 1 | 2 | 'POWER' };
 
 export type PassScreenOptions = { nextName: string; nextTeam: Team };
 
@@ -131,6 +131,8 @@ export type HudState = {
   angleDeg: number;
   power: number;
   shotsLeft: 0 | 1 | 2;
+  /** True while the Power Shot (the bonus for a right answer) is up. */
+  bonus: boolean;
   /** False while a shot flies or a cover is up. */
   canFire: boolean;
 };

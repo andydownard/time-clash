@@ -145,7 +145,18 @@ export class BattleFlow {
       }
     }
 
-    await this.reload(team);
+    const bonus = await this.reload(team);
+    if (bonus) {
+      // A right answer earns one Power Shot. It has no question and no bonus of its own.
+      await this.gate();
+      void overlay.showTurnBanner({ name: names[team], team, shot: 'POWER' });
+      await this.aimAndFire(team);
+      this.live();
+      if (match.snapshot().status === 'OVER') {
+        await this.finish();
+        return true;
+      }
+    }
     match.pass();
     return false;
   }
@@ -216,7 +227,8 @@ export class BattleFlow {
   }
 
   /** The learning moment. A wrong answer still reloads (Gate 2). */
-  private async reload(team: Team): Promise<void> {
+  /** Returns true when a right answer earned the Power Shot. */
+  private async reload(team: Team): Promise<boolean> {
     const { match, overlay, view, audio, bank } = this.deps;
     const player = match.snapshot().players[team === 'PAST' ? 0 : 1];
     let answer: { correct: boolean; elapsedMs: number } = { correct: false, elapsedMs: Infinity };
@@ -289,6 +301,7 @@ export class BattleFlow {
       await this.deps.wait(SCRAP_POPUP_MS);
       this.live();
     }
+    return score.bonus;
   }
 
   // ---------- player input ----------
@@ -344,6 +357,7 @@ export class BattleFlow {
       angleDeg: aim.angleDeg,
       power: aim.power,
       shotsLeft,
+      bonus: s.turn.phase === 'BONUS_AIMING' || s.turn.phase === 'BONUS_SHOT',
       canFire,
     };
     overlay.updateHud(hud);
