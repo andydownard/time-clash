@@ -1,6 +1,7 @@
 // Shared contract for the localStorage wrapper. Nothing here ever leaves the device.
 import type { CampState } from '../game/loadout';
 import type { Players } from '../game/types';
+import type { Levels } from '../questions/calibration';
 import type { PickHistory } from '../questions/types';
 
 export type Settings = {
@@ -22,6 +23,8 @@ export type StorageSchema = {
   'timeclash.history': PickHistory;
   /** Scrap, weapons and upgrades for both teams. Saved on this device only. */
   'timeclash.camp': CampState;
+  /** Quiet level nudges per player name and subject. Never shown to a child. */
+  'timeclash.levels': Levels;
 };
 
 export type StorageKey = keyof StorageSchema;
@@ -32,6 +35,7 @@ export const STORAGE_KEYS: readonly StorageKey[] = [
   'timeclash.settings',
   'timeclash.history',
   'timeclash.camp',
+  'timeclash.levels',
 ];
 
 /** The subset of window.localStorage we use. Inject a fake in tests. */
