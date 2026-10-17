@@ -130,6 +130,18 @@ test('every screen keeps the floors, and the screenshots are retaken', async ({
     await floors(page, 'Camp');
     await fitsOnScreen(page, 'camp', 'Camp');
     await shot('camp');
+    // The Forge, for both teams, then back to the Camp.
+    await tid(page, 'camp-forge').click();
+    await expect(tid(page, 'forge-back')).toBeVisible();
+    await floors(page, 'Forge Past');
+    await fitsOnScreen(page, 'forge', 'Forge Past');
+    await shot('forge-past');
+    await tid(page, 'forge-team-FUTURE').click();
+    await floors(page, 'Forge Future');
+    await fitsOnScreen(page, 'forge', 'Forge Future');
+    await shot('forge-future');
+    await tid(page, 'forge-back').click();
+    await expect(tid(page, 'camp-start')).toBeVisible();
   });
   await floors(page, 'Pass screen');
   await shot('pass-screen');

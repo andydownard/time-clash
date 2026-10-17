@@ -128,7 +128,8 @@ The design boards are 1600x900 mockups. We translate their look to 1280x800, 102
 
 ## Phase 3: Deep crafting and customization
 - Working Camp buttons. Build the Forge screens from the Forge and ForgeFuture boards, and the Upgrade screens from the Upgrade and UpgradePast boards. Recipes combine Past materials (granite, iron) with Future materials (nanotubes, energy shields).
-- **Rules built** (screens not yet): `src/game/weapons.ts`, `upgrades.ts`, `loadout.ts` and `economy.ts`, saved in `timeclash.camp`. Scrap is the only currency. A fresh game plays exactly like Phase 1. The balance test (`tests/game/balance.test.ts`) checks that no single purchase wins the game alone.
+- **Forge Weapon screen built** from the Forge and ForgeFuture boards (`src/ui/forgeScreen.ts`, `forgeArt.ts`): pick a team, unlock or equip a weapon, forge the one in use. Scrap only. The Upgrade Base screen is not built yet.
+- **Rules built**: `src/game/weapons.ts`, `upgrades.ts`, `loadout.ts` and `economy.ts`, saved in `timeclash.camp`. Scrap is the only currency. A fresh game plays exactly like Phase 1. The balance test (`tests/game/balance.test.ts`) checks that no single purchase wins the game alone.
 - Hybrid weapons: Nanotech Trebuchet, Wrought-Iron Railgun, EMP-shielded Railgun. Each has stats in `src/game/weapons.ts` (damage, blast radius, speed, reload difficulty).
 - Ammo types: confetti explosives, bouncy plasma spheres, heavy iron bowling balls.
 - Scrap economy: earned from fast, correct reloads. Spent only at the Camp. Balance test: no single purchase wins the game alone.

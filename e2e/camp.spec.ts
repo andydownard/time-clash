@@ -25,13 +25,9 @@ test('Setup leads to the Camp, and Time to Clash! starts the match', async ({ pa
   ]);
 });
 
-test('Forge Weapon and Upgrade Base stay on the Camp and say they are coming soon', async ({
-  page,
-}) => {
+test('Upgrade Base stays on the Camp and says it is coming soon', async ({ page }) => {
   await toCamp(page);
-  await expect(page.locator('.tc-camp-soon')).toHaveText(['Coming soon', 'Coming soon']);
-  await tid(page, 'camp-forge').click({ force: true });
-  await expect(tid(page, 'camp-status')).toHaveText('Forge Weapon is coming soon.');
+  await expect(page.locator('.tc-camp-soon')).toHaveText(['Coming soon']);
   await tid(page, 'camp-upgrade').click({ force: true });
   await expect(tid(page, 'camp-status')).toHaveText('Upgrade Base is coming soon.');
   await expect(tid(page, 'camp-start')).toBeVisible();

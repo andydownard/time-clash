@@ -215,7 +215,7 @@ describe('camp step', () => {
     expect(route).toEqual({ key: SCENE_KEYS.setup });
     expect(t.services.session.match).toBeNull();
   });
-  it('stays on the Camp when a closed button is tapped', async () => {
+  it('stays on the Camp when the closed Upgrade Base button is tapped', async () => {
     t.services.session.bank = tinyBank;
     t.storage.set('timeclash.players', players);
     let finished = false;
@@ -223,13 +223,55 @@ describe('camp step', () => {
       finished = true;
       return r;
     });
-    click(q(TEST_IDS.campForge));
     click(q(TEST_IDS.campUpgrade));
     await flush();
     expect(finished).toBe(false);
     expect(q(TEST_IDS.campStart)).not.toBeNull();
     click(q(TEST_IDS.campStart));
     await p;
+  });
+});
+
+describe('camp step: Forge Weapon', () => {
+  it('opens the Forge, saves what the family does there, and returns to the Camp', async () => {
+    t.storage.set('timeclash.players', players);
+    t.storage.set('timeclash.camp', { ...freshCamp(), scrap: { PAST: 30, FUTURE: 0 } });
+    const p = runCampStep(t.services);
+    click(q(TEST_IDS.campForge));
+    await flush();
+    expect(q(TEST_IDS.forgeBack)).not.toBeNull();
+    expect(q(TEST_IDS.campStart)).toBeNull();
+    click(q(TEST_IDS.forgeWeapon('elderLongbow')));
+    expect(loadCamp(t.storage).loadout.PAST.owned.elderLongbow).toBe(1);
+    expect(loadCamp(t.storage).scrap.PAST).toBe(30 - 12);
+    click(q(TEST_IDS.forgeBack));
+    expect(await p).toEqual({ key: SCENE_KEYS.camp });
+  });
+  it('starts no match when the family only visits the Forge', async () => {
+    t.storage.set('timeclash.players', players);
+    const p = runCampStep(t.services);
+    click(q(TEST_IDS.campForge));
+    await flush();
+    click(q(TEST_IDS.forgeBack));
+    const route = await p;
+    expect(route.key).toBe(SCENE_KEYS.camp);
+    expect(t.services.session.match).toBeNull();
+  });
+  it('a weapon unlocked at the Forge is in the next match', async () => {
+    t.services.session.bank = tinyBank;
+    t.storage.set('timeclash.players', players);
+    t.storage.set('timeclash.camp', { ...freshCamp(), scrap: { PAST: 40, FUTURE: 0 } });
+    const forge = runCampStep(t.services);
+    click(q(TEST_IDS.campForge));
+    await flush();
+    click(q(TEST_IDS.forgeWeapon('ironCannon')));
+    click(q(TEST_IDS.forgeWeapon('ironCannon')));
+    click(q(TEST_IDS.forgeBack));
+    await forge;
+    const match = runCampStep(t.services);
+    click(q(TEST_IDS.campStart));
+    const data = (await match).data as BattleSceneData;
+    expect(data.match.rematchOptions().effects?.PAST.direct).toBe(32);
   });
 });
 

@@ -1,6 +1,7 @@
 // Shared contract for the DOM layer that sits on top of the Phaser canvas.
 // All buttons, text inputs, modals, banners, and captions are plain DOM.
 // Phaser draws only the world (backdrop, bases, shots, tumbles).
+import type { CampState } from '../game/loadout';
 import type { Grade, Players, Team, TeamStats, Vec2 } from '../game/types';
 import type { Question } from '../questions/types';
 import type { Settings } from '../storage/types';
@@ -50,6 +51,12 @@ export const TEST_IDS = {
   campForge: 'camp-forge',
   campUpgrade: 'camp-upgrade',
   campStart: 'camp-start',
+  forgeBack: 'forge-back',
+  forgeScrap: 'forge-scrap',
+  forgeUpgrade: 'forge-upgrade',
+  forgeStatus: 'forge-status',
+  forgeTeam: (team: Team) => `forge-team-${team}`,
+  forgeWeapon: (id: string) => `forge-weapon-${id}`,
   campPlayers: 'camp-players',
   turnBanner: 'turn-banner',
   passScreen: 'pass-screen',
@@ -133,7 +140,14 @@ export type VictoryOptions = {
 };
 
 /** The Camp starts the match, or sends the family back to Setup to change the players. */
-export type CampChoice = 'battle' | 'players';
+export type CampChoice = 'battle' | 'players' | 'forge';
+
+export type ForgeOptions = {
+  /** What the family owns now. */
+  camp: CampState;
+  /** Called with the new camp after every change, so it is saved at once. */
+  save: (camp: CampState) => void;
+};
 
 export type VictoryChoice = 'rematch' | 'back-to-camp';
 
@@ -172,6 +186,8 @@ export interface Overlay {
   showSetup(initial: Players | null): Promise<Players>;
   /** The Camp hub. Resolves when the big "Time to Clash!" button is tapped. */
   showCamp(): Promise<CampChoice>;
+  /** Forge Weapon. Changes go through `save`. Resolves when Back is tapped. */
+  showForge(options: ForgeOptions): Promise<void>;
   showVictory(options: VictoryOptions): Promise<VictoryChoice>;
 
   // Battle HUD (Z.hud)

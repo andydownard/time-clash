@@ -366,6 +366,7 @@ body {
 }
 .tc-screen > .tc-skyline,
 .tc-screen > .tc-camp-art,
+.tc-screen > .tc-forge-art,
 .tc-screen > .tc-loading-art {
   position: absolute;
 }
@@ -1874,6 +1875,319 @@ body {
   animation-delay: 0.12s;
 }
 
+/* ---------- Forge Weapon ---------- */
+.tc-forge {
+  background: var(--tc-ink-deep);
+  overflow: hidden;
+  align-items: stretch;
+  gap: var(--tc-s-3);
+}
+.tc-forge-art {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.tc-forge-head {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--tc-s-4);
+}
+/* Past: a purple banner with an Ember ring. Future: a blue banner with a Pulse glow. */
+.tc-forge-title {
+  margin: 0;
+  justify-self: center;
+  padding: var(--tc-s-3) var(--tc-s-6);
+  border: 5px solid var(--tc-ink-deep);
+  border-radius: 20px;
+  background: linear-gradient(100deg, var(--tc-purple-700), var(--tc-purple-900));
+  box-shadow:
+    0 0 0 4px var(--tc-ember),
+    0 8px 0 var(--tc-ink-deep);
+  color: var(--tc-parchment-warm);
+  font-family: var(--tc-font-voice-old);
+  font-weight: 400;
+  font-size: calc(var(--tc-text-min) * 2);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-shadow: 0 4px 0 var(--tc-ink-deep);
+  white-space: nowrap;
+}
+.tc-forge[data-team='FUTURE'] .tc-forge-title {
+  border: 4px solid var(--tc-pulse);
+  border-radius: 16px;
+  background: linear-gradient(100deg, var(--tc-blue-700), var(--tc-blue-900));
+  box-shadow: var(--tc-glow-neon);
+  color: var(--tc-blue-100);
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  text-shadow: 0 0 16px var(--tc-pulse);
+}
+.tc-forge-scrap {
+  margin: 0;
+  padding: var(--tc-s-2) var(--tc-s-4);
+  border: 3px solid var(--tc-ember);
+  border-radius: 12px;
+  background: var(--tc-ink-deep);
+  color: var(--tc-parchment-warm);
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: var(--tc-text-min);
+  letter-spacing: var(--tc-ls-caps);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.tc-forge-scrap-n {
+  color: var(--tc-ember);
+}
+.tc-forge-picker {
+  display: flex;
+  justify-content: center;
+  gap: var(--tc-s-3);
+}
+.tc-forge-list {
+  width: min(880px, 100%);
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--tc-s-3);
+}
+.tc-forge-row {
+  display: flex;
+  align-items: center;
+  gap: var(--tc-s-4);
+  width: 100%;
+  min-height: var(--tc-tap);
+  padding: var(--tc-s-2) var(--tc-s-5);
+  border: 4px solid var(--tc-purple-500);
+  border-radius: 18px;
+  background: var(--tc-parchment-warm);
+  color: var(--tc-ink-deep);
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.tc-forge-row[data-state='equipped'] {
+  border: 5px solid var(--tc-ink-deep);
+  background: var(--tc-ember);
+  box-shadow:
+    0 0 0 5px var(--tc-purple-500),
+    0 0 24px var(--tc-purple-500);
+}
+.tc-forge-row[data-team='FUTURE'] {
+  border-color: var(--tc-blue-700);
+  background: var(--tc-ink-deep);
+  color: var(--tc-blue-100);
+}
+.tc-forge-row[data-team='FUTURE'][data-state='equipped'] {
+  border-color: var(--tc-ink-deep);
+  background: var(--tc-blue-500);
+  color: var(--tc-white);
+  box-shadow:
+    0 0 0 5px var(--tc-blue-700),
+    0 0 24px var(--tc-blue-700);
+}
+/* Not enough Scrap yet: a dashed edge, never a faded row (the text must stay easy to read). */
+.tc-forge-row[aria-disabled='true'] {
+  border-style: dashed;
+  cursor: not-allowed;
+}
+.tc-weapon-icon {
+  flex: none;
+  width: 80px;
+  height: 40px;
+}
+.tc-forge-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--tc-s-1);
+  min-width: 0;
+}
+.tc-forge-name {
+  font-family: var(--tc-font-voice-old);
+  font-size: var(--tc-fs-lead);
+}
+.tc-forge-row[data-team='FUTURE'] .tc-forge-name {
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+}
+.tc-forge-stats {
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new);
+  font-size: var(--tc-text-min);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.tc-forge-badge {
+  flex: none;
+  padding: var(--tc-s-2) var(--tc-s-3);
+  border-radius: 10px;
+  background: var(--tc-purple-500);
+  color: var(--tc-parchment-warm);
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: var(--tc-text-min);
+  letter-spacing: var(--tc-ls-caps);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.tc-forge-row[data-team='FUTURE'] .tc-forge-badge {
+  background: var(--tc-blue-700);
+  color: var(--tc-blue-100);
+}
+.tc-forge-status {
+  align-self: flex-end;
+  margin: 0;
+  min-height: var(--tc-tap);
+  padding: var(--tc-s-2) var(--tc-s-4);
+  border-radius: 12px;
+  background: var(--tc-ink-deep);
+  color: var(--tc-parchment-warm);
+  font-size: var(--tc-text-min);
+}
+.tc-forge-status:empty {
+  visibility: hidden;
+}
+.tc-forge-upgrade {
+  align-self: flex-end;
+  margin-top: auto;
+  white-space: nowrap;
+}
+.tc-forge-upgrade[aria-disabled='true'] {
+  border-style: dashed;
+  cursor: not-allowed;
+}
+/* The picture moves: the hammer, the press, sparks. Reduced motion stops it all. */
+.tc-forge-btn {
+  animation: tc-forge-blink 0.8s steps(2) infinite;
+}
+@keyframes tc-forge-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.3;
+  }
+}
+.tc-forge-sig {
+  opacity: 0;
+  animation: tc-forge-sig 1.2s ease-out infinite;
+}
+@keyframes tc-forge-sig {
+  0% {
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.9;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+.tc-forge-glow {
+  animation: tc-forge-glow 1.6s ease-in-out infinite alternate;
+}
+@keyframes tc-forge-glow {
+  from {
+    opacity: 0.7;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.tc-forge-hammer {
+  animation: tc-forge-hammer 1.1s cubic-bezier(0.5, 0, 0.9, 0.4) infinite;
+}
+@keyframes tc-forge-hammer {
+  0%,
+  10% {
+    transform: rotate(-72deg);
+  }
+  46%,
+  56% {
+    transform: rotate(6deg);
+  }
+  100% {
+    transform: rotate(-72deg);
+  }
+}
+.tc-forge-press {
+  animation: tc-forge-press 1.3s cubic-bezier(0.5, 0, 0.9, 0.4) infinite;
+}
+@keyframes tc-forge-press {
+  0%,
+  10% {
+    transform: translateY(-70px);
+  }
+  46%,
+  56% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-70px);
+  }
+}
+.tc-forge-hot {
+  animation: tc-forge-hot 1.1s ease-out infinite;
+}
+.tc-forge-hotf {
+  animation: tc-forge-hot 1.3s ease-out infinite;
+}
+@keyframes tc-forge-hot {
+  0%,
+  44% {
+    opacity: 0.55;
+  }
+  48% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.55;
+  }
+}
+.tc-forge-sp {
+  opacity: 0;
+  animation: tc-forge-spit 1.1s ease-out infinite;
+}
+.tc-forge-spf {
+  opacity: 0;
+  animation: tc-forge-spit 1.3s ease-out infinite;
+}
+@keyframes tc-forge-spit {
+  0%,
+  45% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+  49% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy));
+  }
+}
+.tc-forge-spark {
+  opacity: 0;
+  animation: tc-forge-rise 2.4s ease-out infinite;
+}
+@keyframes tc-forge-rise {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--dx, 30px), -120px);
+    opacity: 0;
+  }
+}
+
 /* ---------- Settings (and other panels) ---------- */
 .tc-settings {
   justify-content: center;
@@ -2119,6 +2433,13 @@ body {
 
 /* ---------- Smaller screens: iPad portrait ---------- */
 @media (max-width: 900px) {
+  .tc-forge-list {
+    margin-left: 0;
+  }
+  .tc-forge-title {
+    padding-inline: var(--tc-s-4);
+    font-size: var(--tc-fs-title);
+  }
   /* Portrait: the whole Camp picture sits at the bottom at its own 16:9 shape (no cropping), and
      its top edge fades into the sky above. */
   .tc-camp {
