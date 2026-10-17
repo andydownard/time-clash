@@ -51,8 +51,8 @@ describe('Upgrade screen', () => {
   it('lists the three Past upgrades with what they do, the level and the cost in words', () => {
     open(withScrap(0));
     expect(qa('.tc-forge-name').map((n) => n.textContent)).toEqual([
-      'Rebuild the Tower',
-      'Mend the Wall',
+      'Upgrade the Tower',
+      'Reinforce the Wall',
       'New Castle Gate',
     ]);
     expect(stats('tower')).toBe(
@@ -108,7 +108,7 @@ describe('upgrading', () => {
     expect(saves).toHaveLength(1);
     expect(who(saves[0]!, 'PAST').scrap).toBe(30 - u.cost[0]);
     expect(who(saves[0]!, 'PAST').loadout.PAST.upgrades.tower).toBe(1);
-    expect(status()).toBe(UPGRADE_COPY.upgraded('Rebuild the Tower', 1));
+    expect(status()).toBe(UPGRADE_COPY.upgraded('Upgrade the Tower', 1));
     expect(q(TEST_IDS.upgradeScrap)!.textContent).toContain(String(30 - u.cost[0]));
     expect(stats('tower')).toContain(UPGRADE_COPY.level(1, UPGRADE_MAX_LEVEL));
     expect(badge('tower')).toBe(UPGRADE_COPY.cost(u.cost[1]));
@@ -126,6 +126,24 @@ describe('upgrading', () => {
     click(row('wall'));
     expect(saves).toHaveLength(3);
     expect(status()).toBe(UPGRADE_COPY.atTop);
+  });
+
+  it('says who owns an upgrade once it has a level, and nothing before', () => {
+    open(withScrap(30, 30));
+    const owner = (id: string) => row(id).querySelector('.tc-forge-owned')?.textContent;
+    expect(owner('tower')).toBeUndefined();
+    click(row('tower'));
+    expect(owner('tower')).toBe(UPGRADE_COPY.ownedBy('Alex'));
+    click(q(TEST_IDS.upgradeTeam('FUTURE')));
+    click(row('forceField'));
+    expect(owner('forceField')).toBe('Owned by Sam');
+  });
+
+  it('has no loose button at the bottom and no word rebuild or build', () => {
+    open(withScrap(50));
+    const screen = document.querySelector('[data-screen="upgrade"]')!;
+    expect(screen.querySelectorAll('.tc-forge-upgrade, .tc-forge-levelup')).toHaveLength(0);
+    expect(screen.textContent).not.toMatch(/rebuild|\bbuild\b/i);
   });
 
   it('says how much more Scrap is needed when poor, and changes nothing', () => {

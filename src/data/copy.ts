@@ -23,10 +23,13 @@ export const FORGE_COPY = {
   level: 'Level',
   rangeNames: { short: 'Short', long: 'Long', far: 'Far' } as const,
   equipped: 'Equipped',
-  owned: 'Owned',
+  /** Who owns it: the name of the player on that side. */
+  ownedBy: (name: string): string => `Owned by ${name}`,
   unlockCost: (cost: number): string => `${cost} Scrap`,
-  upgrade: (cost: number): string => `Forge upgrade · ${cost} Scrap`,
-  upgradeMax: 'Top level',
+  /** The button inside the row of the weapon in use. */
+  levelUp: (cost: number): string => `Level up · ${cost} Scrap`,
+  levelUpMax: 'Top level',
+  levelUpLabel: (weapon: string, text: string): string => `${weapon}: ${text}`,
   /** Status lines, read out politely. Never shaming: a short purse is just "not yet". */
   equippedNow: (name: string): string => `${name} is equipped.`,
   unlocked: (name: string): string => `You unlocked ${name}!`,
@@ -62,6 +65,8 @@ export const UPGRADE_COPY = {
   level: (n: number, max: number): string => `Level ${n} of ${max}`,
   cost: (cost: number): string => `${cost} Scrap`,
   topLevel: 'Top level',
+  /** Who owns it: the name of the player on that side. */
+  ownedBy: (name: string): string => `Owned by ${name}`,
   /** Status lines, read out politely. A short purse is just "not yet". */
   upgraded: (name: string, level: number): string => `${name} is now level ${level}!`,
   needMore: (n: number): string => `Not yet. You need ${n} more Scrap.`,
