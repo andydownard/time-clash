@@ -94,6 +94,8 @@ export type ReloadModalOptions = {
   question: Question;
   team: Team;
   playerName: string;
+  /** The other side, shown as a "Waiting" tag. Optional. Their name is not secret. */
+  waiting?: { team: Team; name: string };
   /** Reads the question aloud (the Hear it button). Gets the whole text and its sentences. */
   speak?: (text: string, sentences: string[]) => void;
   /** Chrono's quick joke for the answer. Optional. */

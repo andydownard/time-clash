@@ -161,7 +161,8 @@ export const LOADING = {
 
 // ---------- Setup ----------
 export const SETUP = {
-  heading: 'Who is playing?',
+  heading: 'Who is fighting?',
+  subtitle: 'Type your name. Pick your grade and subject.',
   nameLabel: 'Name',
   namePlaceholder: 'Type a name',
   gradeLabel: 'Grade',
@@ -236,6 +237,8 @@ export const RELOAD = {
   hintIcon: '💡',
   speakIcon: '🔊',
   yourTurn: 'Your turn!',
+  waiting: 'Waiting',
+  readStory: 'Read the story',
   gotIt: 'Got it',
   matchWord: (word: string): string => `Tap the word that matches: ${word}`,
   why: (hint: string): string => `Clue: ${hint}`,

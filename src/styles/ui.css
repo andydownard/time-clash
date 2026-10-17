@@ -870,6 +870,27 @@ body {
 }
 /* The heading shares a row with the ? and gear buttons (it is centered, they sit at the left),
    so the cards start higher and every button fits on a 1024x768 screen. */
+[data-tc-root] .tc-setup-sub {
+  margin: 0;
+  font-family: var(--tc-font-voice-new);
+  font-weight: 700;
+  font-size: var(--tc-fs-label);
+  letter-spacing: var(--tc-ls-caps);
+  text-align: center;
+  text-transform: uppercase;
+}
+/* On a 768 tall screen there is no room for the line, and Setup must not scroll (regression 13).
+   It stays for screen readers. */
+@media (max-height: 790px) {
+  [data-tc-root] .tc-setup-sub {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
 [data-tc-root] .tc-setup-title {
   display: flex;
   align-items: center;
@@ -1208,6 +1229,24 @@ body {
   letter-spacing: var(--tc-ls-caps);
   text-transform: uppercase;
 }
+.tc-turn-chips {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--tc-s-1);
+}
+/* On a narrow screen the second tag has no room, and the card must fit without scrolling. */
+@media (max-width: 900px) {
+  .tc-turn-chip[data-state='waiting'] {
+    display: none;
+  }
+}
+.tc-turn-chip[data-state='waiting'] {
+  border-color: var(--tc-strip-text);
+  background: transparent;
+  color: var(--tc-strip-text);
+  box-shadow: none;
+}
 .tc-reload-who::before,
 .tc-turn-tag::before {
   content: '\00B7';
@@ -1300,6 +1339,31 @@ body {
 }
 .tc-speak-btn {
   flex: none;
+}
+/* Older readers get the story, the question and the answers in the voice font. This is safe
+   because no reading question holds a digit (tests/ui/boardGap.test.ts). Math and the youngest
+   readers keep the open face above. */
+.tc-reload[data-layout='reading'] .tc-prompt {
+  font-family: var(--tc-font-voice-new);
+  font-weight: 700;
+}
+.tc-reload[data-layout='reading'] .tc-passage {
+  font-family: var(--tc-font-voice-new);
+  font-weight: 700;
+}
+.tc-reload[data-layout='reading'] .tc-choice {
+  font-family: var(--tc-font-voice-new);
+}
+.tc-passage::before {
+  content: attr(data-label);
+  display: block;
+  margin-bottom: var(--tc-s-2);
+  color: var(--tc-purple-700);
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: var(--tc-fs-label);
+  letter-spacing: var(--tc-ls-caps);
+  text-transform: uppercase;
 }
 .tc-passage {
   padding: var(--tc-s-4) var(--tc-s-5);

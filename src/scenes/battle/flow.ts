@@ -246,6 +246,10 @@ export class BattleFlow {
         question: pick.question,
         team,
         playerName: player.name,
+        waiting: {
+          team: team === 'PAST' ? 'FUTURE' : 'PAST',
+          name: match.snapshot().players[team === 'PAST' ? 1 : 0].name,
+        },
         quip: (kind) => RELOAD_QUIPS[kind][this.quipBags[kind].next()] ?? null,
         speak: (text, sentences) => {
           const durationMs = Math.max(1500, text.split(/\s+/).length * 450);
