@@ -37,6 +37,9 @@ async function fitsOnScreen(page: Page, screen: string, where: string): Promise<
     );
     return {
       scrolls: el.scrollHeight - el.clientHeight,
+      parts: [...el.children].map(
+        (c) => `${c.className || c.tagName}:${Math.round(c.getBoundingClientRect().height)}`,
+      ),
       outside: buttons
         .map((b) => ({ id: b.dataset.testid ?? b.textContent, box: b.getBoundingClientRect() }))
         .filter(
@@ -46,7 +49,9 @@ async function fitsOnScreen(page: Page, screen: string, where: string): Promise<
         .map((x) => x.id),
     };
   }, screen);
-  expect.soft(r.scrolls, `${where}: the screen scrolls`).toBeLessThanOrEqual(1);
+  expect
+    .soft(r.scrolls, `${where}: the screen scrolls (${r.parts.join(' ')})`)
+    .toBeLessThanOrEqual(1);
   expect.soft(r.outside, `${where}: buttons not fully inside the window`).toEqual([]);
 }
 
