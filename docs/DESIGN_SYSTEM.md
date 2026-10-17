@@ -142,7 +142,7 @@ Computed from the token values by `tests/styles/designPairs.ts` (WCAG 2.1 relati
 | Google Fonts link | Self-hosted woff2 in `public/fonts` | No third-party requests. Children's game. |
 | Pixel sizes of the 1600x900 boards | Tokens above | Our screens are 1280x800, 1024x768, 768x1024. |
 
-The Camp board (Main) is built: `src/ui/campArt.ts` holds its picture, with ids prefixed `tcCamp` and classes `tc-camp-*`. The big button reads "Time to Clash!" (the slogan, never the name). The Forge and Upgrade boards are not built yet. On narrow screens the Camp picture keeps its 16:9 shape along the bottom, because cropping it hides both camps. The "Base Destroyed" board becomes the Wipeout screen: walls turn into bouncy toy blocks, and no copy uses "destroyed", "defeat", "dead", "die", or "kill".
+The Camp board (Main) is built: `src/ui/campArt.ts` holds its picture, with ids prefixed `tcCamp` and classes `tc-camp-*`. The big button reads "Time to Clash!" (the slogan, never the name). The Forge board (Past and Future) is built in `src/ui/forgeArt.ts`: the board's Gold, Credits, Wood and Stone become Scrap, and "Build upgrade" becomes "Forge upgrade". The Upgrade boards are not built yet. On narrow screens the Camp picture keeps its 16:9 shape along the bottom, because cropping it hides both camps. The "Base Destroyed" board becomes the Wipeout screen: walls turn into bouncy toy blocks, and no copy uses "destroyed", "defeat", "dead", "die", or "kill".
 
 ## Fonts
 
