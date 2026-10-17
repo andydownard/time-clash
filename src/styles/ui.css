@@ -1974,6 +1974,9 @@ body {
   text-transform: uppercase;
   white-space: nowrap;
 }
+.tc-forge-owner {
+  display: block;
+}
 .tc-forge-scrap-n {
   color: var(--tc-ember);
 }
@@ -1983,7 +1986,7 @@ body {
   gap: var(--tc-s-3);
 }
 .tc-forge-list {
-  width: min(880px, 100%);
+  width: min(960px, 100%);
   margin-left: auto;
   display: flex;
   flex-direction: column;
@@ -2027,9 +2030,55 @@ body {
     0 0 24px var(--tc-blue-700);
 }
 /* Not enough Scrap yet: a dashed edge, never a faded row (the text must stay easy to read). */
-.tc-forge-row[aria-disabled='true'] {
+button.tc-forge-row[aria-disabled='true'],
+.tc-forge-item[data-poor='true'] {
   border-style: dashed;
   cursor: not-allowed;
+}
+/* A Forge row holds two buttons side by side: the pick area and, on the weapon in use, Level up. */
+.tc-forge-item {
+  padding: var(--tc-s-1) var(--tc-s-3) var(--tc-s-1) var(--tc-s-2);
+  cursor: default;
+}
+.tc-forge-pick {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--tc-s-4);
+  min-width: 0;
+  min-height: var(--tc-tap);
+  padding: var(--tc-s-1) var(--tc-s-3);
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.tc-forge-levelup {
+  flex: none;
+  padding-inline: var(--tc-s-4);
+  font-size: var(--tc-text-min);
+  min-height: var(--tc-tap);
+  white-space: nowrap;
+}
+.tc-forge-levelup[aria-disabled='true'] {
+  border-style: dashed;
+  cursor: not-allowed;
+}
+.tc-forge-namerow {
+  display: flex;
+  align-items: center;
+  gap: var(--tc-s-3);
+}
+.tc-forge-owned {
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: var(--tc-text-min);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 .tc-weapon-icon {
   flex: none;
@@ -2087,15 +2136,6 @@ body {
 }
 .tc-forge-status:empty {
   visibility: hidden;
-}
-.tc-forge-upgrade {
-  align-self: flex-end;
-  margin-top: auto;
-  white-space: nowrap;
-}
-.tc-forge-upgrade[aria-disabled='true'] {
-  border-style: dashed;
-  cursor: not-allowed;
 }
 /* The picture moves: the hammer, the press, sparks. Reduced motion stops it all. */
 .tc-forge-btn {
@@ -2586,6 +2626,21 @@ body {
   .tc-forge-title {
     padding-inline: var(--tc-s-4);
     font-size: var(--tc-fs-title);
+  }
+  /* Back and the wallet share the top line, and the title sits under them, so long names fit. */
+  .tc-forge-head {
+    grid-template-columns: auto 1fr;
+    row-gap: var(--tc-s-3);
+  }
+  .tc-forge-head .tc-forge-scrap {
+    justify-self: end;
+  }
+  .tc-forge-head .tc-forge-title {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+  .tc-forge-back {
+    white-space: nowrap;
   }
   /* Portrait: the whole Camp picture sits at the bottom at its own 16:9 shape (no cropping), and
      its top edge fades into the sky above. */

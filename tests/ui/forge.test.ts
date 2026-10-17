@@ -1,6 +1,8 @@
 // @vitest-environment jsdom
 // Forge Weapon: pick, unlock and forge weapons with Scrap. Every tap that cannot work says why in
 // words and changes nothing. Every change is saved at once.
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { FORGE_COPY } from '../../src/data/copy';
 import { freshLoadout, walletOf, type CampState } from '../../src/game/loadout';
@@ -10,6 +12,7 @@ import { FORGE, weaponById } from '../../src/game/weapons';
 import { TEST_IDS } from '../../src/ui/types';
 import { click, flush, q, qa, setup } from './helpers';
 
+const ui = readFileSync(join(process.cwd(), 'src/styles/ui.css'), 'utf8');
 let s: ReturnType<typeof setup>;
 beforeEach(() => {
   s = setup();
@@ -63,14 +66,18 @@ describe('Forge screen', () => {
     );
   });
 
-  it('shows Equipped, Owned and the Scrap cost in words, not only by color', () => {
+  it('shows Equipped, who owns it, and the Scrap cost in words, not only by color', () => {
     const camp = withScrap(0);
     who(camp, 'PAST').loadout.PAST.owned.elderLongbow = 1;
     open(camp);
-    const badge = (id: string) => row(id).querySelector('.tc-forge-badge')!.textContent;
+    const badge = (id: string) => row(id).querySelector('.tc-forge-badge')?.textContent;
+    const owner = (id: string) => row(id).querySelector('.tc-forge-owned')?.textContent;
     expect(badge('royalSword')).toBe(FORGE_COPY.equipped);
-    expect(badge('elderLongbow')).toBe(FORGE_COPY.owned);
+    expect(owner('royalSword')).toBe('Owned by Alex');
+    expect(owner('elderLongbow')).toBe('Owned by Alex');
+    expect(badge('elderLongbow')).toBeUndefined();
     expect(badge('ironCannon')).toBe(FORGE_COPY.unlockCost(weaponById('ironCannon')!.cost));
+    expect(owner('ironCannon')).toBeUndefined();
     expect(row('royalSword').getAttribute('aria-pressed')).toBe('true');
     expect(row('elderLongbow').getAttribute('aria-pressed')).toBe('false');
   });
@@ -134,8 +141,8 @@ describe('unlocking a weapon', () => {
     expect(who(saves[0]!, 'PAST').loadout.PAST.owned.elderLongbow).toBe(1);
     expect(status()).toBe(FORGE_COPY.unlocked('Elder Longbow'));
     expect(q(TEST_IDS.forgeScrap)!.textContent).toContain(String(20 - w.cost));
-    expect(row('elderLongbow').querySelector('.tc-forge-badge')!.textContent).toBe(
-      FORGE_COPY.owned,
+    expect(row('elderLongbow').querySelector('.tc-forge-owned')!.textContent).toBe(
+      FORGE_COPY.ownedBy('Alex'),
     );
   });
 
@@ -198,12 +205,42 @@ describe('equipping a weapon', () => {
   });
 });
 
-describe('forge upgrade', () => {
+describe('Level up inside the row of the weapon in use', () => {
   const upgrade = () => q<HTMLButtonElement>(TEST_IDS.forgeUpgrade)!;
+
+  it('has no loose button at the bottom, only one Level up, inside the equipped row', () => {
+    open(withScrap(50));
+    expect(qa('.tc-forge-levelup')).toHaveLength(1);
+    expect(upgrade().closest('.tc-forge-row')).toBe(row('royalSword').closest('.tc-forge-row'));
+    expect(upgrade().closest('.tc-forge-list')).not.toBeNull();
+    expect(document.querySelector('.tc-forge-upgrade')).toBeNull();
+    expect(
+      row('elderLongbow').closest('.tc-forge-row')!.querySelector('.tc-forge-levelup'),
+    ).toBeNull();
+  });
+
+  it('is named for the weapon and meets the tap size', () => {
+    open(withScrap(50));
+    expect(upgrade().getAttribute('aria-label')).toBe(
+      FORGE_COPY.levelUpLabel('Royal Sword', FORGE_COPY.levelUp(FORGE.upgradeCost[0]!)),
+    );
+    expect(upgrade().className).toContain('tc-forge-levelup');
+    expect(ui).toMatch(/\.tc-forge-levelup \{[^}]*min-height: var\(--tc-tap\)/);
+  });
+
+  it('moves to the weapon you equip', () => {
+    const camp = withScrap(100);
+    who(camp, 'PAST').loadout.PAST.owned.elderLongbow = 1;
+    open(camp);
+    click(row('elderLongbow'));
+    expect(upgrade().getAttribute('data-weapon')).toBe('elderLongbow');
+    expect(row('elderLongbow').closest('.tc-forge-row')!.contains(upgrade())).toBe(true);
+    expect(qa('.tc-forge-levelup')).toHaveLength(1);
+  });
 
   it('shows the price for the next level', () => {
     open(withScrap(50));
-    expect(upgrade().textContent).toBe(FORGE_COPY.upgrade(FORGE.upgradeCost[0]!));
+    expect(upgrade().textContent).toBe(FORGE_COPY.levelUp(FORGE.upgradeCost[0]!));
   });
 
   it('raises the weapon in use one level, spends the Scrap, and shows the new damage', () => {
@@ -230,7 +267,7 @@ describe('forge upgrade', () => {
     const { saves } = open(withScrap(100));
     click(upgrade());
     click(upgrade());
-    expect(upgrade().textContent).toBe(FORGE_COPY.upgradeMax);
+    expect(upgrade().textContent).toBe(FORGE_COPY.levelUpMax);
     const before = saves.length;
     click(upgrade());
     expect(saves).toHaveLength(before);
@@ -254,5 +291,18 @@ describe('forge upgrade', () => {
     click(upgrade());
     expect(status()).toBe(first);
     await flush();
+  });
+});
+
+describe('Owned by the player on that side', () => {
+  it('names the player, and the label never wraps to a second line', () => {
+    open(withScrap(0));
+    expect(row('royalSword').querySelector('.tc-forge-owned')!.textContent).toBe('Owned by Alex');
+    expect(ui).toMatch(/\.tc-forge-owned \{[^}]*white-space: nowrap/);
+  });
+  it('shows the other player on the other side', () => {
+    open(withScrap(0, 0));
+    click(q(TEST_IDS.forgeTeam('FUTURE')));
+    expect(row('plasmaBlade').querySelector('.tc-forge-owned')!.textContent).toBe('Owned by Sam');
   });
 });

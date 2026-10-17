@@ -27,7 +27,7 @@ test('an upgrade spends Scrap, is remembered after a reload, and rises level by 
   await page.reload();
   await tid(page, 'camp-upgrade').click();
   await tid(page, 'upgrade-row-tower').click();
-  await expect(tid(page, 'upgrade-status')).toHaveText('Rebuild the Tower is now level 1!');
+  await expect(tid(page, 'upgrade-status')).toHaveText('Upgrade the Tower is now level 1!');
   await expect(tid(page, 'upgrade-scrap')).toContainText('34');
   await tid(page, 'upgrade-row-tower').click();
   await expect(tid(page, 'upgrade-scrap')).toContainText('24');
@@ -51,7 +51,7 @@ test('Team Future has its own upgrades and Scrap', async ({ page }) => {
   await expect(tid(page, 'upgrade-scrap')).toContainText('0');
 });
 
-test('Rebuild the Tower gives more base health in the next match, shown in the HUD', async ({
+test('Upgrade the Tower gives more base health in the next match, shown in the HUD', async ({
   page,
 }) => {
   await toCamp(page);
@@ -78,5 +78,5 @@ test('the keyboard can use Upgrade Base', async ({ page }) => {
   await expect(tid(page, 'upgrade-back')).toBeFocused();
   await tid(page, 'upgrade-row-wall').focus();
   await page.keyboard.press('Enter');
-  await expect(tid(page, 'upgrade-status')).toHaveText('Mend the Wall is now level 1!');
+  await expect(tid(page, 'upgrade-status')).toHaveText('Reinforce the Wall is now level 1!');
 });

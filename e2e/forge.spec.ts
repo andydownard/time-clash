@@ -66,6 +66,7 @@ test('a forged weapon is used in the next match', async ({ page }) => {
   await giveScrap(page, 50, 0);
   await page.reload();
   await tid(page, 'camp-forge').click();
+  await expect(tid(page, 'forge-upgrade')).toContainText('Level up');
   await tid(page, 'forge-upgrade').click();
   await tid(page, 'forge-back').click();
   await tid(page, 'camp-start').click();
@@ -75,6 +76,22 @@ test('a forged weapon is used in the next match', async ({ page }) => {
   const saved = await savedCamp(page);
   expect(saved.wallets.alex!.loadout.PAST!.owned.royalSword).toBe(2);
   expect(saved.wallets.alex!.scrap).toBe(44);
+});
+
+test('Level up sits inside the equipped weapon row, with no loose button below', async ({
+  page,
+}) => {
+  await toCamp(page);
+  await giveScrap(page, 50, 0);
+  await page.reload();
+  await tid(page, 'camp-forge').click();
+  const levelUp = tid(page, 'forge-upgrade');
+  const rowBox = await tid(page, 'forge-weapon-royalSword').locator('..').boundingBox();
+  const btnBox = await levelUp.boundingBox();
+  expect(btnBox!.height).toBeGreaterThanOrEqual(56);
+  expect(btnBox!.y).toBeGreaterThanOrEqual(rowBox!.y);
+  expect(btnBox!.y + btnBox!.height).toBeLessThanOrEqual(rowBox!.y + rowBox!.height);
+  await expect(tid(page, 'forge-weapon-royalSword')).toContainText('Owned by Alex');
 });
 
 test('the keyboard can use the Forge', async ({ page }) => {

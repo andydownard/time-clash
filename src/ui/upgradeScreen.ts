@@ -120,6 +120,12 @@ export function showUpgrade(ctx: UiCtx, options: ForgeOptions): Promise<void> {
               UPGRADE_COPY.level(level, UPGRADE_MAX_LEVEL),
             ].join(' · '),
           }),
+          level > 0
+            ? h(doc, 'span', {
+                class: 'tc-forge-owned',
+                text: UPGRADE_COPY.ownedBy(options.names[team]),
+              })
+            : null,
         ),
         h(doc, 'span', {
           class: 'tc-forge-badge',
@@ -147,7 +153,7 @@ export function showUpgrade(ctx: UiCtx, options: ForgeOptions): Promise<void> {
       const next = upgradeScene(doc, team);
       art.replaceWith(next);
       art = next;
-      ownerName.textContent = `${options.names[team]} · `;
+      ownerName.textContent = options.names[team];
       scrapValue.textContent = String(wallet().scrap);
       for (const chip of teamChips) {
         const on = chip.getAttribute('data-team') === team;
