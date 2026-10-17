@@ -1,5 +1,13 @@
 import { clampAim, simulateShot } from './ballistics';
-import { AIM, PHASE1_LAYOUT, RNG_SALT, SCRAP, TEAM_FACING, TUMBLE_LINE_COUNT } from './config';
+import {
+  AIM,
+  BONUS,
+  PHASE1_LAYOUT,
+  RNG_SALT,
+  SCRAP,
+  TEAM_FACING,
+  TUMBLE_LINE_COUNT,
+} from './config';
 import { classifyBlast, winnerOf } from './damage';
 import { DEFAULT_EFFECTS } from './loadout';
 import { scoreReload } from './reload';
@@ -17,7 +25,7 @@ import type {
   MatchController,
   MatchOptions,
   ReloadInput,
-  ReloadScore,
+  ReloadResult,
   ShotResult,
   Team,
   TeamStats,
@@ -106,14 +114,16 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
 
     setAim(input: AimInput): AimInput {
       guard('aim');
-      if (turn.phase !== 'AIMING') throw new IllegalTransitionError(turn.phase, 'SET_AIM');
+      if (turn.phase !== 'AIMING' && turn.phase !== 'BONUS_AIMING')
+        throw new IllegalTransitionError(turn.phase, 'SET_AIM');
       aim[turn.team] = clampAim(input);
       return { ...aim[turn.team] };
     },
 
     selectUnit(id: UnitId): void {
       guard('pick a fighter');
-      if (turn.phase !== 'AIMING') throw new IllegalTransitionError(turn.phase, 'SELECT_UNIT');
+      if (turn.phase !== 'AIMING' && turn.phase !== 'BONUS_AIMING')
+        throw new IllegalTransitionError(turn.phase, 'SELECT_UNIT');
       const unit = unitById(id);
       if (!unit) throw new RangeError(`Unknown fighter: ${String(id)}`);
       if (unit.team !== turn.team) {
@@ -147,6 +157,7 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
 
     shotLanded(): BlastOutcome {
       guard('land a shot');
+      const isBonus = turn.phase === 'BONUS_SHOT';
       step({ type: 'SHOT_LANDED' });
       const team = turn.team;
       const target = otherTeam(team);
@@ -161,14 +172,16 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       const defender = effects[target];
       const scale = unitOf(team).damageScale;
       // A hit's damage: the shooter's weapon, less the defender's walls, never below 1.
+      // The Power Shot multiplies the weapon's damage first, then the walls cut it.
+      const boost = (n: number): number => (isBonus ? Math.round(n * BONUS.damageMultiplier) : n);
       let damage = 0;
       if (result === 'direct') {
         damage = Math.max(
           1,
-          Math.round((shooter.direct + shooter.directBonus) * scale) - defender.directCut,
+          boost(Math.round((shooter.direct + shooter.directBonus) * scale)) - defender.directCut,
         );
       } else if (result === 'near') {
-        damage = Math.max(1, Math.round(shooter.near * scale) - defender.nearCut);
+        damage = Math.max(1, boost(Math.round(shooter.near * scale)) - defender.nearCut);
       }
       // A force field blocks the first hits that would have done damage.
       let blocked = false;
@@ -195,9 +208,9 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       };
     },
 
-    reloadDone(input: ReloadInput): ReloadScore {
+    reloadDone(input: ReloadInput): ReloadResult {
       guard('reload');
-      step({ type: 'RELOAD_DONE' });
+      step({ type: 'RELOAD_DONE', correct: input.correct === true });
       const score = scoreReload(input);
       const team = turn.team;
       const s = stats[team];
@@ -213,7 +226,7 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
               : Math.min(s.fastestAnswerMs, input.elapsedMs);
         }
       }
-      return score;
+      return { ...score, bonus: turn.phase === 'BONUS_AIMING' };
     },
 
     pass(): void {

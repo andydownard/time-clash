@@ -20,6 +20,7 @@ const state = (over: Partial<HudState> = {}): HudState => ({
   angleDeg: 45,
   power: 60,
   shotsLeft: 2,
+  bonus: false,
   canFire: true,
   selected: 'C',
   units: [],
@@ -167,6 +168,15 @@ describe('HUD', () => {
     expect(bar.style.width).toBe('100%');
     s.overlay.updateHud(state({ wind: 0 }));
     expect(bar.style.width).toBe('0%');
+  });
+
+  it('shows a third gold star pip and Power Shot text only while the bonus is up', () => {
+    s.overlay.showHud({ onAim: () => {}, onFire: () => {}, onMuteToggle: () => {} });
+    s.overlay.updateHud(state({ shotsLeft: 0, bonus: true }));
+    expect(q(TEST_IDS.shotsLeft)!.textContent).toContain(HUD.powerShot);
+    expect(document.querySelectorAll('.tc-pip-bonus')).toHaveLength(1);
+    s.overlay.updateHud(state({ shotsLeft: 1, bonus: false }));
+    expect(document.querySelectorAll('.tc-pip-bonus')).toHaveLength(0);
   });
 
   it('health bars are meters with numbers', () => {

@@ -38,7 +38,7 @@ export function fakeController(
     players,
     status: 'OVER',
     winner: 'PAST',
-    turn: { phase: 'RELOAD', team: 'PAST', turnNumber: 3, shotsFired: 2 },
+    turn: { phase: 'RELOAD', team: 'PAST', turnNumber: 3, shotsFired: 2, bonus: false },
     wind: 0,
     baseHp: { PAST: 50, FUTURE: 0 },
     maxBaseHp: { PAST: 100, FUTURE: 100 },

@@ -123,7 +123,7 @@ export function createHud(ctx: UiCtx) {
   };
 
   // One pip per shot (spent ones show a cross) and a last pip: a question comes after shot 2.
-  const paintPips = (el: HTMLElement, shotsLeft: number): void => {
+  const paintPips = (el: HTMLElement, shotsLeft: number, bonus = false): void => {
     el.replaceChildren(
       ...Array.from({ length: TURN.shotsPerTurn }, (_, i) =>
         h(doc, 'span', {
@@ -132,6 +132,7 @@ export function createHud(ctx: UiCtx) {
         }),
       ),
       h(doc, 'span', { class: 'tc-pip tc-pip-reload', text: HUD.reloadPip }),
+      ...(bonus ? [h(doc, 'span', { class: 'tc-pip tc-pip-bonus', text: '\u2605' })] : []),
     );
   };
 
@@ -404,14 +405,18 @@ export function createHud(ctx: UiCtx) {
         fill.style.width = `${pct}%`;
         fill.setAttribute('data-dir', state.wind > 0 ? 'right' : state.wind < 0 ? 'left' : 'none');
       }
-      parts.shots.textContent = `${HUD.shotsLeft}: ${HUD.shotsValue(state.shotsLeft)}`;
+      parts.shots.textContent = state.bonus
+        ? HUD.powerShot
+        : `${HUD.shotsLeft}: ${HUD.shotsValue(state.shotsLeft)}`;
       const who = state.activeTeam;
       parts.aimPanel.setAttribute('data-team', who ?? 'none');
       parts.strip.setAttribute('data-team', who ?? 'none');
       // Shot 1 until the first shot is fired, then shot 2.
       const shot = Math.min(TURN.shotsPerTurn, TURN.shotsPerTurn - state.shotsLeft + 1);
-      parts.turnText.textContent = who ? turnBanner(state.names[who], shot) : '';
-      paintPips(parts.pips, state.shotsLeft);
+      parts.turnText.textContent = who
+        ? turnBanner(state.names[who], state.bonus ? 'POWER' : shot)
+        : '';
+      paintPips(parts.pips, state.shotsLeft, state.bonus);
       for (const t of TEAMS) {
         const max = Math.max(1, Math.round(state.maxBaseHp?.[t] ?? 100));
         const hp = clamp(Math.round(state.baseHp[t]), 0, max);

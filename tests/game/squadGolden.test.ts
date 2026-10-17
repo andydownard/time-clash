@@ -33,7 +33,7 @@ function playTrace(seed: number): string[] {
       );
     }
     if (c.snapshot().status === 'OVER') break;
-    c.reloadDone({ correct: true, elapsedMs: 1000 });
+    c.reloadDone({ correct: false, elapsedMs: 1000 });
     c.pass();
   }
   return out;
