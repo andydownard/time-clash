@@ -81,7 +81,9 @@ export async function waitAiming(page: Page, shotsFired: 0 | 1): Promise<void> {
       { timeout: 30_000 },
     )
     .toBe(`AIMING:${shotsFired}`);
-  await expect(tid(page, 'fire')).toBeEnabled();
+  // The phase flips when the shot lands. Fire turns on after the blast, the fall and the bubble,
+  // which take longer on a slow CI browser, so wait as long as the phase poll does.
+  await expect(tid(page, 'fire')).toBeEnabled({ timeout: 30_000 });
 }
 
 async function pressAxis(page: Page, from: number, to: number, up: string, down: string) {
