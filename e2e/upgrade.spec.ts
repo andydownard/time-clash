@@ -1,8 +1,7 @@
 // Upgrade Base: opens from the Camp, spends Scrap, and the upgrade shows up in the next match.
 import { expect, test } from './fixtures';
+import { giveScrap } from './support/camp';
 import { FUTURE_SIDE, PAST_SIDE, fillTeam, snap, tid, toSetup } from './support/game';
-
-const CAMP_KEY = 'timeclash.camp';
 
 async function toCamp(page: Parameters<typeof tid>[0]): Promise<void> {
   await toSetup(page);
@@ -10,24 +9,6 @@ async function toCamp(page: Parameters<typeof tid>[0]): Promise<void> {
   await fillTeam(page, 'FUTURE', FUTURE_SIDE);
   await tid(page, 'setup-next').click();
   await expect(tid(page, 'camp-start')).toBeVisible({ timeout: 10_000 });
-}
-
-async function giveScrap(page: Parameters<typeof tid>[0], past: number, future: number) {
-  await page.evaluate(
-    ([key, p, f]) =>
-      localStorage.setItem(
-        key as string,
-        JSON.stringify({
-          scrap: { PAST: p, FUTURE: f },
-          loadout: {
-            PAST: { weapon: 'royalSword', owned: { royalSword: 1 }, upgrades: {} },
-            FUTURE: { weapon: 'plasmaBlade', owned: { plasmaBlade: 1 }, upgrades: {} },
-          },
-          creditedSeed: null,
-        }),
-      ),
-    [CAMP_KEY, past, future] as const,
-  );
 }
 
 test('too little Scrap changes nothing and says how much more is needed', async ({ page }) => {

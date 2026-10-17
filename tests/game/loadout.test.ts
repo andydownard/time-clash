@@ -5,7 +5,10 @@ import {
   effectsFor,
   freshCamp,
   freshLoadout,
+  freshWallet,
   matchEffectsFor,
+  walletOf,
+  withWallet,
 } from '../../src/game/loadout';
 import {
   UPGRADES,
@@ -100,11 +103,14 @@ describe('upgrades', () => {
 });
 
 describe('loadout effects', () => {
-  it('a fresh camp has zero scrap and the starters', () => {
+  it('a fresh camp has no players yet, and a new name starts with zero Scrap and the starters', () => {
     const camp = freshCamp();
-    expect(camp.scrap).toEqual({ PAST: 0, FUTURE: 0 });
-    expect(camp.loadout.PAST).toEqual(freshLoadout('PAST'));
+    expect(camp.wallets).toEqual({});
     expect(camp.creditedSeed).toBeNull();
+    const w = walletOf(camp, 'Alex');
+    expect(w).toMatchObject({ name: 'Alex', scrap: 0, earned: 0 });
+    expect(w.loadout.PAST).toEqual(freshLoadout('PAST'));
+    expect(w.loadout.FUTURE).toEqual(freshLoadout('FUTURE'));
   });
   it('gives Phase 1 numbers for a fresh game, so nothing changes until a family spends scrap', () => {
     for (const team of ['PAST', 'FUTURE'] as const) {
@@ -144,7 +150,22 @@ describe('loadout effects', () => {
     const loadout = { ...freshLoadout('PAST'), upgrades: { forceField: 3, missiles: 3 } };
     expect(effectsFor('PAST', loadout)).toEqual(DEFAULT_EFFECTS.PAST);
   });
-  it('builds both teams from a camp', () => {
-    expect(matchEffectsFor(freshCamp())).toEqual(DEFAULT_EFFECTS);
+  it('builds both teams from what each named player owns for their side', () => {
+    expect(matchEffectsFor(freshCamp(), { PAST: 'Alex', FUTURE: 'Sam' })).toEqual(DEFAULT_EFFECTS);
+    const camp = withWallet(freshCamp(), {
+      ...freshWallet('Alex'),
+      loadout: {
+        PAST: { ...freshLoadout('PAST'), upgrades: { tower: 2 } },
+        FUTURE: { ...freshLoadout('FUTURE'), upgrades: { forceField: 3 } },
+      },
+    });
+    // Alex plays Past: the tower counts, the Future force field does not.
+    const asPast = matchEffectsFor(camp, { PAST: 'Alex', FUTURE: 'Sam' });
+    expect(asPast.PAST.maxHp).toBe(124);
+    expect(asPast.FUTURE.shieldHits).toBe(0);
+    // Alex plays Future next time: the force field counts, the Past tower does not.
+    const asFuture = matchEffectsFor(camp, { PAST: 'Sam', FUTURE: 'alex' });
+    expect(asFuture.FUTURE.shieldHits).toBe(3);
+    expect(asFuture.PAST.maxHp).toBe(100);
   });
 });

@@ -3,7 +3,7 @@
 // through `save`, and a tap that cannot work says why in words and changes nothing.
 import { TEAM_NAMES, UPGRADE_COPY, upgradeEffect } from '../data/copy';
 import { buyUpgrade } from '../game/economy';
-import type { CampState } from '../game/loadout';
+import { walletOf, type CampState } from '../game/loadout';
 import { TEAMS, type Team } from '../game/types';
 import { UPGRADE_MAX_LEVEL, upgradeCost, upgradesOf, type Upgrade } from '../game/upgrades';
 import type { UiCtx } from './ctx';
@@ -16,6 +16,8 @@ export function showUpgrade(ctx: UiCtx, options: ForgeOptions): Promise<void> {
   return new Promise<void>((resolve) => {
     let camp: CampState = options.camp;
     let team: Team = 'PAST';
+    /** The player on the chosen side. Their Scrap and purchases are the ones shown. */
+    const wallet = () => walletOf(camp, options.names[team]);
 
     const status = h(doc, 'p', {
       class: 'tc-forge-status',
@@ -28,11 +30,13 @@ export function showUpgrade(ctx: UiCtx, options: ForgeOptions): Promise<void> {
       status.textContent = text;
     };
 
+    const ownerName = h(doc, 'span', { class: 'tc-forge-owner' });
     const scrapValue = h(doc, 'span', { class: 'tc-forge-scrap-n' });
     const scrapBox = h(
       doc,
       'p',
       { class: 'tc-forge-scrap', 'data-testid': TEST_IDS.upgradeScrap },
+      ownerName,
       h(doc, 'span', { text: `${UPGRADE_COPY.scrap}: ` }),
       scrapValue,
     );
@@ -88,10 +92,10 @@ export function showUpgrade(ctx: UiCtx, options: ForgeOptions): Promise<void> {
     );
 
     const row = (u: Upgrade): HTMLElement => {
-      const level = camp.loadout[team].upgrades[u.id] ?? 0;
+      const level = wallet().loadout[team].upgrades[u.id] ?? 0;
       const cost = upgradeCost(u, level);
       const state = level >= UPGRADE_MAX_LEVEL ? 'max' : level > 0 ? 'owned' : 'locked';
-      const affordable = cost === null || camp.scrap[team] >= cost;
+      const affordable = cost === null || wallet().scrap >= cost;
       const button = h(
         doc,
         'button',
@@ -123,13 +127,13 @@ export function showUpgrade(ctx: UiCtx, options: ForgeOptions): Promise<void> {
         }),
       );
       button.addEventListener('click', () => {
-        const outcome = buyUpgrade(camp, team, u.id);
+        const outcome = buyUpgrade(camp, options.names[team], team, u.id);
         if (outcome.ok) {
           camp = outcome.camp;
           options.save(camp);
           say(UPGRADE_COPY.upgraded(u.name, level + 1));
         } else if (outcome.reason === 'not_enough_scrap') {
-          say(UPGRADE_COPY.needMore(Math.max(1, (cost ?? 0) - camp.scrap[team])));
+          say(UPGRADE_COPY.needMore(Math.max(1, (cost ?? 0) - wallet().scrap)));
         } else if (outcome.reason === 'max_level') {
           say(UPGRADE_COPY.atTop);
         }
@@ -143,7 +147,8 @@ export function showUpgrade(ctx: UiCtx, options: ForgeOptions): Promise<void> {
       const next = upgradeScene(doc, team);
       art.replaceWith(next);
       art = next;
-      scrapValue.textContent = String(camp.scrap[team]);
+      ownerName.textContent = `${options.names[team]} · `;
+      scrapValue.textContent = String(wallet().scrap);
       for (const chip of teamChips) {
         const on = chip.getAttribute('data-team') === team;
         chip.setAttribute('aria-checked', String(on));

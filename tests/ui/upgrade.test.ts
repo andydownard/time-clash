@@ -3,7 +3,9 @@
 // words and changes nothing. Every change is saved at once.
 import { beforeEach, describe, expect, it } from 'vitest';
 import { UPGRADE_COPY, upgradeEffect } from '../../src/data/copy';
-import { freshCamp, type CampState } from '../../src/game/loadout';
+import { walletOf, type CampState } from '../../src/game/loadout';
+import type { Team } from '../../src/game/types';
+import { NAMES, campWith } from '../helpers/camp';
 import { UPGRADE_MAX_LEVEL, upgradeById } from '../../src/game/upgrades';
 import { TEST_IDS } from '../../src/ui/types';
 import { click, q, qa, setup } from './helpers';
@@ -13,14 +15,13 @@ beforeEach(() => {
   s = setup();
 });
 
-const withScrap = (past: number, future = 0): CampState => ({
-  ...freshCamp(),
-  scrap: { PAST: past, FUTURE: future },
-});
+const withScrap = campWith;
+/** The wallet of the player on a side (Alex plays Past, Sam plays Future). */
+const who = (c: CampState, team: Team) => walletOf(c, NAMES[team]);
 
 function open(camp: CampState) {
   const saves: CampState[] = [];
-  const done = s.overlay.showUpgrade({ camp, save: (c) => saves.push(c) });
+  const done = s.overlay.showUpgrade({ camp, names: NAMES, save: (c) => saves.push(c) });
   return { saves, done };
 }
 
@@ -83,14 +84,30 @@ describe('Upgrade screen', () => {
   });
 });
 
+describe('Scrap by player name', () => {
+  it('shows the name of the player on the chosen side next to their Scrap', () => {
+    open(withScrap(7, 9));
+    expect(q(TEST_IDS.upgradeScrap)!.textContent).toContain('Alex');
+    click(q(TEST_IDS.upgradeTeam('FUTURE')));
+    expect(q(TEST_IDS.upgradeScrap)!.textContent).toContain('Sam');
+    expect(q(TEST_IDS.upgradeScrap)!.textContent).toContain('9');
+  });
+  it('records the upgrade under that player name and keeps their lifetime Scrap', () => {
+    const { saves } = open(withScrap(30, 0));
+    click(row('tower'));
+    expect(who(saves[0]!, 'PAST').loadout.PAST.upgrades.tower).toBe(1);
+    expect(who(saves[0]!, 'PAST').earned).toBe(30);
+  });
+});
+
 describe('upgrading', () => {
   it('spends the Scrap for the next level, saves, and says so', () => {
     const { saves } = open(withScrap(30));
     const u = upgradeById('tower')!;
     click(row('tower'));
     expect(saves).toHaveLength(1);
-    expect(saves[0]!.scrap.PAST).toBe(30 - u.cost[0]);
-    expect(saves[0]!.loadout.PAST.upgrades.tower).toBe(1);
+    expect(who(saves[0]!, 'PAST').scrap).toBe(30 - u.cost[0]);
+    expect(who(saves[0]!, 'PAST').loadout.PAST.upgrades.tower).toBe(1);
     expect(status()).toBe(UPGRADE_COPY.upgraded('Rebuild the Tower', 1));
     expect(q(TEST_IDS.upgradeScrap)!.textContent).toContain(String(30 - u.cost[0]));
     expect(stats('tower')).toContain(UPGRADE_COPY.level(1, UPGRADE_MAX_LEVEL));
@@ -102,8 +119,8 @@ describe('upgrading', () => {
     const u = upgradeById('wall')!;
     for (let level = 1; level <= UPGRADE_MAX_LEVEL; level++) click(row('wall'));
     expect(saves).toHaveLength(3);
-    expect(saves.at(-1)!.loadout.PAST.upgrades.wall).toBe(3);
-    expect(saves.at(-1)!.scrap.PAST).toBe(200 - u.cost[0] - u.cost[1] - u.cost[2]);
+    expect(who(saves.at(-1)!, 'PAST').loadout.PAST.upgrades.wall).toBe(3);
+    expect(who(saves.at(-1)!, 'PAST').scrap).toBe(200 - u.cost[0] - u.cost[1] - u.cost[2]);
     expect(badge('wall')).toBe(UPGRADE_COPY.topLevel);
     expect(row('wall').getAttribute('data-state')).toBe('max');
     click(row('wall'));
@@ -125,11 +142,11 @@ describe('upgrading', () => {
   it('never takes Scrap from the other team, and each team keeps its own levels', () => {
     const { saves } = open(withScrap(50, 50));
     click(row('tower'));
-    expect(saves[0]!.scrap.FUTURE).toBe(50);
+    expect(who(saves[0]!, 'FUTURE').scrap).toBe(50);
     click(q(TEST_IDS.upgradeTeam('FUTURE')));
     click(row('forceField'));
-    expect(saves.at(-1)!.loadout.FUTURE.upgrades.forceField).toBe(1);
-    expect(saves.at(-1)!.loadout.PAST.upgrades.tower).toBe(1);
+    expect(who(saves.at(-1)!, 'FUTURE').loadout.FUTURE.upgrades.forceField).toBe(1);
+    expect(who(saves.at(-1)!, 'PAST').loadout.PAST.upgrades.tower).toBe(1);
     click(q(TEST_IDS.upgradeTeam('PAST')));
     expect(stats('tower')).toContain(UPGRADE_COPY.level(1, UPGRADE_MAX_LEVEL));
   });

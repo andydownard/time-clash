@@ -151,8 +151,10 @@ export type VictoryOptions = {
 export type CampChoice = 'battle' | 'players' | 'forge' | 'upgrade';
 
 export type ForgeOptions = {
-  /** What the family owns now. */
+  /** What everyone owns now, by name. */
   camp: CampState;
+  /** Who plays each side. The screen shows and spends that player's Scrap. */
+  names: Record<Team, string>;
   /** Called with the new camp after every change, so it is saved at once. */
   save: (camp: CampState) => void;
 };

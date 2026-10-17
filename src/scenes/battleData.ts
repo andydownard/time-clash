@@ -1,5 +1,7 @@
 // Builds what BattleScene needs to start: a fresh match plus the services it talks to.
+import { walletOf } from '../game/loadout';
 import { createMatch } from '../game/match';
+import { loadCamp } from '../storage/storage';
 import { EMPTY_HISTORY, type QuestionBank } from '../questions/types';
 import type { BattleSceneData } from './battle/types';
 import type { AppServices, MatchSetup } from './registry';
@@ -12,11 +14,15 @@ export function buildBattleData(
 ): BattleSceneData {
   const match = createMatch(setup);
   s.session.match = match;
+  // Each player's Scrap in hand, found by name. The HUD adds what they earn in this match.
+  const camp = loadCamp(s.storage);
+  const [past, future] = setup.players;
   return {
     match,
     overlay: s.overlay,
     audio: s.audio,
     bank,
+    scrapBase: { PAST: walletOf(camp, past.name).scrap, FUTURE: walletOf(camp, future.name).scrap },
     history: s.storage.get('timeclash.history') ?? EMPTY_HISTORY,
     onHistory: (history) => void s.storage.set('timeclash.history', history),
     onMuteToggle: () => void toggleMute(s.audio, s.storage),

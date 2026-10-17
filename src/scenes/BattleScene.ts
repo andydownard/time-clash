@@ -144,6 +144,7 @@ export class BattleScene extends Phaser.Scene implements BattleView {
       history: this.data0.history,
       onHistory: this.data0.onHistory,
       onMuteToggle: this.data0.onMuteToggle,
+      ...(this.data0.scrapBase ? { scrapBase: this.data0.scrapBase } : {}),
       onFinished: (result) => {
         if (this.data0.onFinished) this.data0.onFinished(result);
         else this.scene.start(VICTORY_SCENE_KEY, result);

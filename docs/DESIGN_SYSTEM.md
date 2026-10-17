@@ -144,6 +144,9 @@ Computed from the token values by `tests/styles/designPairs.ts` (WCAG 2.1 relati
 
 The Camp board (Main) is built: `src/ui/campArt.ts` holds its picture, with ids prefixed `tcCamp` and classes `tc-camp-*`. The big button reads "Time to Clash!" (the slogan, never the name). The Forge board (Past and Future) is built in `src/ui/forgeArt.ts`: the board's Gold, Credits, Wood and Stone become Scrap, and "Build upgrade" becomes "Forge upgrade". The Upgrade boards are built in `src/ui/upgradeArt.ts` (the Past castle rebuild and the Future silo hologram). They share the Forge's layout and classes (`tc-forge-*`). On narrow screens the Camp picture keeps its 16:9 shape along the bottom, because cropping it hides both camps. The "Base Destroyed" board becomes the Wipeout screen: walls turn into bouncy toy blocks, and no copy uses "destroyed", "defeat", "dead", "die", or "kill".
 
+## Icon
+The design file has no icon, so the game's own is drawn from its look: a sword crossed with a laser sword (Past and Future) on a purple and blue split, in palette colors only. Files: `public/favicon.svg`, `public/favicon-32.png`, `public/apple-touch-icon.png` (for the iPad home screen). `tests/favicon.test.ts` checks the links, sizes and colors.
+
 ## Fonts
 
 Both fonts are served from our own origin. The browser makes no request to any other site. The Content-Security-Policy keeps `font-src 'self'`.

@@ -42,6 +42,8 @@ export type FlowDeps = {
   onHistory?: (history: PickHistory) => void;
   onMuteToggle?: () => void;
   onFinished: (result: BattleResult) => void;
+  /** Each player's Scrap in hand before this match. The HUD shows it plus what they earn. */
+  scrapBase?: Record<Team, number>;
   /** Resolves after ms. The scene uses a real timer; tests resolve at once. */
   wait: (ms: number) => Promise<void>;
   /** Resolves right away unless the game is paused. */
@@ -299,12 +301,15 @@ export class BattleFlow {
     const team = s.turn.team;
     const shotsLeft = Math.max(0, TURN.shotsPerTurn - s.turn.shotsFired) as 0 | 1 | 2;
     const aim = s.aim[team];
+    // The Scrap a player has in total: what they had before, plus what they earned in this match.
+    const base = this.deps.scrapBase ?? { PAST: 0, FUTURE: 0 };
+    const scrap = { PAST: base.PAST + s.scrap.PAST, FUTURE: base.FUTURE + s.scrap.FUTURE };
     const hud: HudState = {
       activeTeam: team,
       names: this.names(),
       baseHp: s.baseHp,
       maxBaseHp: s.maxBaseHp,
-      scrap: s.scrap,
+      scrap,
       wind: s.wind,
       angleDeg: aim.angleDeg,
       power: aim.power,
@@ -317,7 +322,7 @@ export class BattleFlow {
       names: hud.names,
       baseHp: s.baseHp,
       maxBaseHp: s.maxBaseHp,
-      scrap: s.scrap,
+      scrap,
       wind: s.wind,
       shotsLeft,
       aim,

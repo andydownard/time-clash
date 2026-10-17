@@ -1553,9 +1553,55 @@ body {
   font-weight: 700;
 }
 .tc-award-card li {
-  padding: 2px var(--tc-s-3);
-  border: 2px solid currentcolor;
+  list-style: none;
+}
+/* A medal: a round picture on the left, the award's name on the right. The name is always written,
+   so the picture and its color are never the only clue. */
+.tc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--tc-s-2);
+  padding: 2px var(--tc-s-4) 2px 3px;
+  border: 3px solid var(--tc-ink-deep);
   border-radius: var(--tc-r-pill);
+  background: var(--tc-parchment-warm);
+  color: var(--tc-ink-deep);
+  box-shadow: 0 3px 0 var(--tc-purple-700);
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  letter-spacing: 0.02em;
+}
+.tc-badge-icon {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--tc-white);
+  border: 2px solid var(--tc-ink-deep);
+}
+.tc-badge-art {
+  width: 28px;
+  height: 28px;
+}
+.tc-badge[data-award='quickestBrain'] .tc-badge-icon {
+  background: var(--tc-blue-100);
+}
+.tc-badge[data-award='mostWobbles'] .tc-badge-icon {
+  background: var(--tc-purple-100);
+}
+.tc-badge[data-award='sharpestShot'] .tc-badge-icon {
+  background: var(--tc-white);
+}
+.tc-badge[data-award='brainPower'] .tc-badge-icon {
+  background: var(--tc-purple-100);
+}
+.tc-badge[data-award='scrapCollector'] .tc-badge-icon {
+  background: var(--tc-blue-100);
+}
+.tc-badge[data-award='goodSport'] .tc-badge-icon {
+  background: var(--tc-white);
 }
 .tc-victory > .tc-row:last-child {
   margin-top: var(--tc-s-3);
@@ -1571,8 +1617,16 @@ body {
   .tc-award-card {
     padding: var(--tc-s-2) var(--tc-s-3);
   }
-  .tc-award-card li {
+  .tc-badge {
     padding-block: 0;
+  }
+  .tc-badge-icon {
+    width: 30px;
+    height: 30px;
+  }
+  .tc-badge-art {
+    width: 22px;
+    height: 22px;
   }
   .tc-victory > .tc-row:last-child {
     margin-top: var(--tc-s-2);

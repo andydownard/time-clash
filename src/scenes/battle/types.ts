@@ -96,4 +96,6 @@ export type BattleSceneData = {
   onFinished?: (result: BattleResult) => void;
   /** Runs when the family leaves a game from the pause panel. */
   onLeave?: () => void;
+  /** Each player's Scrap in hand when the match began. The HUD shows this plus what they earn. */
+  scrapBase?: Record<Team, number>;
 };

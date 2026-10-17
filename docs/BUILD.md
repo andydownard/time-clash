@@ -132,7 +132,7 @@ The design boards are 1600x900 mockups. We translate their look to 1280x800, 102
 - **Rules built**: `src/game/weapons.ts`, `upgrades.ts`, `loadout.ts` and `economy.ts`, saved in `timeclash.camp`. Scrap is the only currency. A fresh game plays exactly like Phase 1. The balance test (`tests/game/balance.test.ts`) checks that no single purchase wins the game alone.
 - Hybrid weapons: Nanotech Trebuchet, Wrought-Iron Railgun, EMP-shielded Railgun. Each has stats in `src/game/weapons.ts` (damage, blast radius, speed, reload difficulty).
 - Ammo types: confetti explosives, bouncy plasma spheres, heavy iron bowling balls.
-- Scrap economy: earned from fast, correct reloads. Spent only at the Camp. Balance test: no single purchase wins the game alone.
+- Scrap economy: earned from fast, correct reloads. Spent only at the Camp. Kept by player name on the device, with a lifetime total. A database for signed-in players is planned (docs/ACCOUNTS_PLAN.md). Balance test: no single purchase wins the game alone.
 - Individual K to 12 calibration: if a player gets 4 of 5 right, nudge the next question up a level (never more than 2 above grade). If 2 of 5 or fewer, nudge down. Show nothing scary about this.
 
 ## Phase 4: iPad and multi-device

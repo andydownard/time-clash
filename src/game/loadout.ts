@@ -14,13 +14,30 @@ export type TeamLoadout = {
   upgrades: Partial<Record<UpgradeId, number>>;
 };
 
-/** Everything saved at the Camp. Nothing here leaves the device. */
-export type CampState = {
-  scrap: Record<Team, number>;
+/**
+ * One player's saved progress, found by name. Scrap is one currency for the player. The weapons and
+ * upgrades they own are kept for each side, so Alex has a Past kit and a Future kit.
+ */
+export type Wallet = {
+  /** The name as the player typed it (last time). */
+  name: string;
+  /** Scrap to spend now. */
+  scrap: number;
+  /** Every Scrap this player has ever earned. It never goes down. */
+  earned: number;
   loadout: Record<Team, TeamLoadout>;
+};
+
+/** Everything saved at the Camp, by player name. Nothing here leaves the device. */
+export type CampState = {
+  /** Keyed by walletKey(name). */
+  wallets: Record<string, Wallet>;
   /** The seed of the last match whose scrap was added, so a replay cannot add it twice. */
   creditedSeed: number | null;
 };
+
+/** Names match without caring about capitals or extra spaces ("  alex" is "Alex"). */
+export const walletKey = (name: string): string => name.trim().replace(/\s+/g, ' ').toLowerCase();
 
 /** What a match needs to know about one team. */
 export type TeamEffects = {
@@ -48,10 +65,23 @@ export const freshLoadout = (team: Team): TeamLoadout => ({
   upgrades: {},
 });
 
-export const freshCamp = (): CampState => ({
-  scrap: { PAST: SCRAP.starting, FUTURE: SCRAP.starting },
+export const freshWallet = (name = ''): Wallet => ({
+  name: name.trim(),
+  scrap: SCRAP.starting,
+  earned: 0,
   loadout: { PAST: freshLoadout('PAST'), FUTURE: freshLoadout('FUTURE') },
-  creditedSeed: null,
+});
+
+export const freshCamp = (): CampState => ({ wallets: {}, creditedSeed: null });
+
+/** A player's saved progress, or a fresh wallet if they have none yet (nothing is stored). */
+export const walletOf = (camp: CampState, name: string): Wallet =>
+  camp.wallets[walletKey(name)] ?? freshWallet(name);
+
+/** The camp with this wallet saved under its name. Never changes the camp it is given. */
+export const withWallet = (camp: CampState, wallet: Wallet): CampState => ({
+  ...camp,
+  wallets: { ...camp.wallets, [walletKey(wallet.name)]: wallet },
 });
 
 /** The numbers for one team. An unknown weapon falls back to the starter, so it never throws. */
@@ -80,10 +110,14 @@ export function effectsFor(team: Team, loadout: TeamLoadout): TeamEffects {
   };
 }
 
-export const matchEffectsFor = (camp: CampState): MatchEffects => ({
-  PAST: effectsFor('PAST', camp.loadout.PAST),
-  FUTURE: effectsFor('FUTURE', camp.loadout.FUTURE),
+/** The numbers for a match, from what each of the two players owns for the side they play. */
+export const matchEffectsFor = (camp: CampState, names: Record<Team, string>): MatchEffects => ({
+  PAST: effectsFor('PAST', walletOf(camp, names.PAST).loadout.PAST),
+  FUTURE: effectsFor('FUTURE', walletOf(camp, names.FUTURE).loadout.FUTURE),
 });
 
 /** A fresh game: every team has its starter weapon and no upgrades. Phase 1 numbers exactly. */
-export const DEFAULT_EFFECTS: MatchEffects = matchEffectsFor(freshCamp());
+export const DEFAULT_EFFECTS: MatchEffects = matchEffectsFor(freshCamp(), {
+  PAST: '',
+  FUTURE: '',
+});
