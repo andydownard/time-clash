@@ -85,6 +85,12 @@ export const SCRAP = {
   wrong: 0,
 } as const;
 
+/** The Power Shot: one extra shot after a right reload answer. It has no question of its own. */
+export const BONUS = {
+  /** Multiplies the hit's damage (rounded). Walls and force fields still apply. */
+  damageMultiplier: 1.5,
+} as const;
+
 export const TURN = {
   shotsPerTurn: 2,
   /** Team Past starts the first match. Each rematch flips who starts. */
@@ -107,6 +113,12 @@ export const RNG_SALT = {
 
 // ---------- Layout (logical world, scaled to fit by Phaser) ----------
 export const WORLD = { width: 1280, height: 720 } as const;
+
+/**
+ * Extra canvas height below the battlefield, in world px. The HUD control bar lives in this band,
+ * so the fighters on the ground are never covered. Physics and layout still use WORLD alone.
+ */
+export const BATTLE_BAND = 200;
 
 const GROUND_Y = 620;
 
@@ -148,13 +160,59 @@ export const PHASE1_LAYOUT: BattleLayout = {
   launchOrigins: LAUNCH_ORIGINS,
 };
 
+// ---------- Base deployment spots (Phase 2, Team Future only) ----------
+/** Austin spots for Team Future's base. `null` (no spot picked) is the Phase 1 layout, unchanged. */
+export const SPOT_IDS = ['skyscraper', 'bridge', 'foodTruck'] as const;
+
+export type SpotConfig = {
+  /** How far the base (and so every Future fighter) moves from its Phase 1 place. */
+  shift: Vec2;
+  /** The base rectangle after the move. */
+  base: Rect;
+  /** Where Future shots start. Outside the base, above the ground. */
+  launchOrigin: Vec2;
+  /** Extra solid shapes: the tower, the bridge deck, the low wall. */
+  obstacles: readonly Polygon[];
+};
+
+const rectToPolygon = (r: Rect): Polygon => [
+  { x: r.x, y: r.y },
+  { x: r.x + r.w, y: r.y },
+  { x: r.x + r.w, y: r.y + r.h },
+  { x: r.x, y: r.y + r.h },
+];
+
+export const SPOTS: Record<(typeof SPOT_IDS)[number], SpotConfig> = {
+  /** High on a tower. The best view, and no cover. The tower is solid, so low shots thud into it. */
+  skyscraper: {
+    shift: { x: 0, y: -160 },
+    base: { x: 1040, y: 330, w: 160, h: 130 },
+    launchOrigin: { x: 1060, y: 310 },
+    obstacles: [rectToPolygon({ x: 1040, y: 460, w: 160, h: GROUND_Y - 460 })],
+  },
+  /** Low, under a bridge deck. The deck stops flat shots, so players must lob. */
+  bridge: {
+    shift: { x: 0, y: 60 },
+    base: { x: 1040, y: 550, w: 160, h: 70 },
+    launchOrigin: { x: 1060, y: 530 },
+    obstacles: [rectToPolygon({ x: 880, y: 410, w: 210, h: 60 })],
+  },
+  /** On the ground at the pavilion, behind a low wall. */
+  foodTruck: {
+    shift: { x: 0, y: 0 },
+    base: { x: 1040, y: 490, w: 160, h: 130 },
+    launchOrigin: { x: 1060, y: 470 },
+    obstacles: [rectToPolygon({ x: 960, y: 540, w: 30, h: GROUND_Y - 540 })],
+  },
+};
+
 // ---------- Timing (ms) ----------
 export const TIMING = {
   /** Loading screen waits at least this long so jokes can be read. */
   loadingMinMs: 1500,
+  /** A new family sees the longer, funnier load once. Returning families use loadingMinMs. */
+  loadingFirstMinMs: 4000,
   loadingMessageMs: 2500,
-  /** How long the Coming soon ribbon wiggles after a tap on a closed Camp button. */
-  campNudgeMs: 600,
   bannerDropMs: 400,
   bannerHoldMs: 1800,
   modalPopMs: 250,

@@ -18,15 +18,29 @@ export const ART = {
   hull: 0x5d6c8c,
   hullDark: 0x1d2744,
   visor: 0xcfd9ee,
+  /** Knight helmet, arms and legs on the Battle board: pale silver with a purple tint. */
+  knightSteel: 0xb3b8d4,
   skin: 0xf5c9a0,
   pink: 0xff5fb0,
+  cream: 0xf3e6c8,
+  metal: 0x7d879c,
+  metalDark: 0x3d4560,
   flame: 0xff7a2e,
+  // Projectile shades from the designers' missile in campArt.ts.
+  missileGreen: 0x2d6a3a,
+  missileGreenDark: 0x1f4a2c,
+  flameYellow: 0xffd23e,
   shadow: 0x05061a,
   skyTop: 0x0c1a52,
   skyMid: 0x2f2a9c,
   skyLow: 0x9a4fc4,
   skyHorizon: 0xee7fa0,
   skyGlow: 0xffb877,
+  /** The night aspen forest: dusky white trunks, dark bark, dim golden leaves. */
+  aspenTrunk: 0xc4bfd6,
+  aspenBark: 0x2a2540,
+  aspenLeafFar: 0x8f7436,
+  aspenLeafNear: 0xa8863a,
 } as const;
 
 /** Colors the drawing code leans on, grouped by team. Every UI color is a design token. */
@@ -99,12 +113,12 @@ export const PREVIEW_STRIDE = 3;
 /** Alpha of the last preview dot. The first is 1. */
 export const PREVIEW_MIN_ALPHA = 0.15;
 
-/** Character stands this far outside its base, on the ground. */
-export const CHARACTER_OFFSET = 40;
+/** Chrono stands this far outside its base, on the ground. Chrono is small so it fits the gap. */
+export const CHARACTER_OFFSET = 16;
 /** The speech bubble tip sits this far above the character's feet. */
 export const BUBBLE_RISE = 130;
 /** The bubble tail aims this far above the character's feet (about head height). */
-export const TAIL_TARGET_RISE = 90;
+export const TAIL_TARGET_RISE = 66;
 /** Widest a speech bubble gets, in world units. It is centered on the bubble anchor. */
 export const BUBBLE_MAX_WORLD_W = 360;
 
@@ -116,6 +130,15 @@ export const WIN_BEAT_MS = 1400;
 export const IMPACT_BEAT_MS = 700;
 /** Shorter fade used when motion is reduced (ms). */
 export const REDUCED_FADE_MS = 250;
+
+/** Awkward tumble: fly away, land, wobble or lie, then topple. All in ms and px. */
+export const FALL_MS = 1500;
+export const FALL_DX = 110;
+export const FALL_HEIGHT = 120;
+/** The vanish puff after the tumble. */
+export const VANISH_MS = 700;
+/** Base blast timing. */
+export const BLAST_MS = 900;
 
 export const IMPACT_SCALE = { direct: 1.4, near: 1, miss: 0.6 } as const;
 

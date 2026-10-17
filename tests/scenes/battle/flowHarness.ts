@@ -12,6 +12,7 @@ import type {
   Team,
 } from '../../../src/game/types';
 import { windForTurn } from '../../../src/game/wind';
+import type { Levels } from '../../../src/questions/calibration';
 import { BANK } from '../../../src/questions/bank';
 import { EMPTY_HISTORY, type PickHistory, type Question } from '../../../src/questions/types';
 import { BattleFlow, type FlowDeps } from '../../../src/scenes/battle/flow';
@@ -22,6 +23,7 @@ import type {
   PreviewDot,
   ViewStatus,
 } from '../../../src/scenes/battle/types';
+import type { UnitId } from '../../../src/game/units';
 import type { SfxName } from '../../../src/audio/types';
 import type { HudHandlers, HudState, ReloadAnswer } from '../../../src/ui/types';
 
@@ -40,6 +42,8 @@ export function makeWorld(
     waitIfPaused?: () => Promise<void>;
     bank?: FlowDeps['bank'];
     matchOptions?: Partial<MatchOptions>;
+    levels?: Levels;
+    players?: Players;
   } = {},
 ) {
   const log: Log = [];
@@ -54,8 +58,11 @@ export function makeWorld(
   const captions: Array<string | null> = [];
   const hudStates: HudState[] = [];
   const statuses: ViewStatus[] = [];
+  const selections: Array<{ team: Team; id: UnitId }> = [];
+  const shots: Array<{ team: Team; kind: string | undefined; start: { x: number; y: number } }> = [];
   const previews: Array<{ team: Team; dots: readonly PreviewDot[] | null }> = [];
   const histories: PickHistory[] = [];
+  const levelsSaved: Levels[] = [];
   const results: BattleResult[] = [];
   let cover: 'pass' | 'reload' | null = null;
   const coverViolations: string[] = [];
@@ -65,7 +72,7 @@ export function makeWorld(
   const answers = [...(opts.answers ?? [])];
 
   const match: MatchController = createMatch({
-    players: PLAYERS,
+    players: opts.players ?? PLAYERS,
     seed: opts.seed ?? 7,
     ...opts.matchOptions,
   });
@@ -84,8 +91,10 @@ export function makeWorld(
     setAimDragHandler: (h) => {
       dragHandler = h;
     },
-    animateShot: async (shooter) => {
+    setSelectedUnit: (team, id) => void selections.push({ team, id }),
+    animateShot: async (shooter, result, kind) => {
       guard('animateShot');
+      shots.push({ team: shooter, kind, start: { ...result.path[0]! } });
       log.push(`fly:${shooter}`);
     },
     playImpact: async (info) => {
@@ -132,7 +141,7 @@ export function makeWorld(
         );
     },
     hideHud: () => {},
-    showTurnBanner: async (o: { name: string; shot: 1 | 2 }) => {
+    showTurnBanner: async (o: { name: string; shot: 1 | 2 | 'POWER' }) => {
       log.push(`banner:${o.name}:${o.shot}`);
     },
     showPassScreen: async (o: { nextName: string; nextTeam: Team }) => {
@@ -148,7 +157,7 @@ export function makeWorld(
       log.push(`reload:${o.team}`);
       await Promise.resolve();
       cover = null;
-      const kind = answers.shift() ?? 'right';
+      const kind = answers.shift() ?? 'wrong';
       return kind === 'right'
         ? { correct: true, elapsedMs: 1000, choice: o.question.answer }
         : { correct: false, elapsedMs: 9000, choice: 'nope' };
@@ -170,6 +179,8 @@ export function makeWorld(
     bank: opts.bank ?? BANK,
     history: EMPTY_HISTORY,
     onHistory: (h) => histories.push(h),
+    levels: opts.levels,
+    onLevels: (l) => levelsSaved.push(l),
     onFinished: (r) => {
       log.push('finished');
       results.push(r);
@@ -195,7 +206,10 @@ export function makeWorld(
     hudStates,
     statuses,
     previews,
+    selections,
+    shots,
     histories,
+    levelsSaved,
     results,
     coverViolations,
     handlers: () => handlers,

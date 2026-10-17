@@ -1,8 +1,9 @@
 // Battle HUD: base health, scrap, wind, aim sliders, Fire, and the corner buttons.
 // Keyboard: Up/Down = angle, Left/Right = power (Shift = bigger steps), Space = fire.
-import { BUTTONS, HUD, TEAM_NAMES, windLabel } from '../data/copy';
-import { AIM, TURN, WIND } from '../game/config';
+import { BUTTONS, HUD, TEAM_NAMES, turnBanner, windLabel } from '../data/copy';
+import { AIM, TIMING, TURN, WIND } from '../game/config';
 import { TEAMS, type Team } from '../game/types';
+import type { UnitId } from '../game/units';
 import { LOCAL_IDS } from './constants';
 import type { UiCtx } from './ctx';
 import { h } from './dom';
@@ -21,7 +22,10 @@ type Parts = {
   shots: HTMLElement;
   pips: HTMLElement;
   aimPanel: HTMLElement;
-  turnName: HTMLElement;
+  strip: HTMLElement;
+  units: HTMLElement;
+  unitName: HTMLElement;
+  turnText: HTMLElement;
   hint: HTMLElement;
   mute: HTMLButtonElement;
   panel: Record<Team, HTMLElement>;
@@ -41,6 +45,8 @@ export function createHud(ctx: UiCtx) {
     power: AIM.defaultPower,
   };
   let canFire = false;
+  /** The active team's fighter ids, as last drawn. Keys outside this list do nothing. */
+  let unitIds: UnitId[] = [];
   /** The coach line stays until the first shot of the session, so a new player learns the controls. */
   let hasFired = false;
   let unsubscribe: (() => void) | null = null;
@@ -64,6 +70,18 @@ export function createHud(ctx: UiCtx) {
     if (ctx.coverKind() !== null) return;
     if (doc.body.dataset.paused) return;
     const target = e.target as Element | null;
+    // A fighter's letter or number picks it (only the active team's five). Not while typing.
+    const typing =
+      target &&
+      'closest' in target &&
+      target.closest('textarea, select, [contenteditable], input:not([type="range"])');
+    if (e.key.length === 1 && !typing) {
+      const id = unitIds.find((u) => u.toLowerCase() === e.key.toLowerCase());
+      if (id) {
+        if (canFire) handlers.onSelect(id);
+        return;
+      }
+    }
     const onControl =
       target &&
       'closest' in target &&
@@ -105,7 +123,7 @@ export function createHud(ctx: UiCtx) {
   };
 
   // One pip per shot (spent ones show a cross) and a last pip: a question comes after shot 2.
-  const paintPips = (el: HTMLElement, shotsLeft: number): void => {
+  const paintPips = (el: HTMLElement, shotsLeft: number, bonus = false): void => {
     el.replaceChildren(
       ...Array.from({ length: TURN.shotsPerTurn }, (_, i) =>
         h(doc, 'span', {
@@ -114,7 +132,43 @@ export function createHud(ctx: UiCtx) {
         }),
       ),
       h(doc, 'span', { class: 'tc-pip tc-pip-reload', text: HUD.reloadPip }),
+      ...(bonus ? [h(doc, 'span', { class: 'tc-pip tc-pip-bonus', text: '\u2605' })] : []),
     );
+  };
+
+  // Rebuild the tokens only when the roster changes. Otherwise just move the selection.
+  const paintUnits = (state: HudState): void => {
+    if (!parts) return;
+    const ids = state.units.map((u) => u.id);
+    if (ids.join('') !== unitIds.join('')) {
+      unitIds = ids;
+      const tokens = state.units.map((u) => {
+        const b = h(doc, 'button', {
+          type: 'button',
+          role: 'radio',
+          class: 'tc-unit',
+          'data-unit': u.id,
+          'data-testid': TEST_IDS.unit(u.id),
+          'aria-label': HUD.unitLabel(u.name, u.id),
+          text: u.id,
+        });
+        b.addEventListener('click', () => {
+          if (canFire) handlers?.onSelect(u.id);
+        });
+        return b;
+      });
+      parts.units.replaceChildren(
+        h(doc, 'span', { class: 'tc-units-label', text: HUD.pickOne }),
+        ...tokens,
+        parts.unitName,
+      );
+    }
+    parts.units.setAttribute('data-team', state.activeTeam ?? 'none');
+    for (const b of parts.units.querySelectorAll<HTMLElement>('.tc-unit')) {
+      b.setAttribute('aria-checked', String(b.dataset.unit === state.selected));
+      b.setAttribute('aria-disabled', String(!canFire));
+    }
+    parts.unitName.textContent = state.units.find((u) => u.id === state.selected)?.name ?? '';
   };
 
   const fireNow = (h_: HudHandlers): void => {
@@ -238,15 +292,30 @@ export function createHud(ctx: UiCtx) {
       ),
     );
 
-    // The bar's header says whose turn it is and how many shots are left, in words and shapes.
-    const turnName = h(doc, 'span', { class: 'tc-turn-name' });
-    const aimPanel = h(
+    // The turn strip sits on top of the control bar: flashing chevrons, whose turn it is in words,
+    // and the shot pips (two shots, then a question). Everything for a turn is in one place.
+    const turnText = h(doc, 'span', {
+      class: 'tc-turn-text',
+      'data-testid': TEST_IDS.turnBanner,
+      role: 'status',
+    });
+    const strip = h(
       doc,
       'div',
-      { class: 'tc-aim' },
-      h(doc, 'div', { class: 'tc-aim-head' }, turnName, pips),
-      a.row,
-      p.row,
+      { class: 'tc-turn-strip' },
+      h(doc, 'span', { class: 'tc-turn-chev', 'aria-hidden': 'true', text: '\u00AB\u00AB\u00AB' }),
+      turnText,
+      pips,
+    );
+    const aimPanel = h(doc, 'div', { class: 'tc-aim' }, a.row, p.row);
+    // Fighter selector: one round token per fighter, drawn in update().
+    const unitName = h(doc, 'span', { class: 'tc-unit-name', 'aria-live': 'polite' });
+    const units = h(
+      doc,
+      'div',
+      { class: 'tc-units', role: 'radiogroup', 'aria-label': HUD.pickOne },
+      h(doc, 'span', { class: 'tc-units-label', text: HUD.pickOne }),
+      unitName,
     );
     // Wind is drawn once, on the canvas sign. This copy and the shot count are for screen readers.
     const hint = h(
@@ -269,7 +338,7 @@ export function createHud(ctx: UiCtx) {
         ...TEAMS.slice(1).map((t) => panel[t]),
         h(doc, 'div', { class: 'tc-hud-corner' }, mute),
       ),
-      h(doc, 'div', { class: 'tc-hud-bottom' }, aimPanel, fire, hint, wind, shots),
+      h(doc, 'div', { class: 'tc-hud-bottom' }, strip, units, aimPanel, fire, hint, wind, shots),
     );
     return {
       root,
@@ -282,7 +351,10 @@ export function createHud(ctx: UiCtx) {
       shots,
       pips,
       aimPanel,
-      turnName,
+      strip,
+      units,
+      unitName,
+      turnText,
       hint,
       mute,
       panel,
@@ -315,6 +387,7 @@ export function createHud(ctx: UiCtx) {
       parts.angle.disabled = !canFire;
       parts.power.disabled = !canFire;
       parts.fire.disabled = !canFire;
+      paintUnits(state);
       // A disabled control drops focus to the page. Keep it inside the HUD instead.
       const active = doc.activeElement;
       if (
@@ -332,22 +405,44 @@ export function createHud(ctx: UiCtx) {
         fill.style.width = `${pct}%`;
         fill.setAttribute('data-dir', state.wind > 0 ? 'right' : state.wind < 0 ? 'left' : 'none');
       }
-      parts.shots.textContent = `${HUD.shotsLeft}: ${HUD.shotsValue(state.shotsLeft)}`;
+      parts.shots.textContent = state.bonus
+        ? HUD.powerShot
+        : `${HUD.shotsLeft}: ${HUD.shotsValue(state.shotsLeft)}`;
       const who = state.activeTeam;
       parts.aimPanel.setAttribute('data-team', who ?? 'none');
-      parts.turnName.textContent = who ? state.names[who] : '';
-      paintPips(parts.pips, state.shotsLeft);
+      parts.strip.setAttribute('data-team', who ?? 'none');
+      // Shot 1 until the first shot is fired, then shot 2.
+      const shot = Math.min(TURN.shotsPerTurn, TURN.shotsPerTurn - state.shotsLeft + 1);
+      parts.turnText.textContent = who
+        ? turnBanner(state.names[who], state.bonus ? 'POWER' : shot)
+        : '';
+      paintPips(parts.pips, state.shotsLeft, state.bonus);
       for (const t of TEAMS) {
-        const hp = clamp(Math.round(state.baseHp[t]), 0, 100);
+        const max = Math.max(1, Math.round(state.maxBaseHp?.[t] ?? 100));
+        const hp = clamp(Math.round(state.baseHp[t]), 0, max);
         parts.name[t].textContent = state.names[t];
-        parts.hpText[t].textContent = HUD.hpValue(hp);
+        parts.hpText[t].textContent = HUD.hpValue(hp, max);
         parts.hpMeter[t].setAttribute('aria-valuenow', String(hp));
-        parts.hpFill[t].style.width = `${hp}%`;
+        parts.hpMeter[t].setAttribute('aria-valuemax', String(max));
+        parts.hpFill[t].style.width = `${(hp / max) * 100}%`;
         parts.scrap[t].textContent = String(state.scrap[t]);
         parts.panel[t].setAttribute('data-active', String(state.activeTeam === t));
         const turn = parts.panel[t].querySelector('[data-role="turn-text"]');
         if (turn) turn.textContent = state.activeTeam === t ? HUD.yourTurn : '';
       }
+    },
+    /** A new turn starts: the horn sounds and the strip flashes for a moment. */
+    flash(): Promise<void> {
+      ctx.sfx('horn');
+      const strip = parts?.strip;
+      if (!strip) return Promise.resolve();
+      strip.setAttribute('data-flash', 'true');
+      return new Promise<void>((resolve) => {
+        ctx.env.setTimeout(() => {
+          strip.removeAttribute('data-flash');
+          resolve();
+        }, TIMING.bannerHoldMs);
+      });
     },
     hide(): void {
       doc.removeEventListener('keydown', onKey);
@@ -357,6 +452,7 @@ export function createHud(ctx: UiCtx) {
       parts = null;
       handlers = null;
       canFire = false;
+      unitIds = [];
     },
   };
 }

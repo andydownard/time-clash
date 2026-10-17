@@ -36,7 +36,7 @@ export const UPGRADES: readonly Upgrade[] = [
   {
     id: 'tower',
     team: 'PAST',
-    name: 'Rebuild the Tower',
+    name: 'Upgrade the Tower',
     effect: 'maxHp',
     perLevel: 12,
     cost: [6, 10, 14],
@@ -44,7 +44,7 @@ export const UPGRADES: readonly Upgrade[] = [
   {
     id: 'wall',
     team: 'PAST',
-    name: 'Mend the Wall',
+    name: 'Reinforce the Wall',
     effect: 'directCut',
     perLevel: 3,
     cost: [6, 10, 14],

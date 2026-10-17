@@ -1,42 +1,9 @@
-// Short-lived pieces: the turn banner and speech bubbles.
-import { turnBanner } from '../data/copy';
+// Short-lived pieces: speech bubbles.
 import { TIMING, WORLD } from '../game/config';
 import type { Team } from '../game/types';
 import type { UiCtx } from './ctx';
 import { h } from './dom';
-import { TEST_IDS, type BannerOptions, type BubbleOptions } from './types';
-
-type BannerState = { el: HTMLElement; timer: unknown; resolve: () => void };
-const banners = new WeakMap<UiCtx, BannerState>();
-
-export function showTurnBanner(ctx: UiCtx, options: BannerOptions): Promise<void> {
-  const { doc, env } = ctx;
-  const previous = banners.get(ctx);
-  if (previous) {
-    env.clearTimeout(previous.timer);
-    previous.el.remove();
-    previous.resolve();
-    banners.delete(ctx);
-  }
-  return new Promise<void>((resolve) => {
-    const el = h(doc, 'div', {
-      class: 'tc-banner',
-      'data-testid': TEST_IDS.turnBanner,
-      'data-team': options.team,
-      'data-motion': ctx.motion(),
-      role: 'status',
-      text: turnBanner(options.name, options.shot),
-    });
-    ctx.layer.banner.append(el);
-    ctx.sfx('horn');
-    const timer = env.setTimeout(() => {
-      el.remove();
-      if (banners.get(ctx)?.el === el) banners.delete(ctx);
-      resolve();
-    }, TIMING.bannerHoldMs);
-    banners.set(ctx, { el, timer, resolve });
-  });
-}
+import { TEST_IDS, type BubbleOptions } from './types';
 
 const holdFor = (text: string): number =>
   Math.max(TIMING.bubbleHoldMs, text.trim().split(/\s+/).length * TIMING.bubbleMsPerWord);
@@ -70,8 +37,10 @@ export function showSpeechBubble(
           width: view?.innerWidth || WORLD.width,
           height: view?.innerHeight || WORLD.height,
         };
-  const x = Math.round((box.left + (options.anchor.x / WORLD.width) * box.width) * 100) / 100;
-  const y = Math.round((box.top + (options.anchor.y / WORLD.height) * box.height) * 100) / 100;
+  // One scale for both axes: the canvas is taller than the world (the control band).
+  const k = box.width / WORLD.width;
+  const x = Math.round((box.left + options.anchor.x * k) * 100) / 100;
+  const y = Math.round((box.top + options.anchor.y * k) * 100) / 100;
   const el = h(doc, 'div', {
     class: 'tc-bubble',
     'data-testid': TEST_IDS.speechBubble,
@@ -84,7 +53,7 @@ export function showSpeechBubble(
   el.style.top = `${y}px`;
   if (options.tailTarget) {
     // How far the speaker is from the bubble center, in screen pixels. CSS slides the tail by it.
-    const dx = ((options.tailTarget.x - options.anchor.x) / WORLD.width) * box.width;
+    const dx = (options.tailTarget.x - options.anchor.x) * k;
     el.style.setProperty('--tc-tail-shift', `${Math.round(dx * 100) / 100}px`);
   }
   ctx.layer.bubble.append(el);

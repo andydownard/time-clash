@@ -53,9 +53,17 @@ function findAim(c: MatchController, want: BlastResult, skip = 0): AimInput {
 }
 
 const FAST: ReloadInput = { correct: true, elapsedMs: 2000 };
+/** A wrong answer: no Power Shot, so the turn goes straight on (keeps the Phase 1 goldens exact). */
+const WRONG: ReloadInput = { correct: false, elapsedMs: 2000 };
+
+/** The Power Shot after a right answer: a plain shot at the default aim. */
+function bonusShot(c: MatchController): void {
+  c.fire();
+  c.shotLanded();
+}
 
 /** Run one whole turn: both shots with the given result, then reload and pass. */
-function playTurn(c: MatchController, want: BlastResult, reload: ReloadInput = FAST): void {
+function playTurn(c: MatchController, want: BlastResult, reload: ReloadInput = WRONG): void {
   c.ready();
   for (let i = 0; i < 2; i++) {
     c.setAim(findAim(c, want, i));
@@ -72,7 +80,13 @@ describe('createMatch: initial state', () => {
     const s = createMatch(opts(7)).snapshot();
     expect(s.status).toBe('PLAYING');
     expect(s.winner).toBeNull();
-    expect(s.turn).toEqual({ phase: 'PASS_SCREEN', team: 'PAST', turnNumber: 0, shotsFired: 0 });
+    expect(s.turn).toEqual({
+      phase: 'PASS_SCREEN',
+      team: 'PAST',
+      turnNumber: 0,
+      shotsFired: 0,
+      bonus: false,
+    });
     expect(s.baseHp).toEqual({ PAST: DAMAGE.startingBaseHp, FUTURE: DAMAGE.startingBaseHp });
     expect(s.scrap).toEqual({ PAST: 0, FUTURE: 0 });
     expect(s.wind).toBe(windForTurn(7, 0));
@@ -131,7 +145,7 @@ describe('turn flow through the controller', () => {
     phases.push(c.snapshot().turn.phase);
     c.shotLanded();
     phases.push(c.snapshot().turn.phase);
-    c.reloadDone(FAST);
+    c.reloadDone(WRONG);
     phases.push(c.snapshot().turn.phase);
     c.pass();
     phases.push(c.snapshot().turn.phase);
@@ -190,6 +204,7 @@ describe('turn flow through the controller', () => {
       team: 'PAST',
       wind: s.wind,
       turnNumber: 0,
+      unit: 'C',
     });
     expect(s.stats.PAST.shotsFired).toBe(1);
     expect(s.stats.FUTURE.shotsFired).toBe(0);
@@ -203,7 +218,7 @@ describe('turn flow through the controller', () => {
     c.shotLanded();
     c.fire();
     c.shotLanded();
-    c.reloadDone(FAST);
+    c.reloadDone(WRONG);
     c.pass();
     c.ready();
     expect(c.snapshot().aim.PAST).toEqual({ angleDeg: 90, power: 0 });
@@ -233,7 +248,7 @@ describe('negative paths: illegal moves throw and change nothing', () => {
     setAim: (c) => c.setAim({ angleDeg: 1, power: 1 }),
     fire: (c) => c.fire(),
     shotLanded: (c) => c.shotLanded(),
-    reloadDone: (c) => c.reloadDone(FAST),
+    reloadDone: (c) => c.reloadDone(WRONG),
     pass: (c) => c.pass(),
   };
   // Which actions are legal in each phase. Everything else must throw.
@@ -271,7 +286,7 @@ describe('negative paths: illegal moves throw and change nothing', () => {
       c.shotLanded();
       c.fire();
       c.shotLanded();
-      c.reloadDone(FAST);
+      c.reloadDone(WRONG);
     },
   };
   const cases = Object.keys(reach).flatMap((phase) =>
@@ -423,7 +438,7 @@ describe('shotLanded: damage, tumble, and bubbles', () => {
         const out = c.shotLanded();
         seen.push(out.bubbleIndex as number);
       }
-      c.reloadDone(FAST);
+      c.reloadDone(WRONG);
       c.pass();
     }
     expect(seen.length).toBe(TUMBLE_LINE_COUNT + 2);
@@ -460,7 +475,11 @@ describe('reloadDone: scrap and stats', () => {
   it('fast and right: +2 scrap and the stats update', () => {
     const c = createMatch(opts());
     toReload(c);
-    expect(c.reloadDone({ correct: true, elapsedMs: 3000 })).toEqual({ scrap: 2, fast: true });
+    expect(c.reloadDone({ correct: true, elapsedMs: 3000 })).toEqual({
+      scrap: 2,
+      fast: true,
+      bonus: true,
+    });
     const s = c.snapshot();
     expect(s.scrap.PAST).toBe(2);
     expect(s.stats.PAST).toMatchObject({
@@ -480,7 +499,11 @@ describe('reloadDone: scrap and stats', () => {
   it('wrong answer still reloads: +0 scrap, turn moves on, nothing blocks play', () => {
     const c = createMatch(opts());
     toReload(c);
-    expect(c.reloadDone({ correct: false, elapsedMs: 1000 })).toEqual({ scrap: 0, fast: false });
+    expect(c.reloadDone({ correct: false, elapsedMs: 1000 })).toEqual({
+      scrap: 0,
+      fast: false,
+      bonus: false,
+    });
     const s = c.snapshot();
     expect(s.turn.phase).toBe('NEXT_PLAYER');
     expect(s.stats.PAST).toMatchObject({
@@ -495,19 +518,26 @@ describe('reloadDone: scrap and stats', () => {
   it('bad elapsedMs counts as slow and never throws', () => {
     const c = createMatch(opts());
     toReload(c);
-    expect(c.reloadDone({ correct: true, elapsedMs: NaN })).toEqual({ scrap: 1, fast: false });
+    expect(c.reloadDone({ correct: true, elapsedMs: NaN })).toEqual({
+      scrap: 1,
+      fast: false,
+      bonus: true,
+    });
     expect(c.snapshot().stats.PAST.fastestAnswerMs).toBeNull();
   });
   it('keeps the fastest correct time across turns and accumulates scrap', () => {
     const c = createMatch(opts(6));
     toReload(c);
     c.reloadDone({ correct: true, elapsedMs: 5000 });
+    bonusShot(c);
     c.pass();
     toReload(c);
     c.reloadDone({ correct: true, elapsedMs: 1000 });
+    bonusShot(c);
     c.pass();
     toReload(c);
     c.reloadDone({ correct: true, elapsedMs: 9000 });
+    bonusShot(c);
     c.pass();
     const s = c.snapshot();
     expect(s.stats.PAST.fastestAnswerMs).toBe(5000);
@@ -572,7 +602,7 @@ describe('winning', () => {
     c.setAim(findAim(c, 'miss'));
     c.fire();
     c.shotLanded();
-    c.reloadDone(FAST);
+    c.reloadDone(WRONG);
     c.pass();
     playTurn(c, 'miss');
     c.ready();
@@ -595,7 +625,7 @@ describe('winning', () => {
     expect(() => c.setAim({ angleDeg: 1, power: 1 })).toThrow(MatchOverError);
     expect(() => c.fire()).toThrow(MatchOverError);
     expect(() => c.shotLanded()).toThrow(MatchOverError);
-    expect(() => c.reloadDone(FAST)).toThrow(MatchOverError);
+    expect(() => c.reloadDone(WRONG)).toThrow(MatchOverError);
     expect(() => c.pass()).toThrow(MatchOverError);
     expect(c.snapshot()).toEqual(before);
   });
@@ -626,7 +656,14 @@ describe('determinism and rematch', () => {
         log.push(c.shotLanded());
       }
       if (c.snapshot().status === 'OVER') break;
-      log.push(c.reloadDone({ correct: guard % 3 !== 0, elapsedMs: 1500 * guard }));
+      const reloaded = c.reloadDone({ correct: guard % 3 !== 0, elapsedMs: 1500 * guard });
+      log.push(reloaded);
+      if (reloaded.bonus) {
+        c.setAim(findAim(c, team === 'PAST' ? 'direct' : 'near', 0));
+        log.push(c.fire().landing);
+        log.push(c.shotLanded());
+        if (c.snapshot().status === 'OVER') break;
+      }
       c.pass();
     }
     return { log, final: c.snapshot() };
@@ -693,6 +730,14 @@ describe('property loops: random seeded matches keep every invariant', () => {
         expect(fired).toBe(2);
         const score = c.reloadDone({ correct: rng.next() < 0.5, elapsedMs: rng.int(-100, 20000) });
         expect([0, 1, 2]).toContain(score.scrap);
+        expect(score.bonus).toBe(score.scrap > 0);
+        if (score.bonus) {
+          c.setAim({ angleDeg: rng.int(-10, 100), power: rng.int(-10, 110) });
+          c.fire();
+          expect([0, 15, 38]).toContain(c.shotLanded().damage);
+          expect(c.snapshot().turn.shotsFired).toBe(2);
+          if (c.snapshot().status === 'OVER') break;
+        }
         c.pass();
       }
       const s = c.snapshot();

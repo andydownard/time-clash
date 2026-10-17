@@ -137,11 +137,15 @@ export function showReloadModal(ctx: UiCtx, options: ReloadModalOptions): Promis
         'header',
         { class: 'tc-reload-head' },
         h(doc, 'h2', { id: 'tc-reload-heading', tabindex: -1, text: COPY.heading }),
+        h(
+          doc,
+          'div',
+          { class: 'tc-turn-chips' },
         // Whose turn it is, in words and a shape, so it is never color alone.
         h(
           doc,
           'div',
-          { class: 'tc-turn-chip', 'data-team': options.team },
+          { class: 'tc-turn-chip', 'data-team': options.team, 'data-state': 'turn' },
           h(doc, 'span', {
             class: 'tc-turn-icon',
             'aria-hidden': 'true',
@@ -150,6 +154,26 @@ export function showReloadModal(ctx: UiCtx, options: ReloadModalOptions): Promis
           h(doc, 'span', { class: 'tc-turn-team', text: TEAM_NAMES[options.team] }),
           h(doc, 'span', { class: 'tc-reload-who', text: options.playerName }),
           h(doc, 'span', { class: 'tc-turn-tag', text: COPY.yourTurn }),
+        ),
+        // The other side waits. Words and a shape again, never color alone.
+        options.waiting
+          ? h(
+              doc,
+              'div',
+              {
+                class: 'tc-turn-chip',
+                'data-team': options.waiting.team,
+                'data-state': 'waiting',
+              },
+              h(doc, 'span', {
+                class: 'tc-turn-icon',
+                'aria-hidden': 'true',
+                text: PASS_SCREEN.icon[options.waiting.team],
+              }),
+              h(doc, 'span', { class: 'tc-reload-who', text: options.waiting.name }),
+              h(doc, 'span', { class: 'tc-turn-tag', text: COPY.waiting }),
+            )
+          : null,
         ),
       ),
       h(
@@ -170,7 +194,10 @@ export function showReloadModal(ctx: UiCtx, options: ReloadModalOptions): Promis
           ),
         ),
         question.passage
-          ? h(doc, 'p', { id: 'tc-reload-passage', class: 'tc-passage', text: question.passage })
+          ? h(doc, 'p', { id: 'tc-reload-passage', class: 'tc-passage',
+              'data-label': COPY.readStory,
+              text: question.passage,
+            })
           : null,
         h(doc, 'div', { class: 'tc-prompt-row' }, prompt, speakButton),
         h(

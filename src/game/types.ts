@@ -3,6 +3,7 @@
 // See docs/CONTRACTS.md for the reasons behind each choice.
 
 import type { MatchEffects } from './loadout';
+import type { UnitId } from './units';
 
 // ---------- Basics ----------
 
@@ -76,7 +77,7 @@ export type AimInput = {
 };
 
 /** One fired shot, enough to replay it exactly. Wind is fixed per turn. */
-export type Shot = AimInput & { team: Team; wind: number; turnNumber: number };
+export type Shot = AimInput & { team: Team; wind: number; turnNumber: number; unit: UnitId };
 
 export type ShotInput = AimInput & {
   origin: Vec2;
@@ -121,7 +122,17 @@ export type WindForTurn = (seed: number, turnNumber: number) => number;
 // ---------- Turn state machine (turn.ts) ----------
 
 /** Exactly the states in docs/BUILD.md. SHOT_1 and SHOT_2 mean "ball in the air". */
-export type TurnPhase = 'PASS_SCREEN' | 'AIMING' | 'SHOT_1' | 'SHOT_2' | 'RELOAD' | 'NEXT_PLAYER';
+export type TurnPhase =
+  | 'PASS_SCREEN'
+  | 'AIMING'
+  | 'SHOT_1'
+  | 'SHOT_2'
+  | 'RELOAD'
+  /** A right answer earns one Power Shot: aim it here. */
+  | 'BONUS_AIMING'
+  /** The Power Shot is in the air. */
+  | 'BONUS_SHOT'
+  | 'NEXT_PLAYER';
 
 export type TurnState = {
   readonly phase: TurnPhase;
@@ -134,13 +145,16 @@ export type TurnState = {
    * Goes up on FIRE. Never above 2.
    */
   readonly shotsFired: 0 | 1 | 2;
+  /** True once a right answer earned the Power Shot this turn. It is not shot 3 and never counts in shotsFired. */
+  readonly bonus: boolean;
 };
 
 export type TurnEvent =
   | { type: 'READY' } // PASS_SCREEN -> AIMING (the "I'm ready!" button)
-  | { type: 'FIRE' } // AIMING(0) -> SHOT_1, AIMING(1) -> SHOT_2
-  | { type: 'SHOT_LANDED' } // SHOT_1 -> AIMING(1), SHOT_2 -> RELOAD
-  | { type: 'RELOAD_DONE' } // RELOAD -> NEXT_PLAYER
+  | { type: 'FIRE' } // AIMING(0) -> SHOT_1, AIMING(1) -> SHOT_2, BONUS_AIMING -> BONUS_SHOT
+  | { type: 'SHOT_LANDED' } // SHOT_1 -> AIMING(1), SHOT_2 -> RELOAD, BONUS_SHOT -> NEXT_PLAYER
+  /** RELOAD -> BONUS_AIMING when correct is true, else RELOAD -> NEXT_PLAYER. */
+  | { type: 'RELOAD_DONE'; correct?: boolean }
   | { type: 'PASS' }; // NEXT_PLAYER -> PASS_SCREEN for the other team, turnNumber + 1
 
 export type TurnEventType = TurnEvent['type'];
@@ -211,6 +225,8 @@ export type ReloadScore = {
   /** correct and elapsedMs < RELOAD.fastMs. Bad elapsedMs (NaN, negative) counts as slow. Never throws. */
   fast: boolean;
 };
+/** What the match hands back after a reload: the score, and whether a Power Shot is next. */
+export type ReloadResult = ReloadScore & { bonus: boolean };
 export type ScoreReload = (input: ReloadInput) => ReloadScore;
 
 // ---------- Name check (names.ts) ----------
@@ -250,6 +266,8 @@ export type Match = {
   readonly scrap: Record<Team, number>;
   /** Each team's aim is remembered between its turns. */
   readonly aim: Record<Team, AimInput>;
+  /** The fighter each team will shoot with next. Remembered between turns. */
+  readonly selected: Record<Team, UnitId>;
   readonly stats: Record<Team, TeamStats>;
   readonly lastShot: Shot | null;
 };
@@ -284,17 +302,23 @@ export interface MatchController {
   snapshot(): Match;
   /** PASS_SCREEN -> AIMING. */
   ready(): void;
-  /** Only in AIMING. Clamps and stores the active team's aim. Returns the clamped aim. */
+  /** Only in AIMING or BONUS_AIMING. Clamps and stores the active team's aim. Returns the clamped aim. */
   setAim(aim: AimInput): AimInput;
-  /** AIMING -> SHOT_n. Runs the full flight now. The scene animates result.path. */
+  /**
+   * Only in AIMING or BONUS_AIMING. Picks which of the active team's fighters takes the next shot. Free (not a shot).
+   * Another team's fighter or an unknown id throws RangeError.
+   */
+  selectUnit(id: UnitId): void;
+  /** AIMING -> SHOT_n, or BONUS_AIMING -> BONUS_SHOT. Runs the full flight now. The scene animates result.path. */
   fire(): ShotResult;
   /**
-   * SHOT_n -> AIMING (after shot 1) or RELOAD (after shot 2). Applies damage.
+   * SHOT_n -> AIMING (after shot 1) or RELOAD (after shot 2); BONUS_SHOT -> NEXT_PLAYER.
+   * Applies damage (a Power Shot's damage is multiplied).
    * If a base reaches 0, status becomes OVER, winner is set, and the turn stops here.
    */
   shotLanded(): BlastOutcome;
-  /** RELOAD -> NEXT_PLAYER. Adds scrap and updates stats. */
-  reloadDone(input: ReloadInput): ReloadScore;
+  /** RELOAD -> BONUS_AIMING (right answer) or NEXT_PLAYER. Adds scrap and updates stats. */
+  reloadDone(input: ReloadInput): ReloadResult;
   /** NEXT_PLAYER -> PASS_SCREEN for the other team with new wind. */
   pass(): void;
   /** Options for a rematch: same players, seed + 1, the other team starts. */

@@ -31,7 +31,7 @@ function questionsFor(bank: QuestionBank, subject: QuestionSubject): Question[] 
   return bank.questions.filter((q) => q.subject === subject);
 }
 
-function pickSubject(
+export function pickSubject(
   bank: QuestionBank,
   request: PickRequest,
   history: PickHistory,

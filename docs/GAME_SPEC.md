@@ -92,6 +92,7 @@ F. K–12 Educational Reload Loop
 
 ⚬ Turn Sequence: 2 shots per turn.
 ⚬ Reload Modal: Pops up immediately after shot 2.
+⚬ Power Shot: A right answer (fast or slow) earns exactly one extra shot that does 1.5 times the damage (`BONUS.damageMultiplier`). Walls and force fields still apply. It has no question and no bonus of its own. A wrong answer earns no Power Shot but never blocks play.
 ⚬ Asymmetric Tuning: Player 1 (e.g., 2nd Grade Reading) identifies sight words to reload; Player 2 (e.g., 8th Grade Math) solves pre-algebra equations.
 ⚬ Fast answers grant bonus scrap materials to spend in the Camp Hub.
 

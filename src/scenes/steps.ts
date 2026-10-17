@@ -2,10 +2,11 @@
 // saving, and returns where to go next. Phaser scenes just run a step and follow the route.
 import { LOADING } from '../data/copy';
 import { creditMatch } from '../game/economy';
-import { matchEffectsFor } from '../game/loadout';
+import { TEAMS, type Players, type Team } from '../game/types';
+import { matchEffectsFor, type CampState } from '../game/loadout';
 import { loadCamp } from '../storage/storage';
 import type { QuestionBank } from '../questions/types';
-import { runLoading } from '../ui/loadingLogic';
+import { loadingMinFor, runLoading } from '../ui/loadingLogic';
 import { buildBattleData } from './battleData';
 import {
   buildMatchSetup,
@@ -49,6 +50,8 @@ export async function runLoadingStep(s: AppServices, data: unknown): Promise<Sce
   await runLoading({
     handle,
     env: s.env,
+    // A family with no saved players is new. The intro already marks introSeen before Loading.
+    minMs: loadingMinFor(s.storage.get('timeclash.players') == null),
     load: async (report) => {
       loaded.bank = await loadAssets(s.loadBank, report);
     },
@@ -60,6 +63,12 @@ export async function runLoadingStep(s: AppServices, data: unknown): Promise<Sce
   }
   return route;
 }
+
+/** The two players' names by side. Index 0 is always Team Past. */
+const namesOf = (players: Players): Record<Team, string> => ({
+  PAST: players[0].name,
+  FUTURE: players[1].name,
+});
 
 export async function runSetupStep(s: AppServices): Promise<SceneRoute> {
   const saved = s.storage.get('timeclash.players');
@@ -77,18 +86,22 @@ export async function runCampStep(s: AppServices): Promise<SceneRoute> {
   const players = s.storage.get('timeclash.players');
   // No saved players (it should not happen) goes back to Setup, never a dead end.
   if (!players) return { key: SCENE_KEYS.setup };
+  const names = namesOf(players);
   const choice = await s.overlay.showCamp();
   if (choice === 'players') return { key: SCENE_KEYS.setup };
-  if (choice === 'forge') {
-    await s.overlay.showForge({
+  if (choice === 'forge' || choice === 'upgrade') {
+    const options = {
       camp: loadCamp(s.storage),
-      save: (next) => void s.storage.set('timeclash.camp', next),
-    });
-    // Back from the Forge: the Camp again, which shows what the family now has.
+      names,
+      save: (next: CampState) => void s.storage.set('timeclash.camp', next),
+    };
+    if (choice === 'forge') await s.overlay.showForge(options);
+    else await s.overlay.showUpgrade(options);
+    // Back from the Forge or Upgrade Base: the Camp again, which shows what the family now has.
     return { key: SCENE_KEYS.camp };
   }
   // The weapons and upgrades the family chose at the Camp go into the match.
-  const effects = matchEffectsFor(loadCamp(s.storage));
+  const effects = matchEffectsFor(loadCamp(s.storage), names);
   const setup = buildMatchSetup(players, s.newSeed(), effects);
   // The bank is loaded once, before Setup. If it is somehow missing, load it first.
   if (!s.session.bank) {
@@ -104,10 +117,11 @@ export async function runVictoryStep(s: AppServices, data: unknown): Promise<Sce
   s.overlay.hideHud();
   s.session.match = null;
   // Scrap earned in this match goes to the Camp once. A rematch has the next seed, so it counts again.
-  const earned = {
-    PAST: plan.options.stats.PAST.scrapEarned,
-    FUTURE: plan.options.stats.FUTURE.scrapEarned,
-  };
+  // It goes to each player's own total, found by name.
+  const earned = TEAMS.map((team) => ({
+    name: plan.options.names[team],
+    scrap: plan.options.stats[team].scrapEarned,
+  }));
   s.storage.set('timeclash.camp', creditMatch(loadCamp(s.storage), plan.rematch.seed - 1, earned));
   const choice = await s.overlay.showVictory(plan.options);
   return routeAfterVictory(choice, plan.rematch);

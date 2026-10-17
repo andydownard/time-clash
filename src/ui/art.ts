@@ -2,6 +2,7 @@
 // (Loading, Setup). No files are fetched. Every color is a palette color from
 // docs/DESIGN_SYSTEM.md, plus a short list of scene-only colors (sky, grass, skin, flame)
 // that tests/ui/art.test.ts keeps in check. All pictures are decorative: aria-hidden.
+import { LOADING } from '../data/copy';
 import { svgFromString } from './svg';
 
 /** Scene-only colors that are not in the palette (sky, grass, skin tone, flames, wood). */
@@ -33,32 +34,60 @@ export const ART_EXTRA_COLORS: readonly string[] = [
   '#fff3b0',
   '#05061a',
   '#ffffff',
+  '#fffaf0',
+  '#ff8a3a',
+  '#ffe08a',
 ];
 
-/** The loading scene: a knight on a wobbling hoverboard and a confused repair bot. */
-const LOADING_SCENE = `<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+/** Where each rider's speech bubble sits (x of the tail). Bubbles sit well away from the rider. */
+const BUBBLE_X = [1250, 580, 1110] as const;
+
+/** One speech bubble. The text is 28 units tall, which draws at 20 px or more on every screen. */
+function speechBubble(i: number, lines: readonly string[]): string {
+  const x = BUBBLE_X[i] ?? 0;
+  const text = lines
+    .map(
+      (l, n) =>
+        `<text x="${x}" y="${334 + n * 34}" text-anchor="middle" font-family="MedievalSharp, Georgia, serif" font-size="28" fill="#12102b">${l}</text>`,
+    )
+    .join('');
+  return `<g class="tc-ld-say${i}" style="transform-origin:${x}px 440px"><rect x="${x - 236}" y="290" width="472" height="136" rx="24" fill="#fffaf0" stroke="#25104f" stroke-width="5"/><path d="M${x - 30},424 L${x + 14},424 L${x - 6},462 Z" fill="#fffaf0" stroke="#25104f" stroke-width="5" stroke-linejoin="round"/><path d="M${x - 24},422 H${x + 8}" stroke="#fffaf0" stroke-width="8"/>${text}</g>`;
+}
+
+/** The loading scene: a knight on a hoverboard, and three balloon riders who get a surprise. */
+function loadingSceneSvg(lines: readonly (readonly string[])[]): string {
+  const bubble = (i: number): string => speechBubble(i, lines[i] ?? []);
+  return `<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
 <defs>
 <linearGradient id="tcLdBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4aa8f0"/><stop offset=".55" stop-color="#a9e0ff"/><stop offset="1" stop-color="#fff2c9"/></linearGradient>
 <linearGradient id="tcLdBoard" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6f95ff"/><stop offset="1" stop-color="#1a3fb5"/></linearGradient>
 <linearGradient id="tcLdSteel" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e9eef7"/><stop offset=".5" stop-color="#9aa8bd"/><stop offset="1" stop-color="#5d6c8c"/></linearGradient>
-<filter id="tcLdBlur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="8"/></filter>
+
+
+<filter id="tcLdBlur8" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="8"/></filter>
+<filter id="tcLdBlur16" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="16"/></filter>
+
 <path id="tcLdStar" d="M0,-12 L3,-3 L12,0 L3,3 L0,12 L-3,3 L-12,0 L-3,-3 Z" fill="#ffffff" stroke="#ffb23e" stroke-width="1.5"/>
 <path id="tcLdWind" d="M0,0 L34,0" stroke="#ffffff" stroke-width="4" stroke-linecap="round" opacity=".9"/>
 </defs>
 <rect width="1600" height="900" fill="url(#tcLdBg)"/>
-<circle cx="1230" cy="140" r="110" fill="#fff3b0" opacity=".5" filter="url(#tcLdBlur)"/>
+
+<circle cx="1230" cy="140" r="110" fill="#fff3b0" opacity=".5" filter="url(#tcLdBlur16)"/>
 <circle cx="1230" cy="140" r="62" fill="#fff6c2"/>
-<g fill="#ffffff" opacity=".95"><ellipse cx="420" cy="160" rx="90" ry="28"/><ellipse cx="380" cy="145" rx="50" ry="28"/><ellipse cx="450" cy="140" rx="55" ry="32"/><ellipse cx="900" cy="110" rx="110" ry="26"/><ellipse cx="860" cy="95" rx="55" ry="28"/><ellipse cx="930" cy="88" rx="60" ry="30"/><ellipse cx="260" cy="408" rx="90" ry="22"/><ellipse cx="230" cy="394" rx="44" ry="24"/><ellipse cx="290" cy="390" rx="48" ry="26"/></g>
+<g fill="#ffffff" opacity=".95"><ellipse cx="420" cy="160" rx="90" ry="28"/><ellipse cx="380" cy="145" rx="50" ry="28"/><ellipse cx="450" cy="140" rx="55" ry="32"/><ellipse cx="900" cy="110" rx="110" ry="26"/><ellipse cx="860" cy="95" rx="55" ry="28"/><ellipse cx="930" cy="88" rx="60" ry="30"/><ellipse cx="1380" cy="478" rx="80" ry="22"/><ellipse cx="1350" cy="464" rx="42" ry="24"/><ellipse cx="1410" cy="458" rx="46" ry="26"/><ellipse cx="260" cy="408" rx="90" ry="22"/><ellipse cx="230" cy="394" rx="44" ry="24"/><ellipse cx="290" cy="390" rx="48" ry="26"/></g>
 <path d="M0,640 C250,560 520,600 800,570 C1100,540 1350,600 1600,560 L1600,900 L0,900 Z" fill="#7fcf7a"/>
 <path d="M0,720 C300,660 600,720 900,690 C1200,660 1450,720 1600,690 L1600,900 L0,900 Z" fill="#5fb860"/>
-<g><use href="#tcLdStar" x="260" y="120" class="tc-ld-twinkle"/><use href="#tcLdStar" x="1180" y="90" class="tc-ld-twinkle" style="animation-delay:-1.4s"/><use href="#tcLdStar" x="540" y="250" class="tc-ld-twinkle" style="animation-delay:-.8s"/></g>
-<g transform="translate(0 50)">
+
+<g><use href="#tcLdStar" x="260" y="120" class="tc-ld-tw"/><use href="#tcLdStar" x="520" y="70" class="tc-ld-tw" style="animation-delay: -.8s" transform="translate(0 0) scale(.7)"/><use href="#tcLdStar" x="1180" y="90" class="tc-ld-tw" style="animation-delay: -1.4s"/><use href="#tcLdStar" x="1360" y="470" class="tc-ld-tw" style="animation-delay: -.4s"/><use href="#tcLdStar" x="230" y="500" class="tc-ld-tw" style="animation-delay: -1.9s"/><use href="#tcLdStar" x="980" y="60" class="tc-ld-tw" style="animation-delay: -1.1s"/></g>
+
 <ellipse cx="800" cy="600" rx="270" ry="30" fill="#05061a" opacity=".25"/>
+<ellipse cx="800" cy="600" rx="190" ry="20" fill="#4fd8ff" opacity=".12" filter="url(#tcLdBlur8)"/>
+
 <g transform="translate(800 410)">
-<g class="tc-ld-board">
-<ellipse cx="-116" cy="84" rx="46" ry="62" fill="#ff7a1a" opacity=".5" filter="url(#tcLdBlur)"/><ellipse cx="116" cy="84" rx="46" ry="62" fill="#ff7a1a" opacity=".5" filter="url(#tcLdBlur)"/>
+<g class="tc-ld-wob">
+<ellipse cx="-116" cy="84" rx="46" ry="62" fill="#ff7a1a" opacity=".5" filter="url(#tcLdBlur8)"/><ellipse cx="116" cy="84" rx="46" ry="62" fill="#ff7a1a" opacity=".5" filter="url(#tcLdBlur8)"/>
 <g transform="translate(-116 0)"><g class="tc-ld-flame"><path d="M-20,40 Q-26,90 0,142 Q26,90 20,40 Z" fill="#e8262a"/><path d="M-14,40 Q-18,82 0,120 Q18,82 14,40 Z" fill="#ff7a1a"/><path d="M-8,40 Q-10,70 0,96 Q10,70 8,40 Z" fill="#ffd23e"/></g></g>
-<g transform="translate(116 0)"><g class="tc-ld-flame" style="animation-delay:-.07s"><path d="M-20,40 Q-26,90 0,142 Q26,90 20,40 Z" fill="#e8262a"/><path d="M-14,40 Q-18,82 0,120 Q18,82 14,40 Z" fill="#ff7a1a"/><path d="M-8,40 Q-10,70 0,96 Q10,70 8,40 Z" fill="#ffd23e"/></g></g>
+<g transform="translate(116 0)"><g class="tc-ld-flame" style="animation-delay: -.07s"><path d="M-20,40 Q-26,90 0,142 Q26,90 20,40 Z" fill="#e8262a"/><path d="M-14,40 Q-18,82 0,120 Q18,82 14,40 Z" fill="#ff7a1a"/><path d="M-8,40 Q-10,70 0,96 Q10,70 8,40 Z" fill="#ffd23e"/></g></g>
 <rect x="-170" y="0" width="340" height="30" rx="15" fill="url(#tcLdBoard)" stroke="#0a1a4f" stroke-width="4"/>
 <rect x="-150" y="5" width="300" height="7" rx="3.5" fill="#cfe0ff" opacity=".6"/>
 <rect x="-150" y="22" width="300" height="4" rx="2" fill="#4fd8ff"/>
@@ -66,8 +95,8 @@ const LOADING_SCENE = `<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid
 <g class="tc-ld-knight">
 <g class="tc-ld-leg-a"><path d="M-24,-92 L-62,-48 L-92,-6" fill="none" stroke="#25104f" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/><path d="M-24,-92 L-62,-48 L-92,-6" fill="none" stroke="#9aa8bd" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="-100" cy="-4" rx="24" ry="11" fill="#7a4a24" stroke="#25104f" stroke-width="3"/></g>
 <g class="tc-ld-leg-b"><path d="M24,-92 L50,-44 L44,-6" fill="none" stroke="#25104f" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/><path d="M24,-92 L50,-44 L44,-6" fill="none" stroke="#9aa8bd" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/><ellipse cx="54" cy="-4" rx="24" ry="11" fill="#7a4a24" stroke="#25104f" stroke-width="3"/></g>
-<g class="tc-ld-arm-l"><path d="M-44,-160 L-92,-182 L-86,-232" fill="none" stroke="#25104f" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/><path d="M-44,-160 L-92,-182 L-86,-232" fill="none" stroke="#9aa8bd" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/><g transform="translate(-86 -232) rotate(-8)"><rect x="-6" y="-104" width="12" height="90" rx="4" fill="#c98f52" stroke="#25104f" stroke-width="3"/><rect x="-22" y="-18" width="44" height="10" rx="4" fill="#6b4b2a" stroke="#25104f" stroke-width="3"/><rect x="-6" y="-8" width="12" height="22" rx="4" fill="#6b4b2a" stroke="#25104f" stroke-width="3"/></g><circle cx="-86" cy="-230" r="14" fill="#cfd9ee" stroke="#25104f" stroke-width="3"/></g>
-<g class="tc-ld-arm-r"><path d="M44,-160 L92,-182 L86,-232" fill="none" stroke="#25104f" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/><path d="M44,-160 L92,-182 L86,-232" fill="none" stroke="#9aa8bd" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/><g transform="translate(86 -232) rotate(-30) scale(1.5 1.5)"><rect x="-3" y="-4" width="7" height="14" rx="2" fill="#12102b"/><rect x="-5" y="-12" width="34" height="10" rx="3" fill="#12102b" stroke="#ff5fb0" stroke-width="1.5"/><rect x="6" y="-10" width="16" height="3" rx="1.5" fill="#8247e8"/><rect x="22" y="-10" width="12" height="6" rx="2" fill="#ff5fb0"/></g><circle cx="86" cy="-230" r="14" fill="#cfd9ee" stroke="#25104f" stroke-width="3"/></g>
+<g class="tc-ld-arm-l"><path d="M-44,-160 L-92,-182 L-86,-232" fill="none" stroke="#25104f" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/><path d="M-44,-160 L-92,-182 L-86,-232" fill="none" stroke="#9aa8bd" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/><g transform="translate(-86 -232) rotate(-8)"><rect x="-6" y="-104" width="12" height="90" rx="4" fill="#c98f52" stroke="#25104f" stroke-width="3"/><path d="M0,-98 V-24" stroke="#8a5a2b" stroke-width="2"/><rect x="-22" y="-18" width="44" height="10" rx="4" fill="#6b4b2a" stroke="#25104f" stroke-width="3"/><rect x="-6" y="-8" width="12" height="22" rx="4" fill="#6b4b2a" stroke="#25104f" stroke-width="3"/></g><circle cx="-86" cy="-230" r="14" fill="#cfd9ee" stroke="#25104f" stroke-width="3"/></g>
+<g class="tc-ld-arm-r"><path d="M44,-160 L92,-182 L86,-232" fill="none" stroke="#25104f" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/><path d="M44,-160 L92,-182 L86,-232" fill="none" stroke="#9aa8bd" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/><g transform="translate(86 -232) rotate(-30) scale(2.7 2.7)"><rect x="-3" y="-4" width="7" height="14" rx="2" fill="#12102b"/><rect x="-5" y="-12" width="34" height="10" rx="3" fill="#12102b" stroke="#ff5fb0" stroke-width="1.5"/><rect x="6" y="-10" width="16" height="3" rx="1.5" fill="#8247e8"/><rect x="22" y="-10" width="12" height="6" rx="2" fill="#ff5fb0"/><circle cx="36" cy="-7" r="4" fill="#ff5fb0" opacity=".7"/><g transform="translate(38 -7) rotate(21.6)"></g><g transform="translate(38 -7) rotate(70)"><path class="tc-ld-br" style="animation-delay:1.0s" d="M0,0 h16" stroke="#ff5fb0" stroke-width="2.6" stroke-linecap="round"/><path class="tc-ld-br" style="animation-delay:1.0s" d="M2,0 h11" stroke="#fff" stroke-width="1" stroke-linecap="round"/></g><g transform="translate(38 -7) rotate(-40)"><path class="tc-ld-br" style="animation-delay:1.9s" d="M0,0 h16" stroke="#ff5fb0" stroke-width="2.6" stroke-linecap="round"/><path class="tc-ld-br" style="animation-delay:1.9s" d="M2,0 h11" stroke="#fff" stroke-width="1" stroke-linecap="round"/></g><g transform="translate(38 -7) rotate(105)"><path class="tc-ld-br" style="animation-delay:5.1s" d="M0,0 h16" stroke="#ff5fb0" stroke-width="2.6" stroke-linecap="round"/><path class="tc-ld-br" style="animation-delay:5.1s" d="M2,0 h11" stroke="#fff" stroke-width="1" stroke-linecap="round"/></g><g transform="translate(38 -7) rotate(-15)"><path class="tc-ld-br" style="animation-delay:6.3s" d="M0,0 h16" stroke="#ff5fb0" stroke-width="2.6" stroke-linecap="round"/><path class="tc-ld-br" style="animation-delay:6.3s" d="M2,0 h11" stroke="#fff" stroke-width="1" stroke-linecap="round"/></g><g transform="translate(38 -7) rotate(48)"><path class="tc-ld-br" style="animation-delay:7.4s" d="M0,0 h16" stroke="#ff5fb0" stroke-width="2.6" stroke-linecap="round"/><path class="tc-ld-br" style="animation-delay:7.4s" d="M2,0 h11" stroke="#fff" stroke-width="1" stroke-linecap="round"/></g><g transform="translate(38 -7) rotate(-65)"><path class="tc-ld-br" style="animation-delay:8.6s" d="M0,0 h16" stroke="#ff5fb0" stroke-width="2.6" stroke-linecap="round"/><path class="tc-ld-br" style="animation-delay:8.6s" d="M2,0 h11" stroke="#fff" stroke-width="1" stroke-linecap="round"/></g></g><circle cx="86" cy="-230" r="14" fill="#cfd9ee" stroke="#25104f" stroke-width="3"/></g>
 <path d="M-44,-170 L44,-170 L54,-84 Q0,-68 -54,-84 Z" fill="#5a28b8" stroke="#25104f" stroke-width="4" stroke-linejoin="round"/>
 <rect x="-52" y="-100" width="104" height="12" fill="#7a4a24" stroke="#25104f" stroke-width="3"/>
 <circle cx="0" cy="-124" r="14" fill="#ffb23e" stroke="#25104f" stroke-width="3"/>
@@ -78,37 +107,112 @@ const LOADING_SCENE = `<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid
 <ellipse cx="0" cy="-214" rx="40" ry="38" fill="#f5c9a0" stroke="#25104f" stroke-width="3"/>
 <path d="M-56,-236 Q0,-300 56,-236 Q0,-262 -56,-236 Z" fill="#7d8aa6" stroke="#25104f" stroke-width="3" stroke-linejoin="round"/>
 <ellipse cx="-17" cy="-222" rx="5.5" ry="7.5" fill="#25104f"/><ellipse cx="17" cy="-222" rx="5.5" ry="7.5" fill="#25104f"/>
-<circle cx="-15.2" cy="-225" r="2.2" fill="#ffffff"/><circle cx="18.8" cy="-225" r="2.2" fill="#ffffff"/>
+<circle cx="-15.2" cy="-225" r="2.2" fill="#fff"/><circle cx="18.8" cy="-225" r="2.2" fill="#fff"/>
 <path d="M-27,-238 Q-17,-244 -7,-239 M7,-239 Q17,-244 27,-238" stroke="#25104f" stroke-width="4" stroke-linecap="round" fill="none"/>
 <circle cx="0" cy="-208" r="7" fill="#e5a57a"/>
 <path d="M-13,-192 Q0,-181 13,-192" fill="none" stroke="#25104f" stroke-width="4" stroke-linecap="round"/>
 <circle cx="-30" cy="-200" r="7" fill="#ff8aa0" opacity=".6"/><circle cx="30" cy="-200" r="7" fill="#ff8aa0" opacity=".6"/>
-<path class="tc-ld-sweat" d="M-70,-250 q-6,12 0,16 q6,-4 0,-16 Z" fill="#8fe4ff" stroke="#25104f" stroke-width="2"/>
 </g>
 </g>
 </g>
 </g>
-<g transform="translate(1030 290)">
+
+<g transform="translate(1150 300)">
 <g class="tc-ld-bot">
+<path d="M-26,50 L26,50 L16,86 L-16,86 Z" fill="#4fd8ff" opacity=".0"/>
 <g class="tc-ld-flame"><path d="M-14,46 L14,46 L0,90 Z" fill="#ff5a1a"/><path d="M-8,46 L8,46 L0,72 Z" fill="#ffd23e"/></g>
 <g class="tc-ld-head">
 <path d="M0,-40 V-62" stroke="#cfd9ee" stroke-width="5"/>
 <circle cx="0" cy="-66" r="9" fill="#ffb23e" stroke="#25104f" stroke-width="3"/>
 <circle cx="0" cy="0" r="44" fill="url(#tcLdSteel)" stroke="#25104f" stroke-width="4"/>
 <ellipse cx="0" cy="-2" rx="32" ry="26" fill="#12102b" stroke="#25104f" stroke-width="3"/>
-<circle cx="0" cy="-2" r="15" fill="#4fd8ff"/><circle cx="0" cy="-2" r="7" fill="#12102b"/><circle cx="-4" cy="-6" r="3" fill="#ffffff"/>
+<circle cx="0" cy="-2" r="15" fill="#4fd8ff"/><circle cx="0" cy="-2" r="7" fill="#12102b"/><circle cx="-4" cy="-6" r="3" fill="#fff"/>
 <path d="M-24,-24 L-6,-20" stroke="#4fd8ff" stroke-width="4" stroke-linecap="round"/>
 <rect x="-58" y="-6" width="14" height="22" rx="7" fill="#9aa8bd" stroke="#25104f" stroke-width="3"/><rect x="44" y="-6" width="14" height="22" rx="7" fill="#9aa8bd" stroke="#25104f" stroke-width="3"/>
 </g>
-<text x="52" y="-72" font-family="Orbitron, sans-serif" font-weight="900" font-size="46" fill="#ffb23e" stroke="#12102b" stroke-width="2" paint-order="stroke">?</text>
 </g>
 </g>
-<g><use href="#tcLdWind" x="470" y="300"/><use href="#tcLdWind" x="440" y="340"/><use href="#tcLdWind" x="1120" y="480"/></g>
+
+<g><use href="#tcLdWind" x="330" y="300"/><use href="#tcLdWind" x="300" y="340"/><use href="#tcLdWind" x="1260" y="480"/></g>
+
+<g class="tc-ld-scn">
+<g transform="translate(0 90)"><g class="tc-ld-bal-m0">
+<g class="tc-ld-def0"><path d="M-40,-10 Q-70,20 -30,40 Q0,50 30,38 Q64,18 36,-14 Q0,-30 -40,-10 Z" fill="#e8262a" stroke="#25104f" stroke-width="3"/><path d="M-20,-10 Q-30,20 -10,40 M10,-14 Q20,20 6,44" fill="none" stroke="#ffd23e" stroke-width="6"/></g>
+<g class="tc-ld-env0"><g class="tc-ld-bob">
+<path d="M-62,0 C-62,-70 -30,-96 0,-96 C30,-96 62,-70 62,0 C62,34 28,62 12,80 H-12 C-28,62 -62,34 -62,0 Z" fill="#e8262a" stroke="#25104f" stroke-width="4"/>
+<path d="M-12,-95 C-40,-60 -40,40 -12,80 M12,-95 C40,-60 40,40 12,80" fill="none" stroke="#ffd23e" stroke-width="12"/>
+<path d="M-56,-30 C-30,-50 30,-50 56,-30" fill="none" stroke="#25104f" stroke-width="3" opacity=".4"/>
+<path d="M-10,80 L-20,150 M10,80 L20,150" stroke="#25104f" stroke-width="3"/>
+</g></g>
+<g class="tc-ld-rid0"><g transform="translate(0 150)"><g class="tc-ld-tum0">
+<path d="M-20,0 L-10,16 M20,0 L10,16" stroke="#25104f" stroke-width="3" stroke-linecap="round"/>
+<path d="M-12,18 L-22,2 M12,18 L22,2" stroke="#f5c9a0" stroke-width="7" stroke-linecap="round"/>
+<rect x="-14" y="16" width="28" height="36" rx="9" fill="#ff8a3a" stroke="#25104f" stroke-width="3"/>
+<path d="M-8,52 L-10,82 M8,52 L10,82" stroke="#2f6bff" stroke-width="9" stroke-linecap="round"/>
+<ellipse cx="-11" cy="85" rx="9" ry="5" fill="#7a4a24" stroke="#25104f" stroke-width="2"/><ellipse cx="11" cy="85" rx="9" ry="5" fill="#7a4a24" stroke="#25104f" stroke-width="2"/>
+<circle cx="0" cy="6" r="14" fill="#f5c9a0" stroke="#25104f" stroke-width="3"/>
+<path d="M-14,2 Q0,-14 14,2 Z" fill="#8247e8" stroke="#25104f" stroke-width="2.5"/>
+<circle cx="-5" cy="7" r="2" fill="#25104f"/><circle cx="5" cy="7" r="2" fill="#25104f"/><ellipse cx="0" cy="13" rx="4" ry="3" fill="#25104f"/>
+</g></g></g>
+<g transform="translate(0 -6)"><g class="tc-ld-pop-f0"><path d="M0,-34 l9,22 l24,-8 l-14,20 l20,14 l-26,0 l-5,24 l-9,-22 l-24,8 l14,-20 l-20,-14 l26,0 Z" fill="#ffe08a" stroke="#ff5fb0" stroke-width="3"/><text x="0" y="-48" text-anchor="middle" font-family="Orbitron, sans-serif" font-weight="900" font-size="34" fill="#ff5fb0" stroke="#25104f" stroke-width="2" paint-order="stroke">POP!</text></g></g>
+</g></g>
+${bubble(0)}
+<g class="tc-ld-dizzy0" style="transform-origin: 1250px 504px" fill="#ffb23e" stroke="#25104f" stroke-width="1.5"><circle cx="1250" cy="480" r="6"/><circle cx="1280" cy="506" r="6"/><circle cx="1220" cy="506" r="6"/></g>
+<g transform="translate(0 90)"><g class="tc-ld-bal-m1">
+<g class="tc-ld-def1"><path d="M-40,-10 Q-70,20 -30,40 Q0,50 30,38 Q64,18 36,-14 Q0,-30 -40,-10 Z" fill="#e8262a" stroke="#25104f" stroke-width="3"/><path d="M-20,-10 Q-30,20 -10,40 M10,-14 Q20,20 6,44" fill="none" stroke="#ffd23e" stroke-width="6"/></g>
+<g class="tc-ld-env1"><g class="tc-ld-bob">
+<path d="M-62,0 C-62,-70 -30,-96 0,-96 C30,-96 62,-70 62,0 C62,34 28,62 12,80 H-12 C-28,62 -62,34 -62,0 Z" fill="#e8262a" stroke="#25104f" stroke-width="4"/>
+<path d="M-12,-95 C-40,-60 -40,40 -12,80 M12,-95 C40,-60 40,40 12,80" fill="none" stroke="#ffd23e" stroke-width="12"/>
+<path d="M-56,-30 C-30,-50 30,-50 56,-30" fill="none" stroke="#25104f" stroke-width="3" opacity=".4"/>
+<path d="M-10,80 L-20,150 M10,80 L20,150" stroke="#25104f" stroke-width="3"/>
+</g></g>
+<g class="tc-ld-rid1"><g transform="translate(0 150)"><g class="tc-ld-tum1">
+<path d="M-20,0 L-10,16 M20,0 L10,16" stroke="#25104f" stroke-width="3" stroke-linecap="round"/>
+<path d="M-12,18 L-22,2 M12,18 L22,2" stroke="#f5c9a0" stroke-width="7" stroke-linecap="round"/>
+<rect x="-14" y="16" width="28" height="36" rx="9" fill="#ff8a3a" stroke="#25104f" stroke-width="3"/>
+<path d="M-8,52 L-10,82 M8,52 L10,82" stroke="#2f6bff" stroke-width="9" stroke-linecap="round"/>
+<ellipse cx="-11" cy="85" rx="9" ry="5" fill="#7a4a24" stroke="#25104f" stroke-width="2"/><ellipse cx="11" cy="85" rx="9" ry="5" fill="#7a4a24" stroke="#25104f" stroke-width="2"/>
+<circle cx="0" cy="6" r="14" fill="#f5c9a0" stroke="#25104f" stroke-width="3"/>
+<path d="M-14,2 Q0,-14 14,2 Z" fill="#8247e8" stroke="#25104f" stroke-width="2.5"/>
+<circle cx="-5" cy="7" r="2" fill="#25104f"/><circle cx="5" cy="7" r="2" fill="#25104f"/><ellipse cx="0" cy="13" rx="4" ry="3" fill="#25104f"/>
+</g></g></g>
+<g transform="translate(0 -6)"><g class="tc-ld-pop-f1"><path d="M0,-34 l9,22 l24,-8 l-14,20 l20,14 l-26,0 l-5,24 l-9,-22 l-24,8 l14,-20 l-20,-14 l26,0 Z" fill="#ffe08a" stroke="#ff5fb0" stroke-width="3"/><text x="0" y="-48" text-anchor="middle" font-family="Orbitron, sans-serif" font-weight="900" font-size="34" fill="#ff5fb0" stroke="#25104f" stroke-width="2" paint-order="stroke">POP!</text></g></g>
+</g></g>
+${bubble(1)}
+<g class="tc-ld-dizzy1" style="transform-origin: 580px 504px" fill="#ffb23e" stroke="#25104f" stroke-width="1.5"><circle cx="580" cy="480" r="6"/><circle cx="610" cy="506" r="6"/><circle cx="550" cy="506" r="6"/></g>
+<g transform="translate(0 90)"><g class="tc-ld-bal-m2">
+<g class="tc-ld-def2"><path d="M-40,-10 Q-70,20 -30,40 Q0,50 30,38 Q64,18 36,-14 Q0,-30 -40,-10 Z" fill="#e8262a" stroke="#25104f" stroke-width="3"/><path d="M-20,-10 Q-30,20 -10,40 M10,-14 Q20,20 6,44" fill="none" stroke="#ffd23e" stroke-width="6"/></g>
+<g class="tc-ld-env2"><g class="tc-ld-bob">
+<path d="M-62,0 C-62,-70 -30,-96 0,-96 C30,-96 62,-70 62,0 C62,34 28,62 12,80 H-12 C-28,62 -62,34 -62,0 Z" fill="#e8262a" stroke="#25104f" stroke-width="4"/>
+<path d="M-12,-95 C-40,-60 -40,40 -12,80 M12,-95 C40,-60 40,40 12,80" fill="none" stroke="#ffd23e" stroke-width="12"/>
+<path d="M-56,-30 C-30,-50 30,-50 56,-30" fill="none" stroke="#25104f" stroke-width="3" opacity=".4"/>
+<path d="M-10,80 L-20,150 M10,80 L20,150" stroke="#25104f" stroke-width="3"/>
+</g></g>
+<g class="tc-ld-rid2"><g transform="translate(0 150)"><g class="tc-ld-tum2">
+<path d="M-20,0 L-10,16 M20,0 L10,16" stroke="#25104f" stroke-width="3" stroke-linecap="round"/>
+<path d="M-12,18 L-22,2 M12,18 L22,2" stroke="#f5c9a0" stroke-width="7" stroke-linecap="round"/>
+<rect x="-14" y="16" width="28" height="36" rx="9" fill="#ff8a3a" stroke="#25104f" stroke-width="3"/>
+<path d="M-8,52 L-10,82 M8,52 L10,82" stroke="#2f6bff" stroke-width="9" stroke-linecap="round"/>
+<ellipse cx="-11" cy="85" rx="9" ry="5" fill="#7a4a24" stroke="#25104f" stroke-width="2"/><ellipse cx="11" cy="85" rx="9" ry="5" fill="#7a4a24" stroke="#25104f" stroke-width="2"/>
+<circle cx="0" cy="6" r="14" fill="#f5c9a0" stroke="#25104f" stroke-width="3"/>
+<path d="M-14,2 Q0,-14 14,2 Z" fill="#8247e8" stroke="#25104f" stroke-width="2.5"/>
+<circle cx="-5" cy="7" r="2" fill="#25104f"/><circle cx="5" cy="7" r="2" fill="#25104f"/><ellipse cx="0" cy="13" rx="4" ry="3" fill="#25104f"/>
+</g></g></g>
+<g transform="translate(0 -6)"><g class="tc-ld-pop-f2"><path d="M0,-34 l9,22 l24,-8 l-14,20 l20,14 l-26,0 l-5,24 l-9,-22 l-24,8 l14,-20 l-20,-14 l26,0 Z" fill="#ffe08a" stroke="#ff5fb0" stroke-width="3"/><text x="0" y="-48" text-anchor="middle" font-family="Orbitron, sans-serif" font-weight="900" font-size="34" fill="#ff5fb0" stroke="#25104f" stroke-width="2" paint-order="stroke">POP!</text></g></g>
+</g></g>
+${bubble(2)}
+<g class="tc-ld-dizzy2" style="transform-origin: 1110px 504px" fill="#ffb23e" stroke="#25104f" stroke-width="1.5"><circle cx="1110" cy="480" r="6"/><circle cx="1140" cy="506" r="6"/><circle cx="1080" cy="506" r="6"/></g>
+<path class="tc-ld-slash" d="M676,186 Q748,150 722,60" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round"/><path class="tc-ld-slash" d="M684,176 Q740,146 716,76" fill="none" stroke="#4fd8ff" stroke-width="4" stroke-linecap="round"/>
+<g transform="translate(886 178) rotate(-25.9)"><g class="tc-ld-bf"><path d="M0,0 h44" stroke="#ff5fb0" stroke-width="6" stroke-linecap="round"/><path d="M4,0 h30" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/></g></g>
 </g>
 </svg>`;
+}
 
-export function loadingScene(doc: Document): SVGElement {
-  return svgFromString(doc, LOADING_SCENE, 'tc-loading-art');
+export function loadingScene(
+  doc: Document,
+  lines: readonly (readonly string[])[] = LOADING.riderLines,
+): SVGElement {
+  return svgFromString(doc, loadingSceneSvg(lines), 'tc-loading-art');
 }
 
 /** The wavy timeline that fills as loading moves along. pathLength is 100, so a dash is a percent. */

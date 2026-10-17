@@ -33,7 +33,8 @@ export function createPauseControl(doc: Document, handlers: PauseHandlers): Paus
   const bs = button.style;
   bs.position = 'fixed';
   bs.right = '16px';
-  bs.bottom = '16px';
+  // Top right, under the team card, so the band under the picture holds only the controls.
+  bs.top = 'var(--tc-pause-top)';
   bs.zIndex = String(PAUSE_Z);
   bs.minHeight = `${UI.tapTargetMinPx}px`;
   bs.minWidth = `${UI.tapTargetMinPx}px`;

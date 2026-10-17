@@ -17,7 +17,6 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 - Miss, near-miss, and wrong-answer lines are plain. Chrono has no label or quip on the reload card. "My dignity needs a rematch" shows even when it does not fit.
 
 ## P2
-- The aim panel still sits over the ground strip at 1024x768. Moving the controls below the picture means a new canvas layout.
 - Tumble bubble: a squash, spin or block-bounce animation for the speaker (the tail now points at them).
 - Reload card: an optional "hide the bonus ring" setting for slow readers.
 - Victory awards: the winner can still hold five awards. Consider a cap if it stings.
@@ -29,7 +28,6 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 - Wood plank and neon pod card skins, bigger castle and rocket pictures on Setup cards, brighter Tap to Play silhouettes with a visual gag, and bouncing victory blocks are new art.
 - Phase 2 base placement, biomes, and evasion abilities (docs/BUILD.md). The Camp Hub is built.
 - Camp scrap counter and saved scrap between matches. The Main board has no scrap counter, so it waits for Phase 3 and the Forge.
-- Phase 3 Upgrade screen: build from the Upgrade and UpgradePast boards in the design handoff. The rules are built. The label is "Upgrade Base", never "Build". The HUD health meter and base pills must show the raised maximum health (`maxBaseHp`) once Upgrade Base is playable.
 - There are about 40 items per grade and subject. Families who play many rematches will see repeats. K-1 reading is all sight words.
 - There is no way to end a match early and no setting for match length.
 - Parents must re-pick grades every time (Clear my data now fits on screen with a privacy line).

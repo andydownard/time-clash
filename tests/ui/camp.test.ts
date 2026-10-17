@@ -3,9 +3,8 @@
 // that must hold on every look (real buttons, a name for assistive tech, no color-only meaning).
 import { beforeEach, describe, expect, it } from 'vitest';
 import { CAMP, GAME_TAGLINE, GAME_TITLE } from '../../src/data/copy';
-import { LOCAL_IDS } from '../../src/ui/constants';
 import { TEST_IDS } from '../../src/ui/types';
-import { click, flush, q, qa, setup } from './helpers';
+import { click, q, qa, setup } from './helpers';
 
 let s: ReturnType<typeof setup>;
 beforeEach(() => {
@@ -83,55 +82,28 @@ describe('Camp Change players', () => {
   });
 });
 
-describe('Camp Forge Weapon', () => {
-  it('is a working button with no Coming soon ribbon', () => {
-    void s.overlay.showCamp();
-    const forge = q<HTMLButtonElement>(TEST_IDS.campForge)!;
-    expect(forge.getAttribute('aria-disabled')).toBeNull();
-    expect(forge.parentElement!.querySelector('.tc-camp-soon')).toBeNull();
-  });
-  it('resolves with forge and closes, so the Forge can open', async () => {
+describe('Camp side buttons', () => {
+  it.each([
+    [TEST_IDS.campForge, 'forge'],
+    [TEST_IDS.campUpgrade, 'upgrade'],
+  ] as const)('%s is a working button that opens its own screen', async (id, choice) => {
     const p = s.overlay.showCamp();
-    click(q(TEST_IDS.campForge));
-    await expect(p).resolves.toBe('forge');
+    const button = q<HTMLButtonElement>(id)!;
+    expect(button.getAttribute('aria-disabled')).toBeNull();
+    click(button);
+    await expect(p).resolves.toBe(choice);
     expect(q(TEST_IDS.campStart)).toBeNull();
   });
-});
 
-describe('Camp closed button (Upgrade Base)', () => {
-  it('shows a Coming soon ribbon in words, not only by dimming', () => {
+  it('has no Coming soon text anywhere now that both screens exist', () => {
     void s.overlay.showCamp();
-    const slot = q(TEST_IDS.campUpgrade)!.parentElement!;
-    expect(slot.querySelector('.tc-camp-soon')!.textContent).toBe(CAMP.soon);
-    const button = slot.querySelector('button')!;
-    expect(button.getAttribute('aria-disabled')).toBe('true');
-    expect(button.hasAttribute('disabled')).toBe(false);
+    expect(document.body.textContent).not.toMatch(/coming soon/i);
+    expect(document.querySelector('.tc-camp-soon')).toBeNull();
   });
 
-  it('stays on the Camp when tapped, and says why in a polite status line', async () => {
-    let done = false;
-    void s.overlay.showCamp().then(() => (done = true));
-    const status = q(LOCAL_IDS.campStatus)!;
-    expect(status.getAttribute('role')).toBe('status');
-    click(q(TEST_IDS.campUpgrade));
-    expect(status.textContent).toBe(CAMP.upgradeSoon);
-    await flush();
-    expect(done).toBe(false);
-    expect(q(TEST_IDS.campStart)).not.toBeNull();
-  });
-
-  it('wiggles the ribbon on a tap, so a child can see something heard them', () => {
+  it('puts Forge Weapon on the Past side and Upgrade Base on the Future side', () => {
     void s.overlay.showCamp();
-    const ribbon = q(TEST_IDS.campUpgrade)!.parentElement!.querySelector('.tc-camp-soon')!;
-    expect(ribbon.hasAttribute('data-nudge')).toBe(false);
-    click(q(TEST_IDS.campUpgrade));
-    expect(ribbon.hasAttribute('data-nudge')).toBe(true);
-  });
-
-  it('can be reached with the keyboard (aria-disabled, not disabled)', () => {
-    void s.overlay.showCamp();
-    const b = q<HTMLButtonElement>(TEST_IDS.campUpgrade)!;
-    b.focus();
-    expect(document.activeElement).toBe(b);
+    expect(q(TEST_IDS.campForge)!.parentElement!.getAttribute('data-kind')).toBe('past');
+    expect(q(TEST_IDS.campUpgrade)!.parentElement!.getAttribute('data-kind')).toBe('future');
   });
 });

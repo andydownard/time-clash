@@ -72,6 +72,10 @@ All interactive parts are at least 56px tall and wide (`--tc-tap`).
 
 **Focus ring.** `outline: var(--tc-focus-width) solid var(--tc-focus-on-light)` on light surfaces and `var(--tc-focus-on-dark)` on dark ones, with `outline-offset: var(--tc-focus-offset)`. Never remove it. One ring color cannot reach 3:1 on both parchment and ink, so there are two.
 
+## Battle layout
+
+The Phaser canvas is the 1280x720 battlefield plus a control band below it (`BATTLE_BAND`, 200 world px), so it is 1280x920 and scaled to fit, top-aligned and centered across. Physics and layout still use the 1280x720 world. The HUD control bar sits at the bottom of the screen, full width, inside that band: the turn strip on row 1, then the fighter selector, the Angle and Power sliders and Fire on row 2 (portrait wraps to more rows). The backdrop paints the band as ground (grass left, soil right). Sound sits top left under the ? and gear. Pause sits top right under the team card. The speech bubble maps world to screen with one scale (canvas width / world width) on both axes.
+
 ## Contrast
 
 Computed from the token values by `tests/styles/designPairs.ts` (WCAG 2.1 relative luminance). Ratios are rounded down. Body text needs 4.5:1. Large UI (buttons, borders, focus rings, fills) needs 3:1. The test fails if this table drifts from the tokens.
@@ -142,7 +146,10 @@ Computed from the token values by `tests/styles/designPairs.ts` (WCAG 2.1 relati
 | Google Fonts link | Self-hosted woff2 in `public/fonts` | No third-party requests. Children's game. |
 | Pixel sizes of the 1600x900 boards | Tokens above | Our screens are 1280x800, 1024x768, 768x1024. |
 
-The Camp board (Main) is built: `src/ui/campArt.ts` holds its picture, with ids prefixed `tcCamp` and classes `tc-camp-*`. The big button reads "Time to Clash!" (the slogan, never the name). The Forge board (Past and Future) is built in `src/ui/forgeArt.ts`: the board's Gold, Credits, Wood and Stone become Scrap, and "Build upgrade" becomes "Forge upgrade". The Upgrade boards are not built yet. On narrow screens the Camp picture keeps its 16:9 shape along the bottom, because cropping it hides both camps. The "Base Destroyed" board becomes the Wipeout screen: walls turn into bouncy toy blocks, and no copy uses "destroyed", "defeat", "dead", "die", or "kill".
+The Camp board (Main) is built: `src/ui/campArt.ts` holds its picture, with ids prefixed `tcCamp` and classes `tc-camp-*`. The big button reads "Time to Clash!" (the slogan, never the name). The Forge board (Past and Future) is built in `src/ui/forgeArt.ts`: the board's Gold, Credits, Wood and Stone become Scrap. The loose bottom button is gone. The weapon in use shows a "Level up · N Scrap" button inside its own row (56px tall, named for the weapon, "Top level" at the top). Each owned card says "Owned by <name>", the player on that side. The Upgrade boards are built in `src/ui/upgradeArt.ts` (the Past castle tower and the Future silo hologram with its ground line and depth marks). The cards read "Upgrade the Tower", "Reinforce the Wall" and "New Castle Gate", the title reads "Upgrade Base", and nothing says rebuild or build. They share the Forge's layout and classes (`tc-forge-*`). On narrow screens the Camp picture keeps its 16:9 shape along the bottom, because cropping it hides both camps. The "Base Destroyed" board becomes the Wipeout screen: walls turn into bouncy toy blocks, and no copy uses "destroyed", "defeat", "dead", "die", or "kill".
+
+## Icon
+The icon comes from the design (a sword crossed with a glowing laser sword on purple, for Past and Future). Andy supplied it as a 128x128 PNG. Files: `public/favicon-128.png` (the original), `public/favicon-32.png` and `public/apple-touch-icon.png` (180x180, for the iPad home screen) are resized from it. `tests/favicon.test.ts` checks the links and sizes.
 
 ## Fonts
 

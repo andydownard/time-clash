@@ -30,7 +30,7 @@ test('every screen meets the 56px and 20px floors', async ({ page }) => {
   await startMatch(page, undefined, undefined, undefined, () => expectFloors(page, 'Camp'));
   await expectFloors(page, 'Pass screen');
   await readyUp(page);
-  await expect(tid(page, 'turn-banner')).toBeHidden({ timeout: 5_000 });
+  await expect(tid(page, 'fire')).toBeEnabled({ timeout: 5_000 });
   await expectFloors(page, 'Battle HUD');
   await playShots(page, ['miss', 'miss']);
   await expect(tid(page, 'reload-modal')).toBeVisible({ timeout: 45_000 });

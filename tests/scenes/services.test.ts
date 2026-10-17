@@ -39,6 +39,19 @@ describe('createBrowserAudioEnv', () => {
   it('has no speech synthesis when the window lacks it', () => {
     expect(createBrowserAudioEnv({} as never).speechSynthesis ?? null).toBeNull();
   });
+  it('never speaks in a browser driven by a test tool', () => {
+    const synth = { speak: () => {}, cancel: () => {} };
+    const driven = createBrowserAudioEnv({
+      speechSynthesis: synth,
+      navigator: { webdriver: true },
+    } as never);
+    expect(driven.speechSynthesis).toBeNull();
+    const human = createBrowserAudioEnv({
+      speechSynthesis: synth,
+      navigator: { webdriver: false },
+    } as never);
+    expect(human.speechSynthesis).toBe(synth);
+  });
 });
 
 describe('createServices', () => {

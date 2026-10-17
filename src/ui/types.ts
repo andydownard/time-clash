@@ -3,6 +3,7 @@
 // Phaser draws only the world (backdrop, bases, shots, tumbles).
 import type { CampState } from '../game/loadout';
 import type { Grade, Players, Team, TeamStats, Vec2 } from '../game/types';
+import type { UnitId } from '../game/units';
 import type { Question } from '../questions/types';
 import type { Settings } from '../storage/types';
 import type { IntroScript } from '../data/types';
@@ -52,6 +53,11 @@ export const TEST_IDS = {
   campForge: 'camp-forge',
   campUpgrade: 'camp-upgrade',
   campStart: 'camp-start',
+  upgradeBack: 'upgrade-back',
+  upgradeScrap: 'upgrade-scrap',
+  upgradeStatus: 'upgrade-status',
+  upgradeTeam: (team: Team) => `upgrade-team-${team}`,
+  upgradeRow: (id: string) => `upgrade-row-${id}`,
   forgeBack: 'forge-back',
   forgeScrap: 'forge-scrap',
   forgeUpgrade: 'forge-upgrade',
@@ -70,6 +76,7 @@ export const TEST_IDS = {
   angleControl: 'aim-angle',
   powerControl: 'aim-power',
   fireButton: 'fire',
+  unit: (id: string) => `unit-${id}`,
   wind: 'wind',
   baseHp: (team: Team) => `base-hp-${team}`,
   shotsLeft: 'shots-left',
@@ -81,7 +88,7 @@ export const TEST_IDS = {
 
 // ---------- Per-call options ----------
 
-export type BannerOptions = { name: string; team: Team; shot: 1 | 2 };
+export type BannerOptions = { name: string; team: Team; shot: 1 | 2 | 'POWER' };
 
 export type PassScreenOptions = { nextName: string; nextTeam: Team };
 
@@ -89,6 +96,8 @@ export type ReloadModalOptions = {
   question: Question;
   team: Team;
   playerName: string;
+  /** The other side, shown as a "Waiting" tag. Optional. Their name is not secret. */
+  waiting?: { team: Team; name: string };
   /** Reads the question aloud (the Hear it button). Gets the whole text and its sentences. */
   speak?: (text: string, sentences: string[]) => void;
   /** Chrono's quick joke for the answer. Optional. */
@@ -119,18 +128,27 @@ export type HudState = {
   activeTeam: Team | null;
   names: Record<Team, string>;
   baseHp: Record<Team, number>;
+  /** Each base's full health. Missing means 100. An upgrade can raise it. */
+  maxBaseHp?: Record<Team, number>;
   scrap: Record<Team, number>;
   wind: number;
   angleDeg: number;
   power: number;
   shotsLeft: 0 | 1 | 2;
+  /** True while the Power Shot (the bonus for a right answer) is up. */
+  bonus: boolean;
   /** False while a shot flies or a cover is up. */
   canFire: boolean;
+  /** The fighter chosen by the active team. */
+  selected: UnitId;
+  /** The active team's five fighters. Empty when no team is up. */
+  units: ReadonlyArray<{ id: UnitId; name: string }>;
 };
 
 export type HudHandlers = {
   onAim: (aim: { angleDeg: number; power: number }) => void;
   onFire: () => void;
+  onSelect: (id: UnitId) => void;
   onMuteToggle: () => void;
 };
 
@@ -141,11 +159,13 @@ export type VictoryOptions = {
 };
 
 /** The Camp starts the match, or sends the family back to Setup to change the players. */
-export type CampChoice = 'battle' | 'players' | 'forge';
+export type CampChoice = 'battle' | 'players' | 'forge' | 'upgrade';
 
 export type ForgeOptions = {
-  /** What the family owns now. */
+  /** What everyone owns now, by name. */
   camp: CampState;
+  /** Who plays each side. The screen shows and spends that player's Scrap. */
+  names: Record<Team, string>;
   /** Called with the new camp after every change, so it is saved at once. */
   save: (camp: CampState) => void;
 };
@@ -191,6 +211,8 @@ export interface Overlay {
   showCamp(): Promise<CampChoice>;
   /** Forge Weapon. Changes go through `save`. Resolves when Back is tapped. */
   showForge(options: ForgeOptions): Promise<void>;
+  /** Upgrade Base. Same options as the Forge. Resolves when Back is tapped. */
+  showUpgrade(options: ForgeOptions): Promise<void>;
   showVictory(options: VictoryOptions): Promise<VictoryChoice>;
 
   // Battle HUD (Z.hud)

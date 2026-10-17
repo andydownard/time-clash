@@ -5,6 +5,7 @@ import { TURN } from '../game/config';
 import type { AwardId } from '../game/awards';
 import { windLevel } from '../game/wind';
 import type { Subject, Team } from '../game/types';
+import type { UpgradeEffect } from '../game/upgrades';
 
 export const GAME_TITLE = 'Time Clash';
 export const GAME_SUBTITLE = 'Past vs. Future';
@@ -22,16 +23,54 @@ export const FORGE_COPY = {
   level: 'Level',
   rangeNames: { short: 'Short', long: 'Long', far: 'Far' } as const,
   equipped: 'Equipped',
-  owned: 'Owned',
+  /** Who owns it: the name of the player on that side. */
+  ownedBy: (name: string): string => `Owned by ${name}`,
   unlockCost: (cost: number): string => `${cost} Scrap`,
-  upgrade: (cost: number): string => `Forge upgrade · ${cost} Scrap`,
-  upgradeMax: 'Top level',
+  /** The button inside the row of the weapon in use. */
+  levelUp: (cost: number): string => `Level up · ${cost} Scrap`,
+  levelUpMax: 'Top level',
+  levelUpLabel: (weapon: string, text: string): string => `${weapon}: ${text}`,
   /** Status lines, read out politely. Never shaming: a short purse is just "not yet". */
   equippedNow: (name: string): string => `${name} is equipped.`,
   unlocked: (name: string): string => `You unlocked ${name}!`,
   forged: (name: string, level: number): string => `${name} is now level ${level}!`,
   needMore: (n: number): string => `Not yet. You need ${n} more Scrap.`,
   atTop: 'This weapon is at the top level.',
+} as const;
+
+// ---------- Upgrade Base ----------
+/** What an upgrade does, in words a child can read. `n` is the total at the level shown. */
+export const upgradeEffect = (effect: UpgradeEffect, n: number): string => {
+  switch (effect) {
+    case 'maxHp':
+      return `Base health +${n}`;
+    case 'directCut':
+      return `Direct hits hurt ${n} less`;
+    case 'nearCut':
+      return `Near misses hurt ${n} less`;
+    case 'shieldHits':
+      return n === 1 ? 'Blocks 1 hit each match' : `Blocks ${n} hits each match`;
+    case 'directBonus':
+      return `Your direct hits +${n}`;
+    case 'repair':
+      return `Heals ${n} health each turn`;
+  }
+};
+
+export const UPGRADE_COPY = {
+  title: 'Upgrade Base',
+  back: 'Back',
+  scrap: 'Scrap',
+  pickTeam: 'Choose a team',
+  level: (n: number, max: number): string => `Level ${n} of ${max}`,
+  cost: (cost: number): string => `${cost} Scrap`,
+  topLevel: 'Top level',
+  /** Who owns it: the name of the player on that side. */
+  ownedBy: (name: string): string => `Owned by ${name}`,
+  /** Status lines, read out politely. A short purse is just "not yet". */
+  upgraded: (name: string, level: number): string => `${name} is now level ${level}!`,
+  needMore: (n: number): string => `Not yet. You need ${n} more Scrap.`,
+  atTop: 'This one is at the top level.',
 } as const;
 
 // ---------- Camp ----------
@@ -45,8 +84,6 @@ export const CAMP = {
   start: GAME_TAGLINE,
   /** A small way back to Setup, to change names, grades and subjects. */
   players: 'Change players',
-  soon: 'Coming soon',
-  upgradeSoon: 'Upgrade Base is coming soon.',
 } as const;
 
 export const TEAM_NAMES: Record<Team, string> = { PAST: 'Team Past', FUTURE: 'Team Future' };
@@ -114,12 +151,18 @@ export const INTRO = {
 export const LOADING = {
   /** From docs/DESIGN_BRIEF.md. Rotates every TIMING.loadingMessageMs. */
   messages: [
-    'Charging the laser cannon with a potato...',
+    'Convincing the hoverboard that math is good for it...',
     'Teaching the catapult how to do long division...',
     'Telling the knights what Wi-Fi is...',
     'Warming up the dad jokes...',
     'Buffing out dignity scratches from the last fall...',
     "Looking for Austin's secret base behind a taco truck...",
+  ],
+  /** What each balloon rider says after the landing, one set of lines per rider. Short and silly. */
+  riderLines: [
+    ['I meant to do that', 'on purpose! I was', 'testing gravity.'],
+    ['Rude! I was only', 'admiring your sword.', "It's very pointy."],
+    ['Note to self: take', 'the bus next time.', "Buses don't pop."],
   ],
   percent: (p: number): string => `${Math.round(p)}%`,
   errorTitle: 'Oops! Some pieces got lost in time.',
@@ -129,7 +172,8 @@ export const LOADING = {
 
 // ---------- Setup ----------
 export const SETUP = {
-  heading: 'Who is playing?',
+  heading: 'Who is fighting?',
+  subtitle: 'Type your name. Pick your grade and subject.',
   nameLabel: 'Name',
   namePlaceholder: 'Type a name',
   gradeLabel: 'Grade',
@@ -156,13 +200,17 @@ export const HUD = {
   scrap: 'Scrap',
   shotsLeft: 'Shots left',
   reloadPip: 'Reload',
-  keyboardHint: 'Arrow keys aim. Space fires.',
+  keyboardHint: 'Arrow keys aim. Space fires. Press a fighter\'s letter or number to pick it.',
+  pickOne: 'Pick one',
+  unitLabel: (name: string, id: string): string => `${name} ${id}`,
+  /** The gold star pip and screen-reader text while the Power Shot is up. */
+  powerShot: 'Power Shot!',
   /** The coach line: it teaches the two sliders and shows until the first shot is fired. */
   coach: 'Slide Angle and Power. Then press Fire!',
   yourTurn: 'Your turn',
   angleValue: (deg: number): string => `${Math.round(deg)}°`,
   powerValue: (p: number): string => `${Math.round(p)}`,
-  hpValue: (hp: number): string => `${Math.round(hp)} / 100`,
+  hpValue: (hp: number, max = 100): string => `${Math.round(hp)} / ${Math.round(max)}`,
   shotsValue: (n: number): string => `${n} of ${TURN.shotsPerTurn}`,
 } as const;
 
@@ -183,8 +231,10 @@ export const windLabel = (wind: number): string => {
 };
 
 // ---------- Turn banner and pass screen ----------
-export const turnBanner = (name: string, shot: number): string =>
-  `${String(name).toUpperCase()}, YOUR TURN! (SHOT ${shot} OF ${TURN.shotsPerTurn})`;
+export const turnBanner = (name: string, shot: number | 'POWER'): string =>
+  shot === 'POWER'
+    ? `${String(name).toUpperCase()}, POWER SHOT!`
+    : `${String(name).toUpperCase()}, YOUR TURN! (SHOT ${shot} OF ${TURN.shotsPerTurn})`;
 
 export const PASS_SCREEN = {
   heading: 'Pass the screen!',
@@ -204,6 +254,8 @@ export const RELOAD = {
   hintIcon: '💡',
   speakIcon: '🔊',
   yourTurn: 'Your turn!',
+  waiting: 'Waiting',
+  readStory: 'Read the story',
   gotIt: 'Got it',
   matchWord: (word: string): string => `Tap the word that matches: ${word}`,
   why: (hint: string): string => `Clue: ${hint}`,

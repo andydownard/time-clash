@@ -32,14 +32,43 @@ Voice dictation made some comments noisy, so a few asks are guesses. Claude Desi
 
 | Board | Status |
 |---|---|
-| 1 Camp Hub | Built, no hawk or fires yet. Home screen for returning families. |
+| 1 Camp Hub | Built, no hawk or fires yet. Home screen for returning families. Both side buttons open their screens. |
 | 2 Loading | Not rebuilt from the latest board (daytime scene, three balloon riders, 10 seconds). |
 | 3 Battle | HUD simplified to one bottom bar. The units, scenery and explosions are not built (Phase 5 Squads). |
 | 4 Setup | Built from the earlier board. |
 | 5 Math, 6 Reading | Built from earlier boards. |
 | 7 and 7b Forge | Built (Scrap only). |
-| 8 and 8b Upgrade | Rules built, screen not built. |
+| 8 and 8b Upgrade | Built (Scrap only, "Upgrade Base"). |
 | 9 Base Destroyed | Built as the Wipeout screen. |
+
+## Gap check (2026-10-16)
+
+Compared Setup, Math, Reading and Base Destroyed on the design canvas with the game. Placeholder grades (K and 1 to 8) on the boards are not a gap, because the game keeps K to 12.
+
+**Setup**
+- Title "Who is fighting?" and the line "Type your name. Pick your grade and subject." Fixed. The line is hidden on screens under 791 px tall (screen readers still read it), because Setup must fit 1024x768 without scrolling.
+- Player 1 and Player 2 tags. Left: the vocabulary table bans P1 and P2. Team Past and Team Future say the same thing.
+- Names in capitals, a 14 letter limit, and no Subject picker on the board. Left: the game keeps 12 letters and the Subject picker (parents and teachers choose it).
+- Button "START BATTLE". Left: the game says "Let's clash!" and the Camp has "Time to Clash!".
+
+**Math reload card**
+- Turn-order tags (turn and waiting). Fixed on screens wider than 900 px. On narrower screens the waiting tag is hidden so the card fits 768x1024.
+- Header "Math Challenge", "Player 1: Jack, your turn! (shot 1 of 2)" and "Solve it to load your shot!". Left: the game says "Reload time!" for every subject. A reload comes after both shots, so "shot 1 of 2" would be wrong.
+- Answer text in Orbitron. Left: regression 12. Math numbers keep the plain numeral face.
+- Letters A to D on the answers. Left: the 1 to 4 keys already match the numbers shown.
+- SUBMIT step. Left: it adds a tap to the loop, and the game answers on one tap.
+
+**Reading reload card**
+- Story, question and answers in Orbitron. Fixed for grade 3 and up (no reading question holds a digit, pinned by a test). Grades K to 2 keep the open letter face, because Orbitron's I and l look alike.
+- "Read the story" label above the story. Fixed.
+- Story title ("The Wobbly Ride"). Left: stories in the bank have no title field.
+- "Read it again" link and CHECK ANSWER. Left: Hear it already reads aloud, and Check Answer is a Submit step.
+
+**Base Destroyed (mid-battle) and Victory**
+- The Destroyed board shows a base that collapses while the fight goes on, with "NEW FIGHTERS: 0". Left: it needs fighters on the field (Phase 5 Squads). The game says Wipeout, not "Base destroyed".
+- Victory wording already says Wipeout and toy blocks. No change.
+
+**Pass screen**: no board. Wording checked against the banned list. No change.
 
 ## Questions Claude Design asked that Andy has not answered
 

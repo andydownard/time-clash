@@ -14,9 +14,16 @@ import { createLoadFaults, type LoadFaults } from './testHook';
 type AudioWindow = Partial<
   Pick<Window, 'speechSynthesis' | 'setTimeout' | 'clearTimeout' | 'performance'>
 > & {
+  navigator?: Pick<Navigator, 'webdriver'>;
   AudioContext?: new () => AudioContext;
   webkitAudioContext?: new () => AudioContext;
 };
+
+/**
+ * A browser driven by a test tool (navigator.webdriver) never speaks. The system voice ignores
+ * Chromium's --mute-audio, so a scripted run would read the intro aloud on the owner's computer.
+ */
+const isAutomated = (win: AudioWindow): boolean => win.navigator?.webdriver === true;
 
 /** Nothing here makes sound. The AudioManager only calls these after the first tap. */
 export function createBrowserAudioEnv(win: AudioWindow): AudioEnv {
@@ -37,7 +44,7 @@ export function createBrowserAudioEnv(win: AudioWindow): AudioEnv {
         return null;
       }
     },
-    speechSynthesis: win.speechSynthesis ?? null,
+    speechSynthesis: isAutomated(win) ? null : (win.speechSynthesis ?? null),
     createUtterance: (text) => new SpeechSynthesisUtterance(text),
     setTimeout: (fn, ms) => globalThis.setTimeout(fn, ms),
     clearTimeout: (id) => globalThis.clearTimeout(id as number),

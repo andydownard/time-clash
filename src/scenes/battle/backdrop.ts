@@ -3,6 +3,8 @@
 // Original shapes only. Nothing here is scary.
 import Phaser from 'phaser';
 import type { BattleLayout, Polygon } from '../../game/types';
+import { aspenLayers, type AspenLayer } from './aspens';
+import { BATTLE_BAND } from '../../game/config';
 import { ART, PALETTE } from './visual';
 
 const CLOUDS = [
@@ -71,8 +73,22 @@ export function drawBackdrop(scene: Phaser.Scene, layout: BattleLayout): Backdro
     pts.push({ x: width, y: base - (peaks[peaks.length - 1] ?? 0) }, { x: width, y: height });
     g.fillPoints(pts, true);
   };
+  // The aspen forest sits between the hills: faint trees behind, stronger trees in front.
+  const [farAspens, nearAspens] = aspenLayers(width, horizon);
+  const aspens = (layer: AspenLayer, leafColor: number): void => {
+    for (const t of layer.trees) {
+      g.fillStyle(ART.aspenTrunk, layer.alpha);
+      g.fillRect(t.x - t.w / 2, t.top, t.w, t.bottom - t.top);
+      g.fillStyle(ART.aspenBark, layer.alpha + 0.2);
+      for (const y of t.marks) g.fillRect(t.x - t.w / 2, y, t.w * 0.7, 3);
+      g.fillStyle(leafColor, layer.alpha);
+      for (const l of t.leaves) g.fillCircle(l.x, l.y, l.r);
+    }
+  };
   hill(PALETTE.past.deep, 0.55, horizon - 40, [150, 60, 130, 40, 150, 70, 140, 50, 110, 60], 140);
+  aspens(farAspens, ART.aspenLeafFar);
   hill(PALETTE.past.bannerDark, 0.6, horizon - 20, [90, 30, 100, 20, 90, 50, 110, 30, 80, 40], 140);
+  aspens(nearAspens, ART.aspenLeafNear);
   hill(ART.grassLow, 1, horizon - 6, [40, 10, 46, 8, 40, 16, 48, 10, 36, 14], 140);
 
   // Ground and hill from the layout. Grass on the left, blue soil on the right.
@@ -83,6 +99,11 @@ export function drawBackdrop(scene: Phaser.Scene, layout: BattleLayout): Backdro
   g.fillRect(0, horizon, width / 2, height - horizon);
   g.fillGradientStyle(ART.soilTop, ART.soilTop, ART.hullDark, ART.hullDark, 1);
   g.fillRect(width / 2, horizon, width / 2, height - horizon);
+  // The band under the battlefield holds the controls. It carries on as ground, never black.
+  g.fillStyle(ART.grassLow, 1);
+  g.fillRect(0, height, width / 2, BATTLE_BAND);
+  g.fillStyle(ART.hullDark, 1);
+  g.fillRect(width / 2, height, width / 2, BATTLE_BAND);
   for (const o of layout.terrain.obstacles) {
     g.fillStyle(ART.stone, 1);
     g.fillPoints(toPoints(o), true);

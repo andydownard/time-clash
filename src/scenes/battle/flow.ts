@@ -4,6 +4,8 @@
 //   pass screen -> ready() -> banner -> setAim/fire() -> animate path -> shotLanded()
 //   -> (tumble, bubble) -> ... -> pickQuestion -> showReloadModal -> reloadDone() -> pass()
 import type { AudioManager } from '../../audio/types';
+import { DEFAULT_UNIT, unitById, unitsOf, type UnitId } from '../../game/units';
+import { kindForRole } from './projectileKinds';
 import { RNG_SALT, TEAM_FACING, TURN } from '../../game/config';
 import { simulateShot } from '../../game/ballistics';
 import { createShuffleBag } from '../../game/bag';
@@ -11,7 +13,15 @@ import { createRng } from '../../game/rng';
 import type { AimInput, MatchController, Rng, Team } from '../../game/types';
 import { HIT_LINES, RELOAD as RELOAD_COPY, RELOAD_QUIPS } from '../../data/copy';
 import { timeCaptions } from '../../data/introScript';
-import { noteMissed, pickQuestion } from '../../questions/pick';
+import {
+  effectiveGrade,
+  levelOffset,
+  recordAnswer,
+  recordFor,
+  withRecord,
+  type Levels,
+} from '../../questions/calibration';
+import { noteMissed, pickQuestion, pickSubject } from '../../questions/pick';
 import type { PickHistory, QuestionBank } from '../../questions/types';
 import type { HudHandlers, HudState, Overlay } from '../../ui/types';
 import { bubbleAnchor, bubbleTailTarget } from './geometry';
@@ -40,8 +50,13 @@ export type FlowDeps = {
   bank: QuestionBank;
   history: PickHistory;
   onHistory?: (history: PickHistory) => void;
+  /** Quiet level nudges per player name. Never shown to a child. */
+  levels?: Levels;
+  onLevels?: (levels: Levels) => void;
   onMuteToggle?: () => void;
   onFinished: (result: BattleResult) => void;
+  /** Each player's Scrap in hand before this match. The HUD shows it plus what they earn. */
+  scrapBase?: Record<Team, number>;
   /** Resolves after ms. The scene uses a real timer; tests resolve at once. */
   wait: (ms: number) => Promise<void>;
   /** Resolves right away unless the game is paused. */
@@ -54,6 +69,7 @@ class Stopped extends Error {}
 export class BattleFlow {
   private stopped = false;
   private history: PickHistory;
+  private levels: Levels;
   private readonly questionRng: Rng;
   private readonly hitBags: Record<'direct' | 'near' | 'miss', { next(): number }>;
   private readonly quipBags: Record<'fast' | 'slow' | 'wrong', { next(): number }>;
@@ -61,6 +77,7 @@ export class BattleFlow {
 
   constructor(private readonly deps: FlowDeps) {
     this.history = deps.history;
+    this.levels = deps.levels ?? {};
     this.questionRng = createRng(deps.match.snapshot().seed ^ RNG_SALT.questions);
     // Jokes come from seeded shuffle bags, so a match repeats and no line shows twice in a row.
     const lineRng = createRng((deps.match.snapshot().seed ^ RNG_SALT.lines) >>> 0);
@@ -130,7 +147,18 @@ export class BattleFlow {
       }
     }
 
-    await this.reload(team);
+    const bonus = await this.reload(team);
+    if (bonus) {
+      // A right answer earns one Power Shot. It has no question and no bonus of its own.
+      await this.gate();
+      void overlay.showTurnBanner({ name: names[team], team, shot: 'POWER' });
+      await this.aimAndFire(team);
+      this.live();
+      if (match.snapshot().status === 'OVER') {
+        await this.finish();
+        return true;
+      }
+    }
     match.pass();
     return false;
   }
@@ -154,7 +182,8 @@ export class BattleFlow {
     const result = match.fire();
     audio?.playSfx(team === 'PAST' ? 'cannonBoom' : 'laserPew');
     this.pushStatus(false);
-    await view.animateShot(team, result);
+    const unit = unitById(match.snapshot().selected[team]);
+    await view.animateShot(team, result, unit ? kindForRole(unit.role) : undefined);
     this.live();
 
     const outcome = match.shotLanded();
@@ -201,15 +230,26 @@ export class BattleFlow {
   }
 
   /** The learning moment. A wrong answer still reloads (Gate 2). */
-  private async reload(team: Team): Promise<void> {
+  /** Returns true when a right answer earned the Power Shot. */
+  private async reload(team: Team): Promise<boolean> {
     const { match, overlay, view, audio, bank } = this.deps;
     const player = match.snapshot().players[team === 'PAST' ? 0 : 1];
     let answer: { correct: boolean; elapsedMs: number } = { correct: false, elapsedMs: Infinity };
     let asked: { kind: string; grade: number } | null = null;
     try {
-      const pick = pickQuestion(
+      // Ask at this player's own level nudge for the subject actually asked.
+      const subject = pickSubject(
         bank,
         { subject: player.subject, grade: player.grade, who: team },
+        this.history,
+      );
+      const grade = effectiveGrade(
+        player.grade,
+        levelOffset(recordFor(this.levels, player.name, subject)),
+      );
+      const pick = pickQuestion(
+        bank,
+        { subject, grade, who: team },
         this.history,
         this.questionRng,
       );
@@ -221,6 +261,10 @@ export class BattleFlow {
         question: pick.question,
         team,
         playerName: player.name,
+        waiting: {
+          team: team === 'PAST' ? 'FUTURE' : 'PAST',
+          name: match.snapshot().players[team === 'PAST' ? 1 : 0].name,
+        },
         quip: (kind) => RELOAD_QUIPS[kind][this.quipBags[kind].next()] ?? null,
         speak: (text, sentences) => {
           const durationMs = Math.max(1500, text.split(/\s+/).length * 450);
@@ -236,6 +280,13 @@ export class BattleFlow {
         },
       });
       this.live();
+      this.levels = withRecord(
+        this.levels,
+        player.name,
+        pick.subjectUsed,
+        recordAnswer(recordFor(this.levels, player.name, pick.subjectUsed), answer.correct),
+      );
+      this.deps.onLevels?.(this.levels);
       if (!answer.correct) {
         this.history = noteMissed(this.history, pick.question.id);
         this.deps.onHistory?.(this.history);
@@ -257,6 +308,7 @@ export class BattleFlow {
       await this.deps.wait(SCRAP_POPUP_MS);
       this.live();
     }
+    return score.bonus;
   }
 
   // ---------- player input ----------
@@ -270,8 +322,23 @@ export class BattleFlow {
         this.awaitingFire = null;
         go();
       },
+      onSelect: (id) => this.selectUnit(id),
       onMuteToggle: () => this.deps.onMuteToggle?.(),
     };
+  }
+
+  private selectUnit(id: UnitId): void {
+    if (!this.awaitingFire || this.stopped) return;
+    const { match, view } = this.deps;
+    try {
+      match.selectUnit(id);
+    } catch {
+      return; // wrong phase, wrong team or unknown fighter; ignore
+    }
+    const team = match.snapshot().turn.team;
+    this.drawPreview(team);
+    view.setSelectedUnit(team, id);
+    this.pushStatus(true);
   }
 
   private setAim(aim: AimInput): void {
@@ -299,23 +366,31 @@ export class BattleFlow {
     const team = s.turn.team;
     const shotsLeft = Math.max(0, TURN.shotsPerTurn - s.turn.shotsFired) as 0 | 1 | 2;
     const aim = s.aim[team];
+    // The Scrap a player has in total: what they had before, plus what they earned in this match.
+    const base = this.deps.scrapBase ?? { PAST: 0, FUTURE: 0 };
+    const scrap = { PAST: base.PAST + s.scrap.PAST, FUTURE: base.FUTURE + s.scrap.FUTURE };
     const hud: HudState = {
       activeTeam: team,
       names: this.names(),
       baseHp: s.baseHp,
-      scrap: s.scrap,
+      maxBaseHp: s.maxBaseHp,
+      scrap,
       wind: s.wind,
       angleDeg: aim.angleDeg,
       power: aim.power,
       shotsLeft,
+      bonus: s.turn.phase === 'BONUS_AIMING' || s.turn.phase === 'BONUS_SHOT',
       canFire,
+      selected: s.selected[team],
+      units: unitsOf(team).map((u) => ({ id: u.id, name: u.name })),
     };
     overlay.updateHud(hud);
     const status: ViewStatus = {
       activeTeam: team,
       names: hud.names,
       baseHp: s.baseHp,
-      scrap: s.scrap,
+      maxBaseHp: s.maxBaseHp,
+      scrap,
       wind: s.wind,
       shotsLeft,
       aim,
@@ -329,12 +404,19 @@ export class BattleFlow {
     const aim = s.aim[team];
     const sim = simulateShot({
       ...aim,
-      origin: match.layout.launchOrigins[team],
+      origin: this.originFor(team),
       facing: TEAM_FACING[team],
       wind: s.wind,
       layout: match.layout,
     });
     view.showPreview(team, previewDots(sim.path));
+  }
+
+  /** Same rule as match.fire(): the default fighter keeps the layout launcher. */
+  private originFor(team: Team) {
+    const { match } = this.deps;
+    const unit = unitById(match.snapshot().selected[team]);
+    return !unit || unit.id === DEFAULT_UNIT[team] ? match.layout.launchOrigins[team] : unit.origin;
   }
 
   // ---------- helpers ----------

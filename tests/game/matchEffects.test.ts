@@ -59,7 +59,8 @@ function findAim(c: MatchController, effects: MatchEffects, want: BlastResult, s
   throw new Error(`no ${want} aim found`);
 }
 
-const FAST = { correct: true, elapsedMs: 2000 };
+/** A wrong answer: no Power Shot, so these tests keep their exact numbers. */
+const FAST = { correct: false, elapsedMs: 2000 };
 
 /** One shot by the team now aiming. Returns what landed. */
 function shoot(c: MatchController, effects: MatchEffects, want: BlastResult, skip = 0) {

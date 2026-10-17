@@ -63,9 +63,9 @@ export function windArrow(wind: number): { dir: -1 | 0 | 1; length: number } {
 }
 
 /** Health as 0..1 for a candle or battery. */
-export function hpFraction(hp: number): number {
-  if (!Number.isFinite(hp)) return 0;
-  return clamp(hp / DAMAGE.startingBaseHp, 0, 1);
+export function hpFraction(hp: number, max: number = DAMAGE.startingBaseHp): number {
+  if (!Number.isFinite(hp) || !Number.isFinite(max) || max <= 0) return 0;
+  return clamp(hp / max, 0, 1);
 }
 
 /** One entry per shot in a turn. true = still to fire. */

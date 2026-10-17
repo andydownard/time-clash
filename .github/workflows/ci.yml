@@ -3,6 +3,11 @@ on:
   pull_request:
   push:
     branches: [main]
+# A new push to a pull request cancels the older run, so no minutes are spent on stale code.
+# Runs on main are never cancelled.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -22,19 +27,17 @@ jobs:
       - run: npm run build
       - run: npm run check:dist
       - run: npm audit --omit=dev
-  # One job per browser and screen size, so the slow browser tests run side by side.
+  # One job per browser, screen size and shard, so the slow browser tests run side by side.
+  # WebKit is about twice as slow as Chromium, so each WebKit size is split into two halves. A pull
+  # request runs everything. After the merge, main runs one Chromium job (the pull request already
+  # passed the rest on the same code), which saves about half of the Actions minutes.
   e2e:
+    name: e2e (${{ matrix.project }} ${{ matrix.shard }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        project:
-          - chromium-1280x800
-          - chromium-1024x768
-          - chromium-768x1024
-          - webkit-1280x800
-          - webkit-1024x768
-          - webkit-768x1024
+        include: ${{ fromJSON(github.event_name == 'pull_request' && '[{"project":"chromium-1280x800","shard":"1/1"},{"project":"chromium-1024x768","shard":"1/1"},{"project":"chromium-768x1024","shard":"1/1"},{"project":"webkit-1280x800","shard":"1/2"},{"project":"webkit-1280x800","shard":"2/2"},{"project":"webkit-1024x768","shard":"1/2"},{"project":"webkit-1024x768","shard":"2/2"},{"project":"webkit-768x1024","shard":"1/2"},{"project":"webkit-768x1024","shard":"2/2"}]' || '[{"project":"chromium-1280x800","shard":"1/1"}]') }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -48,4 +51,4 @@ jobs:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
       - run: npx playwright install --with-deps ${{ startsWith(matrix.project, 'webkit') && 'webkit' || 'chromium' }}
-      - run: npx playwright test --project=${{ matrix.project }}
+      - run: npx playwright test --project=${{ matrix.project }} --shard=${{ matrix.shard }}

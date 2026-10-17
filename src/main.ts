@@ -3,7 +3,7 @@
 import Phaser from 'phaser';
 import './styles/fonts.css';
 import './styles/index.css';
-import { WORLD } from './game/config';
+import { BATTLE_BAND, WORLD } from './game/config';
 import { PALETTE } from './scenes/palette';
 import { SERVICES_KEY } from './scenes/registry';
 import { SCENES } from './scenes';
@@ -19,9 +19,10 @@ const game = new Phaser.Game({
   banner: false,
   parent: 'game',
   width: WORLD.width,
-  height: WORLD.height,
+  // The picture is the battlefield plus a band below it for the control bar.
+  height: WORLD.height + BATTLE_BAND,
   backgroundColor: PALETTE.night,
-  scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+  scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_HORIZONTALLY },
   // All sound goes through our AudioManager, which waits for the first tap.
   // Phaser's own audio would open an audio context at boot.
   audio: { noAudio: true },

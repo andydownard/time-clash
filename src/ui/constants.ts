@@ -17,7 +17,6 @@ export const LOCAL_IDS = {
   loadingMessage: 'loading-message',
   loadingError: 'loading-error',
   hudScrap: (team: string) => `hud-scrap-${team}`,
-  campStatus: 'camp-status',
   clearData: 'clear-data',
   clearDataYes: 'clear-data-yes',
   clearDataNo: 'clear-data-no',

@@ -10,7 +10,7 @@
 **Read first:** [QUICKSTART.md](./QUICKSTART.md) → this file → [ARCHITECTURE.md](./ARCHITECTURE.md) → [docs/GAME_SPEC.md](./docs/GAME_SPEC.md) → [docs/BUILD.md](./docs/BUILD.md). For UI or audio work also read [docs/DESIGN_BRIEF.md](./docs/DESIGN_BRIEF.md) and [docs/NARRATION.md](./docs/NARRATION.md).
 
 ## What this is
-Two players share one computer and take turns. One commands a Medieval castle (Team Past). The other commands a secret base in futuristic Austin (Team Future). Each turn has 2 shots. After shot 2, the player answers a reading or math question to reload. Tone is slapstick. No gore, no blood, ever.
+Two players share one computer and take turns. One commands a Medieval castle (Team Past). The other commands a secret base in futuristic Austin (Team Future). Each turn has 2 shots. After shot 2, the player answers a reading or math question to reload. A right answer earns one Power Shot (a bonus shot that hits 1.5 times as hard, with no question of its own). Tone is slapstick. No gore, no blood, ever.
 
 The game is **free**. No ads. No accounts. No purchases. No tracking. The players are children.
 
@@ -57,6 +57,7 @@ test: `npm test` · lint: `npm run lint` · typecheck: `npm run typecheck` · bu
 - Override PII: do not log names. Phase 4 relay logs hold room code and event type only. No IPs kept.
 - Override AI: no model calls at runtime. Any future AI feature needs Andy's approval and a panel review first.
 - Override GIT: one deploy branch. PR into `main` with green CI, then the static host deploys `main`. No staging hop. Confirm the deployed build shows its SHA on `/version.txt` after every deploy (`VERIFY`).
+- Override CI cost: a pull request runs the full browser matrix (Chromium and WebKit at three sizes, WebKit in two shards each). After the merge, `main` runs one Chromium job plus the unit, lint and build checks. New pushes cancel older pull request runs. Put more into each pull request: every PR costs one full matrix.
 - Override UI: smallest supported screens are iPad portrait (768x1024) and iPad landscape (1024x768), plus laptop. Phone is not supported through Phase 3. Screenshot at 1280x800 and 1024x768 before calling any visual change done.
 - Override TRACKING: use `INBOX.md` and `BACKLOG.md`. Never create new tracking files.
 - Feedback FAB: not used. This is a kids' game with no accounts.
@@ -72,7 +73,7 @@ test: `npm test` · lint: `npm run lint` · typecheck: `npm run typecheck` · bu
 Allowed: splitting files, extracting shared styles, renaming internals, adding types, adding tests, reorganizing folders.
 Not allowed without Andy:
 - Removing the intro voice, captions, Skip, or Replay.
-- Removing the pass-the-mouse cover or the 2-shots-then-reload turn shape.
+- Removing the pass-the-mouse cover or the 2-shots-then-reload turn shape (a right answer earns one Power Shot).
 - Adding network calls, analytics, ads, accounts, or purchases.
 - Making any wipeout, hit, or message scary.
 
@@ -119,11 +120,12 @@ Check this list before coding. If your change touches a listed area, read the ex
 | 14 | The ? and gear buttons used the light focus ring (about 2:1 on Ink), so keyboard users could not see them. | `tests/ui/handoffReview.test.ts` (chrome ring uses the Ember token). |
 | 15 | The tumble bubble tail pointed at empty sky, away from the speaker. | `tests/ui/hud.test.ts` (tail shift) and `tests/scenes/battle/geometry.test.ts` (`bubbleTailTarget`). |
 | 16 | Leaving a game from Pause left the reused Battle scene marked paused, so the next match never reached its first turn. | `e2e/navigation.spec.ts` (Leave game, then a new match starts). `BattleScene.cleanup` resets `paused`. |
+| 17 | The fighter selector made the control bar wrap to three rows, so the bar reached over the ground fighters. The system voice read the intro aloud during scripted browser runs (`--mute-audio` does not mute it). | `e2e/layout.spec.ts` (bar starts below the ground line, selector, sliders and Fire share one row). `tests/scenes/services.test.ts` (no speech in a browser driven by a test tool). |
 
 ## Current state (2026-10-15)
-Phase 1 is built: Tap to Play, How to Play (5 cards, captions, Skip, Replay, Mute), Loading, Setup, Battle (2 shots, then reload), Victory and Rematch. Sound is made in code with WebAudio: cannon boom for Team Past, laser pew for Team Future, and one original music loop in two flavors. Test runs are silent (`tests/setup/silent.ts` and `e2e/support/silent.ts` fail a test that starts real sound). Question bank has 40 questions per grade per subject (1,040 total, checked by `npm run check:questions`). Intro voice audio files are not recorded yet, so the browser's speech voice is used.
+Phase 1 is built: Tap to Play, How to Play (5 cards, captions, Skip, Replay, Mute), Loading, Setup, Battle (2 shots, then reload, then a Power Shot after a right answer), Victory and Rematch. Sound is made in code with WebAudio: cannon boom for Team Past, laser pew for Team Future, and one original music loop in two flavors. Test runs are silent (`tests/setup/silent.ts` and `e2e/support/silent.ts` fail a test that starts real sound). Question bank has 40 questions per grade per subject (1,040 total, checked by `npm run check:questions`). Intro voice audio files are not recorded yet, so the browser's speech voice is used.
 
-The look and feel phase is built from the Claude Design handoff. Tokens are in `src/styles/tokens.css`, and the rules are in [docs/DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md). MedievalSharp and Orbitron are self-hosted in `public/fonts/`. Grade chips are 56px or more. Contrast meets 4.5:1 for body text and 3:1 for large text. The labels are Team Past and Team Future, and the Wipeout screen replaces the mock's destroyed-base screen. Open polish and content items are in `BACKLOG.md`. The Camp Hub is built from the Main board: the Camp is the home screen (a returning family lands there with no Tap to Play screen, and a new family after Setup, with a small Change players button back to Setup), and "Time to Clash!" starts the match (Forge Weapon and Upgrade Base say "Coming soon"). The name is Time Clash. "Time to Clash!" is only the slogan. The Battle HUD follows the Battle board: one bar at the bottom (turn name, shot pips, Angle, Power, Fire!) and a coach line ("Slide Angle and Power. Then press Fire!") that shows until the first shot. Forge Weapon is built (Scrap only). Setup and the Forge have Back, and Pause has Leave game. Upgrade Base still says Coming soon. The rest of Phase 2 (base placement, biomes, evasion) follows `docs/BUILD.md`. The Forge and Upgrade boards are for Phase 3 and are not built yet.
+The look and feel phase is built from the Claude Design handoff. Tokens are in `src/styles/tokens.css`, and the rules are in [docs/DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md). MedievalSharp and Orbitron are self-hosted in `public/fonts/`. Grade chips are 56px or more. Contrast meets 4.5:1 for body text and 3:1 for large text. The labels are Team Past and Team Future, and the Wipeout screen replaces the mock's destroyed-base screen. Open polish and content items are in `BACKLOG.md`. The Camp Hub is built from the Main board: the Camp is the home screen (a returning family lands there with no Tap to Play screen, and a new family after Setup, with a small Change players button back to Setup), and "Time to Clash!" starts the match (Forge Weapon and Upgrade Base open their own screens). The name is Time Clash. "Time to Clash!" is only the slogan. The Battle HUD follows the Battle board: one bar at the bottom (turn name, shot pips, Angle, Power, Fire!) and a coach line ("Slide Angle and Power. Then press Fire!") that shows until the first shot. Forge Weapon and Upgrade Base are built (Scrap only; the label is "Upgrade Base", never "Build"). Setup, the Forge and Upgrade Base have Back, and Pause has Leave game. Scrap and purchases are kept by player name on the device (lifetime Scrap too), and each player's Scrap shows in the battle HUD. Signed-in players and a SQLite database are planned, not built. The rest of Phase 2 (base placement, biomes, evasion) follows `docs/BUILD.md`. Battle now has five fighters per side with a "Pick one" selector in the bottom band (only one acts at a time), a Power Shot after a right reload answer (one extra shot at 1.5x damage, size still Andy's call), fighters drawn from the Battle board, explosions, base damage marks, and funny falls that end in a puff. The Loading screen and Camp follow the latest boards, with arrows, the ball and the missile flying on real physics. Ammo, evasion, biomes and base spots exist as rules only and are not wired in yet. Question-level calibration is wired into the reload.
 
 ## Pre-merge checklist
 1. `npm test`, `npm run lint`, `npm run typecheck`, `npm run build` pass with zero failures.
@@ -150,6 +152,7 @@ New ideas go in [INBOX.md](./INBOX.md) (raw, 30-day expiry). Triage moves them t
 | Privacy and child safety | [SECURITY.md](./SECURITY.md) |
 | Original game spec | [docs/GAME_SPEC.md](./docs/GAME_SPEC.md) |
 | Design guidance from the canvas comments | [docs/DESIGN_GUIDANCE.md](./docs/DESIGN_GUIDANCE.md) |
+| Plan for signed-in players and a database | [docs/ACCOUNTS_PLAN.md](./docs/ACCOUNTS_PLAN.md) |
 | Phased build plan and start prompt | [docs/BUILD.md](./docs/BUILD.md) |
 | Text to paste into Claude Design | [docs/DESIGN_BRIEF.md](./docs/DESIGN_BRIEF.md) |
 | Intro voice script and audio plan | [docs/NARRATION.md](./docs/NARRATION.md) |

@@ -81,7 +81,9 @@ export async function waitAiming(page: Page, shotsFired: 0 | 1): Promise<void> {
       { timeout: 30_000 },
     )
     .toBe(`AIMING:${shotsFired}`);
-  await expect(tid(page, 'fire')).toBeEnabled();
+  // The phase flips when the shot lands. Fire turns on after the blast, the fall and the bubble,
+  // which take longer on a slow CI browser, so wait as long as the phase poll does.
+  await expect(tid(page, 'fire')).toBeEnabled({ timeout: 30_000 });
 }
 
 async function pressAxis(page: Page, from: number, to: number, up: string, down: string) {
@@ -160,8 +162,32 @@ export async function tapGotIt(page: Page): Promise<void> {
   await tid(page, 'reload-next').click();
 }
 
-/** Waits for the next pass screen (the other team's turn). */
+/** Waits until the Power Shot (earned by a right answer) can be aimed. */
+export async function waitBonusAiming(page: Page): Promise<void> {
+  await expect
+    .poll(async () => (await snap(page)).turn.phase, { timeout: 30_000 })
+    .toBe('BONUS_AIMING');
+  await expect(tid(page, 'fire')).toBeEnabled();
+}
+
+/** Takes the Power Shot with the keyboard, like any other shot. */
+export async function takeBonusShot(page: Page, wanted: BlastResult = 'miss'): Promise<AimInput> {
+  await waitBonusAiming(page);
+  return takeShot(page, wanted);
+}
+
+/**
+ * Waits for the next pass screen (the other team's turn). A right answer earns a Power Shot
+ * first, so if one shows up this takes it as a harmless miss and then waits for the pass.
+ */
 export async function waitPassScreen(page: Page): Promise<void> {
+  const state = async (): Promise<'pass' | 'bonus' | 'wait'> => {
+    if (await tid(page, 'pass-screen').isVisible()) return 'pass';
+    const m = await page.evaluate(() => window.__timeclash!.match());
+    return m?.turn.phase === 'BONUS_AIMING' ? 'bonus' : 'wait';
+  };
+  await expect.poll(state, { timeout: 45_000 }).not.toBe('wait');
+  if ((await state()) === 'bonus') await takeBonusShot(page, 'miss');
   await expect(tid(page, 'pass-screen')).toBeVisible({ timeout: 45_000 });
 }
 

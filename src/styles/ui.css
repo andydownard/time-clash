@@ -477,33 +477,69 @@ body {
 }
 
 /* ---------- Banner, bubble, caption ---------- */
-.tc-banner {
-  position: absolute;
-  top: var(--tc-hud-row);
-  left: 50%;
-  transform: translateX(-50%) rotate(var(--tc-banner-turn-tilt));
-  padding: var(--tc-s-3) var(--tc-s-5);
+/* The turn strip sits on top of the HUD control bar: flashing chevrons, whose turn it is in words,
+   and the shot pips. It is the only turn banner, so everything for a turn is in one place. */
+.tc-turn-strip {
+  flex: 1 1 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--tc-s-3);
+  padding: var(--tc-s-1) var(--tc-s-4);
   border: var(--tc-banner-turn-border);
   border-radius: var(--tc-r-button);
   background: var(--tc-banner-turn-bg);
   color: var(--tc-banner-turn-text);
-  box-shadow: var(--tc-shadow-banner);
+  box-shadow: 0 4px 0 var(--tc-purple-700);
   font-family: var(--tc-font-voice-new);
-  font-size: calc(var(--tc-text-min) * 1.5);
+  font-size: var(--tc-text-min);
   font-weight: var(--tc-fw-new-heavy);
   letter-spacing: var(--tc-ls-caps);
+}
+.tc-turn-text {
+  flex: 1;
+  min-width: 0;
   text-align: center;
-  /* One line when it fits. A long name wraps rather than running off the screen. */
-  width: max-content;
-  max-width: 94vw;
-  animation: tc-drop var(--tc-banner-drop) cubic-bezier(0.3, 1.6, 0.5, 1) both;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 /* The team shows as a shape too, not by color. */
-.tc-banner[data-team='PAST']::before {
+.tc-turn-strip[data-team='PAST'] .tc-turn-text::before {
   content: '\1F3F0  ';
 }
-.tc-banner[data-team='FUTURE']::before {
+.tc-turn-strip[data-team='FUTURE'] .tc-turn-text::before {
   content: '\1F6F8  ';
+}
+.tc-turn-chev {
+  flex: none;
+  color: var(--tc-purple-700);
+  letter-spacing: 0;
+  animation: tc-turn-blink 0.8s steps(2) infinite;
+}
+@keyframes tc-turn-blink {
+  50% {
+    opacity: 0.25;
+  }
+}
+/* A new turn: the strip pulses for a moment. */
+.tc-turn-strip[data-flash] {
+  animation: tc-turn-flash 0.6s ease-in-out 3;
+}
+@keyframes tc-turn-flash {
+  50% {
+    filter: brightness(1.25);
+    transform: scale(1.02);
+  }
+}
+/* The pips sit on the orange strip, so they use Ink instead of Ember. */
+.tc-turn-strip .tc-pip {
+  border-color: var(--tc-ink-deep);
+  background: var(--tc-ink-deep);
+  color: var(--tc-ember);
+}
+.tc-turn-strip .tc-pip[data-used='true'] {
+  background: transparent;
+  color: var(--tc-ink-deep);
 }
 .tc-bubble {
   position: relative;
@@ -553,6 +589,10 @@ body {
 }
 
 /* ---------- HUD ---------- */
+/* Pause sits top right, just under the team card row (cards end 108px down). */
+:root {
+  --tc-pause-top: 120px;
+}
 .tc-hud {
   position: absolute;
   inset: 0;
@@ -583,7 +623,8 @@ body {
   align-items: stretch;
   justify-content: space-between;
   padding: 12px;
-  padding-left: var(--tc-chrome-clear);
+  /* Wide screens: the cards start to the right of the Sound button, which sits under the ? and gear. */
+  padding-left: calc(var(--tc-tap) * 3 + 40px);
 }
 /* Two shot pips, then a third "Reload" pip: a question comes after shot 2. */
 .tc-pips {
@@ -622,6 +663,11 @@ body {
 .tc-pip-reload::before {
   content: '\1F4D6\00A0';
 }
+.tc-pip-bonus {
+  border-color: var(--tc-torch-gold);
+  background: var(--tc-torch-gold);
+  color: var(--tc-ink-deep);
+}
 .tc-wind-bar {
   display: block;
   height: 10px;
@@ -636,11 +682,12 @@ body {
   height: 100%;
   background: var(--tc-wood);
 }
-/* Sound sits low and left, Pause low and right: one bar of helpers under the picture. */
+/* Sound sits top left, under the ? and gear row. Pause sits top right, under the team card.
+   The band under the picture holds only the controls. */
 .tc-hud-corner {
   position: absolute;
-  left: var(--tc-s-4);
-  bottom: var(--tc-s-4);
+  left: var(--tc-s-3);
+  top: var(--tc-chrome-row);
   display: flex;
   gap: 8px;
 }
@@ -737,31 +784,41 @@ body {
   background: var(--tc-bar-fill);
   transition: width 300ms ease;
 }
-/* The aim controls sit between the two bases (they fill 0 to 20% and 80% to 100% of the width),
-   so a child can see the base they aim from. */
+/* The control bar fills its own band under the picture (the canvas is taller than the
+   battlefield, see BATTLE_BAND). It sits at the bottom of the screen, full width, so the
+   fighters on the ground are never covered. Row 1 is the turn strip. Row 2 is the fighter
+   selector, the aim sliders and Fire. Portrait has more room, so row 2 may wrap. */
 .tc-hud-bottom {
   position: absolute;
-  left: 20%;
-  right: 20%;
-  bottom: 72px;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
-  gap: var(--tc-s-5);
+  flex-wrap: wrap;
+  gap: var(--tc-s-2) var(--tc-s-4);
   align-items: flex-end;
   justify-content: center;
-  padding: 0 12px;
+  padding: 0 var(--tc-s-3) var(--tc-s-2);
+}
+.tc-hud-bottom > .tc-turn-strip {
+  order: -1;
+  min-width: 0;
+  max-width: 100%;
 }
 .tc-hud-bottom > * {
   pointer-events: auto;
 }
 .tc-aim {
   display: grid;
-  gap: 6px;
+  gap: 0;
   background: var(--tc-ink-deep);
   color: var(--tc-on-dark);
   border: 4px solid var(--tc-ember);
   border-radius: var(--tc-r-card);
-  box-shadow: 0 6px 0 var(--tc-purple-900);
-  padding: 6px 14px 8px;
+  box-shadow: 0 3px 0 var(--tc-purple-900);
+  padding: 4px 14px;
+  flex: 1 1 340px;
+  max-width: 460px;
   min-width: 340px;
   font-family: var(--tc-font-voice-new);
   font-weight: var(--tc-fw-new);
@@ -769,36 +826,6 @@ body {
   text-transform: uppercase;
 }
 /* The bar's header: whose turn it is, and the shot pips (two shots, then a question). */
-.tc-aim-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--tc-s-3);
-}
-.tc-turn-name {
-  flex: 1 1 auto;
-  min-width: 0;
-  font-family: var(--tc-font-voice-old);
-  font-weight: 400;
-  font-size: var(--tc-fs-lead);
-  letter-spacing: 0;
-  text-transform: none;
-  line-height: var(--tc-lh-tight);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.tc-turn-name::before {
-  content: '\25B6\00A0';
-  font-family: var(--tc-font-voice-new);
-  font-size: var(--tc-text-min);
-}
-.tc-aim[data-team='PAST'] .tc-turn-name {
-  color: var(--tc-purple-300);
-}
-.tc-aim[data-team='FUTURE'] .tc-turn-name {
-  color: var(--tc-pulse);
-}
 .tc-aim .tc-range {
   accent-color: var(--tc-pulse);
 }
@@ -818,12 +845,12 @@ body {
 }
 .tc-hint {
   position: absolute;
-  top: 100%;
+  bottom: 100%;
   left: 50%;
   transform: translateX(-50%);
   width: max-content;
   max-width: 100%;
-  margin: 8px 0 0;
+  margin: 0 0 8px;
   padding: 4px 12px;
   font-size: var(--tc-text-min);
   text-align: center;
@@ -863,6 +890,27 @@ body {
 }
 /* The heading shares a row with the ? and gear buttons (it is centered, they sit at the left),
    so the cards start higher and every button fits on a 1024x768 screen. */
+[data-tc-root] .tc-setup-sub {
+  margin: 0;
+  font-family: var(--tc-font-voice-new);
+  font-weight: 700;
+  font-size: var(--tc-fs-label);
+  letter-spacing: var(--tc-ls-caps);
+  text-align: center;
+  text-transform: uppercase;
+}
+/* On a 768 tall screen there is no room for the line, and Setup must not scroll (regression 13).
+   It stays for screen readers. */
+@media (max-height: 790px) {
+  [data-tc-root] .tc-setup-sub {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
 [data-tc-root] .tc-setup-title {
   display: flex;
   align-items: center;
@@ -1201,6 +1249,24 @@ body {
   letter-spacing: var(--tc-ls-caps);
   text-transform: uppercase;
 }
+.tc-turn-chips {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--tc-s-1);
+}
+/* On a narrow screen the second tag has no room, and the card must fit without scrolling. */
+@media (max-width: 900px) {
+  .tc-turn-chip[data-state='waiting'] {
+    display: none;
+  }
+}
+.tc-turn-chip[data-state='waiting'] {
+  border-color: var(--tc-strip-text);
+  background: transparent;
+  color: var(--tc-strip-text);
+  box-shadow: none;
+}
 .tc-reload-who::before,
 .tc-turn-tag::before {
   content: '\00B7';
@@ -1293,6 +1359,31 @@ body {
 }
 .tc-speak-btn {
   flex: none;
+}
+/* Older readers get the story, the question and the answers in the voice font. This is safe
+   because no reading question holds a digit (tests/ui/boardGap.test.ts). Math and the youngest
+   readers keep the open face above. */
+.tc-reload[data-layout='reading'] .tc-prompt {
+  font-family: var(--tc-font-voice-new);
+  font-weight: 700;
+}
+.tc-reload[data-layout='reading'] .tc-passage {
+  font-family: var(--tc-font-voice-new);
+  font-weight: 700;
+}
+.tc-reload[data-layout='reading'] .tc-choice {
+  font-family: var(--tc-font-voice-new);
+}
+.tc-passage::before {
+  content: attr(data-label);
+  display: block;
+  margin-bottom: var(--tc-s-2);
+  color: var(--tc-purple-700);
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: var(--tc-fs-label);
+  letter-spacing: var(--tc-ls-caps);
+  text-transform: uppercase;
 }
 .tc-passage {
   padding: var(--tc-s-4) var(--tc-s-5);
@@ -1546,9 +1637,55 @@ body {
   font-weight: 700;
 }
 .tc-award-card li {
-  padding: 2px var(--tc-s-3);
-  border: 2px solid currentcolor;
+  list-style: none;
+}
+/* A medal: a round picture on the left, the award's name on the right. The name is always written,
+   so the picture and its color are never the only clue. */
+.tc-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--tc-s-2);
+  padding: 2px var(--tc-s-4) 2px 3px;
+  border: 3px solid var(--tc-ink-deep);
   border-radius: var(--tc-r-pill);
+  background: var(--tc-parchment-warm);
+  color: var(--tc-ink-deep);
+  box-shadow: 0 3px 0 var(--tc-purple-700);
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  letter-spacing: 0.02em;
+}
+.tc-badge-icon {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--tc-white);
+  border: 2px solid var(--tc-ink-deep);
+}
+.tc-badge-art {
+  width: 28px;
+  height: 28px;
+}
+.tc-badge[data-award='quickestBrain'] .tc-badge-icon {
+  background: var(--tc-blue-100);
+}
+.tc-badge[data-award='mostWobbles'] .tc-badge-icon {
+  background: var(--tc-purple-100);
+}
+.tc-badge[data-award='sharpestShot'] .tc-badge-icon {
+  background: var(--tc-white);
+}
+.tc-badge[data-award='brainPower'] .tc-badge-icon {
+  background: var(--tc-purple-100);
+}
+.tc-badge[data-award='scrapCollector'] .tc-badge-icon {
+  background: var(--tc-blue-100);
+}
+.tc-badge[data-award='goodSport'] .tc-badge-icon {
+  background: var(--tc-white);
 }
 .tc-victory > .tc-row:last-child {
   margin-top: var(--tc-s-3);
@@ -1561,11 +1698,24 @@ body {
   .tc-blocks {
     display: none;
   }
+  .tc-victory {
+    gap: var(--tc-s-1);
+    padding-top: var(--tc-s-2);
+    padding-bottom: var(--tc-s-2);
+  }
   .tc-award-card {
     padding: var(--tc-s-2) var(--tc-s-3);
   }
-  .tc-award-card li {
+  .tc-badge {
     padding-block: 0;
+  }
+  .tc-badge-icon {
+    width: 30px;
+    height: 30px;
+  }
+  .tc-badge-art {
+    width: 22px;
+    height: 22px;
   }
   .tc-victory > .tc-row:last-child {
     margin-top: var(--tc-s-2);
@@ -1637,31 +1787,6 @@ body {
 }
 .tc-camp-side {
   white-space: nowrap;
-}
-/* The Coming soon ribbon stays on screen, so the tap is never a silent dead end. */
-.tc-camp-soon {
-  padding: var(--tc-s-1) var(--tc-s-4);
-  border: 3px solid var(--tc-ink-deep);
-  border-radius: var(--tc-r-pill);
-  background: var(--tc-ember);
-  color: var(--tc-ink-deep);
-  font-family: var(--tc-font-voice-new);
-  font-size: var(--tc-text-min);
-  font-weight: var(--tc-fw-new-heavy);
-  letter-spacing: var(--tc-ls-caps);
-  text-transform: uppercase;
-  transform: rotate(-2deg);
-}
-.tc-camp-soon[data-nudge] {
-  animation: tc-camp-nudge 0.6s ease-in-out;
-}
-@keyframes tc-camp-nudge {
-  25% {
-    transform: rotate(-6deg) scale(1.08);
-  }
-  75% {
-    transform: rotate(4deg) scale(1.08);
-  }
 }
 /* The picture moves: flames, sparks, flags, a friendly skirmish. Reduced motion stops it all. */
 .tc-camp-flame {
@@ -1742,60 +1867,19 @@ body {
     opacity: 1;
   }
 }
-.tc-camp-arrow {
+/* Arrows, the cannonball and missiles fly with real physics from ambientFlights.ts. They stay
+   hidden until the script moves them, and forever when motion is reduced. The hawk is moved by the
+   same script; its three groups need no style of their own. */
+.tc-camp-arrow,
+.tc-camp-ball,
+.tc-camp-miss {
   opacity: 0;
-  animation: tc-camp-arrow 4s ease-out infinite;
 }
-@keyframes tc-camp-arrow {
-  0% {
-    transform: translate(0, 0);
-    opacity: 0;
-  }
-  4% {
-    opacity: 1;
-  }
-  18% {
-    transform: translate(430px, -230px);
-    opacity: 1;
-  }
-  40% {
-    transform: translate(1000px, -90px);
-    opacity: 1;
-  }
-  46% {
-    transform: translate(1060px, -60px);
-    opacity: 0;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-.tc-camp-ball {
-  opacity: 0;
-  animation: tc-camp-ball 4s ease-out infinite;
-}
-@keyframes tc-camp-ball {
-  0% {
-    transform: translate(0, 0);
-    opacity: 0;
-  }
-  4% {
-    opacity: 1;
-  }
-  22% {
-    transform: translate(480px, -260px);
-  }
-  44% {
-    transform: translate(920px, -100px);
-    opacity: 1;
-  }
-  50% {
-    transform: translate(960px, -70px);
-    opacity: 0;
-  }
-  100% {
-    opacity: 0;
-  }
+.tc-camp-hawk,
+.tc-camp-hawk-y,
+.tc-camp-hawk-flip,
+.tc-camp-hawk-bank {
+  will-change: transform;
 }
 .tc-camp-puff {
   transform-box: fill-box;
@@ -1837,34 +1921,6 @@ body {
   }
   46% {
     transform: translate(-860px, -30px);
-    opacity: 0;
-  }
-  100% {
-    opacity: 0;
-  }
-}
-.tc-camp-miss {
-  opacity: 0;
-  animation: tc-camp-miss 4s ease-out infinite;
-}
-@keyframes tc-camp-miss {
-  0% {
-    transform: translate(0, 0);
-    opacity: 0;
-  }
-  4% {
-    opacity: 1;
-  }
-  20% {
-    transform: translate(-420px, -260px);
-    opacity: 1;
-  }
-  44% {
-    transform: translate(-1080px, -110px);
-    opacity: 1;
-  }
-  50% {
-    transform: translate(-1120px, -80px);
     opacity: 0;
   }
   100% {
@@ -1938,6 +1994,9 @@ body {
   text-transform: uppercase;
   white-space: nowrap;
 }
+.tc-forge-owner {
+  display: block;
+}
 .tc-forge-scrap-n {
   color: var(--tc-ember);
 }
@@ -1947,7 +2006,7 @@ body {
   gap: var(--tc-s-3);
 }
 .tc-forge-list {
-  width: min(880px, 100%);
+  width: min(960px, 100%);
   margin-left: auto;
   display: flex;
   flex-direction: column;
@@ -1968,7 +2027,8 @@ body {
   cursor: pointer;
   touch-action: manipulation;
 }
-.tc-forge-row[data-state='equipped'] {
+.tc-forge-row[data-state='equipped'],
+.tc-forge-row[data-state='max'] {
   border: 5px solid var(--tc-ink-deep);
   background: var(--tc-ember);
   box-shadow:
@@ -1980,7 +2040,8 @@ body {
   background: var(--tc-ink-deep);
   color: var(--tc-blue-100);
 }
-.tc-forge-row[data-team='FUTURE'][data-state='equipped'] {
+.tc-forge-row[data-team='FUTURE'][data-state='equipped'],
+.tc-forge-row[data-team='FUTURE'][data-state='max'] {
   border-color: var(--tc-ink-deep);
   background: var(--tc-blue-500);
   color: var(--tc-white);
@@ -1989,9 +2050,55 @@ body {
     0 0 24px var(--tc-blue-700);
 }
 /* Not enough Scrap yet: a dashed edge, never a faded row (the text must stay easy to read). */
-.tc-forge-row[aria-disabled='true'] {
+button.tc-forge-row[aria-disabled='true'],
+.tc-forge-item[data-poor='true'] {
   border-style: dashed;
   cursor: not-allowed;
+}
+/* A Forge row holds two buttons side by side: the pick area and, on the weapon in use, Level up. */
+.tc-forge-item {
+  padding: var(--tc-s-1) var(--tc-s-3) var(--tc-s-1) var(--tc-s-2);
+  cursor: default;
+}
+.tc-forge-pick {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--tc-s-4);
+  min-width: 0;
+  min-height: var(--tc-tap);
+  padding: var(--tc-s-1) var(--tc-s-3);
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.tc-forge-levelup {
+  flex: none;
+  padding-inline: var(--tc-s-4);
+  font-size: var(--tc-text-min);
+  min-height: var(--tc-tap);
+  white-space: nowrap;
+}
+.tc-forge-levelup[aria-disabled='true'] {
+  border-style: dashed;
+  cursor: not-allowed;
+}
+.tc-forge-namerow {
+  display: flex;
+  align-items: center;
+  gap: var(--tc-s-3);
+}
+.tc-forge-owned {
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: var(--tc-text-min);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 .tc-weapon-icon {
   flex: none;
@@ -2049,15 +2156,6 @@ body {
 }
 .tc-forge-status:empty {
   visibility: hidden;
-}
-.tc-forge-upgrade {
-  align-self: flex-end;
-  margin-top: auto;
-  white-space: nowrap;
-}
-.tc-forge-upgrade[aria-disabled='true'] {
-  border-style: dashed;
-  cursor: not-allowed;
 }
 /* The picture moves: the hammer, the press, sparks. Reduced motion stops it all. */
 .tc-forge-btn {
@@ -2188,6 +2286,130 @@ body {
   }
 }
 
+/* Upgrade Base pictures: a stone drops into the broken tower, and the silo hologram flickers and
+   scans. Reduced motion stops it all. */
+.tc-upgrade-holo {
+  animation: tc-upgrade-holo 3.2s steps(1) infinite;
+}
+@keyframes tc-upgrade-holo {
+  0% {
+    opacity: 1;
+  }
+  48% {
+    opacity: 0.8;
+  }
+  50% {
+    opacity: 1;
+  }
+  92% {
+    opacity: 0.65;
+  }
+  94%,
+  100% {
+    opacity: 1;
+  }
+}
+.tc-upgrade-scan {
+  animation: tc-upgrade-scan 3s linear infinite;
+}
+@keyframes tc-upgrade-scan {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(700px);
+  }
+}
+.tc-upgrade-glow {
+  animation: tc-upgrade-glow 1.8s ease-in-out infinite alternate;
+}
+@keyframes tc-upgrade-glow {
+  from {
+    opacity: 0.55;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.tc-upgrade-drop {
+  opacity: 0;
+  animation: tc-upgrade-drop 3.6s cubic-bezier(0.6, 0, 0.9, 0.5) infinite;
+}
+@keyframes tc-upgrade-drop {
+  0%,
+  8% {
+    transform: translateY(-300px);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  52% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  80% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  92%,
+  100% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+}
+.tc-upgrade-hole {
+  animation: tc-upgrade-hole 3.6s linear infinite;
+}
+@keyframes tc-upgrade-hole {
+  0%,
+  52% {
+    opacity: 1;
+  }
+  56%,
+  80% {
+    opacity: 0;
+  }
+  92%,
+  100% {
+    opacity: 1;
+  }
+}
+.tc-upgrade-dust {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  opacity: 0;
+  animation: tc-upgrade-dust 3.6s ease-out infinite;
+}
+@keyframes tc-upgrade-dust {
+  0%,
+  52% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+  56% {
+    opacity: 0.8;
+  }
+  75%,
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+.tc-upgrade-rope {
+  animation: tc-upgrade-rope 3.6s linear infinite;
+}
+@keyframes tc-upgrade-rope {
+  0%,
+  8% {
+    transform: translateY(-300px);
+  }
+  52%,
+  100% {
+    transform: translateY(0);
+  }
+}
+
 /* ---------- Settings (and other panels) ---------- */
 .tc-settings {
   justify-content: center;
@@ -2244,14 +2466,6 @@ body {
 .tc-pass {
   animation: tc-pop var(--tc-modal-pop) ease-out both;
 }
-@keyframes tc-drop {
-  from {
-    transform: translate(-50%, -150%) rotate(var(--tc-banner-turn-tilt));
-  }
-  to {
-    transform: translate(-50%, 0) rotate(var(--tc-banner-turn-tilt));
-  }
-}
 @keyframes tc-slide {
   from {
     transform: translateX(60px);
@@ -2283,12 +2497,681 @@ body {
   }
 }
 
-/* Loading scene: the wobbling hoverboard, swinging arms, and the confused bot. */
-.tc-ld-board {
+/* Loading scene: the knight on a hoverboard, the sword and laser gun, and three balloon riders
+   on one 10 second loop. Each rider is popped or slashed, falls, lands, then tells a joke. */
+.tc-ld-br {
+  animation: tc-ld-brk 10s linear infinite;
+  opacity: 0;
+}
+@keyframes tc-ld-brk {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+  1% {
+    opacity: 1;
+  }
+  6% {
+    opacity: 1;
+    transform: translate(230px, 0);
+  }
+  7%,
+  100% {
+    opacity: 0;
+    transform: translate(230px, 0);
+  }
+}
+.tc-ld-bal-m0 {
+  animation: tc-ld-bal-mk0 10s ease-in-out infinite;
+  opacity: 0;
+}
+@keyframes tc-ld-bal-mk0 {
+  0% {
+    opacity: 0;
+    transform: translate(1760px, -8px);
+  }
+  0.0% {
+    opacity: 1;
+    transform: translate(1760px, -8px);
+  }
+  11.0%,
+  47.0% {
+    opacity: 1;
+    transform: translate(1250px, -8px);
+  }
+  48.0%,
+  100% {
+    opacity: 0;
+    transform: translate(1250px, -8px);
+  }
+}
+.tc-ld-env0 {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: tc-ld-env-k0 10s linear infinite;
+}
+@keyframes tc-ld-env-k0 {
+  0%,
+  11.0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  14.0% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+  14.1%,
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+.tc-ld-rid0 {
+  animation: tc-ld-rid-k0 10s ease-in infinite;
+}
+@keyframes tc-ld-rid-k0 {
+  0%,
+  12.0% {
+    transform: translate(0, 0);
+  }
+  15.5% {
+    transform: translate(0px, 70px);
+  }
+  19.5% {
+    transform: translate(0px, 190px);
+  }
+  23.0% {
+    transform: translate(0px, 270px);
+  }
+  24.5% {
+    transform: translate(0px, 270px);
+  }
+  26.0% {
+    transform: translate(0px, 270px);
+  }
+  29.0%,
+  100% {
+    transform: translate(18px, 284px);
+  }
+}
+.tc-ld-tum0 {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: tc-ld-tum-k0 10s ease-in infinite;
+}
+@keyframes tc-ld-tum-k0 {
+  0%,
+  12.0% {
+    transform: rotate(0);
+  }
+  15.5% {
+    transform: rotate(70deg);
+  }
+  19.5% {
+    transform: rotate(300deg);
+  }
+  23.0% {
+    transform: rotate(720deg);
+  }
+  24.5% {
+    transform: rotate(738deg);
+  }
+  26.0% {
+    transform: rotate(704deg);
+  }
+  29.0%,
+  100% {
+    transform: rotate(822deg);
+  }
+}
+.tc-ld-def0 {
+  animation: tc-ld-def-k0 10s ease-in infinite;
+  opacity: 0;
+}
+@keyframes tc-ld-def-k0 {
+  0%,
+  12.0% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(0) scale(1);
+  }
+  13.0% {
+    opacity: 1;
+  }
+  28.0% {
+    opacity: 1;
+    transform: translate(-90px, 520px) rotate(-220deg) scale(0.55);
+  }
+  30.0%,
+  100% {
+    opacity: 0;
+  }
+}
+.tc-ld-pop-f0 {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: tc-ld-pop-k0 10s ease-out infinite;
+  opacity: 0;
+}
+@keyframes tc-ld-pop-k0 {
+  0%,
+  11.8% {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+  13.0% {
+    opacity: 1;
+  }
+  20.0%,
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+.tc-ld-say0 {
+  animation: tc-ld-say-k0 10s ease-out infinite;
+  opacity: 0;
+}
+@keyframes tc-ld-say-k0 {
+  0%,
+  29.0% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  31.0%,
+  45.0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  47.0%,
+  100% {
+    opacity: 0;
+  }
+}
+.tc-ld-dizzy0 {
+  animation: tc-ld-dz-k0 10s linear infinite;
+  opacity: 0;
+}
+@keyframes tc-ld-dz-k0 {
+  0%,
+  28.0% {
+    opacity: 0;
+    transform: rotate(0);
+  }
+  30.0% {
+    opacity: 1;
+  }
+  45.0% {
+    opacity: 1;
+    transform: rotate(720deg);
+  }
+  47.0%,
+  100% {
+    opacity: 0;
+  }
+}
+.tc-ld-bal-m1 {
+  animation: tc-ld-bal-mk1 10s ease-in-out infinite;
+  opacity: 0;
+}
+@keyframes tc-ld-bal-mk1 {
+  0%,
+  25.9% {
+    opacity: 0;
+    transform: translate(-300px, -8px);
+  }
+  26.0% {
+    opacity: 1;
+    transform: translate(-300px, -8px);
+  }
+  37.0%,
+  72.0% {
+    opacity: 1;
+    transform: translate(640px, -8px);
+  }
+  73.0%,
+  100% {
+    opacity: 0;
+    transform: translate(640px, -8px);
+  }
+}
+.tc-ld-env1 {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: tc-ld-env-k1 10s linear infinite;
+}
+@keyframes tc-ld-env-k1 {
+  0%,
+  37.0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  40.0% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+  40.1%,
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+.tc-ld-rid1 {
+  animation: tc-ld-rid-k1 10s ease-in infinite;
+}
+@keyframes tc-ld-rid-k1 {
+  0%,
+  38.0% {
+    transform: translate(0, 0);
+  }
+  41.5% {
+    transform: translate(-18px, 70px);
+  }
+  45.5% {
+    transform: translate(-42px, 190px);
+  }
+  49.0% {
+    transform: translate(-60px, 270px);
+  }
+  50.5% {
+    transform: translate(-60px, 270px);
+  }
+  52.0% {
+    transform: translate(-60px, 270px);
+  }
+  55.0%,
+  100% {
+    transform: translate(-42px, 284px);
+  }
+}
+.tc-ld-tum1 {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: tc-ld-tum-k1 10s ease-in infinite;
+}
+@keyframes tc-ld-tum-k1 {
+  0%,
+  38.0% {
+    transform: rotate(0);
+  }
+  41.5% {
+    transform: rotate(70deg);
+  }
+  45.5% {
+    transform: rotate(300deg);
+  }
+  49.0% {
+    transform: rotate(720deg);
+  }
+  50.5% {
+    transform: rotate(738deg);
+  }
+  52.0% {
+    transform: rotate(704deg);
+  }
+  55.0%,
+  100% {
+    transform: rotate(822deg);
+  }
+}
+.tc-ld-def1 {
+  animation: tc-ld-def-k1 10s ease-in infinite;
+  opacity: 0;
+}
+@keyframes tc-ld-def-k1 {
+  0%,
+  38.0% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(0) scale(1);
+  }
+  39.0% {
+    opacity: 1;
+  }
+  54.0% {
+    opacity: 1;
+    transform: translate(-90px, 520px) rotate(-220deg) scale(0.55);
+  }
+  56.0%,
+  100% {
+    opacity: 0;
+  }
+}
+.tc-ld-pop-f1 {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: tc-ld-pop-k1 10s ease-out infinite;
+  opacity: 0;
+}
+@keyframes tc-ld-pop-k1 {
+  0%,
+  37.8% {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+  39.0% {
+    opacity: 1;
+  }
+  46.0%,
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+.tc-ld-say1 {
+  animation: tc-ld-say-k1 10s ease-out infinite;
+  opacity: 0;
+}
+@keyframes tc-ld-say-k1 {
+  0%,
+  55.0% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  57.0%,
+  71.0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  73.0%,
+  100% {
+    opacity: 0;
+  }
+}
+.tc-ld-dizzy1 {
+  animation: tc-ld-dz-k1 10s linear infinite;
+  opacity: 0;
+}
+@keyframes tc-ld-dz-k1 {
+  0%,
+  54.0% {
+    opacity: 0;
+    transform: rotate(0);
+  }
+  56.0% {
+    opacity: 1;
+  }
+  71.0% {
+    opacity: 1;
+    transform: rotate(720deg);
+  }
+  73.0%,
+  100% {
+    opacity: 0;
+  }
+}
+.tc-ld-bal-m2 {
+  animation: tc-ld-bal-mk2 10s ease-in-out infinite;
+  opacity: 0;
+}
+@keyframes tc-ld-bal-mk2 {
+  0%,
+  51.9% {
+    opacity: 0;
+    transform: translate(1700px, -8px);
+  }
+  52.0% {
+    opacity: 1;
+    transform: translate(1700px, -8px);
+  }
+  63.0%,
+  98.0% {
+    opacity: 1;
+    transform: translate(1100px, -8px);
+  }
+  99.0%,
+  100% {
+    opacity: 0;
+    transform: translate(1100px, -8px);
+  }
+}
+.tc-ld-env2 {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: tc-ld-env-k2 10s linear infinite;
+}
+@keyframes tc-ld-env-k2 {
+  0%,
+  63.0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  66.0% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+  66.1%,
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+.tc-ld-rid2 {
+  animation: tc-ld-rid-k2 10s ease-in infinite;
+}
+@keyframes tc-ld-rid-k2 {
+  0%,
+  64.0% {
+    transform: translate(0, 0);
+  }
+  67.5% {
+    transform: translate(3px, 70px);
+  }
+  71.5% {
+    transform: translate(7px, 190px);
+  }
+  75.0% {
+    transform: translate(10px, 270px);
+  }
+  76.5% {
+    transform: translate(10px, 270px);
+  }
+  78.0% {
+    transform: translate(10px, 270px);
+  }
+  81.0%,
+  100% {
+    transform: translate(28px, 284px);
+  }
+}
+.tc-ld-tum2 {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: tc-ld-tum-k2 10s ease-in infinite;
+}
+@keyframes tc-ld-tum-k2 {
+  0%,
+  64.0% {
+    transform: rotate(0);
+  }
+  67.5% {
+    transform: rotate(70deg);
+  }
+  71.5% {
+    transform: rotate(300deg);
+  }
+  75.0% {
+    transform: rotate(720deg);
+  }
+  76.5% {
+    transform: rotate(738deg);
+  }
+  78.0% {
+    transform: rotate(704deg);
+  }
+  81.0%,
+  100% {
+    transform: rotate(822deg);
+  }
+}
+.tc-ld-def2 {
+  animation: tc-ld-def-k2 10s ease-in infinite;
+  opacity: 0;
+}
+@keyframes tc-ld-def-k2 {
+  0%,
+  64.0% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(0) scale(1);
+  }
+  65.0% {
+    opacity: 1;
+  }
+  80.0% {
+    opacity: 1;
+    transform: translate(-90px, 520px) rotate(-220deg) scale(0.55);
+  }
+  82.0%,
+  100% {
+    opacity: 0;
+  }
+}
+.tc-ld-pop-f2 {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+  animation: tc-ld-pop-k2 10s ease-out infinite;
+  opacity: 0;
+}
+@keyframes tc-ld-pop-k2 {
+  0%,
+  63.8% {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+  65.0% {
+    opacity: 1;
+  }
+  72.0%,
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+.tc-ld-say2 {
+  animation: tc-ld-say-k2 10s ease-out infinite;
+  opacity: 0;
+}
+@keyframes tc-ld-say-k2 {
+  0%,
+  81.0% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  83.0%,
+  97.0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  99.0%,
+  100% {
+    opacity: 0;
+  }
+}
+.tc-ld-dizzy2 {
+  animation: tc-ld-dz-k2 10s linear infinite;
+  opacity: 0;
+}
+@keyframes tc-ld-dz-k2 {
+  0%,
+  80.0% {
+    opacity: 0;
+    transform: rotate(0);
+  }
+  82.0% {
+    opacity: 1;
+  }
+  97.0% {
+    opacity: 1;
+    transform: rotate(720deg);
+  }
+  99.0%,
+  100% {
+    opacity: 0;
+  }
+}
+.tc-ld-slash {
+  animation: tc-ld-sl-k 10s linear infinite;
+  opacity: 0;
+}
+@keyframes tc-ld-sl-k {
+  0%,
+  36.5% {
+    opacity: 0;
+  }
+  37.0% {
+    opacity: 1;
+  }
+  40.5%,
+  100% {
+    opacity: 0;
+  }
+}
+.tc-ld-bf {
+  animation: tc-ld-bfk 10s linear infinite;
+  opacity: 0;
+}
+@keyframes tc-ld-bfk {
+  0%,
+  59.0% {
+    opacity: 0;
+    transform: translate(0, 0);
+  }
+  59.5% {
+    opacity: 1;
+  }
+  64.0% {
+    opacity: 1;
+    transform: translate(238px, 0);
+  }
+  64.2%,
+  100% {
+    opacity: 0;
+    transform: translate(238px, 0);
+  }
+}
+.tc-ld-scn {
+  animation: tc-ld-scn-k 10s linear infinite;
+}
+@keyframes tc-ld-scn-k {
+  0%,
+  96% {
+    opacity: 1;
+  }
+  99%,
+  100% {
+    opacity: 0;
+  }
+}
+.tc-ld-bob {
+  animation: tc-ld-bob-k 1.6s ease-in-out infinite alternate;
+}
+@keyframes tc-ld-bob-k {
+  from {
+    transform: rotate(-3deg);
+  }
+  to {
+    transform: rotate(3deg);
+  }
+}
+.tc-ld-wob {
   animation: tc-ld-wob 1.3s ease-in-out infinite alternate;
+}
+@keyframes tc-ld-wob {
+  from {
+    transform: rotate(-13deg) translateY(6px);
+  }
+  to {
+    transform: rotate(13deg) translateY(-8px);
+  }
 }
 .tc-ld-knight {
   animation: tc-ld-knight 1.3s ease-in-out infinite alternate;
+}
+@keyframes tc-ld-knight {
+  from {
+    transform: rotate(9deg);
+  }
+  to {
+    transform: rotate(-9deg);
+  }
 }
 .tc-ld-arm-l {
   transform-box: view-box;
@@ -2300,54 +3183,6 @@ body {
   transform-origin: 44px -160px;
   animation: tc-ld-arm 0.65s ease-in-out infinite alternate-reverse;
 }
-.tc-ld-leg-a {
-  transform-origin: -24px -92px;
-  animation: tc-ld-leg 0.65s ease-in-out infinite alternate;
-}
-.tc-ld-leg-b {
-  transform-origin: 24px -92px;
-  animation: tc-ld-leg 0.65s ease-in-out infinite alternate-reverse;
-}
-.tc-ld-plume {
-  transform-box: fill-box;
-  transform-origin: 50% 100%;
-  animation: tc-ld-plume 0.7s ease-in-out infinite alternate;
-}
-.tc-ld-bot {
-  animation: tc-ld-bot 3s ease-in-out infinite;
-}
-.tc-ld-head {
-  transform-box: fill-box;
-  transform-origin: 50% 100%;
-  animation: tc-ld-tilt 2.4s ease-in-out infinite alternate;
-}
-.tc-ld-flame {
-  transform-box: fill-box;
-  transform-origin: 50% 0;
-  animation: tc-ld-flame 0.15s ease-in-out infinite alternate;
-}
-.tc-ld-twinkle {
-  animation: tc-ld-twinkle 2.4s ease-in-out infinite;
-}
-.tc-ld-sweat {
-  animation: tc-ld-sweat 1.4s ease-in infinite;
-}
-@keyframes tc-ld-wob {
-  from {
-    transform: rotate(-13deg) translateY(6px);
-  }
-  to {
-    transform: rotate(13deg) translateY(-8px);
-  }
-}
-@keyframes tc-ld-knight {
-  from {
-    transform: rotate(9deg);
-  }
-  to {
-    transform: rotate(-9deg);
-  }
-}
 @keyframes tc-ld-arm {
   from {
     transform: rotate(-16deg);
@@ -2355,6 +3190,14 @@ body {
   to {
     transform: rotate(16deg);
   }
+}
+.tc-ld-leg-a {
+  transform-origin: -24px -92px;
+  animation: tc-ld-leg 0.65s ease-in-out infinite alternate;
+}
+.tc-ld-leg-b {
+  transform-origin: 24px -92px;
+  animation: tc-ld-leg 0.65s ease-in-out infinite alternate-reverse;
 }
 @keyframes tc-ld-leg {
   from {
@@ -2364,6 +3207,11 @@ body {
     transform: rotate(5deg);
   }
 }
+.tc-ld-plume {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: tc-ld-plume 0.7s ease-in-out infinite alternate;
+}
 @keyframes tc-ld-plume {
   from {
     transform: rotate(-12deg);
@@ -2372,10 +3220,18 @@ body {
     transform: rotate(14deg);
   }
 }
+.tc-ld-bot {
+  animation: tc-ld-bot 3s ease-in-out infinite;
+}
 @keyframes tc-ld-bot {
   50% {
     transform: translate(0, -14px);
   }
+}
+.tc-ld-head {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  animation: tc-ld-tilt 2.4s ease-in-out infinite alternate;
 }
 @keyframes tc-ld-tilt {
   from {
@@ -2385,7 +3241,12 @@ body {
     transform: rotate(10deg);
   }
 }
-@keyframes tc-ld-flame {
+.tc-ld-flame {
+  transform-box: fill-box;
+  transform-origin: 50% 0;
+  animation: tc-ld-fl 0.15s ease-in-out infinite alternate;
+}
+@keyframes tc-ld-fl {
   from {
     transform: scaleY(0.8);
   }
@@ -2393,20 +3254,33 @@ body {
     transform: scaleY(1.2);
   }
 }
-@keyframes tc-ld-twinkle {
+.tc-ld-tw {
+  animation: tc-ld-tw 2.4s ease-in-out infinite;
+}
+@keyframes tc-ld-tw {
   50% {
     opacity: 0.2;
   }
 }
-@keyframes tc-ld-sweat {
-  0% {
-    transform: translate(0, 0);
-    opacity: 1;
-  }
-  100% {
-    transform: translate(-14px, 40px);
-    opacity: 0;
-  }
+
+/* Reduced motion: the global rule stops every animation, so show a still scene that reads well.
+   The first rider has landed and the first joke is showing. The other two riders stay hidden. */
+.tc-ld-bal-m0 {
+  opacity: 1;
+  transform: translate(1250px, -8px);
+}
+.tc-ld-env0 {
+  opacity: 0;
+}
+.tc-ld-rid0 {
+  transform: translate(18px, 284px);
+}
+.tc-ld-tum0 {
+  transform: rotate(102deg);
+}
+.tc-ld-say0,
+.tc-ld-dizzy0 {
+  opacity: 1;
 }
 
 /* Reduced motion: no slides, drops, pops, bounces, or spins. Glows stay still. No banner tilt. */
@@ -2417,18 +3291,11 @@ body {
     animation: none !important;
     transition: none !important;
   }
-  .tc-banner {
-    transform: translateX(-50%);
-  }
 }
 [data-motion='reduced'],
 [data-motion='reduced'] * {
   animation: none !important;
   transition: none !important;
-}
-[data-motion='reduced'] .tc-banner,
-.tc-banner[data-motion='reduced'] {
-  transform: translateX(-50%);
 }
 
 /* ---------- Smaller screens: iPad portrait ---------- */
@@ -2439,6 +3306,21 @@ body {
   .tc-forge-title {
     padding-inline: var(--tc-s-4);
     font-size: var(--tc-fs-title);
+  }
+  /* Back and the wallet share the top line, and the title sits under them, so long names fit. */
+  .tc-forge-head {
+    grid-template-columns: auto 1fr;
+    row-gap: var(--tc-s-3);
+  }
+  .tc-forge-head .tc-forge-scrap {
+    justify-self: end;
+  }
+  .tc-forge-head .tc-forge-title {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+  .tc-forge-back {
+    white-space: nowrap;
   }
   /* Portrait: the whole Camp picture sits at the bottom at its own 16:9 shape (no cropping), and
      its top edge fades into the sky above. */
@@ -2455,9 +3337,6 @@ body {
     height: auto;
     aspect-ratio: 16 / 9;
     mask-image: linear-gradient(to bottom, transparent, var(--tc-ink) 30%);
-  }
-  .tc-banner {
-    font-size: var(--tc-fs-lead);
   }
   /* Both card headers wrap the same way, so the two cards stay level. */
   .tc-team-home {
@@ -2498,22 +3377,31 @@ body {
     min-width: 0;
     max-width: none;
   }
-  /* Portrait: aim panel and Fire share one row in the band below the picture. */
+  /* Portrait: the team cards take the second row, so Sound and Pause ride the first row with the
+     ? and gear. */
+  .tc-hud-corner {
+    left: var(--tc-chrome-clear);
+    top: var(--tc-s-3);
+  }
+  :root {
+    --tc-pause-top: 12px;
+  }
+  /* Portrait: the band is taller, so the controls wrap to two rows. The aim panel and Fire
+     share the second row. */
   .tc-hud-bottom {
-    left: 0;
-    right: 0;
-    bottom: 88px;
+    /* Starts right under the picture (width x 920/1280 tall: battlefield plus band). */
+    top: calc(100vw * 920 / 1280);
+    bottom: auto;
     align-items: stretch;
+    padding-top: var(--tc-s-2);
+    padding-bottom: var(--tc-s-4);
+  }
+  .tc-hud-bottom .tc-turn-chev {
+    display: none;
   }
   .tc-aim {
-    flex: 1;
+    flex: 1 1 360px;
     min-width: 0;
-  }
-  /* The keyboard hint rides above the controls here, clear of Sound and Pause. */
-  .tc-hint {
-    top: auto;
-    bottom: 100%;
-    margin: 0 0 8px;
   }
   .tc-reload-body {
     padding-inline: var(--tc-s-4);
@@ -2579,4 +3467,75 @@ body {
     flex: 1 1 0;
     text-align: left;
   }
+}
+
+/* Fighter selector (Pick one). Basic on purpose: the HUD band restyles around these classes. */
+.tc-units {
+  /* Label on the left; the five tokens, then the fighter's name, to its right. About 360px wide,
+     so the selector, the sliders and Fire share one row under the turn strip. */
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: 6px;
+  row-gap: 18px;
+  background: var(--tc-ink-deep);
+  color: var(--tc-on-dark);
+  border: 4px solid var(--tc-ember);
+  border-radius: var(--tc-r-card);
+  padding: 6px 10px;
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new);
+  letter-spacing: var(--tc-ls-caps);
+  text-transform: uppercase;
+}
+.tc-units-label,
+.tc-unit-name {
+  font-size: 20px;
+}
+.tc-units-label {
+  grid-row: 1 / span 2;
+  grid-column: 1;
+}
+.tc-unit-name {
+  grid-row: 2;
+  grid-column: 2 / span 5;
+  white-space: nowrap;
+  color: var(--tc-parchment-warm);
+}
+.tc-unit {
+  grid-row: 1;
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+  border-radius: 50%;
+  border: 3px solid var(--tc-on-dark);
+  background: var(--tc-ink-deep);
+  color: var(--tc-on-dark);
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: 20px;
+  cursor: pointer;
+}
+.tc-unit[aria-checked='true'] {
+  border-width: 7px;
+  border-color: var(--tc-ember);
+  background: var(--tc-ember);
+  color: var(--tc-ink-deep);
+  position: relative;
+}
+/* A pointer under the picked token, so the pick is not shown by color alone. */
+.tc-unit[aria-checked='true']::after {
+  content: '\25B2';
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%);
+  font-size: 20px;
+  line-height: 1;
+  color: var(--tc-ember);
+}
+.tc-unit[aria-disabled='true'] {
+  opacity: 0.6;
+  cursor: default;
 }

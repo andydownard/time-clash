@@ -1,11 +1,20 @@
 import { clampAim, simulateShot } from './ballistics';
-import { AIM, PHASE1_LAYOUT, RNG_SALT, SCRAP, TEAM_FACING, TUMBLE_LINE_COUNT } from './config';
+import {
+  AIM,
+  BONUS,
+  PHASE1_LAYOUT,
+  RNG_SALT,
+  SCRAP,
+  TEAM_FACING,
+  TUMBLE_LINE_COUNT,
+} from './config';
 import { classifyBlast, winnerOf } from './damage';
 import { DEFAULT_EFFECTS } from './loadout';
 import { scoreReload } from './reload';
 import { createShuffleBag } from './bag';
 import { createRng } from './rng';
 import { createTurn, transition } from './turn';
+import { DEFAULT_UNIT, unitById, type UnitDef, type UnitId } from './units';
 import { IllegalTransitionError, MatchOverError, otherTeam } from './types';
 import type {
   AimInput,
@@ -16,7 +25,7 @@ import type {
   MatchController,
   MatchOptions,
   ReloadInput,
-  ReloadScore,
+  ReloadResult,
   ShotResult,
   Team,
   TeamStats,
@@ -61,7 +70,10 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
     angleDeg: AIM.defaultAngleDeg,
     power: AIM.defaultPower,
   }));
+  const selected: Record<Team, UnitId> = { ...DEFAULT_UNIT };
   const stats: Record<Team, TeamStats> = perTeam(freshStats);
+  /** The fighter for a team. Always valid: selectUnit checks ids. */
+  const unitOf = (team: Team): UnitDef => unitById(selected[team]) as UnitDef;
   let lastShot: Match['lastShot'] = null;
   let inFlight: ShotResult | null = null;
 
@@ -90,6 +102,7 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       maxBaseHp: { ...maxHp },
       scrap: { ...scrap },
       aim: { PAST: { ...aim.PAST }, FUTURE: { ...aim.FUTURE } },
+      selected: { ...selected },
       stats: { PAST: { ...stats.PAST }, FUTURE: { ...stats.FUTURE } },
       lastShot: lastShot ? { ...lastShot } : null,
     }),
@@ -101,9 +114,22 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
 
     setAim(input: AimInput): AimInput {
       guard('aim');
-      if (turn.phase !== 'AIMING') throw new IllegalTransitionError(turn.phase, 'SET_AIM');
+      if (turn.phase !== 'AIMING' && turn.phase !== 'BONUS_AIMING')
+        throw new IllegalTransitionError(turn.phase, 'SET_AIM');
       aim[turn.team] = clampAim(input);
       return { ...aim[turn.team] };
+    },
+
+    selectUnit(id: UnitId): void {
+      guard('pick a fighter');
+      if (turn.phase !== 'AIMING' && turn.phase !== 'BONUS_AIMING')
+        throw new IllegalTransitionError(turn.phase, 'SELECT_UNIT');
+      const unit = unitById(id);
+      if (!unit) throw new RangeError(`Unknown fighter: ${String(id)}`);
+      if (unit.team !== turn.team) {
+        throw new RangeError(`Fighter ${id} is not on ${turn.team}`);
+      }
+      selected[turn.team] = unit.id;
     },
 
     fire(): ShotResult {
@@ -111,23 +137,27 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       step({ type: 'FIRE' });
       const team = turn.team;
       const { angleDeg, power } = aim[team];
+      const unit = unitOf(team);
+      // The default fighter shoots from the layout's own launcher, so a fresh game is unchanged.
+      const origin = unit.id === DEFAULT_UNIT[team] ? layout.launchOrigins[team] : unit.origin;
       const result = simulateShot({
         angleDeg,
         power,
-        origin: layout.launchOrigins[team],
+        origin,
         facing: TEAM_FACING[team],
         wind,
         layout,
-        speedScale: effects[team].speedScale,
+        speedScale: effects[team].speedScale * unit.speedScale,
       });
       inFlight = result;
-      lastShot = { angleDeg, power, team, wind, turnNumber: turn.turnNumber };
+      lastShot = { angleDeg, power, team, wind, turnNumber: turn.turnNumber, unit: unit.id };
       stats[team].shotsFired += 1;
       return result;
     },
 
     shotLanded(): BlastOutcome {
       guard('land a shot');
+      const isBonus = turn.phase === 'BONUS_SHOT';
       step({ type: 'SHOT_LANDED' });
       const team = turn.team;
       const target = otherTeam(team);
@@ -140,12 +170,18 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       const tumble = result === 'near';
       const shooter = effects[team];
       const defender = effects[target];
+      const scale = unitOf(team).damageScale;
       // A hit's damage: the shooter's weapon, less the defender's walls, never below 1.
+      // The Power Shot multiplies the weapon's damage first, then the walls cut it.
+      const boost = (n: number): number => (isBonus ? Math.round(n * BONUS.damageMultiplier) : n);
       let damage = 0;
       if (result === 'direct') {
-        damage = Math.max(1, shooter.direct + shooter.directBonus - defender.directCut);
+        damage = Math.max(
+          1,
+          boost(Math.round((shooter.direct + shooter.directBonus) * scale)) - defender.directCut,
+        );
       } else if (result === 'near') {
-        damage = Math.max(1, shooter.near - defender.nearCut);
+        damage = Math.max(1, boost(Math.round(shooter.near * scale)) - defender.nearCut);
       }
       // A force field blocks the first hits that would have done damage.
       let blocked = false;
@@ -172,9 +208,9 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       };
     },
 
-    reloadDone(input: ReloadInput): ReloadScore {
+    reloadDone(input: ReloadInput): ReloadResult {
       guard('reload');
-      step({ type: 'RELOAD_DONE' });
+      step({ type: 'RELOAD_DONE', correct: input.correct === true });
       const score = scoreReload(input);
       const team = turn.team;
       const s = stats[team];
@@ -190,7 +226,7 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
               : Math.min(s.fastestAnswerMs, input.elapsedMs);
         }
       }
-      return score;
+      return { ...score, bonus: turn.phase === 'BONUS_AIMING' };
     },
 
     pass(): void {

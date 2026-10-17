@@ -2,7 +2,7 @@
 // CSS variables, so these read the CSS text itself.
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { UI } from '../../src/game/config';
+import { BATTLE_BAND, UI } from '../../src/game/config';
 import { COVER_BG_FALLBACK } from '../../src/ui/constants';
 import { contrastRatio, parseCssVars, resolveCssVars } from '../../src/ui/contrast';
 
@@ -191,15 +191,33 @@ describe('ui.css: room for the corner buttons', () => {
   it('defines how much room the ? and gear row needs', () => {
     expect(vars['--tc-chrome-clear']).toBeDefined();
   });
-  it('the HUD top row keeps its first card clear of the corner buttons', () => {
-    expect(body('.tc-hud-top')).toMatch(/padding-left:\s*var\(--tc-chrome-clear\)/);
+  it('the HUD top row keeps its first card clear of the ? and gear and the Sound button', () => {
+    expect(body('.tc-hud-top')).toMatch(/padding-left:\s*calc\(var\(--tc-tap\) \* 3/);
+  });
+  it('the control bar lives in its own band at the bottom, full width', () => {
+    const bar = body('.tc-hud-bottom');
+    expect(bar).toMatch(/left:\s*0/);
+    expect(bar).toMatch(/right:\s*0/);
+    expect(bar).toMatch(/bottom:\s*0/);
+    expect(bar).not.toMatch(/bottom:\s*\d+px/);
+  });
+  it('Sound and Pause sit at the top, so the band holds only the controls', () => {
+    expect(body('.tc-hud-corner')).toMatch(/top:\s*var\(--tc-chrome-row\)/);
+    expect(ui).toMatch(/--tc-pause-top:\s*120px/);
+  });
+  it('the canvas band is 200 world px, and the speech bubble uses one uniform scale', () => {
+    expect(BATTLE_BAND).toBe(200);
+    const src = readFileSync(new URL('../../src/ui/transient.ts', import.meta.url), 'utf8');
+    expect(src).toMatch(/box\.width \/ WORLD\.width/);
+    expect(src).not.toMatch(/WORLD\.height\) \* box\.height/);
   });
   it('full screens keep their content below the corner buttons', () => {
     expect(body('.tc-screen')).toMatch(/padding:\s*var\(--tc-chrome-row\)/);
     expect(vars['--tc-chrome-row']).toBeDefined();
   });
-  it('the turn banner sits below the HUD cards', () => {
-    expect(body('.tc-banner')).toMatch(/top:\s*var\(--tc-hud-row\)/);
-    expect(vars['--tc-hud-row']).toBeDefined();
+  it('the turn banner is a strip docked on the control bar, not a drop-down over the cards', () => {
+    expect(ui).not.toMatch(/\.tc-banner\s*\{/);
+    expect(body('.tc-turn-strip')).toMatch(/flex:\s*1 1 100%/);
+    expect(body('.tc-hud-bottom')).toMatch(/flex-wrap:\s*wrap/);
   });
 });

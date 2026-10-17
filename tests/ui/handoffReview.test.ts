@@ -39,10 +39,15 @@ const state = (over: Partial<HudState> = {}): HudState => ({
   angleDeg: 45,
   power: 60,
   shotsLeft: 2,
+  bonus: false,
   canFire: true,
+  selected: 'C',
+  units: [],
   ...over,
 });
-const handlers = (): HudHandlers => ({ onAim: () => {}, onFire: () => {}, onMuteToggle: () => {} });
+const handlers = (): HudHandlers => ({ onAim: () => {}, onFire: () => {}, onMuteToggle: () => {},
+  onSelect: () => {},
+});
 
 describe('team accents are in the palette', () => {
   it('Past is Purple and Future is Pulse, never the old red or cyan', () => {
@@ -127,9 +132,10 @@ describe('HUD readouts', () => {
   it('has no separate shots panel: the bar header holds the turn name and the pips', () => {
     expect(css).not.toContain('.tc-hud-center');
   });
-  it('Sound sits low and left, like Pause low and right, and uses the shared button font', () => {
+  it('Sound sits top left under the ? and gear, and uses the shared button font', () => {
     const corner = bodyOf('.tc-hud-corner');
-    expect(corner).toMatch(/bottom:/);
+    expect(corner).toMatch(/top:/);
+    expect(corner).not.toMatch(/bottom:/);
     expect(corner).toMatch(/left:/);
     expect(bodyOf('.tc-hud-corner .tc-btn')).not.toMatch(/font-family/);
   });

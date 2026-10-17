@@ -16,6 +16,7 @@ import { TEAMS, otherTeam } from '../game/types';
 import { chronoFace, loadingScene, loadingTimeline, skyline } from './art';
 import { LOCAL_IDS } from './constants';
 import type { UiCtx } from './ctx';
+import { awardIcon } from './awardIcons';
 import { h } from './dom';
 import { TEST_IDS, type LoadingHandle, type VictoryChoice, type VictoryOptions } from './types';
 
@@ -243,7 +244,20 @@ export function showVictory(ctx: UiCtx, options: VictoryOptions): Promise<Victor
                 stats[t].questionsAnswered,
               )}`,
             }),
-            h(doc, 'ul', {}, ...awards[t].map((id) => h(doc, 'li', { text: VICTORY.awards[id] }))),
+            h(
+              doc,
+              'ul',
+              {},
+              ...awards[t].map((id) =>
+                h(
+                  doc,
+                  'li',
+                  { class: 'tc-badge', 'data-award': id },
+                  h(doc, 'span', { class: 'tc-badge-icon' }, awardIcon(doc, id)),
+                  h(doc, 'span', { class: 'tc-badge-name', text: VICTORY.awards[id] }),
+                ),
+              ),
+            ),
           ),
         ),
       ),

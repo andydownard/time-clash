@@ -11,8 +11,11 @@ import type {
   TeamStats,
   Vec2,
 } from '../../game/types';
+import type { UnitId } from '../../game/units';
+import type { Levels } from '../../questions/calibration';
 import type { PickHistory, QuestionBank } from '../../questions/types';
 import type { Overlay } from '../../ui/types';
+import type { ProjectileKind } from './projectileKinds';
 
 export const BATTLE_SCENE_KEY = 'BattleScene';
 /** Where Battle hands off when a team wins. The Victory scene owner must register this key. */
@@ -45,6 +48,8 @@ export type ViewStatus = {
   activeTeam: Team | null;
   names: Record<Team, string>;
   baseHp: Record<Team, number>;
+  /** Each base's full health. Missing means 100. An upgrade can raise it. */
+  maxBaseHp?: Record<Team, number>;
   scrap: Record<Team, number>;
   wind: number;
   shotsLeft: 0 | 1 | 2;
@@ -62,10 +67,12 @@ export interface BattleView {
   /** The player dragged the dial handle. Pass null to turn dragging off. */
   setAimDragHandler(handler: ((aim: AimInput) => void) | null): void;
   /** Fly the projectile along result.path. Resolves when it lands. */
-  animateShot(shooter: Team, result: ShotResult): Promise<void>;
+  animateShot(shooter: Team, result: ShotResult, kind?: ProjectileKind): Promise<void>;
   playImpact(info: ImpactInfo): Promise<void>;
   /** Awkward Tumble for that team's character. Resolves when it springs back up. */
   playTumble(team: Team): Promise<void>;
+  /** Show which fighter is up for that team. */
+  setSelectedUnit(team: Team, id: UnitId): void;
   showScrapPopup(team: Team, amount: number): void;
 }
 
@@ -87,6 +94,9 @@ export type BattleSceneData = {
   history: PickHistory;
   /** Called with the new history after every question, so main.ts can save it. */
   onHistory?: (history: PickHistory) => void;
+  /** Quiet level nudges per player name. Saved by main.ts. Never shown to a child. */
+  levels?: Levels;
+  onLevels?: (levels: Levels) => void;
   onMuteToggle?: () => void;
   /** True when big motion should become fades. Default: asks the browser. */
   reducedMotion?: () => boolean;
@@ -94,4 +104,6 @@ export type BattleSceneData = {
   onFinished?: (result: BattleResult) => void;
   /** Runs when the family leaves a game from the pause panel. */
   onLeave?: () => void;
+  /** Each player's Scrap in hand when the match began. The HUD shows this plus what they earn. */
+  scrapBase?: Record<Team, number>;
 };
