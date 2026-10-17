@@ -39,7 +39,7 @@ test('a rude name is refused, and fixing it lets the match start', async ({ page
   await tid(page, 'setup-name-PAST').fill('Alex');
   await expect(err(page, 'PAST')).toBeEmpty();
   await tid(page, 'setup-next').click();
-  await expect(tid(page, 'pass-screen')).toBeVisible();
+  await expect(tid(page, 'camp-start')).toBeVisible();
 });
 
 // Setup and src/game/names.ts must refuse the same words ("poop", "butt", "fart" ...).
@@ -69,7 +69,7 @@ test('names, grades and subjects are remembered after a reload', async ({ page }
   await fillTeam(page, 'PAST', PAST_SIDE);
   await fillTeam(page, 'FUTURE', FUTURE_SIDE);
   await tid(page, 'setup-next').click();
-  await expect(tid(page, 'pass-screen')).toBeVisible();
+  await expect(tid(page, 'camp-start')).toBeVisible();
 
   await page.reload();
   await tid(page, 'tap-to-play').click();

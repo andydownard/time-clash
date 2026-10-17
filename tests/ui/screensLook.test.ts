@@ -293,7 +293,7 @@ describe('Wipeout look', () => {
     expect(text).not.toContain('Alex: Wipeout');
     expect(text).toContain('Awards');
     expect(q(TEST_IDS.rematch)).not.toBeNull();
-    expect(q(TEST_IDS.backToStart)).not.toBeNull();
+    expect(q(TEST_IDS.backToCamp)).not.toBeNull();
   });
 
   it('never says destroyed, defeat, dead, die, or kill on screen', () => {

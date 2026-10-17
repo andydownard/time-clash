@@ -27,7 +27,8 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 - The win moment has no celebration.
 - The reward for a fast answer is easy to miss.
 - Wood plank and neon pod card skins, bigger castle and rocket pictures on Setup cards, brighter Tap to Play silhouettes with a visual gag, and bouncing victory blocks are new art.
-- Phase 2 Camp Hub, base placement, biomes (docs/BUILD.md). Build the Camp screen from the Main (Camp hub) board in the design handoff.
+- Phase 2 base placement, biomes, and evasion abilities (docs/BUILD.md). The Camp Hub is built.
+- Camp scrap counter and saved scrap between matches. The Main board has no scrap counter, so it waits for Phase 3 and the Forge.
 - Phase 3 Forge: build from the Forge and ForgeFuture boards in the design handoff.
 - Phase 3 Upgrade: build from the Upgrade and UpgradePast boards in the design handoff.
 - There are about 40 items per grade and subject. Families who play many rematches will see repeats. K-1 reading is all sight words.

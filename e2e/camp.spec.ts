@@ -1,0 +1,56 @@
+// The Camp hub sits between Setup and Battle. One big button starts the match. The other two
+// are not open yet, so they say so and change nothing.
+import { expect, test } from './fixtures';
+import { PAST_SIDE, FUTURE_SIDE, fillTeam, snap, tid, toSetup } from './support/game';
+
+async function toCamp(page: Parameters<typeof tid>[0]): Promise<void> {
+  await toSetup(page);
+  await fillTeam(page, 'PAST', PAST_SIDE);
+  await fillTeam(page, 'FUTURE', FUTURE_SIDE);
+  await tid(page, 'setup-next').click();
+  await expect(tid(page, 'camp-start')).toBeVisible({ timeout: 10_000 });
+}
+
+test('Setup leads to the Camp, and Time to Clash! starts the match', async ({ page }) => {
+  await toCamp(page);
+  await expect(page.locator('[data-screen="camp"] h1')).toHaveText('Time Clash Camp');
+  await expect(tid(page, 'camp-start')).toHaveText('Time to Clash!');
+  await expect(tid(page, 'camp-start')).toBeFocused();
+  await tid(page, 'camp-start').click();
+  await expect(tid(page, 'pass-screen')).toBeVisible({ timeout: 10_000 });
+  const m = await snap(page);
+  expect(m.players.map((p) => [p.team, p.name])).toEqual([
+    ['PAST', PAST_SIDE.name],
+    ['FUTURE', FUTURE_SIDE.name],
+  ]);
+});
+
+test('Forge Weapon and Upgrade Base stay on the Camp and say they are coming soon', async ({
+  page,
+}) => {
+  await toCamp(page);
+  await expect(page.locator('.tc-camp-soon')).toHaveText(['Coming soon', 'Coming soon']);
+  await tid(page, 'camp-forge').click({ force: true });
+  await expect(tid(page, 'camp-status')).toHaveText('Forge Weapon is coming soon.');
+  await tid(page, 'camp-upgrade').click({ force: true });
+  await expect(tid(page, 'camp-status')).toHaveText('Upgrade Base is coming soon.');
+  await expect(tid(page, 'camp-start')).toBeVisible();
+  await expect(tid(page, 'pass-screen')).toHaveCount(0);
+});
+
+test('the keyboard starts the match from the Camp', async ({ page }) => {
+  await toCamp(page);
+  await page.keyboard.press('Enter');
+  await expect(tid(page, 'pass-screen')).toBeVisible({ timeout: 10_000 });
+});
+
+test('reduced motion stops the Camp animation', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await toCamp(page);
+  const names = await page.evaluate(() =>
+    [...document.querySelectorAll('.tc-camp-art [class]')]
+      .map((el) => getComputedStyle(el).animationName)
+      .filter((n) => n !== 'none'),
+  );
+  expect(names).toEqual([]);
+});

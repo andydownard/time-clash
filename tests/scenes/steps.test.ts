@@ -8,6 +8,7 @@ import {
   runSetupStep,
   runTapStep,
   runVictoryStep,
+  runCampStep,
 } from '../../src/scenes/steps';
 import { TEST_IDS } from '../../src/ui/types';
 import type { BattleSceneData } from '../../src/scenes/battle/types';
@@ -130,40 +131,30 @@ describe('loading step', () => {
 });
 
 describe('setup step', () => {
-  it('saves both players and goes to Battle with a seeded setup', async () => {
+  it('saves both players and goes to the Camp', async () => {
     t.services.session.bank = tinyBank;
     const p = runSetupStep(t.services);
     click(q(TEST_IDS.setupGrade('FUTURE', 7)));
     click(q(TEST_IDS.setupSubject('FUTURE', 'math')));
     click(q(TEST_IDS.setupNext));
     const route = await p;
-    expect(route.key).toBe(SCENE_KEYS.battle);
-    const data = route.data as BattleSceneData;
-    const m = data.match.snapshot();
-    expect(m.seed).toBe(1234);
-    expect(m.turn.team).toBe('PAST');
-    expect(m.players[0].team).toBe('PAST');
-    expect(m.players[1]).toMatchObject({ team: 'FUTURE', grade: 7, subject: 'math' });
-    expect(data.bank).toBe(tinyBank);
-    expect(t.storage.get('timeclash.players')).toEqual(m.players);
-  });
-  it('loads the bank first if it is somehow missing', async () => {
-    const p = runSetupStep(t.services);
-    click(q(TEST_IDS.setupNext));
-    const route = await p;
-    expect(route.key).toBe(SCENE_KEYS.loading);
-    expect(route.data).toMatchObject({ next: SCENE_KEYS.battle, setup: { seed: 1234 } });
+    expect(route).toEqual({ key: SCENE_KEYS.camp });
+    expect(t.storage.get('timeclash.players')![1]).toMatchObject({
+      team: 'FUTURE',
+      grade: 7,
+      subject: 'math',
+    });
   });
   it('lets the two sides differ and remembers them next time', async () => {
-    t.services.session.bank = tinyBank;
     t.storage.set('timeclash.players', players);
     const p = runSetupStep(t.services);
     expect(q<HTMLInputElement>(TEST_IDS.setupName('PAST'))!.value).toBe('Alex');
     expect(q<HTMLInputElement>(TEST_IDS.setupName('FUTURE'))!.value).toBe('Sam');
     click(q(TEST_IDS.setupNext));
-    const out = ((await p).data as BattleSceneData).match.snapshot();
-    expect(out.players[0].grade).toBe(3);
-    expect(out.players[1].grade).toBe(5);
+    await p;
+    const saved = t.storage.get('timeclash.players')!;
+    expect(saved[0].grade).toBe(3);
+    expect(saved[1].grade).toBe(5);
   });
   it('does not move on with an empty name', async () => {
     t.services.session.bank = tinyBank;
@@ -184,6 +175,53 @@ describe('setup step', () => {
   });
 });
 
+describe('camp step', () => {
+  it('starts a seeded match for the saved players when Time to Clash! is tapped', async () => {
+    t.services.session.bank = tinyBank;
+    t.storage.set('timeclash.players', players);
+    const p = runCampStep(t.services);
+    click(q(TEST_IDS.campStart));
+    const route = await p;
+    expect(route.key).toBe(SCENE_KEYS.battle);
+    const data = route.data as BattleSceneData;
+    const m = data.match.snapshot();
+    expect(m.seed).toBe(1234);
+    expect(m.turn.team).toBe('PAST');
+    expect(m.players).toEqual(players);
+    expect(data.bank).toBe(tinyBank);
+    expect(q(TEST_IDS.campStart)).toBeNull();
+  });
+  it('loads the bank first if it is somehow missing', async () => {
+    t.storage.set('timeclash.players', players);
+    const p = runCampStep(t.services);
+    click(q(TEST_IDS.campStart));
+    const route = await p;
+    expect(route.key).toBe(SCENE_KEYS.loading);
+    expect(route.data).toMatchObject({ next: SCENE_KEYS.battle, setup: { seed: 1234 } });
+  });
+  it('sends a family with no saved players back to Setup, with no Camp screen', async () => {
+    const route = await runCampStep(t.services);
+    expect(route.key).toBe(SCENE_KEYS.setup);
+    expect(q(TEST_IDS.campStart)).toBeNull();
+  });
+  it('stays on the Camp when a closed button is tapped', async () => {
+    t.services.session.bank = tinyBank;
+    t.storage.set('timeclash.players', players);
+    let finished = false;
+    const p = runCampStep(t.services).then((r) => {
+      finished = true;
+      return r;
+    });
+    click(q(TEST_IDS.campForge));
+    click(q(TEST_IDS.campUpgrade));
+    await flush();
+    expect(finished).toBe(false);
+    expect(q(TEST_IDS.campStart)).not.toBeNull();
+    click(q(TEST_IDS.campStart));
+    await p;
+  });
+});
+
 describe('victory step', () => {
   it('shows the winner and routes a rematch through Loading', async () => {
     const c = fakeController();
@@ -201,10 +239,10 @@ describe('victory step', () => {
     expect(t.services.session.match).toBeNull();
     expect(q(TEST_IDS.victory)).toBeNull();
   });
-  it('accepts the wrapped controller and back to start returns to the tap screen', async () => {
+  it('accepts the wrapped controller and Back to Camp returns to the Camp', async () => {
     const p = runVictoryStep(t.services, { controller: fakeController() });
-    click(q(TEST_IDS.backToStart));
-    expect((await p).key).toBe(SCENE_KEYS.tap);
+    click(q(TEST_IDS.backToCamp));
+    expect((await p).key).toBe(SCENE_KEYS.camp);
   });
   it('hides the battle HUD first', async () => {
     t.overlay.showHud({
@@ -214,7 +252,7 @@ describe('victory step', () => {
     });
     expect(document.querySelector('[data-layer="hud"]')!.childElementCount).toBeGreaterThan(0);
     const p = runVictoryStep(t.services, fakeController());
-    click(q(TEST_IDS.backToStart));
+    click(q(TEST_IDS.backToCamp));
     await p;
     expect(document.querySelector('[data-layer="hud"]')!.childElementCount).toBe(0);
   });

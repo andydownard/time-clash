@@ -126,7 +126,11 @@ test('every screen keeps the floors, and the screenshots are retaken', async ({
   await fitsOnScreen(page, 'setup', 'Setup');
   await saveShot(page, browserName, 'setup');
 
-  await startMatch(page);
+  await startMatch(page, undefined, undefined, undefined, async () => {
+    await floors(page, 'Camp');
+    await fitsOnScreen(page, 'camp', 'Camp');
+    await shot('camp');
+  });
   await floors(page, 'Pass screen');
   await shot('pass-screen');
   await readyUp(page);

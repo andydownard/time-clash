@@ -8,6 +8,22 @@ import type { Subject, Team } from '../game/types';
 
 export const GAME_TITLE = 'Time Clash';
 export const GAME_SUBTITLE = 'Past vs. Future';
+/** The slogan. It is never the name: the game is called Time Clash. */
+export const GAME_TAGLINE = 'Time to Clash!';
+
+// ---------- Camp ----------
+export const CAMP = {
+  heading: 'Camp',
+  logoTime: 'Time',
+  logoClash: 'Clash',
+  forge: 'Forge Weapon',
+  upgrade: 'Upgrade Base',
+  /** The big button. It starts the match. */
+  start: GAME_TAGLINE,
+  soon: 'Coming soon',
+  forgeSoon: 'Forge Weapon is coming soon.',
+  upgradeSoon: 'Upgrade Base is coming soon.',
+} as const;
 
 export const TEAM_NAMES: Record<Team, string> = { PAST: 'Team Past', FUTURE: 'Team Future' };
 export const TEAM_HOMES: Record<Team, string> = { PAST: 'Castle', FUTURE: 'Secret Base' };
@@ -255,7 +271,7 @@ export const VICTORY = {
     ms === null ? 'None yet' : `${(Number(ms) / 1000).toFixed(1)} seconds`,
   scrapEarned: 'Scrap earned',
   rematch: 'Rematch',
-  backToStart: 'Back to Start',
+  backToCamp: 'Back to Camp',
 } as const;
 
 // ---------- Errors ----------
