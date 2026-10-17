@@ -30,7 +30,9 @@ export type SceneRoute = { key: SceneKey; data?: unknown };
 
 /** What LoadingScene receives. It loads, then goes to `next`. */
 export type LoadingData =
-  { next: typeof SCENE_KEYS.setup } | { next: typeof SCENE_KEYS.battle; setup: MatchSetup };
+  | { next: typeof SCENE_KEYS.setup }
+  | { next: typeof SCENE_KEYS.camp }
+  | { next: typeof SCENE_KEYS.battle; setup: MatchSetup };
 
 /**
  * What VictoryScene receives. BattleScene hands over a BattleResult. A finished

@@ -73,7 +73,9 @@ test('names, grades and subjects are remembered after a reload', async ({ page }
 
   await page.reload();
   await tid(page, 'tap-to-play').click();
-  await expect(tid(page, 'setup-next')).toBeVisible({ timeout: 10_000 });
+  await expect(tid(page, 'camp-start')).toBeVisible({ timeout: 10_000 });
+  await tid(page, 'camp-players').click();
+  await expect(tid(page, 'setup-next')).toBeVisible();
   await expect(tid(page, 'setup-name-PAST')).toHaveValue(PAST_SIDE.name);
   await expect(tid(page, 'setup-name-FUTURE')).toHaveValue(FUTURE_SIDE.name);
   await expect(tid(page, 'setup-grade-PAST-2')).toHaveAttribute('aria-checked', 'true');

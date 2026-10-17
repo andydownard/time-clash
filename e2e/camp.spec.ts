@@ -38,6 +38,34 @@ test('Forge Weapon and Upgrade Base stay on the Camp and say they are coming soo
   await expect(tid(page, 'pass-screen')).toHaveCount(0);
 });
 
+test('a returning family lands on the Camp after Tap to Play', async ({ page }) => {
+  await toCamp(page);
+  await page.reload();
+  await tid(page, 'tap-to-play').click();
+  await expect(tid(page, 'camp-start')).toBeVisible({ timeout: 10_000 });
+  await expect(tid(page, 'setup-next')).toHaveCount(0);
+});
+
+test('a new family goes to Setup first, not the Camp', async ({ page }) => {
+  await toSetup(page);
+  await expect(tid(page, 'camp-start')).toHaveCount(0);
+});
+
+test('Change players opens Setup with the saved players, then returns to the Camp', async ({
+  page,
+}) => {
+  await toCamp(page);
+  await tid(page, 'camp-players').click();
+  await expect(tid(page, 'setup-next')).toBeVisible();
+  await expect(tid(page, 'setup-name-PAST')).toHaveValue(PAST_SIDE.name);
+  await tid(page, 'setup-name-PAST').fill('Mia');
+  await tid(page, 'setup-next').click();
+  await expect(tid(page, 'camp-start')).toBeVisible();
+  await tid(page, 'camp-start').click();
+  await expect(tid(page, 'pass-screen')).toBeVisible({ timeout: 10_000 });
+  expect((await snap(page)).players[0].name).toBe('Mia');
+});
+
 test('the keyboard starts the match from the Camp', async ({ page }) => {
   await toCamp(page);
   await page.keyboard.press('Enter');

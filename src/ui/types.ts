@@ -50,6 +50,7 @@ export const TEST_IDS = {
   campForge: 'camp-forge',
   campUpgrade: 'camp-upgrade',
   campStart: 'camp-start',
+  campPlayers: 'camp-players',
   turnBanner: 'turn-banner',
   passScreen: 'pass-screen',
   passReady: 'pass-ready',
@@ -131,8 +132,8 @@ export type VictoryOptions = {
   stats: Record<Team, TeamStats>;
 };
 
-/** The Camp has one way out: the big button that starts the match. */
-export type CampChoice = 'battle';
+/** The Camp starts the match, or sends the family back to Setup to change the players. */
+export type CampChoice = 'battle' | 'players';
 
 export type VictoryChoice = 'rematch' | 'back-to-camp';
 

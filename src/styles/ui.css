@@ -1595,6 +1595,11 @@ body {
     0 5px 0 var(--tc-blue-900),
     0 0 30px var(--tc-pulse);
 }
+.tc-screen > .tc-camp-players {
+  position: absolute;
+  top: var(--tc-s-4);
+  right: var(--tc-s-6);
+}
 .tc-camp-start-slot {
   margin-top: auto;
 }

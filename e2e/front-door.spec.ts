@@ -51,8 +51,10 @@ test('Setup keeps two different sides and remembers them after a reload', async 
 
   await page.reload();
   await id(page, 'tap-to-play').click();
-  // The intro was seen, so Loading then Setup follow the tap.
-  await expect(id(page, 'setup-next')).toBeVisible({ timeout: 10_000 });
+  // The intro was seen and the players are saved, so Loading then the Camp follow the tap.
+  await expect(id(page, 'camp-start')).toBeVisible({ timeout: 10_000 });
+  await id(page, 'camp-players').click();
+  await expect(id(page, 'setup-next')).toBeVisible();
   await expect(id(page, 'setup-name-PAST')).toHaveValue('Alex');
   await expect(id(page, 'setup-name-FUTURE')).toHaveValue('Sam');
   await expect(id(page, 'setup-grade-PAST-3')).toHaveAttribute('aria-checked', 'true');
