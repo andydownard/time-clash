@@ -2,6 +2,7 @@
 // plain DOM. See src/ui/types.ts for the contract and docs/CONTRACTS.md decision 18.
 import type { AudioManager, SfxName } from '../audio/types';
 import { DEFAULT_SETTINGS } from '../game/config';
+import type { Players } from '../game/types';
 import { createStorage } from '../storage/storage';
 import type { Settings, TypedStorage } from '../storage/types';
 import { COVER_BG_FALLBACK } from './constants';
@@ -208,7 +209,8 @@ export const createOverlay: CreateOverlayWithDeps = (
     showTapToStart: (handlers) => showTapToStart(ctx, handlers),
     showIntro: (script, play) => showIntro(ctx, script, play),
     showLoading: (messages) => showLoading(ctx, messages),
-    showSetup: (initial) => showSetup(ctx, initial),
+    showSetup: ((initial: Players | null, options?: { back: true }) =>
+      options ? showSetup(ctx, initial, options) : showSetup(ctx, initial)) as Overlay['showSetup'],
     showCamp: () => showCamp(ctx),
     showForge: (options) => showForge(ctx, options),
     showVictory: (options) => showVictory(ctx, options),

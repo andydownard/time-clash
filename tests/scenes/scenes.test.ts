@@ -25,7 +25,7 @@ import { VictoryScene } from '../../src/scenes/VictoryScene';
 import type { BattleSceneData } from '../../src/scenes/battle/types';
 import { TEST_IDS } from '../../src/ui/types';
 import { click, flush, q } from '../ui/helpers';
-import { fakeController, makeServices } from './fakes';
+import { fakeController, makeServices, players } from './fakes';
 
 type FakeScene = {
   key: string;
@@ -108,6 +108,22 @@ describe('BootScene', () => {
     expect(document.querySelector('[data-tc-root]')).not.toBeNull();
     expect(q(TEST_IDS.howToPlay)).not.toBeNull();
     expect(started).toEqual([{ key: SCENE_KEYS.tap, data: undefined }]);
+  });
+  it('a returning family skips the tap screen: Loading, then the Camp', () => {
+    t.storage.set('timeclash.introSeen', true);
+    t.storage.set('timeclash.players', players);
+    launch(BootScene);
+    expect(started).toEqual([{ key: SCENE_KEYS.loading, data: { next: SCENE_KEYS.camp } }]);
+  });
+  it('a family that never saw the intro still gets the tap screen', () => {
+    t.storage.set('timeclash.players', players);
+    launch(BootScene);
+    expect(started).toEqual([{ key: SCENE_KEYS.tap, data: undefined }]);
+  });
+  it('a family with the intro seen but no saved players gets the tap screen (it is a fresh start)', () => {
+    t.storage.set('timeclash.introSeen', true);
+    launch(BootScene);
+    expect(started[0]!.key).toBe(SCENE_KEYS.tap);
   });
   it('is safe to run twice (no second set of buttons)', () => {
     launch(BootScene);
@@ -250,7 +266,8 @@ describe('the whole flow', () => {
   });
 
   it('a step that throws falls back to the tap screen instead of freezing', async () => {
-    t.services.overlay.showSetup = () => Promise.reject(new Error('boom'));
+    t.services.overlay.showSetup = (() =>
+      Promise.reject(new Error('boom'))) as typeof t.services.overlay.showSetup;
     launch(SetupScene);
     expect((await next()).key).toBe(SCENE_KEYS.tap);
   });

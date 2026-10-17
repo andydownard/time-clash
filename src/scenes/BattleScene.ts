@@ -34,6 +34,7 @@ import { flightDurationMs, pointAtTime } from './battle/trajectory';
 import { tumblePose } from './battle/tumble';
 import {
   BATTLE_SCENE_KEY,
+  CAMP_SCENE_KEY,
   VICTORY_SCENE_KEY,
   type BattleSceneData,
   type BattleView,
@@ -123,6 +124,11 @@ export class BattleScene extends Phaser.Scene implements BattleView {
         const waiters = this.resumeWaiters;
         this.resumeWaiters = [];
         waiters.forEach((fn) => fn());
+      },
+      // Leave game: the family goes back to the Camp. Shutting this scene down stops the flow.
+      onLeave: () => {
+        this.data0.onLeave?.();
+        this.scene.start(CAMP_SCENE_KEY);
       },
     });
 

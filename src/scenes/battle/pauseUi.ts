@@ -1,10 +1,10 @@
 // The Pause corner button and its panel. Plain DOM, like every button in the game.
 // Pausing freezes the scene (tweens and timers) and the flow waits until Keep playing.
-import { BUTTONS } from '../../data/copy';
+import { BUTTONS, PAUSE } from '../../data/copy';
 import { UI } from '../../game/config';
 import { h, trapTab } from '../../ui/dom';
 
-export type PauseHandlers = { onPause: () => void; onResume: () => void };
+export type PauseHandlers = { onPause: () => void; onResume: () => void; onLeave?: () => void };
 export type PauseControl = {
   pause(): void;
   resume(): void;
@@ -58,11 +58,58 @@ export function createPauseControl(doc: Document, handlers: PauseHandlers): Paus
     return b;
   };
 
+  const leaveButton = (): HTMLButtonElement => {
+    const b = h(doc, 'button', {
+      type: 'button',
+      class: 'tc-btn tc-btn-neutral',
+      'data-testid': 'pause-leave',
+      text: BUTTONS.leaveGame,
+    });
+    b.style.minHeight = `${UI.tapTargetMinPx}px`;
+    return b;
+  };
+
+  /** The card shows the pause choices, or the "Leave this game?" question. */
+  const showChoices = (card: HTMLElement): void => {
+    const resume = resumeButton();
+    const leave = leaveButton();
+    leave.addEventListener('click', () => showConfirm(card));
+    card.replaceChildren(h(doc, 'h2', { id: 'tc-pause-heading', text: BUTTONS.pause }), resume);
+    if (handlers.onLeave) card.append(leave);
+    resume.focus();
+  };
+
+  const showConfirm = (card: HTMLElement): void => {
+    const stay = h(doc, 'button', {
+      type: 'button',
+      class: 'tc-btn tc-btn-neutral',
+      'data-testid': 'pause-stay',
+      text: BUTTONS.stay,
+    });
+    stay.style.minHeight = `${UI.tapTargetMinPx}px`;
+    stay.addEventListener('click', () => showChoices(card));
+    const leave = h(doc, 'button', {
+      type: 'button',
+      class: 'tc-btn tc-btn-neutral',
+      'data-testid': 'pause-leave-yes',
+      text: BUTTONS.leaveGame,
+    });
+    leave.style.minHeight = `${UI.tapTargetMinPx}px`;
+    leave.addEventListener('click', () => handlers.onLeave?.());
+    card.replaceChildren(
+      h(doc, 'h2', { id: 'tc-pause-heading', text: PAUSE.leaveTitle }),
+      h(doc, 'p', { text: PAUSE.leaveBody }),
+      stay,
+      leave,
+    );
+    // The safe choice gets focus, so a stray key never ends a game.
+    stay.focus();
+  };
+
   const api: PauseControl = {
     pause() {
       if (paused) return;
       paused = true;
-      const resume = resumeButton();
       panel = h(
         doc,
         'section',
@@ -73,13 +120,7 @@ export function createPauseControl(doc: Document, handlers: PauseHandlers): Paus
           'aria-modal': 'true',
           'aria-labelledby': 'tc-pause-heading',
         },
-        h(
-          doc,
-          'div',
-          { class: 'tc-cover-card' },
-          h(doc, 'h2', { id: 'tc-pause-heading', text: BUTTONS.pause }),
-          resume,
-        ),
+        h(doc, 'div', { class: 'tc-cover-card' }),
       );
       const ps = panel.style;
       ps.position = 'fixed';
@@ -96,7 +137,7 @@ export function createPauseControl(doc: Document, handlers: PauseHandlers): Paus
       doc.body.dataset.paused = 'true';
       setHudInert(true);
       doc.body.append(panel);
-      resume.focus();
+      showChoices(panel.querySelector('.tc-cover-card') as HTMLElement);
       handlers.onPause();
     },
     resume() {

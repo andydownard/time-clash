@@ -79,8 +79,17 @@ export const BUTTONS = {
   volume: 'Volume',
   pause: 'Pause',
   resume: 'Keep playing',
+  back: 'Back',
+  leaveGame: 'Leave game',
+  stay: 'Stay',
   next: 'Next',
   ok: 'OK',
+} as const;
+
+// ---------- Pause and leaving a game ----------
+export const PAUSE = {
+  leaveTitle: 'Leave this game?',
+  leaveBody: 'Your match will end. You can start a new one at the Camp.',
 } as const;
 
 // ---------- Tap to Start ----------

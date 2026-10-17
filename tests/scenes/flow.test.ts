@@ -12,10 +12,41 @@ import {
   routeAfterSetup,
   routeAfterTap,
   routeAfterVictory,
+  routeAtBoot,
   victoryFrom,
 } from '../../src/scenes/flow';
 import { fakeController, players, stats, tinyBank } from './fakes';
 import { createMatch } from '../../src/game/match';
+
+describe('routeAtBoot', () => {
+  it('goes to the front door for a new family', () => {
+    expect(routeAtBoot(createStorage(null)).key).toBe(SCENE_KEYS.tap);
+  });
+  it('goes through Loading to the Camp for a returning family', () => {
+    const s = createStorage(null);
+    s.set('timeclash.introSeen', true);
+    s.set('timeclash.players', players);
+    expect(routeAtBoot(s)).toEqual({ key: SCENE_KEYS.loading, data: { next: SCENE_KEYS.camp } });
+  });
+  it.each(['introSeen only', 'players only'])('still shows the front door with %s', (which) => {
+    const s = createStorage(null);
+    if (which === 'introSeen only') s.set('timeclash.introSeen', true);
+    else s.set('timeclash.players', players);
+    expect(routeAtBoot(s).key).toBe(SCENE_KEYS.tap);
+  });
+  it('treats broken storage as a new family and never throws', () => {
+    const throwing = {
+      getItem: () => {
+        throw new Error('blocked');
+      },
+      setItem: () => {
+        throw new Error('blocked');
+      },
+      removeItem: () => undefined,
+    };
+    expect(routeAtBoot(createStorage(throwing)).key).toBe(SCENE_KEYS.tap);
+  });
+});
 
 describe('routeAfterTap', () => {
   it('goes to the intro on a first visit', () => {
