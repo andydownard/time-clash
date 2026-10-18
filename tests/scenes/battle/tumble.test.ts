@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { TIMING, TUMBLE_LINE_COUNT } from '../../../src/game/config';
-import { TUMBLE_LINES } from '../../../src/data/copy';
+import { tumblePool } from '../../../src/data/copy';
 import type { BlastOutcome } from '../../../src/game/types';
 import {
   TUMBLE_STEPS,
@@ -100,12 +100,16 @@ describe('who tumbles and what they say', () => {
     expect(tumblingTeam(outcome({ result: 'miss', tumble: false, bubbleIndex: null }))).toBeNull();
   });
   it('picks the bubble line by the seeded index', () => {
-    expect(TUMBLE_LINES).toHaveLength(TUMBLE_LINE_COUNT);
-    TUMBLE_LINES.forEach((line, i) => expect(bubbleText(outcome({ bubbleIndex: i }))).toBe(line));
+    for (const target of ['PAST', 'FUTURE'] as const) {
+      const pool = tumblePool(target);
+      expect(pool).toHaveLength(TUMBLE_LINE_COUNT);
+      pool.forEach((line, i) => expect(bubbleText(outcome({ target, bubbleIndex: i }))).toBe(line));
+    }
   });
   it('gives no line when nobody tumbled or the index is bad', () => {
     expect(bubbleText(outcome({ tumble: false, bubbleIndex: null }))).toBeNull();
     expect(bubbleText(outcome({ bubbleIndex: 99 }))).toBeNull();
+    expect(bubbleText(outcome({ bubbleIndex: -1 }))).toBeNull();
     expect(bubbleText(outcome({ bubbleIndex: -1 }))).toBeNull();
   });
 });

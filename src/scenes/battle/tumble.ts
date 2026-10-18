@@ -1,8 +1,10 @@
 // Awkward Tumble: pure timeline data and pose sampling. The view only turns a pose into shapes.
 // Steps in order: fold, windmill arms, pancake, spring up, look left, look right.
 import { TIMING } from '../../game/config';
-import type { BlastOutcome, Team } from '../../game/types';
-import { TUMBLE_LINES } from '../../data/copy';
+import type { BlastOutcome, Team, Vec2 } from '../../game/types';
+import { tumblePool } from '../../data/copy';
+import { HIT_FX } from '../../game/config';
+import { createRng } from '../../game/rng';
 import { FALL_DX, FALL_HEIGHT, FALL_MS } from './visual';
 
 export const TUMBLE_STEPS = [
@@ -52,6 +54,7 @@ export type TumblePose = {
   lookDir: -1 | 0 | 1;
 };
 
+const HEAD_HEIGHT = 80;
 const FOLD_SQUASH = 0.55;
 const PANCAKE_SQUASH = 0.12;
 const FOLD_TILT = -15;
@@ -114,7 +117,7 @@ export function tumblingTeam(outcome: BlastOutcome): Team | null {
 /** The speech bubble line the seeded rng picked, or null. */
 export function bubbleText(outcome: BlastOutcome): string | null {
   if (!outcome.tumble || outcome.bubbleIndex === null) return null;
-  return TUMBLE_LINES[outcome.bubbleIndex] ?? null;
+  return tumblePool(outcome.target)[outcome.bubbleIndex] ?? null;
 }
 
 // ---------- Fall, topple and vanish ----------
@@ -122,7 +125,8 @@ export function bubbleText(outcome: BlastOutcome): string | null {
 // Nobody is hurt. The fighter then vanishes in a puff and comes back on the next turn.
 // All three are pure: same time in, same frame out.
 
-export type FallVariant = 'face' | 'feet';
+/** 'face' is a face-plant (forward). 'flop' is a backward flop. */
+export type FallVariant = 'face' | 'flop';
 export type FallPhase = 'fly' | 'land' | 'wobble' | 'topple';
 
 export type FallFrame = {
@@ -148,10 +152,15 @@ const LAND_SQUASH = 0.35;
 const easeInOut = (u: number): number => (u < 0.5 ? 2 * u * u : 1 - 2 * (1 - u) * (1 - u));
 const clamp01 = (u: number): number => Math.min(1, Math.max(0, u));
 
-/** Alternates by tumble count, so a family sees both kinds. Seeded by the count, not by a clock. */
-export function fallVariant(count: number): FallVariant {
-  return Math.abs(Math.trunc(count)) % 2 === 0 ? 'face' : 'feet';
+/** Picks the fall style from the match seed and how many falls came before. No clock, no Math.random. */
+export function fallVariantFor(seed: number, count: number): FallVariant {
+  const a = Number.isFinite(seed) ? seed >>> 0 : 0;
+  const b = Number.isFinite(count) ? Math.trunc(count) >>> 0 : 0;
+  return createRng((a ^ Math.imul(b + 1, 0x9e3779b1)) >>> 0).next() < 0.5 ? 'face' : 'flop';
 }
+
+/** The tilt of a fighter lying down: forward is clockwise (+), a backward flop is the other way. */
+const lyingDeg = (variant: FallVariant): number => (variant === 'flop' ? -LYING_DEG : LYING_DEG);
 
 export function fallFrame(
   timeMs: number,
@@ -176,10 +185,11 @@ export function fallFrame(
     phase = 'topple';
     u = within(FALL_ENDS.wobble, 1);
   }
-  const flip = variant === 'feet' ? 360 : 360 + LYING_DEG;
+  const lying = lyingDeg(variant);
+  const flip = Math.sign(lying) * 360 + lying;
   let dx = FALL_DX;
   let lift = 0;
-  let rotationDeg = variant === 'feet' ? 0 : LYING_DEG;
+  let rotationDeg = lying;
   let squashY = 1;
   let armSwingDeg = 0;
   let lookDir: -1 | 0 | 1 = 0;
@@ -194,12 +204,11 @@ export function fallFrame(
       squashY = 1 - LAND_SQUASH * Math.sin(Math.PI * u);
       break;
     case 'wobble':
-      // On its feet it sways. Lying down it looks around, dizzy.
-      if (variant === 'feet') rotationDeg = 10 * Math.sin(Math.PI * 3 * u) * (1 - u);
+      // A little bounce off the ground, then it lies there looking around, dizzy.
+      lift = HIT_FX.landBounce * Math.sin(Math.PI * u);
       lookDir = u < 0.5 ? -1 : 1;
       break;
     case 'topple':
-      if (variant === 'feet') rotationDeg = LYING_DEG * u * u;
       break;
   }
   return {
@@ -213,6 +222,48 @@ export function fallFrame(
     armSwingDeg,
     lookDir,
   };
+}
+
+/** Standing back up: from lying where it fell to upright at its post, with a small hop. u runs 0..1. */
+export function standUpFrame(u: number, variant: FallVariant): FallFrame {
+  const x = clamp01(Number.isFinite(u) ? u : 0);
+  const e = easeInOut(x);
+  return {
+    phase: 'topple',
+    progress: x,
+    dx: FALL_DX * (1 - e),
+    lift: HIT_FX.standUpHop * Math.sin(Math.PI * x),
+    rotationDeg: lyingDeg(variant) * (1 - e),
+    squashX: 1,
+    squashY: 1,
+    armSwingDeg: 0,
+    lookDir: 0,
+  };
+}
+
+export type StarOffset = {
+  dx: number;
+  dy: number;
+  /** In front of the head (drawn on top). */ front: boolean;
+};
+
+/** Where the little stars are, around a point over the fallen head. They circle on a flat oval. */
+export function starOffsets(timeMs: number): StarOffset[] {
+  const t = Number.isFinite(timeMs) ? timeMs : 0;
+  const out: StarOffset[] = [];
+  for (let i = 0; i < HIT_FX.starCount; i++) {
+    const a = 2 * Math.PI * (i / HIT_FX.starCount) + (2 * Math.PI * t) / HIT_FX.starPeriodMs;
+    const dx = Math.cos(a) * HIT_FX.starRadiusPx;
+    const dy = Math.sin(a) * HIT_FX.starRadiusPx * HIT_FX.starSquash;
+    out.push({ dx, dy, front: dy >= 0 });
+  }
+  return out;
+}
+
+/** The top of a fighter's head after a tilt (clockwise degrees about the feet). */
+export function headPosition(feetX: number, feetY: number, angleDeg: number): Vec2 {
+  const rad = (angleDeg * Math.PI) / 180;
+  return { x: feetX + Math.sin(rad) * HEAD_HEIGHT, y: feetY - Math.cos(rad) * HEAD_HEIGHT };
 }
 
 /** The same frame as a TumblePose, so the character sprite can draw it. */
