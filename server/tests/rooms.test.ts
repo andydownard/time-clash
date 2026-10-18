@@ -60,7 +60,15 @@ describe('room flow', () => {
     h.send(host, { t: 'setup', turn: 0, seq: 1, team: 'PAST', grade: 1, subject: 'math' });
     h.send(guest, { t: 'setup', turn: 0, seq: 1, team: 'PAST', grade: 1, subject: 'math' });
     expect(guest.last('error').code).toBe('team_taken');
-    h.send(guest, { t: 'setup', turn: 0, seq: 2, team: 'FUTURE', grade: 1, subject: 'math', name: 'shit' });
+    h.send(guest, {
+      t: 'setup',
+      turn: 0,
+      seq: 2,
+      team: 'FUTURE',
+      grade: 1,
+      subject: 'math',
+      name: 'shit',
+    });
     expect(guest.last('error').code).toBe('bad_name');
     expect(host.of('state')).toHaveLength(0);
   });

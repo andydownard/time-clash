@@ -24,7 +24,11 @@ Players are children. Assume the strictest rules for kids' privacy (COPPA in the
 - Pin dependency versions. Commit the lockfile. Run `npm audit --omit=dev` in CI.
 
 ## Phase 4 relay
-- Room codes: 4 uppercase letters, no vowels. Random. Expire after 2 hours idle.
-- Verify the `Origin` header. Rate limit connections and messages per client.
-- The server validates every move and owns turn order. The server checks reload answers, so one player cannot see the other's answer.
-- Logs: room code and event type only.
+- Room codes: 6 symbols from 32 (animal picture plus letter or digit), 30 bits, from `crypto.randomInt`. Rude combinations are skipped. Expire after 2 hours idle. A room locks to two seats.
+- Guessing is limited: 10 failed joins per address per 10 minutes and a server-wide cap. Addresses are held only in memory as a salted hash and dropped after 10 minutes. They are never logged. (Open decision for Andy: see docs/PHASE4_RELAY.md section 14.)
+- Verify the `Origin` header on every WebSocket upgrade (`ALLOWED_ORIGINS`, required in production). Rate limit messages per connection and per room.
+- The server validates every message with a strict schema (unknown fields and frames over 1 KB are rejected), validates every move, and owns turn order. The reload question and answer exist only on the server. The question goes to the player whose turn it is, without its answer. The other player never receives it.
+- Every match-changing message has an idempotency key `{room}:{player}:{turn}:{seq}`. A repeat is a replay, never a second shot.
+- Seat secrets are 256-bit random, kept as a SHA-256 hash in memory, compared in constant time, sent in a message body (never a URL), and never logged. A dropped seat is held for 60 seconds.
+- No free text between players. Names are optional, 12 characters at most, and run through the same banned-word check as the single-player game.
+- Logs: room code and event type only. A test checks it.

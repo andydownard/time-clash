@@ -4,7 +4,13 @@ import { createHash, randomBytes, randomInt, timingSafeEqual } from 'node:crypto
 import { validateName } from '../../src/game/names';
 import type { QuestionBank } from '../../src/questions/types';
 import { LIMITS, ROOM } from './config';
-import { MatchDriver, type Outbound, type Seat, type SeatProfile, type ServerMessage } from './driver';
+import {
+  MatchDriver,
+  type Outbound,
+  type Seat,
+  type SeatProfile,
+  type ServerMessage,
+} from './driver';
 import { parseClientMessage, type ClientMessage, type ErrorCode } from './protocol';
 import { createBucket, createKeyedLimiter, type Bucket } from './rateLimit';
 import { generateRoomCode } from './roomCode';
@@ -58,7 +64,11 @@ export type ManagerOptions = {
 };
 
 const hashSecret = (s: string): Buffer => createHash('sha256').update(s).digest();
-const v1 = (t: string, fields: Record<string, unknown> = {}): ServerMessage => ({ v: 1, t, ...fields });
+const v1 = (t: string, fields: Record<string, unknown> = {}): ServerMessage => ({
+  v: 1,
+  t,
+  ...fields,
+});
 
 export function createRoomManager(options: ManagerOptions) {
   const now = options.now ?? Date.now;
@@ -149,12 +159,17 @@ export function createRoomManager(options: ManagerOptions) {
     failedJoinByAddr.take(conn.addr);
     failedJoinGlobal.take();
   };
-  const guessAllowed = (conn: Conn): boolean => failedJoinByAddr.has(conn.addr) && failedJoinGlobal.has();
+  const guessAllowed = (conn: Conn): boolean =>
+    failedJoinByAddr.has(conn.addr) && failedJoinGlobal.has();
 
   const replayKey = (m: ClientMessage): string => {
     const { v: _v, ...rest } = m as Record<string, unknown>;
     void _v;
-    return JSON.stringify(Object.keys(rest).sort().map((k) => [k, rest[k]]));
+    return JSON.stringify(
+      Object.keys(rest)
+        .sort()
+        .map((k) => [k, rest[k]]),
+    );
   };
 
   /** Runs a keyed (match-changing) message once. A repeat with the same key is a replay. */
@@ -190,7 +205,13 @@ export function createRoomManager(options: ManagerOptions) {
 
   const startMatch = (room: Room, previous?: ReturnType<MatchDriver['rematch']>): Outbound[] => {
     const profiles = [room.seats[0]!.profile!, room.seats[1]!.profile!] as const;
-    room.driver = new MatchDriver({ bank: options.bank, profiles, seeds, now, ...(previous ? { previous } : {}) });
+    room.driver = new MatchDriver({
+      bank: options.bank,
+      profiles,
+      seeds,
+      now,
+      ...(previous ? { previous } : {}),
+    });
     for (const s of room.seats) if (s) s.wantsRematch = false;
     return [
       { to: 0, msg: room.driver.state(0) },
@@ -282,14 +303,17 @@ export function createRoomManager(options: ManagerOptions) {
         );
       case 'answer':
         return runKeyed(conn, st, room, seat, m, () =>
-          room.driver ? room.driver.answer(seat.index, m.turn, m.choice) : { ok: false, code: 'wrong_phase' },
+          room.driver
+            ? room.driver.answer(seat.index, m.turn, m.choice)
+            : { ok: false, code: 'wrong_phase' },
         );
       case 'rematch':
         return runKeyed(conn, st, room, seat, m, () => {
           if (!room.driver?.over) return { ok: false, code: 'wrong_phase' };
           seat.wantsRematch = true;
           const out: Outbound[] = [{ to: 'both', msg: v1('rematch_vote', { seat: seat.index }) }];
-          if (room.seats.every((s) => s?.wantsRematch)) out.push(...startMatch(room, room.driver.rematch()));
+          if (room.seats.every((s) => s?.wantsRematch))
+            out.push(...startMatch(room, room.driver.rematch()));
           return { ok: true, out };
         });
     }
@@ -341,7 +365,8 @@ export function createRoomManager(options: ManagerOptions) {
     if (!guessAllowed(conn)) return reject(conn, st, 'slow_down');
     const room = rooms.get(m.code);
     const seat = room?.seats[m.seat];
-    const secretOk = seat !== undefined && seat !== null && timingSafeEqual(seat.secretHash, hashSecret(m.secret));
+    const secretOk =
+      seat !== undefined && seat !== null && timingSafeEqual(seat.secretHash, hashSecret(m.secret));
     const inGrace =
       seat && (seat.disconnectedAt === null || now() - seat.disconnectedAt <= ROOM.graceMs);
     if (!room || !seat || !secretOk || !inGrace) {
@@ -385,7 +410,11 @@ export function createRoomManager(options: ManagerOptions) {
     for (const room of [...rooms.values()]) {
       if (t - room.lastActive > ROOM.idleMs) {
         closeRoom(room, 'idle');
-      } else if (room.seats.some((s) => s && s.disconnectedAt !== null && t - s.disconnectedAt > ROOM.graceMs)) {
+      } else if (
+        room.seats.some(
+          (s) => s && s.disconnectedAt !== null && t - s.disconnectedAt > ROOM.graceMs,
+        )
+      ) {
         closeRoom(room, 'gone');
       }
     }

@@ -5,10 +5,13 @@ import { join } from 'node:path';
 import { buildBank } from '../../src/questions/bankLoader';
 import type { QuestionBank } from '../../src/questions/types';
 
-export function loadBank(dir = join(import.meta.dirname, '../../src/questions/bank')): QuestionBank {
+export function loadBank(
+  dir = join(import.meta.dirname, '../../src/questions/bank'),
+): QuestionBank {
   const files: Record<string, unknown> = {};
   for (const name of readdirSync(dir)) {
-    if (name.endsWith('.json')) files[`./${name}`] = JSON.parse(readFileSync(join(dir, name), 'utf8'));
+    if (name.endsWith('.json'))
+      files[`./${name}`] = JSON.parse(readFileSync(join(dir, name), 'utf8'));
   }
   return buildBank(files);
 }

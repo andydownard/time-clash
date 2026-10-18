@@ -74,10 +74,12 @@ Mutating messages carry `turn` and `seq`. The server builds the **idempotency ke
 | `shot` | both | `rev`, `team`, `angleDeg`, `power`, `unit`, `path`, `landing`, `hit`, `result`, `damage`, `blocked`, `tumble`, `bubbleIndex` | Everything a client needs to draw the shot. |
 | `question` | active seat only | `turn`, `kind`, `prompt`, `choices`, `passage`, `audioWord`, `grade` | No answer. No question id. |
 | `reload` | both | `rev`, `team`, `correct`, `scrap`, `fast`, `bonus`; `hint` to the answerer only, after a wrong answer | Never contains the question or the answer. |
+| `rematch_vote` | both | `seat` | One player asked for a rematch. When both have, a new `state` follows. |
+| `pong` | sender | none | Reply to `ping`. |
 | `peer` | the other seat | `event` (`left`, `back`) and `graceMs` | Tells the other iPad to show "waiting for your friend". |
 | `emote` | the other seat | `emote` | |
 | `room_closed` | both | `reason` (`left`, `gone`, `idle`) | Then the server closes the socket. |
-| `error` | sender | `code`, `seq` (if known) | Codes: `bad_message`, `too_big`, `unknown_type`, `not_in_room`, `no_such_room`, `room_full`, `busy`, `rejoin_failed`, `not_your_turn`, `wrong_phase`, `stale_turn`, `stale_seq`, `key_reused`, `bad_name`, `team_taken`, `slow_down`. No free text. |
+| `error` | sender | `code`, `seq` (if known) | Codes: `bad_message`, `too_big`, `unknown_type`, `not_in_room`, `no_such_room`, `room_full`, `busy`, `rejoin_failed`, `not_your_turn`, `wrong_phase`, `stale_turn`, `stale_seq`, `key_reused`, `bad_name`, `team_taken`, `already_in_room`, `slow_down`. No free text. |
 
 A repeated `seq` with the same fields is a **replay**. The server sends back the same replies the first call produced to the sender, does nothing else, and tells nobody else. The same `seq` with different fields is `key_reused`. A `seq` lower than the newest one that is not in the replay cache is `stale_seq`. Only accepted actions use up a `seq`; a rejected one does not.
 

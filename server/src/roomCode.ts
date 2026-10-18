@@ -44,19 +44,48 @@ export const CODE_LENGTH = 6;
 export const CODE_BITS = Math.log2(SYMBOLS.length ** CODE_LENGTH);
 
 const CODE_PATTERN = new RegExp(`^[${ALPHABET}]{${CODE_LENGTH}}$`);
-export const isValidCode = (s: unknown): s is string => typeof s === 'string' && CODE_PATTERN.test(s);
+export const isValidCode = (s: unknown): s is string =>
+  typeof s === 'string' && CODE_PATTERN.test(s);
 
 const LEET: Record<string, string> = { '3': 'e', '4': 'a', '5': 's', '7': 't', '8': 'b' };
 
 /** Substrings that must not appear in a code, after digits are read as letters. */
 const RUDE: readonly string[] = [
-  'butt', 'poop', 'fart', 'damn', 'hell', 'crap', 'shit', 'fuck', 'bitch', 'ass', 'kill', 'dead',
-  'die', 'blood', 'gore', 'stupid', 'idiot', 'dumb', 'sex', 'tit', 'cum', 'pee', 'dick', 'cock',
-  'rape', 'nazi', 'hate', 'bum',
+  'butt',
+  'poop',
+  'fart',
+  'damn',
+  'hell',
+  'crap',
+  'shit',
+  'fuck',
+  'bitch',
+  'ass',
+  'kill',
+  'dead',
+  'die',
+  'blood',
+  'gore',
+  'stupid',
+  'idiot',
+  'dumb',
+  'sex',
+  'tit',
+  'cum',
+  'pee',
+  'dick',
+  'cock',
+  'rape',
+  'nazi',
+  'hate',
+  'bum',
 ];
 
 export function isRude(code: string): boolean {
-  const letters = [...code.toLowerCase()].map((c) => LEET[c] ?? c).join('').replace(/[^a-z]/g, '');
+  const letters = [...code.toLowerCase()]
+    .map((c) => LEET[c] ?? c)
+    .join('')
+    .replace(/[^a-z]/g, '');
   return RUDE.some((w) => letters.includes(w));
 }
 

@@ -64,9 +64,23 @@ export function startedMatch(h: Harness) {
   const created = host.last('room_created');
   const code = created.code as string;
   h.send(guest, { t: 'join_room', code });
-  h.send(host, { t: 'setup', turn: 0, seq: 1, team: 'PAST', grade: 3, subject: 'math', name: 'Ana' });
+  h.send(host, {
+    t: 'setup',
+    turn: 0,
+    seq: 1,
+    team: 'PAST',
+    grade: 3,
+    subject: 'math',
+    name: 'Ana',
+  });
   h.send(guest, { t: 'setup', turn: 0, seq: 1, team: 'FUTURE', grade: 2, subject: 'math' });
-  return { host, guest, code, hostSecret: created.secret as string, guestSecret: guest.last('room_joined').secret as string };
+  return {
+    host,
+    guest,
+    code,
+    hostSecret: created.secret as string,
+    guestSecret: guest.last('room_joined').secret as string,
+  };
 }
 
 export const shot = (seq: number, turn: number, extra: Record<string, unknown> = {}) => ({

@@ -20,7 +20,7 @@ Owner: Andy Downard. Built for and with his family. Stack choices favor simple, 
 TypeScript · Vite · Phaser 3 (game canvas) · plain DOM and CSS for menus and modals · Vitest (unit) · Playwright (browser). Static site with no server through Phase 3. Phase 4 adds one small Node WebSocket relay (`ws`). Host on Cloudflare Pages or GitHub Pages (free). Scope key: none (no accounts). Phase 4 uses `room_code`.
 
 ## Commands
-test: `npm test` · lint: `npm run lint` · typecheck: `npm run typecheck` · build: `npm run build` · run: `npm run dev` · browser tests: `npm run e2e` · question check: `npm run check:questions` · bundle check: `npm run check:dist`
+test: `npm test` · lint: `npm run lint` · typecheck: `npm run typecheck` · build: `npm run build` · run: `npm run dev` · browser tests: `npm run e2e` · question check: `npm run check:questions` · bundle check: `npm run check:dist` · relay: `npm run relay` · relay tests: `npm run relay:test`
 
 ## Vocabulary
 | User sees | Code uses | NEVER say in UI |
@@ -52,7 +52,7 @@ test: `npm test` · lint: `npm run lint` · typecheck: `npm run typecheck` · bu
 
 ## Project rules & overrides
 - Override TENANT: not applicable. No user accounts or shared data through Phase 3.
-- Override SESSION: not applicable until Phase 4. Room codes are random, expire after 2 hours idle, and carry no personal data.
+- Override SESSION: not applicable until Phase 4. Room codes are random (6 symbols, 30 bits), expire after 2 hours idle, and carry no personal data. There are no cookies. A seat is held by a random per-seat secret sent in a message body (design: [docs/PHASE4_RELAY.md](./docs/PHASE4_RELAY.md)).
 - Override MONEY: not applicable. The game is free. Never add ads, payments, or paywalls.
 - Override PII: do not log names. Phase 4 relay logs hold room code and event type only. No IPs kept.
 - Override AI: no model calls at runtime. Any future AI feature needs Andy's approval and a panel review first.
@@ -150,6 +150,7 @@ New ideas go in [INBOX.md](./INBOX.md) (raw, 30-day expiry). Triage moves them t
 | Get running in 10 minutes | [QUICKSTART.md](./QUICKSTART.md) |
 | Architecture and data shapes | [ARCHITECTURE.md](./ARCHITECTURE.md) |
 | Privacy and child safety | [SECURITY.md](./SECURITY.md) |
+| Phase 4 relay design (room codes, protocol, deploy) | [docs/PHASE4_RELAY.md](./docs/PHASE4_RELAY.md) |
 | iPad layout audit (all sizes, both orientations) | [docs/IPAD_AUDIT.md](./docs/IPAD_AUDIT.md) |
 | Original game spec | [docs/GAME_SPEC.md](./docs/GAME_SPEC.md) |
 | Design guidance from the canvas comments | [docs/DESIGN_GUIDANCE.md](./docs/DESIGN_GUIDANCE.md) |

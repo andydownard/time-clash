@@ -30,9 +30,9 @@ describe('parseClientMessage: valid messages', () => {
     expect(parseClientMessage(j({ v: 1, t: 'emote', emote: 'wave' })).ok).toBe(true);
     expect(parseClientMessage(j({ v: 1, t: 'leave' })).ok).toBe(true);
     const secret = 'A'.repeat(43);
-    expect(
-      parseClientMessage(j({ v: 1, t: 'rejoin', code: 'BCDFGH', seat: 1, secret })).ok,
-    ).toBe(true);
+    expect(parseClientMessage(j({ v: 1, t: 'rejoin', code: 'BCDFGH', seat: 1, secret })).ok).toBe(
+      true,
+    );
   });
 });
 
@@ -95,9 +95,9 @@ describe('parseClientMessage: rejects bad input', () => {
       bad(j({ v: 1, t: 'setup', turn: 0, seq: 1, team: 'RED', grade: 1, subject: 'math' })),
     ).toBe('bad_message');
     expect(bad(j({ v: 1, t: 'emote', emote: 'hello friend' }))).toBe('bad_message');
-    expect(
-      bad(j({ v: 1, t: 'rejoin', code: 'BCDFGH', seat: 2, secret: 'A'.repeat(43) })),
-    ).toBe('bad_message');
+    expect(bad(j({ v: 1, t: 'rejoin', code: 'BCDFGH', seat: 2, secret: 'A'.repeat(43) }))).toBe(
+      'bad_message',
+    );
   });
   it('rejects a name that is too long or not a string', () => {
     const setup = { v: 1, t: 'setup', turn: 0, seq: 1, team: 'PAST', grade: 3, subject: 'math' };

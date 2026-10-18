@@ -5,7 +5,14 @@ import { createMatch } from '../../src/game/match';
 import { createRng } from '../../src/game/rng';
 import { unitById } from '../../src/game/units';
 import { IllegalTransitionError, MatchOverError } from '../../src/game/types';
-import type { Grade, Match, MatchController, MatchOptions, Players, Rng } from '../../src/game/types';
+import type {
+  Grade,
+  Match,
+  MatchController,
+  MatchOptions,
+  Players,
+  Rng,
+} from '../../src/game/types';
 import { isCorrect, noteMissed, pickQuestion } from '../../src/questions/pick';
 import { EMPTY_HISTORY } from '../../src/questions/types';
 import type { PickHistory, Question, QuestionBank } from '../../src/questions/types';

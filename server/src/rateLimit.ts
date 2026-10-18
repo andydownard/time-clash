@@ -44,9 +44,7 @@ export type KeyedLimiter = {
   size(): number;
 };
 
-export function createKeyedLimiter(
-  opts: BucketOptions & { ttlMs: number },
-): KeyedLimiter {
+export function createKeyedLimiter(opts: BucketOptions & { ttlMs: number }): KeyedLimiter {
   const buckets = new Map<string, Bucket>();
   const get = (key: string): Bucket => {
     let b = buckets.get(key);

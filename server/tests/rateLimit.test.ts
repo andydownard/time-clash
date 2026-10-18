@@ -3,7 +3,7 @@ import { createBucket, createKeyedLimiter } from '../src/rateLimit';
 
 describe('token bucket', () => {
   it('allows a burst then rejects a flood', () => {
-    let now = 0;
+    const now = 0;
     const b = createBucket({ capacity: 5, refillPerSec: 1, now: () => now });
     const results = Array.from({ length: 8 }, () => b.take());
     expect(results.filter(Boolean)).toHaveLength(5);
