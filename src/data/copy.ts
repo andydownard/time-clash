@@ -343,10 +343,10 @@ export const TUMBLE_LINES_PAST = [
 
 /** Extra lines only Team Future says when they wipe out. */
 export const TUMBLE_LINES_FUTURE = [
-  'Error 404: balance not found.',
+  'Oops. My legs went offline.',
   'My hoverboard would never!',
   'Rebooting... please wait.',
-  'I was calibrating the floor.',
+  'I was just checking the floor.',
   'Beep boop. Ouch boop.',
   'Plan B was also falling.',
   'Somebody update my legs.',

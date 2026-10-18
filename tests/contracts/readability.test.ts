@@ -18,12 +18,6 @@ const HARD_WORDS = [
   'initialize',
 ];
 
-/**
- * Two owner-written robot jokes for Team Future's wipeout use words on the hard list. They are
- * short, funny to say aloud, and a parent can read them. Nothing else may use these words.
- */
-const ROBOT_JOKES = ['Error 404: balance not found.', 'I was calibrating the floor.'];
-
 function allStrings(): string[] {
   const out: string[] = [];
   const visit = (v: unknown): void => {
@@ -56,7 +50,7 @@ describe('child-facing copy is easy to read', () => {
   });
 
   it.each(HARD_WORDS)('never uses the hard word "%s"', (word) => {
-    const hit = strings.filter((s) => !ROBOT_JOKES.includes(s) && s.toLowerCase().includes(word));
+    const hit = strings.filter((s) => s.toLowerCase().includes(word));
     expect(hit).toEqual([]);
   });
 });
