@@ -67,14 +67,14 @@ export function hitBurstPlan(shooter: Team, scale: number, seed: number): HitBur
       dist:
         (HIT_FX.particleMinDist + rng.next() * (HIT_FX.particleMaxDist - HIT_FX.particleMinDist)) *
         s,
-      size: Math.round((5 + rng.next() * 6) * Math.min(s, 1.5)),
+      size: Math.round((7 + rng.next() * 7) * Math.min(s, 1.5)),
       color: colors.particles[i % colors.particles.length] as number,
       delayMs,
       durationMs: Math.min(durationMs, HIT_FX.burstMaxMs - 20 - delayMs),
     });
   }
   return {
-    flash: { radius: 60 * s, delayMs: 0, durationMs: HIT_FX.flashMs, color: colors.flash },
+    flash: { radius: 80 * s, delayMs: 0, durationMs: HIT_FX.flashMs, color: colors.flash },
     ring: {
       radius: HIT_FX.ringStartRadius,
       endScale: HIT_FX.ringEndScale * s,
@@ -83,8 +83,8 @@ export function hitBurstPlan(shooter: Team, scale: number, seed: number): HitBur
       color: colors.ring,
     },
     smoke: {
-      radius: 26 * s,
-      rise: 46 * s,
+      radius: 34 * s,
+      rise: 60 * s,
       delayMs: 40,
       durationMs: HIT_FX.smokeMs,
       color: colors.smoke,
@@ -118,7 +118,7 @@ export function damagePipText(damage: number): string | null {
   return `-${Math.round(damage)}`;
 }
 
-/** The pip starts just over the middle of the base that was hit. */
+/** The pip starts over the roof of the base that was hit, clear of the hit label and health tag. */
 export function pipAnchor(base: Rect): Vec2 {
-  return { x: base.x + base.w / 2, y: base.y - 24 };
+  return { x: base.x + base.w / 2, y: base.y - 30 };
 }

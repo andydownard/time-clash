@@ -217,51 +217,51 @@ export function playHitBurst(
   }
   const ring = scene.add
     .circle(pos.x, pos.y, plan.ring.radius)
-    .setStrokeStyle(5, plan.ring.color, 1)
+    .setStrokeStyle(6, plan.ring.color, 1)
     .setDepth(DEPTH + 1);
-  jobs.push(
-    tweenDone(scene, {
-      targets: ring,
-      scale: plan.ring.endScale,
-      alpha: 0,
-      duration: plan.ring.durationMs,
-      ease: 'Quad.easeOut',
-      onComplete: () => ring.destroy(),
-    }),
-  );
   const smoke = scene.add
     .circle(pos.x, pos.y, plan.smoke.radius, plan.smoke.color, 0.6)
     .setDepth(DEPTH - 1);
+  const bits = plan.particles.map((q) =>
+    scene.add
+      .circle(pos.x, pos.y, q.size, q.color, 1)
+      .setStrokeStyle(2, PALETTE.shared.ink, 0.9)
+      .setDepth(DEPTH + 1),
+  );
+  const local = (t: number, delay: number, dur: number): number =>
+    Math.min(1, Math.max(0, (t - delay) / dur));
+  const easeOut = (u: number): number => 1 - (1 - u) * (1 - u) * (1 - u);
+  // One clock drives the ring, the smoke and every flying bit, so they all end together.
   jobs.push(
     tweenDone(scene, {
-      targets: smoke,
-      y: pos.y - plan.smoke.rise,
-      scale: 2,
-      alpha: 0,
-      delay: plan.smoke.delayMs,
-      duration: plan.smoke.durationMs,
-      onComplete: () => smoke.destroy(),
+      targets: { t: 0 },
+      t: HIT_FX.burstMaxMs,
+      duration: HIT_FX.burstMaxMs,
+      onUpdate: (_tw, target: { t: number }) => {
+        const t = target.t;
+        const r = local(t, plan.ring.delayMs, plan.ring.durationMs);
+        ring.setScale(1 + (plan.ring.endScale - 1) * easeOut(r)).setAlpha(1 - r * r);
+        const m = local(t, plan.smoke.delayMs, plan.smoke.durationMs);
+        smoke
+          .setPosition(pos.x, pos.y - plan.smoke.rise * easeOut(m))
+          .setScale(1 + easeOut(m))
+          .setAlpha(0.6 * (1 - m));
+        plan.particles.forEach((q, i) => {
+          const u = local(t, q.delayMs, q.durationMs);
+          bits[i]!.setPosition(
+            pos.x + Math.cos(q.angle) * q.dist * easeOut(u),
+            pos.y + Math.sin(q.angle) * q.dist * easeOut(u) + 24 * u * u,
+          )
+            .setScale(1 - 0.7 * u)
+            .setAlpha(u >= 1 ? 0 : 1 - u * u * u);
+        });
+      },
+    }).then(() => {
+      ring.destroy();
+      smoke.destroy();
+      for (const b of bits) b.destroy();
     }),
   );
-  for (const q of plan.particles) {
-    const bit = scene.add
-      .circle(pos.x, pos.y, q.size, q.color, 1)
-      .setStrokeStyle(1, PALETTE.shared.ink, 0.8)
-      .setDepth(DEPTH + 1);
-    jobs.push(
-      tweenDone(scene, {
-        targets: bit,
-        x: pos.x + Math.cos(q.angle) * q.dist,
-        y: pos.y + Math.sin(q.angle) * q.dist,
-        alpha: 0,
-        scale: 0.3,
-        delay: q.delayMs,
-        duration: q.durationMs,
-        ease: 'Cubic.easeOut',
-        onComplete: () => bit.destroy(),
-      }),
-    );
-  }
   return Promise.all(jobs).then(() => undefined);
 }
 

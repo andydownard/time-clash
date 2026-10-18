@@ -10,6 +10,7 @@ import {
   LYING_DEG,
   vanishFrame,
 } from '../../../src/scenes/battle/tumble';
+import { HIT_FX } from '../../../src/game/config';
 import { FALL_DX, FALL_MS } from '../../../src/scenes/battle/visual';
 
 describe('explosionPlan', () => {
@@ -85,6 +86,7 @@ describe('fallFrame', () => {
         expect(last.dx).toBe(FALL_DX);
         expect(Math.abs(last.rotationDeg)).toBeCloseTo(LYING_DEG);
         expect(last.squashY).toBe(1);
+        expect(last.scale).toBe(HIT_FX.fallScale);
       });
       it('goes through fly, land, wobble, topple in order', () => {
         const order = ['fly', 'land', 'wobble', 'topple'];
@@ -161,6 +163,8 @@ describe('standUpFrame', () => {
       expect(z.rotationDeg).toBeCloseTo(0);
       expect(z.dx).toBeCloseTo(0);
       expect(z.lift).toBeCloseTo(0);
+      expect(a.scale).toBeCloseTo(HIT_FX.fallScale);
+      expect(z.scale).toBeCloseTo(1);
       for (let i = 0; i <= 20; i++) {
         const f = standUpFrame(i / 20, variant);
         expect(f.lift).toBeGreaterThanOrEqual(0);

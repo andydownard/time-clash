@@ -266,10 +266,10 @@ export const HIT_FX = {
   flashMs: 120,
   ringMs: 420,
   ringStartRadius: 14,
-  ringEndScale: 5,
+  ringEndScale: 9,
   smokeMs: 800,
-  particleMinDist: 50,
-  particleMaxDist: 130,
+  particleMinDist: 80,
+  particleMaxDist: 190,
   particleMinMs: 450,
   particleMaxMs: 800,
   /** Photosensitivity: no more than this many flashes in any one second. */
@@ -286,12 +286,16 @@ export const HIT_FX = {
   starRadiusPx: 34,
   starSquash: 0.35,
   starPeriodMs: 1400,
-  starSizePx: 9,
+  starSizePx: 11,
   /** How far above the lying head the stars circle. */
   starLiftPx: 44,
   /** Standing back up after the fall. */
   standUpMs: 600,
   standUpHop: 18,
+  /** A fighter in a fall is drawn this many times bigger, so the slapstick can be seen. */
+  fallScale: 2,
+  /** The speech bubble tail aims this far above a fallen fighter's feet (clears the stars). */
+  fallenTailRise: 72,
   /** Small bounce when a fighter lands. */
   landBounce: 22,
 } as const;

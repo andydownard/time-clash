@@ -52,6 +52,8 @@ export type TumblePose = {
   /** Pixels off the ground. */
   lift: number;
   lookDir: -1 | 0 | 1;
+  /** Extra size on top of the squash. Missing means 1. */
+  scale?: number;
 };
 
 const HEAD_HEIGHT = 80;
@@ -143,6 +145,8 @@ export type FallFrame = {
   squashY: number;
   armSwingDeg: number;
   lookDir: -1 | 0 | 1;
+  /** 1 is normal size. A fighter grows while it flies so the fall can be seen. */
+  scale: number;
 };
 
 /** Where each phase ends, as a share of the total. */
@@ -221,6 +225,7 @@ export function fallFrame(
     squashY,
     armSwingDeg,
     lookDir,
+    scale: phase === 'fly' ? lerp(1, HIT_FX.fallScale, easeOut(u)) : HIT_FX.fallScale,
   };
 }
 
@@ -238,6 +243,7 @@ export function standUpFrame(u: number, variant: FallVariant): FallFrame {
     squashY: 1,
     armSwingDeg: 0,
     lookDir: 0,
+    scale: lerp(HIT_FX.fallScale, 1, e),
   };
 }
 
@@ -283,6 +289,7 @@ export function fallPose(frame: FallFrame): TumblePose {
     armSwingDeg: frame.armSwingDeg,
     lift: frame.lift,
     lookDir: frame.lookDir,
+    scale: frame.scale,
   };
 }
 

@@ -1,11 +1,12 @@
 // Pure layout math for the Battle scene. No Phaser, so it is unit tested.
-import { AIM, BASES, DAMAGE, TIMING, TURN, WIND } from '../../game/config';
+import { AIM, BASES, DAMAGE, HIT_FX, TIMING, TURN, WIND } from '../../game/config';
 import type { AimInput, BattleLayout, Team, Vec2 } from '../../game/types';
 import {
   BUBBLE_MAX_WORLD_W,
   BUBBLE_RISE,
   CHARACTER_OFFSET,
   DIAL,
+  FALL_DX,
   TAIL_TARGET_RISE,
   WIND_ARROW_MAX,
 } from './visual';
@@ -88,8 +89,13 @@ export function characterSpot(team: Team, layout: BattleLayout): Vec2 {
 }
 
 /** The point the speech bubble tail aims at: just above the speaker's head. */
-export function bubbleTailTarget(team: Team, layout: BattleLayout): Vec2 {
+export function bubbleTailTarget(team: Team, layout: BattleLayout, fallen = false): Vec2 {
   const spot = characterSpot(team, layout);
+  if (fallen) {
+    // A fallen fighter lies FALL_DX out toward the field, so the tail aims at the stars above it.
+    const dir = team === 'PAST' ? 1 : -1;
+    return { x: spot.x + dir * FALL_DX, y: spot.y - HIT_FX.fallenTailRise };
+  }
   return { x: spot.x, y: spot.y - TAIL_TARGET_RISE };
 }
 

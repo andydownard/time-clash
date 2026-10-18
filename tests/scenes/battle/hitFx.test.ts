@@ -94,7 +94,7 @@ describe('damage pip', () => {
     expect(damagePipText(-4)).toBeNull();
     expect(damagePipText(NaN)).toBeNull();
   });
-  it('sits above the middle of the base', () => {
+  it('sits over the middle of the base, above its roof', () => {
     const a = pipAnchor({ x: 100, y: 300, w: 200, h: 220 });
     expect(a.x).toBe(200);
     expect(a.y).toBeLessThan(300);

@@ -133,7 +133,7 @@ export const REDUCED_FADE_MS = 250;
 
 /** Awkward tumble: fly away, land, wobble or lie, then topple. All in ms and px. */
 export const FALL_MS = 1500;
-export const FALL_DX = 110;
+export const FALL_DX = 230;
 export const FALL_HEIGHT = 120;
 /** The vanish puff after the tumble. */
 export const VANISH_MS = 700;
