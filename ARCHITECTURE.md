@@ -21,6 +21,9 @@ Back and exit: Setup has Back (to the Camp, saves nothing) once players are save
 
 The Camp is home. A returning family (players saved) goes Loading → Camp. A new family goes through Setup first. "Change players" on the Camp opens Setup again. The Camp reads the players Setup saved, so no data passes between the two. "Time to Clash!" starts a fresh seeded match. A Camp with no saved players goes back to Setup.
 
+## Turn your iPad (landscape only on tablets)
+`src/ui/turnScreen.ts` mounts one full-screen dialog (`data-testid="turn-screen"`, z-index 200, above the covers). It shows when the window is taller than wide, the short side is 600px or more, and the main pointer is coarse (a finger). That keeps laptops and tall mouse windows out and leaves phones alone. It listens to `resize` and `orientationchange` only, no timers. While it is up, the rest of the page is `inert`, focus moves to it, and a running battle is paused through the normal Pause button (nothing is lost). Time spent there is added to `awayMs()`, which the default overlay clock subtracts, so a reload question is not timed while the iPad is upright. Booted from `bootApp`. Tests: `tests/ui/turnScreen.test.ts`, `e2e/turn-screen.spec.ts`.
+
 ## Base deployment spots (Phase 2)
 `src/game/spots.ts` turns a spot id (`skyscraper`, `bridge`, `foodTruck`, or `null`) into a `BattleLayout`. Only Team Future's base, launch origin, and cover move. `null` and unknown ids give the Phase 1 layout. The numbers live in `SPOTS` in `src/game/config.ts`. Not wired into the scenes yet.
 
