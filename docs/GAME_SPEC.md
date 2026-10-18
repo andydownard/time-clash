@@ -160,3 +160,33 @@ Screen 3: Battle Screen & Turn Transition
 ⚬ Environment: Left side shows an ornate medieval castle; right side shows a futuristic Austin cyber-base tucked under a glowing solar skyway.
 ⚬ Active Indicator: Prominent comic banner at top center reading: "PLAYER 1: ALEX — YOUR TURN! (SHOT 1 OF 2)" with glowing directional arrows.
 ⚬ Slapstick Moment: A character who was just knocked over lies hilariously flat on their stomach with arms spread out, a cartoon speech bubble above them saying: "Just checking the lawn for four-leaf clovers!"
+## Practice opponent
+
+A rules-based opponent so one child can play alone, and later fill a seat when no second player is there. Pure logic in `src/game/bot.ts` (and `botPlay.ts` for simulated matches). No screens yet. Off by default: `PRACTICE_BOT.enabled = false` in `src/game/config.ts`.
+
+Rules:
+- It sees only what a child can see: the bases, wind, health and its own fighter. It never sees the other player's reload question.
+- `chooseShot(state, side, level, rng)` returns an angle, a power and a fighter. The aim is always clamped, whole numbers, and legal. It never skips a shot.
+- It finds a good aim on a copy of the physics, then adds a human-sized error. The error spread (degrees and power points) and how much wind it reads are set per level.
+- `answerReload(question, level, rng)` answers only its own question. The chance of a right answer falls with the question's grade (never below a blind guess among four). It also returns a think time in ms (1.8 s to 14 s), longer for older grades and reading questions, so the screen can pace it.
+- Randomness is seeded. Same seed, same game.
+- The screen must say "Computer player" (never "bot", "AI" or "assistant") and show it all the time. No data model change was needed.
+- The rules have no turn cap. Matches end because shots hit. A test plays 1,000 seeded matches and all end with a winner.
+
+Levels (tunables in `PRACTICE_BOT.levels`):
+
+| Level | Angle error | Power error | Wind read | Right answers (grade 0) |
+|---|---|---|---|---|
+| easy | 7.5 deg | 12 pts | 30% | 65% |
+| medium | 5 deg | 9 pts | 60% | 80% |
+| hard | 2 deg | 4 pts | 90% | 92% |
+
+Simulation (`npx tsx scripts/simulate-bot.ts 2000`: 2,000 seeded matches per pairing, sides and first turn alternate). The "decent human" is a scripted player (4.5 deg, 9 pts, reads 50% of wind, 75% right).
+
+| Level | Bot wins vs decent human | Target |
+|---|---|---|
+| easy | 31.8% (human wins 68.2%) | human wins 65 to 75% |
+| medium | 49.6% | 45 to 55% |
+| hard | 62.8% | 60 to 65% |
+
+Bot against bot (row wins): easy 30.9% vs medium, 20.6% vs hard; medium 67.5% vs easy, 37.0% vs hard; hard 79.3% vs easy, 63.1% vs medium. Matches last about 3 to 4 turns each.
