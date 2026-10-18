@@ -468,5 +468,401 @@
     "answer": "hung",
     "hint": "It is the past of hang.",
     "tags": ["fill-in", "word-in-context"]
+  },
+  {
+    "id": "reading-2-0041",
+    "subject": "reading",
+    "grade": 2,
+    "kind": "mainidea",
+    "prompt": "What is this story mostly about?",
+    "choices": [
+      "A knight fixes his squeaky armor",
+      "A dragon learns to cook",
+      "A knight loses his dinner",
+      "A cook makes new armor"
+    ],
+    "answer": "A knight fixes his squeaky armor",
+    "hint": "Read the story again. Look for the clue.",
+    "tags": ["main-idea"],
+    "passage": "Sir Bumble got a new suit of armor. It was shiny and silver, but it had one problem. Every time he took a step, it went squeak! The dragon next door laughed so hard he fell over. Sir Bumble felt silly. Then the cook gave him a drop of oil. He rubbed it on the joints. Now the armor was quiet, and Sir Bumble marched to dinner feeling proud."
+  },
+  {
+    "id": "reading-2-0042",
+    "subject": "reading",
+    "grade": 2,
+    "kind": "mainidea",
+    "prompt": "What did the cook give Sir Bumble?",
+    "choices": ["A bowl of soup", "A drop of oil", "A new sword", "A silver hat"],
+    "answer": "A drop of oil",
+    "hint": "Read the story again. Look for the clue.",
+    "tags": ["detail"],
+    "passage": "Sir Bumble got a new suit of armor. It was shiny and silver, but it had one problem. Every time he took a step, it went squeak! The dragon next door laughed so hard he fell over. Sir Bumble felt silly. Then the cook gave him a drop of oil. He rubbed it on the joints. Now the armor was quiet, and Sir Bumble marched to dinner feeling proud."
+  },
+  {
+    "id": "reading-2-0043",
+    "subject": "reading",
+    "grade": 2,
+    "kind": "mainidea",
+    "prompt": "How did Sir Bumble feel when the dragon laughed?",
+    "choices": ["Sleepy", "Proud", "Silly", "Hungry"],
+    "answer": "Silly",
+    "hint": "Read the story again. Look for the clue.",
+    "tags": ["inference"],
+    "passage": "Sir Bumble got a new suit of armor. It was shiny and silver, but it had one problem. Every time he took a step, it went squeak! The dragon next door laughed so hard he fell over. Sir Bumble felt silly. Then the cook gave him a drop of oil. He rubbed it on the joints. Now the armor was quiet, and Sir Bumble marched to dinner feeling proud."
+  },
+  {
+    "id": "reading-2-0044",
+    "subject": "reading",
+    "grade": 2,
+    "kind": "mainidea",
+    "prompt": "What happened right after Sir Bumble rubbed oil on the joints?",
+    "choices": ["The dragon fell over", "He got new armor", "The cook left", "The armor was quiet"],
+    "answer": "The armor was quiet",
+    "hint": "Read the story again. Look for the clue.",
+    "tags": ["sequence"],
+    "passage": "Sir Bumble got a new suit of armor. It was shiny and silver, but it had one problem. Every time he took a step, it went squeak! The dragon next door laughed so hard he fell over. Sir Bumble felt silly. Then the cook gave him a drop of oil. He rubbed it on the joints. Now the armor was quiet, and Sir Bumble marched to dinner feeling proud."
+  },
+  {
+    "id": "reading-2-0045",
+    "subject": "reading",
+    "grade": 2,
+    "kind": "mainidea",
+    "prompt": "What did Beep want to learn?",
+    "choices": ["To bake", "To sing", "To paint", "To fly"],
+    "answer": "To bake",
+    "hint": "Read the story again. Look for the clue.",
+    "tags": ["detail"],
+    "passage": "Beep the robot wanted to learn to bake. He mixed flour, eggs, and sugar in a big bowl. But he forgot to take off his metal gloves, and the batter got stuck in all ten fingers. Beep shook his hands. Splat! Batter landed on the ceiling. Grandma laughed and handed him a spoon. \"Try this,\" she said. Soon Beep made the best muffins in town."
+  },
+  {
+    "id": "reading-2-0046",
+    "subject": "reading",
+    "grade": 2,
+    "kind": "mainidea",
+    "prompt": "Why did the batter get stuck in Beep's fingers?",
+    "choices": [
+      "He used too much sugar",
+      "He forgot to take off his gloves",
+      "He dropped the bowl",
+      "He had no spoon"
+    ],
+    "answer": "He forgot to take off his gloves",
+    "hint": "Read the story again. Look for the clue.",
+    "tags": ["cause-and-effect"],
+    "passage": "Beep the robot wanted to learn to bake. He mixed flour, eggs, and sugar in a big bowl. But he forgot to take off his metal gloves, and the batter got stuck in all ten fingers. Beep shook his hands. Splat! Batter landed on the ceiling. Grandma laughed and handed him a spoon. \"Try this,\" she said. Soon Beep made the best muffins in town."
+  },
+  {
+    "id": "reading-2-0047",
+    "subject": "reading",
+    "grade": 2,
+    "kind": "mainidea",
+    "prompt": "How did Grandma feel about the mess?",
+    "choices": [
+      "She was very angry",
+      "She was afraid",
+      "She thought it was funny and she helped",
+      "She did not notice"
+    ],
+    "answer": "She thought it was funny and she helped",
+    "hint": "Read the story again. Look for the clue.",
+    "tags": ["inference"],
+    "passage": "Beep the robot wanted to learn to bake. He mixed flour, eggs, and sugar in a big bowl. But he forgot to take off his metal gloves, and the batter got stuck in all ten fingers. Beep shook his hands. Splat! Batter landed on the ceiling. Grandma laughed and handed him a spoon. \"Try this,\" she said. Soon Beep made the best muffins in town."
+  },
+  {
+    "id": "reading-2-0048",
+    "subject": "reading",
+    "grade": 2,
+    "kind": "mainidea",
+    "prompt": "What happened last in the story?",
+    "choices": [
+      "Batter hit the ceiling",
+      "Beep mixed the flour",
+      "Grandma gave him a spoon",
+      "Beep made great muffins"
+    ],
+    "answer": "Beep made great muffins",
+    "hint": "Read the story again. Look for the clue.",
+    "tags": ["sequence"],
+    "passage": "Beep the robot wanted to learn to bake. He mixed flour, eggs, and sugar in a big bowl. But he forgot to take off his metal gloves, and the batter got stuck in all ten fingers. Beep shook his hands. Splat! Batter landed on the ceiling. Grandma laughed and handed him a spoon. \"Try this,\" she said. Soon Beep made the best muffins in town."
+  },
+  {
+    "id": "reading-2-0049",
+    "subject": "reading",
+    "grade": 2,
+    "kind": "mainidea",
+    "prompt": "What is this story mostly about?",
+    "choices": [
+      "Mia keeps trying until she can ride",
+      "Mia loses her dog",
+      "Mia hates her gift",
+      "Mia builds a path"
+    ],
+    "answer": "Mia keeps trying until she can ride",
+    "hint": "Read the story again. Look for the clue.",
+    "tags": ["main-idea"],
+    "passage": "Mia got a hoverboard for her birthday. It floated one foot above the ground. At first she wobbled and fell on the soft grass. \"Again!\" she said. She tried ten times. On the eleventh try, she stood tall and zoomed down the path. Her little dog Pepper ran after her, wagging his tail."
+  },
+  {
+    "id": "reading-2-0050",
+    "subject": "reading",
+    "grade": 2,
+    "kind": "mainidea",
+    "prompt": "In the story, what does the word wobbled mean?",
+    "choices": ["Sang loudly", "Shook from side to side", "Ran very fast", "Fell asleep"],
+    "answer": "Shook from side to side",
+    "hint": "Read the story again. Look for the clue.",
+    "tags": ["word-in-context"],
+    "passage": "Mia got a hoverboard for her birthday. It floated one foot above the ground. At first she wobbled and fell on the soft grass. \"Again!\" she said. She tried ten times. On the eleventh try, she stood tall and zoomed down the path. Her little dog Pepper ran after her, wagging his tail."
+  },
+  {
+    "id": "reading-2-0051",
+    "subject": "reading",
+    "grade": 2,
+    "kind": "mainidea",
+    "prompt": "On which try did Mia stand tall?",
+    "choices": ["The first", "The tenth", "The eleventh", "The second"],
+    "answer": "The eleventh",
+    "hint": "Read the story again. Look for the clue.",
+    "tags": ["detail"],
+    "passage": "Mia got a hoverboard for her birthday. It floated one foot above the ground. At first she wobbled and fell on the soft grass. \"Again!\" she said. She tried ten times. On the eleventh try, she stood tall and zoomed down the path. Her little dog Pepper ran after her, wagging his tail."
+  },
+  {
+    "id": "reading-2-0052",
+    "subject": "reading",
+    "grade": 2,
+    "kind": "mainidea",
+    "prompt": "What kind of girl is Mia?",
+    "choices": [
+      "Someone who is lazy",
+      "Someone who is rude",
+      "Someone who is scared of dogs",
+      "Someone who does not give up"
+    ],
+    "answer": "Someone who does not give up",
+    "hint": "Read the story again. Look for the clue.",
+    "tags": ["inference"],
+    "passage": "Mia got a hoverboard for her birthday. It floated one foot above the ground. At first she wobbled and fell on the soft grass. \"Again!\" she said. She tried ten times. On the eleventh try, she stood tall and zoomed down the path. Her little dog Pepper ran after her, wagging his tail."
+  },
+  {
+    "id": "reading-2-0053",
+    "subject": "reading",
+    "grade": 2,
+    "kind": "mainidea",
+    "prompt": "Who was really in the garden at night?",
+    "choices": ["A frog", "A dragon", "A knight", "A robot"],
+    "answer": "A frog",
+    "hint": "Read the story again. Look for the clue.",
+    "tags": ["detail"],
+    "passage": "The castle garden had a problem. Someone was ruining the carrots! Princess Rosa hid behind a bush to watch. At night a big green frog hopped in. It did not eat the carrots. It ate the bugs on the carrots! Rosa grinned. The frog was helping the garden. She gave the frog a tiny crown and named him King Hop."
+  },
+  {
+    "id": "reading-2-0054",
+    "subject": "reading",
+    "grade": 2,
+    "kind": "mainidea",
+    "prompt": "What was the frog eating?",
+    "choices": ["Carrots", "Bugs", "Flowers", "Crowns"],
+    "answer": "Bugs",
+    "hint": "Read the story again. Look for the clue.",
+    "tags": ["detail"],
+    "passage": "The castle garden had a problem. Someone was ruining the carrots! Princess Rosa hid behind a bush to watch. At night a big green frog hopped in. It did not eat the carrots. It ate the bugs on the carrots! Rosa grinned. The frog was helping the garden. She gave the frog a tiny crown and named him King Hop."
+  },
+  {
+    "id": "reading-2-0055",
+    "subject": "reading",
+    "grade": 2,
+    "kind": "mainidea",
+    "prompt": "Why did Rosa give the frog a crown?",
+    "choices": [
+      "The frog was lost",
+      "The frog was sleepy",
+      "The frog was helping the garden",
+      "The frog was a thief"
+    ],
+    "answer": "The frog was helping the garden",
+    "hint": "Read the story again. Look for the clue.",
+    "tags": ["inference"],
+    "passage": "The castle garden had a problem. Someone was ruining the carrots! Princess Rosa hid behind a bush to watch. At night a big green frog hopped in. It did not eat the carrots. It ate the bugs on the carrots! Rosa grinned. The frog was helping the garden. She gave the frog a tiny crown and named him King Hop."
+  },
+  {
+    "id": "reading-2-0056",
+    "subject": "reading",
+    "grade": 2,
+    "kind": "mainidea",
+    "prompt": "Where did Zed land?",
+    "choices": ["On a hoverboard", "In a robot base", "In a garden", "In a castle kitchen"],
+    "answer": "In a castle kitchen",
+    "hint": "Read the story again. Look for the clue.",
+    "tags": ["detail"],
+    "passage": "Zed pressed the big red button on his time machine. Whoosh! He landed in a castle kitchen long ago. A cook was stirring a giant pot of soup. \"What is that shiny thing?\" the cook asked, pointing at Zed's watch. \"It tells time,\" said Zed. The cook shared a warm bowl of soup, and Zed shared a stick of gum. Both agreed it was a great trade."
+  },
+  {
+    "id": "reading-2-0057",
+    "subject": "reading",
+    "grade": 2,
+    "kind": "mainidea",
+    "prompt": "What did the cook point at?",
+    "choices": ["Zed's watch", "The soup pot", "The red button", "The gum"],
+    "answer": "Zed's watch",
+    "hint": "Read the story again. Look for the clue.",
+    "tags": ["detail"],
+    "passage": "Zed pressed the big red button on his time machine. Whoosh! He landed in a castle kitchen long ago. A cook was stirring a giant pot of soup. \"What is that shiny thing?\" the cook asked, pointing at Zed's watch. \"It tells time,\" said Zed. The cook shared a warm bowl of soup, and Zed shared a stick of gum. Both agreed it was a great trade."
+  },
+  {
+    "id": "reading-2-0058",
+    "subject": "reading",
+    "grade": 2,
+    "kind": "mainidea",
+    "prompt": "What did Zed trade for the soup?",
+    "choices": ["His watch", "A stick of gum", "His time machine", "A crown"],
+    "answer": "A stick of gum",
+    "hint": "Read the story again. Look for the clue.",
+    "tags": ["inference"],
+    "passage": "Zed pressed the big red button on his time machine. Whoosh! He landed in a castle kitchen long ago. A cook was stirring a giant pot of soup. \"What is that shiny thing?\" the cook asked, pointing at Zed's watch. \"It tells time,\" said Zed. The cook shared a warm bowl of soup, and Zed shared a stick of gum. Both agreed it was a great trade."
+  },
+  {
+    "id": "reading-2-0059",
+    "subject": "reading",
+    "grade": 2,
+    "kind": "mainidea",
+    "prompt": "How can you tell Robo-Pup is happy?",
+    "choices": [
+      "His eyes glow dim blue",
+      "He has four legs",
+      "His tail spins fast",
+      "He sits still"
+    ],
+    "answer": "His tail spins fast",
+    "hint": "Read the story again. Look for the clue.",
+    "tags": ["detail"],
+    "passage": "Robo-Pup is a robot dog at the future base. He has four metal legs and a tail that spins like a fan. When he is happy, his tail spins fast. When he is sleepy, his eyes glow dim blue. Today his tail is spinning like crazy because it is his birthday. The robots brought him a shiny new battery."
+  },
+  {
+    "id": "reading-2-0060",
+    "subject": "reading",
+    "grade": 2,
+    "kind": "mainidea",
+    "prompt": "Why is his tail spinning like crazy today?",
+    "choices": ["He is sleepy", "He lost a battery", "He is at school", "It is his birthday"],
+    "answer": "It is his birthday",
+    "hint": "Read the story again. Look for the clue.",
+    "tags": ["cause-and-effect"],
+    "passage": "Robo-Pup is a robot dog at the future base. He has four metal legs and a tail that spins like a fan. When he is happy, his tail spins fast. When he is sleepy, his eyes glow dim blue. Today his tail is spinning like crazy because it is his birthday. The robots brought him a shiny new battery."
+  },
+  {
+    "id": "reading-2-0061",
+    "subject": "reading",
+    "grade": 2,
+    "kind": "mainidea",
+    "prompt": "What does the word dim mean in this story?",
+    "choices": ["Not bright", "Very loud", "Very hot", "Super fast"],
+    "answer": "Not bright",
+    "hint": "Read the story again. Look for the clue.",
+    "tags": ["word-in-context"],
+    "passage": "Robo-Pup is a robot dog at the future base. He has four metal legs and a tail that spins like a fan. When he is happy, his tail spins fast. When he is sleepy, his eyes glow dim blue. Today his tail is spinning like crazy because it is his birthday. The robots brought him a shiny new battery."
+  },
+  {
+    "id": "reading-2-0062",
+    "subject": "reading",
+    "grade": 2,
+    "kind": "vocab",
+    "prompt": "Which word means the same as big?",
+    "choices": ["tiny", "large", "slow", "quiet"],
+    "answer": "large",
+    "hint": "Think of something with a huge size.",
+    "tags": ["synonyms"]
+  },
+  {
+    "id": "reading-2-0063",
+    "subject": "reading",
+    "grade": 2,
+    "kind": "vocab",
+    "prompt": "Which word means the opposite of hot?",
+    "choices": ["warm", "sunny", "cold", "soft"],
+    "answer": "cold",
+    "hint": "Think of ice and snow.",
+    "tags": ["antonyms"]
+  },
+  {
+    "id": "reading-2-0064",
+    "subject": "reading",
+    "grade": 2,
+    "kind": "vocab",
+    "prompt": "Which word means the same as glad?",
+    "choices": ["sad", "tall", "angry", "happy"],
+    "answer": "happy",
+    "hint": "Think of a smile.",
+    "tags": ["synonyms"]
+  },
+  {
+    "id": "reading-2-0065",
+    "subject": "reading",
+    "grade": 2,
+    "kind": "vocab",
+    "prompt": "Which word means the opposite of brave?",
+    "choices": ["scared", "strong", "funny", "kind"],
+    "answer": "scared",
+    "hint": "Think of a knight who is not afraid.",
+    "tags": ["antonyms"]
+  },
+  {
+    "id": "reading-2-0066",
+    "subject": "reading",
+    "grade": 2,
+    "kind": "grammar",
+    "prompt": "Which sentence is written correctly?",
+    "choices": [
+      "the knight rides a horse.",
+      "The knight rides a horse.",
+      "The knight rides a horse",
+      "the Knight rides a horse"
+    ],
+    "answer": "The knight rides a horse.",
+    "hint": "A sentence starts with a capital letter and ends with a dot.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-2-0067",
+    "subject": "reading",
+    "grade": 2,
+    "kind": "grammar",
+    "prompt": "One fox, two ___.",
+    "choices": ["foxs", "foxen", "foxes", "fox's"],
+    "answer": "foxes",
+    "hint": "Words that end with x often add es.",
+    "tags": ["plural-nouns"]
+  },
+  {
+    "id": "reading-2-0068",
+    "subject": "reading",
+    "grade": 2,
+    "kind": "grammar",
+    "prompt": "Yesterday the knight ___ his horse to the castle.",
+    "choices": ["ride", "riding", "rides", "rode"],
+    "answer": "rode",
+    "hint": "Yesterday means it already happened.",
+    "tags": ["past-tense-verbs"]
+  },
+  {
+    "id": "reading-2-0069",
+    "subject": "reading",
+    "grade": 2,
+    "kind": "grammar",
+    "prompt": "Which word is a noun (a person, place, or thing)?",
+    "choices": ["castle", "quick", "jump", "very"],
+    "answer": "castle",
+    "hint": "A noun can be a person, place, or thing.",
+    "tags": ["parts-of-speech"]
+  },
+  {
+    "id": "reading-2-0070",
+    "subject": "reading",
+    "grade": 2,
+    "kind": "grammar",
+    "prompt": "Which word means did not?",
+    "choices": ["didnt'", "didn't", "did'nt", "dident"],
+    "answer": "didn't",
+    "hint": "The apostrophe takes the place of a missing letter.",
+    "tags": ["contractions"]
   }
 ]
