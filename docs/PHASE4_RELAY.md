@@ -110,7 +110,7 @@ Network addresses are held **only in memory**, as a salted hash with a random sa
 - A code is 6 symbols from an alphabet of 32. That is 32^6 = 1,073,741,824 codes (**30 bits**). The 32 symbols are 32 animal pictures. Each picture also has one letter or digit: `23456789` plus `BCDFGHJKLMNPQRSTVWXYZ` plus `A`, `E`, `U`.
 - The code comes from `crypto.randomInt`. A new code is thrown away if it is already in use, or if its letters (after turning digits like 3 and 5 into letters) hold a blocked or rude word.
 - Why 6 and not 4: with 2,000 open rooms at most, one guess hits a room with chance about 1 in 540,000. Four symbols (20 bits) would give about 1 in 520 per guess, which is too easy to farm. Six pictures still fit on an iPad in two rows of three, and kids match pictures well. The code is for one game only.
-- Guess limits: 10 failed joins per address per 10 minutes, and 200 burst for the whole server. A single address needs about 7 years of guessing to expect one hit. A large botnet still hits the server-wide limit first.
+- Guess limits: 10 failed joins per address per 10 minutes, and 200 burst for the whole server. One address, at 1,440 guesses a day, needs about a year to expect one hit on a full server. A large botnet still hits the server-wide limit first.
 - A room locks to **two seats**. A third `join_room` gets `room_full`. A room with no guest yet is open to exactly one joiner.
 - Rooms expire after **2 hours without a valid message** (`room_closed: idle`).
 - The harm of a wrong join is small: no text, no names unless typed, fixed emotes only. It is still treated as a safety issue, which is why the limits exist.
