@@ -4,7 +4,7 @@ import Phaser from 'phaser';
 import { HUD } from '../../data/copy';
 import { AIM, TEAM_FACING } from '../../game/config';
 import type { AimInput, BattleLayout, Team, Vec2 } from '../../game/types';
-import { aimFromDrag, aimVector, dialHandle } from './geometry';
+import { aimFromDrag, aimVector, dialHandle, meterLeft } from './geometry';
 import type { PreviewDot } from './types';
 import type { LabelScaler } from './textScale';
 import { TEXT_ROLES, textStyle, type TextRole } from './textStyle';
@@ -113,7 +113,7 @@ export function createAimArt(
     );
 
     // Power meter above the launcher: a dark track, five segments, a team-colored fill.
-    const mx = o.x - METER.w / 2;
+    const mx = meterLeft(o.x, facing, layout.width, METER.w);
     const my = o.y - DIAL.maxRadius - METER.rise;
     dial.fillStyle(PALETTE.shared.ink, 1);
     dial.fillRoundedRect(mx, my, METER.w, METER.h, 12);
@@ -133,7 +133,7 @@ export function createAimArt(
     dial.lineStyle(3, PALETTE.past.parchment, 1);
     dial.strokeRoundedRect(mx, my, METER.w, METER.h, 12);
     powerText.setText(`${HUD.power} ${HUD.powerValue(aim.power)}`);
-    powerText.setPosition(o.x, my - 28);
+    powerText.setPosition(mx + METER.w / 2, my - 28);
   };
 
   return {

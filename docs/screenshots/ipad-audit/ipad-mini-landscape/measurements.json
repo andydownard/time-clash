@@ -86,9 +86,7 @@
     "smallText": [],
     "sidewaysScroll": 0,
     "verticalScroll": 0,
-    "offscreen": [
-      "clear-data 662,689 to 930,745"
-    ],
+    "offscreen": [],
     "canvas": {
       "x": 48,
       "y": 0,
@@ -104,9 +102,7 @@
     "smallText": [],
     "sidewaysScroll": 0,
     "verticalScroll": 0,
-    "offscreen": [
-      "clear-data 662,689 to 930,745"
-    ],
+    "offscreen": [],
     "canvas": {
       "x": 48,
       "y": 0,
@@ -122,9 +118,7 @@
     "smallText": [],
     "sidewaysScroll": 0,
     "verticalScroll": 0,
-    "offscreen": [
-      "clear-data 662,689 to 930,745"
-    ],
+    "offscreen": [],
     "canvas": {
       "x": 48,
       "y": 0,
@@ -233,12 +227,7 @@
     "screen": "15-leave-dialog",
     "viewport": "1133x744",
     "smallTargets": [],
-    "smallText": [
-      {
-        "what": "Your match will end. You can start a new",
-        "detail": "16px"
-      }
-    ],
+    "smallText": [],
     "sidewaysScroll": 0,
     "verticalScroll": 0,
     "offscreen": [],
