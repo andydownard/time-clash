@@ -3,6 +3,7 @@
 // turns its nose the way it is flying. Lasers are not here: a laser does not fall, so its straight
 // line stays a plain animation. With reduced motion nothing flies.
 import { poseAt, flightTransform, hawkPose, type Flight } from './flightPhysics';
+import { HAWK_STILL, HAWK_STILL_AT, hawkPaints, type HawkPaint } from './hawkModel';
 
 /** A picture to fly: which shapes, how they fly, and which way they point when drawn. */
 export type FlightSpec = {
@@ -79,35 +80,72 @@ export function startFlights(
   };
 }
 
+/** Gives a layer exactly `paints`, reusing its path elements so a frame makes no new garbage. */
+function paintLayer(layer: Element, paints: readonly HawkPaint[]): void {
+  const box = layer.querySelector('.tc-camp-hawk-paths');
+  if (!box) return;
+  const doc = box.ownerDocument;
+  const have = box.children;
+  while (have.length < paints.length) {
+    box.append(doc.createElementNS('http://www.w3.org/2000/svg', 'path'));
+  }
+  while (have.length > paints.length) have[have.length - 1]!.remove();
+  paints.forEach((p, i) => {
+    const el = have[i]!;
+    el.setAttribute('d', p.d);
+    el.setAttribute('fill', p.fill);
+    el.setAttribute('stroke', p.stroke);
+    el.setAttribute('stroke-width', String(p.width));
+    el.setAttribute('stroke-linejoin', 'round');
+  });
+}
+
 /**
- * Makes the hawk circle on a true oval. The picture nests three groups: `.tc-camp-hawk` moves it,
- * `.tc-camp-hawk-flip` turns it to face the way it flies, and `.tc-camp-hawk-bank` tilts it.
- * With reduced motion the hawk stays where the picture draws it. Returns a function that stops it.
+ * Makes the hawk circle a true 3D oval around the title. The picture has two hawk layers: `back`
+ * sits under the title and `front` over it. On the far half of the circle the hawk is painted in
+ * the back layer, small and a little dim. At each turn it moves to the other layer, and on the
+ * near half it is painted in the front layer, larger and with a soft shadow. Each frame turns the
+ * 3D bird to face the way it flies. With reduced motion the hawk stays as the picture draws it
+ * (a still three-quarter pose). Returns a function that stops it.
  */
 export function startHawk(
   root: ParentNode,
   scheduler: Scheduler,
   options: { reduced: boolean },
 ): () => void {
-  const move = root.querySelector<SVGElement>('.tc-camp-hawk');
-  const flip = root.querySelector<SVGElement>('.tc-camp-hawk-flip');
-  const bank = root.querySelector<SVGElement>('.tc-camp-hawk-bank');
-  if (options.reduced || !move || !flip || !bank) return () => undefined;
+  const back = root.querySelector<SVGElement>('.tc-camp-hawk[data-layer="back"]');
+  const front = root.querySelector<SVGElement>('.tc-camp-hawk[data-layer="front"]');
+  if (options.reduced || !back) return () => undefined;
+  const shade = front?.querySelector<SVGElement>('.tc-camp-hawk-shade');
   const began = scheduler.now();
   let stopped = false;
   let handle: unknown = null;
   const frame = (): void => {
     if (stopped) return;
     const pose = hawkPose((scheduler.now() - began) / 1000);
-    move.setAttribute('transform', `translate(${pose.x} ${pose.y})`);
-    flip.setAttribute('transform', `scale(${pose.scaleX} 1)`);
-    bank.setAttribute('transform', `rotate(${pose.tilt})`);
+    const on = pose.front && front ? front : back;
+    const off = on === back ? front : back;
+    off?.setAttribute('display', 'none');
+    off?.removeAttribute('transform');
+    on.removeAttribute('display');
+    on.setAttribute('transform', `translate(${pose.x} ${pose.y}) scale(${pose.scale})`);
+    on.setAttribute('opacity', String(pose.opacity));
+    shade?.setAttribute('opacity', String(pose.shadow));
+    paintLayer(on, hawkPaints({ yaw: pose.yaw, flap: pose.flap }));
     handle = scheduler.next(frame);
   };
   handle = scheduler.next(frame);
   return () => {
     stopped = true;
     if (handle !== null) scheduler.cancel(handle);
-    for (const el of [move, flip, bank]) el.removeAttribute('transform');
+    front?.removeAttribute('transform');
+    front?.removeAttribute('opacity');
+    back.setAttribute('transform', `translate(${HAWK_STILL_AT.x} ${HAWK_STILL_AT.y}) scale(${HAWK_STILL_AT.scale})`);
+    back.removeAttribute('opacity');
+    front?.setAttribute('display', 'none');
+    shade?.setAttribute('opacity', '0');
+    back.removeAttribute('display');
+    if (front) paintLayer(front, []);
+    paintLayer(back, hawkPaints(HAWK_STILL));
   };
 }

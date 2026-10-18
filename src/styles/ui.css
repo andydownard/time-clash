@@ -1869,17 +1869,23 @@ body {
 }
 /* Arrows, the cannonball and missiles fly with real physics from ambientFlights.ts. They stay
    hidden until the script moves them, and forever when motion is reduced. The hawk is moved by the
-   same script; its three groups need no style of their own. */
+   same script. The hawk has two layers: the scene's own (under the title) and a second svg after the
+   title (over it). The script shows one at a time, so he passes over the name, then behind it. */
 .tc-camp-arrow,
 .tc-camp-ball,
 .tc-camp-miss {
   opacity: 0;
 }
-.tc-camp-hawk,
-.tc-camp-hawk-y,
-.tc-camp-hawk-flip,
-.tc-camp-hawk-bank {
+.tc-camp-hawk {
   will-change: transform;
+}
+.tc-camp-hawk-paths,
+.tc-camp-hawk-shade {
+  pointer-events: none;
+}
+/* The over-the-title layer must not catch taps (the buttons are above it anyway). */
+.tc-camp-hawk-layer {
+  pointer-events: none;
 }
 .tc-camp-puff {
   transform-box: fill-box;
