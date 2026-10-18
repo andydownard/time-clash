@@ -4,9 +4,12 @@
 // anyone. The board's own title and buttons are left out: the game draws those in HTML.
 // Arrows, the cannonball and the missile are drawn around their own centre, pointing right (the
 // missile pointing left), so campFlights.ts can fly them on real physics and turn their noses.
-// The hawk is three nested groups (move, flip, bank) that the same script drives.
+// The hawk is a 3D bird (hawkModel.ts). Its back layer is drawn here, under the title, in a still
+// three-quarter pose. campFlights.ts moves it, and swaps it to a second layer drawn over the title
+// (hawkFrontLayer) while it passes on the near side.
 // No files are fetched. The picture is decorative, so it is aria-hidden. Colors come from the
 // palette in tokens.css plus the scene-only list below, which tests/ui/campArt.test.ts keeps in check.
+import { HAWK_STILL, HAWK_STILL_AT, hawkMarkup, hawkPaints } from './hawkModel';
 import { svgFromString } from './svg';
 
 /** Scene-only colors that are not in the palette (sky, grass, stone, flame, glass). */
@@ -408,7 +411,7 @@ const CAMP_SCENE = `<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid sl
 <circle cx="1180" cy="430" r="230" fill="#ffd9a0" opacity=".6" filter="url(#tcCampBlur30)"></circle>
 <circle cx="1180" cy="430" r="58" fill="#fff4c4"></circle>
 <rect x="0" y="230" width="1600" height="230" filter="url(#tcCampCloud)" opacity=".6" mask="url(#tcCampCloudMask)"></rect>
-<g transform="translate(800 190)"><g class="tc-camp-hawk"><g class="tc-camp-hawk-y"><g class="tc-camp-hawk-flip"><g class="tc-camp-hawk-bank"><g transform="scale(1.5)"><path d="M-12,2 L-52,20 Q-50,38 -34,41 Q-18,47 -4,38 Z" fill="#b8481f" stroke="#5a2412" stroke-width="1.6" stroke-linejoin="round"/><path d="M-30,12 Q-26,34 -24,42 M-40,16 Q-38,34 -34,40" stroke="#5a2412" stroke-width="1.2" fill="none" opacity=".6"/><path d="M-46,28 Q-36,36 -22,30 L-20,42 Q-34,46 -46,36 Z" fill="#3b1d12" opacity=".75"/><path d="M-50,34 Q-40,42 -30,41 L-34,44 Q-46,43 -52,36 Z" fill="#f3e6cf"/><path d="M-6,-5 C-10,-26 -8,-48 6,-64 L10,-60 L14,-67 L20,-60 L25,-66 L29,-58 L35,-62 L34,-48 C26,-38 20,-20 15,-5 Z" fill="#f2e4c9" stroke="#4a3322" stroke-width="1.6" stroke-linejoin="round"/><path d="M6,-64 C-4,-52 -8,-30 -6,-8" fill="none" stroke="#6b4a32" stroke-width="3" stroke-linecap="round" opacity=".8"/><path d="M-5,-12 C-3,-30 3,-46 12,-58 M2,-10 C6,-28 14,-42 22,-54" fill="none" stroke="#7b5a40" stroke-width="1.4" opacity=".7"/><path d="M8,-62 L12,-58 M15,-64 L19,-58 M22,-63 L26,-57 M30,-60 L33,-55" stroke="#3b2a1f" stroke-width="2.4" stroke-linecap="round"/><path d="M-3,-8 C-2,-18 0,-26 4,-34" fill="none" stroke="#3b2a1f" stroke-width="3.2" stroke-linecap="round" opacity=".85"/><g transform="scale(1 -1)"><path d="M-6,-5 C-10,-26 -8,-48 6,-64 L10,-60 L14,-67 L20,-60 L25,-66 L29,-58 L35,-62 L34,-48 C26,-38 20,-20 15,-5 Z" fill="#f2e4c9" stroke="#4a3322" stroke-width="1.6" stroke-linejoin="round"/><path d="M6,-64 C-4,-52 -8,-30 -6,-8" fill="none" stroke="#6b4a32" stroke-width="3" stroke-linecap="round" opacity=".8"/><path d="M-5,-12 C-3,-30 3,-46 12,-58 M2,-10 C6,-28 14,-42 22,-54" fill="none" stroke="#7b5a40" stroke-width="1.4" opacity=".7"/><path d="M8,-62 L12,-58 M15,-64 L19,-58 M22,-63 L26,-57 M30,-60 L33,-55" stroke="#3b2a1f" stroke-width="2.4" stroke-linecap="round"/><path d="M-3,-8 C-2,-18 0,-26 4,-34" fill="none" stroke="#3b2a1f" stroke-width="3.2" stroke-linecap="round" opacity=".85"/></g><ellipse cx="2" cy="0" rx="25" ry="9" fill="#f0e0c2" stroke="#4a3322" stroke-width="1.6"/><path d="M-12,-3 Q-4,-1 0,-4 M-14,2 Q-5,4 2,1 M-9,6 Q-1,5 6,3" stroke="#6b4a32" stroke-width="2" stroke-linecap="round" fill="none"/><path d="M-4,0 H12" stroke="#6b4a32" stroke-width="3" stroke-linecap="round" opacity=".6"/><ellipse cx="27" cy="-1" rx="8" ry="7" fill="#6b4a32" stroke="#3b2a1f" stroke-width="1.5"/><path d="M33,-3 Q42,-1 40,5 Q38,2 33,2 Z" fill="#ffcf3a" stroke="#3b2a1f" stroke-width="1.3" stroke-linejoin="round"/><circle cx="30" cy="-3" r="1.8" fill="#12102b"/></g></g></g></g></g></g>
+<g transform="translate(800 150)"><g class="tc-camp-hawk" data-layer="back" transform="translate(${HAWK_STILL_AT.x} ${HAWK_STILL_AT.y}) scale(${HAWK_STILL_AT.scale})"><g class="tc-camp-hawk-paths">${hawkMarkup(hawkPaints(HAWK_STILL))}</g></g></g>
 <ellipse cx="400" cy="410" rx="320" ry="26" fill="#ff9bb0" opacity=".4" filter="url(#tcCampBlur14)"></ellipse>
 <ellipse cx="1150" cy="400" rx="380" ry="22" fill="#ff9bb0" opacity=".35" filter="url(#tcCampBlur14)"></ellipse>
 <path d="M0,430 C200,375 380,420 560,396 C760,372 900,430 1100,402 C1300,375 1460,420 1600,396 L1600,540 L0,540 Z" fill="#8a82c0" filter="url(#tcCampBlur2)"></path>
@@ -498,4 +501,21 @@ const CAMP_SCENE = `<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid sl
 
 export function campScene(doc: Document): SVGElement {
   return svgFromString(doc, CAMP_SCENE, 'tc-camp-art');
+}
+
+/**
+ * The hawk's second layer. The Camp puts it over the title, so the hawk passes in front of the name
+ * on the near half of its circle and behind it (in the scene) on the far half. It starts hidden.
+ * Same size and fit as the scene, so the two line up. It holds a soft shadow the hawk casts on the
+ * near pass.
+ */
+export function hawkFrontLayer(doc: Document): SVGElement {
+  return svgFromString(
+    doc,
+    `<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
+<defs><radialGradient id="tcCampHawkShade"><stop offset="0" stop-color="#05061a" stop-opacity=".55"/><stop offset="1" stop-color="#05061a" stop-opacity="0"/></radialGradient></defs>
+<g transform="translate(800 150)"><g class="tc-camp-hawk" data-layer="front" display="none"><ellipse class="tc-camp-hawk-shade" cx="14" cy="46" rx="104" ry="26" fill="url(#tcCampHawkShade)" opacity="0"/><g class="tc-camp-hawk-paths"></g></g></g>
+</svg>`,
+    'tc-camp-art tc-camp-hawk-layer',
+  );
 }

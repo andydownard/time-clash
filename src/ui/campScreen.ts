@@ -2,7 +2,7 @@
 // buttons. Time to Clash! starts the match. Forge Weapon and Upgrade Base open their own screens.
 // Change players goes back to Setup.
 import { CAMP, GAME_TITLE } from '../data/copy';
-import { campScene } from './campArt';
+import { campScene, hawkFrontLayer } from './campArt';
 import { campScheduler, flyOverCamp } from './campFlights';
 import type { UiCtx } from './ctx';
 import { h } from './dom';
@@ -51,6 +51,8 @@ export function showCamp(ctx: UiCtx): Promise<CampChoice> {
         ' ',
         h(doc, 'span', { class: 'tc-camp-clash', text: CAMP.logoClash }),
       ),
+      // The hawk's near-side layer sits over the name, so he passes in front of it.
+      hawkFrontLayer(doc),
       h(doc, 'div', { class: 'tc-camp-start-slot' }, start),
       h(
         doc,
