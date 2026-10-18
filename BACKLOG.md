@@ -19,7 +19,8 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 - Tumble bubble: a squash, spin or block-bounce animation for the speaker (the tail now points at them).
 - Reload card: an optional "hide the bonus ring" setting for slow readers.
 - Victory awards: the winner can still hold five awards. Consider a cap if it stings.
-- Portrait Setup: the Both chip wraps to its own row at 768 wide.
+- Portrait Setup: the Both chip wraps to its own row at 768 wide. Moot: iPad portrait now shows the Turn your iPad screen (docs/IPAD_AUDIT.md).
+- iPad landscape fixes from docs/IPAD_AUDIT.md: Clear my data is cut off on Setup at 1133x744, the Leave dialog body text is 16px, and the bottom controls have no safe-area margin.
 - Chrome host (? and gear) has no data-motion attribute. Add it if animation is ever added there.
 - The pass screen needs a picture for pre-readers, beyond the team icon in the medium item.
 - The win moment has no celebration.

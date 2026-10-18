@@ -129,6 +129,13 @@ export const PAUSE = {
   leaveBody: 'Your match will end. You can start a new one at the Camp.',
 } as const;
 
+// ---------- Turn your iPad ----------
+export const TURN_SCREEN = {
+  title: 'Turn your iPad sideways',
+  body: 'Time Clash plays best on its side. Turn your iPad and your game waits for you.',
+  picture: 'A tablet turning on its side.',
+} as const;
+
 // ---------- Tap to Start ----------
 export const TAP_TO_START = {
   button: 'TAP TO PLAY',
@@ -200,7 +207,7 @@ export const HUD = {
   scrap: 'Scrap',
   shotsLeft: 'Shots left',
   reloadPip: 'Reload',
-  keyboardHint: 'Arrow keys aim. Space fires. Press a fighter\'s letter or number to pick it.',
+  keyboardHint: "Arrow keys aim. Space fires. Press a fighter's letter or number to pick it.",
   pickOne: 'Pick one',
   unitLabel: (name: string, id: string): string => `${name} ${id}`,
   /** The gold star pip and screen-reader text while the Power Shot is up. */

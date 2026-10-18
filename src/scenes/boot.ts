@@ -1,5 +1,6 @@
 // Mounts the DOM layer over the canvas and the always-there buttons. Safe to run twice.
 import { loadSettings } from '../storage/storage';
+import { mountTurnScreen } from '../ui/turnScreen';
 import { mountChrome } from './chrome';
 import type { AppServices } from './registry';
 
@@ -16,6 +17,8 @@ export function bootApp(
   services.overlay.mount(root, canvas);
   services.overlay.applySettings(loadSettings(services.storage));
   mountChrome(doc, services);
+  // Portrait on a touch tablet shows "Turn your iPad sideways" (landscape is the supported view).
+  if (doc.defaultView) mountTurnScreen(doc, doc.defaultView);
 
   // The browser can pause sound without telling us (a lock screen, a call, a hidden tab).
   doc.addEventListener('visibilitychange', () => services.audio.setPageHidden(doc.hidden));

@@ -28,12 +28,12 @@ export default defineConfig({
     ...sizes.flatMap(({ name, viewport }) => [
       {
         name: `chromium-${name}`,
-        testIgnore: /portrait\.spec\.ts/,
+        testIgnore: /(portrait|turn-screen)\.spec\.ts/,
         use: { ...devices['Desktop Chrome'], viewport, ...quiet },
       },
       {
         name: `webkit-${name}`,
-        testIgnore: /portrait\.spec\.ts/,
+        testIgnore: /(portrait|turn-screen)\.spec\.ts/,
         use: { ...devices['Desktop Safari'], viewport },
       },
     ]),
@@ -46,6 +46,17 @@ export default defineConfig({
       name: `webkit-${portrait.name}`,
       testMatch: /(portrait|look)\.spec\.ts/,
       use: { ...devices['Desktop Safari'], viewport: portrait.viewport },
+    },
+    // Touch tablet checks set their own viewport and touch input.
+    {
+      name: 'chromium-turn-screen',
+      testMatch: /turn-screen\.spec\.ts/,
+      use: { ...devices['Desktop Chrome'], ...quiet },
+    },
+    {
+      name: 'webkit-turn-screen',
+      testMatch: /turn-screen\.spec\.ts/,
+      use: { ...devices['Desktop Safari'] },
     },
   ],
   webServer: {

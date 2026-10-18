@@ -3539,3 +3539,64 @@ button.tc-forge-row[aria-disabled='true'],
   opacity: 0.6;
   cursor: default;
 }
+
+/* ---------- Turn your iPad (portrait on a touch tablet) ---------- */
+.tc-turn {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--tc-s-6);
+  /* Keep clear of the notch and home bar. */
+  padding-top: max(var(--tc-s-6), env(safe-area-inset-top));
+  padding-bottom: max(var(--tc-s-6), env(safe-area-inset-bottom));
+  background: var(--tc-ink-deep);
+  color: var(--tc-on-dark);
+  font-family: var(--tc-font);
+  text-align: center;
+  overflow: auto;
+}
+.tc-turn-card {
+  max-width: 560px;
+  display: grid;
+  justify-items: center;
+  gap: var(--tc-s-4);
+}
+.tc-turn-picture {
+  width: min(320px, 60vw);
+  height: auto;
+}
+.tc-turn-tablet {
+  transform-box: view-box;
+  transform-origin: 120px 80px;
+  animation: tc-turn-tilt 2.4s ease-in-out infinite;
+}
+.tc-turn h2 {
+  font-family: var(--tc-font-voice-old);
+  font-size: var(--tc-fs-title);
+  margin: 0;
+}
+.tc-turn p {
+  font-size: var(--tc-fs-lead);
+  margin: 0;
+}
+@keyframes tc-turn-tilt {
+  0%,
+  25% {
+    transform: rotate(0deg);
+  }
+  65%,
+  100% {
+    transform: rotate(-90deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tc-turn-tablet {
+    animation: none;
+    transform: rotate(-90deg);
+  }
+}
+[data-motion='reduced'] .tc-turn-tablet {
+  transform: rotate(-90deg);
+}

@@ -58,7 +58,7 @@ test: `npm test` · lint: `npm run lint` · typecheck: `npm run typecheck` · bu
 - Override AI: no model calls at runtime. Any future AI feature needs Andy's approval and a panel review first.
 - Override GIT: one deploy branch. PR into `main` with green CI, then the static host deploys `main`. No staging hop. Confirm the deployed build shows its SHA on `/version.txt` after every deploy (`VERIFY`).
 - Override CI cost: a pull request runs the full browser matrix (Chromium and WebKit at three sizes, WebKit in two shards each). After the merge, `main` runs one Chromium job plus the unit, lint and build checks. New pushes cancel older pull request runs. Put more into each pull request: every PR costs one full matrix.
-- Override UI: smallest supported screens are iPad portrait (768x1024) and iPad landscape (1024x768), plus laptop. Phone is not supported through Phase 3. Screenshot at 1280x800 and 1024x768 before calling any visual change done.
+- Override UI: the supported screens are iPad landscape (1024x768 and up, including iPad mini 1133x744 and iPad Pro 13in 1376x1032) plus laptop. iPad portrait is not played: a touch tablet held upright (short side 600px or more, `pointer: coarse`) shows a full-screen "Turn your iPad sideways" screen (`src/ui/turnScreen.ts`) and pauses a running battle. Laptops and tall desktop windows with a mouse are unaffected. Phone is not supported through Phase 3. Screenshot at 1280x800 and 1024x768 before calling any visual change done. The latest iPad audit is [docs/IPAD_AUDIT.md](./docs/IPAD_AUDIT.md).
 - Override TRACKING: use `INBOX.md` and `BACKLOG.md`. Never create new tracking files.
 - Feedback FAB: not used. This is a kids' game with no accounts.
 - **Panel review for user-facing changes.** Panel: a 6-year-old, a 12-year-old, a parent, a teacher, and a slapstick comedy writer. Moderated by a staff game designer. Micro (typo) = auto-GO. Small = 2 min. Medium = 10 min. Large = 30 min. A BLOCK from the parent or teacher on safety, privacy, or learning can only be overridden by Andy.
@@ -150,6 +150,7 @@ New ideas go in [INBOX.md](./INBOX.md) (raw, 30-day expiry). Triage moves them t
 | Get running in 10 minutes | [QUICKSTART.md](./QUICKSTART.md) |
 | Architecture and data shapes | [ARCHITECTURE.md](./ARCHITECTURE.md) |
 | Privacy and child safety | [SECURITY.md](./SECURITY.md) |
+| iPad layout audit (all sizes, both orientations) | [docs/IPAD_AUDIT.md](./docs/IPAD_AUDIT.md) |
 | Original game spec | [docs/GAME_SPEC.md](./docs/GAME_SPEC.md) |
 | Design guidance from the canvas comments | [docs/DESIGN_GUIDANCE.md](./docs/DESIGN_GUIDANCE.md) |
 | Plan for signed-in players and a database | [docs/ACCOUNTS_PLAN.md](./docs/ACCOUNTS_PLAN.md) |

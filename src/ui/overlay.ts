@@ -20,6 +20,7 @@ import { showReloadModal } from './reloadModal';
 import { showSetup } from './setupScreen';
 import { showLoading, showTapToStart, showVictory } from './simpleScreens';
 import { showSpeechBubble } from './transient';
+import { awayMs } from './turnScreen';
 import { TEST_IDS, Z, type CoverKind, type CreateOverlay, type Overlay } from './types';
 
 export type OverlayDeps = {
@@ -52,7 +53,8 @@ export const createOverlay: CreateOverlayWithDeps = (
 ): Overlay => {
   const view = doc.defaultView;
   const env: LoadingEnv = deps.env ?? {
-    now: () => (view?.performance ?? performance).now(),
+    // Time on the Turn-your-iPad screen does not count against a reload answer.
+    now: () => (view?.performance ?? performance).now() - awayMs(),
     setTimeout: (fn, ms) => (view ?? globalThis).setTimeout(fn, ms),
     clearTimeout: (id) => (view ?? globalThis).clearTimeout(id as number),
   };
