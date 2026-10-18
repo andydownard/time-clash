@@ -335,6 +335,40 @@ export const TUMBLE_LINES = [
   'I am a pancake. A proud pancake!',
 ] as const;
 
+/** Extra lines only Team Past says when they wipe out. Silly, kind, and nobody is hurt. */
+export const TUMBLE_LINES_PAST = [
+  'I meant to do that!',
+  'Ouch! My dignity!',
+  'The floor started it.',
+  'Five more minutes, Mom.',
+  'My armor is too shiny. Oops.',
+  "I'm just resting my eyes.",
+  'That was my good helmet!',
+  'Whoa. The sky is sideways.',
+  'Tell my horse I was brave.',
+] as const;
+
+/** Extra lines only Team Future says when they wipe out. */
+export const TUMBLE_LINES_FUTURE = [
+  'Oops. My legs went offline.',
+  'My hoverboard would never!',
+  'Rebooting... please wait.',
+  'I was just checking the floor.',
+  'Beep boop. Ouch boop.',
+  'Plan B was also falling.',
+  'Somebody update my legs.',
+  'I landed exactly as planned.',
+  'Does this count as a nap?',
+] as const;
+
+/**
+ * The lines one team can say: the shared lines, then that team's own. The match picks an index
+ * from this list with a seeded shuffle bag (TUMBLE_LINE_COUNT is its length for both teams).
+ */
+export function tumblePool(team: Team): readonly string[] {
+  return [...TUMBLE_LINES, ...(team === 'PAST' ? TUMBLE_LINES_PAST : TUMBLE_LINES_FUTURE)];
+}
+
 // ---------- Victory ----------
 export const VICTORY = {
   heading: (name: string): string => `${name} wins!`,

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { HIT_LINES, PASS_SCREEN, RELOAD, RELOAD_QUIPS, TUMBLE_LINES } from '../../../src/data/copy';
+import { HIT_LINES, PASS_SCREEN, RELOAD, RELOAD_QUIPS, tumblePool } from '../../../src/data/copy';
 import { DAMAGE, SCRAP } from '../../../src/game/config';
 import { findAim, makeWorld, settle } from './flowHarness';
 
@@ -207,7 +207,7 @@ describe('BattleFlow: hits', () => {
     expect(w.tumbles).toEqual(['FUTURE']);
     expect(w.bubbles).toHaveLength(1);
     expect(w.bubbles[0]!.team).toBe('FUTURE');
-    expect(TUMBLE_LINES).toContain(w.bubbles[0]!.text);
+    expect(tumblePool('FUTURE')).toContain(w.bubbles[0]!.text);
     expect(w.sfx).toContain('boing');
     const i = w.log.indexOf('impact:near');
     expect(w.log[i + 1]).toBe('tumble:FUTURE');

@@ -246,7 +246,7 @@ export function createCharacter(
         drawEyes(0);
         return;
       }
-      container.setScale(pose.squashX, pose.squashY);
+      container.setScale(pose.squashX * (pose.scale ?? 1), pose.squashY * (pose.scale ?? 1));
       container.setAngle(pose.rotationDeg * facing);
       container.setY(groundY - pose.lift);
       armL.setAngle(pose.armSwingDeg);

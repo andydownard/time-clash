@@ -206,7 +206,7 @@ export class BattleFlow {
           text,
           team: tumbler,
           anchor: bubbleAnchor(tumbler, match.layout),
-          tailTarget: bubbleTailTarget(tumbler, match.layout),
+          tailTarget: bubbleTailTarget(tumbler, match.layout, true),
         });
       }
     }

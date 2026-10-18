@@ -255,7 +255,50 @@ export const DEFAULT_SETTINGS: Readonly<Settings> = {
 };
 
 /** How many tumble speech bubbles exist. Must equal TUMBLE_LINES.length in src/data/copy.ts (a test pins it). */
-export const TUMBLE_LINE_COUNT = 12;
+export const TUMBLE_LINE_COUNT = 21;
+
+// ---------- Hit effects (drawing numbers; the burst, the pip, the funny fall) ----------
+export const HIT_FX = {
+  /** Flying bits in the impact burst. */
+  particleCount: 14,
+  /** The whole burst is gone by this time. */
+  burstMaxMs: 850,
+  flashMs: 120,
+  ringMs: 420,
+  ringStartRadius: 14,
+  ringEndScale: 9,
+  smokeMs: 800,
+  particleMinDist: 80,
+  particleMaxDist: 190,
+  particleMinMs: 450,
+  particleMaxMs: 800,
+  /** Photosensitivity: no more than this many flashes in any one second. */
+  maxFlashesPerSecond: 3,
+  /** The floating "-N" over the hit base. */
+  pipRisePx: 70,
+  pipHoldMs: 350,
+  pipFadeMs: 750,
+  /** Health text pops to this scale when it drops, then settles. */
+  hpPopScale: 1.3,
+  hpPopMs: 260,
+  /** Little stars circling a fallen fighter. */
+  starCount: 3,
+  starRadiusPx: 34,
+  starSquash: 0.35,
+  starPeriodMs: 1400,
+  starSizePx: 11,
+  /** How far above the lying head the stars circle. */
+  starLiftPx: 44,
+  /** Standing back up after the fall. */
+  standUpMs: 600,
+  standUpHop: 18,
+  /** A fighter in a fall is drawn this many times bigger, so the slapstick can be seen. */
+  fallScale: 2,
+  /** The speech bubble tail aims this far above a fallen fighter's feet (clears the stars). */
+  fallenTailRise: 72,
+  /** Small bounce when a fighter lands. */
+  landBounce: 22,
+} as const;
 
 // ---------- Practice opponent (the "Computer player") ----------
 export type BotLevel = 'easy' | 'medium' | 'hard';

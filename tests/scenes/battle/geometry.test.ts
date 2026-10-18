@@ -23,7 +23,7 @@ import {
   sideAlpha,
   windArrow,
 } from '../../../src/scenes/battle/geometry';
-import { BUBBLE_MAX_WORLD_W } from '../../../src/scenes/battle/visual';
+import { BUBBLE_MAX_WORLD_W, FALL_DX } from '../../../src/scenes/battle/visual';
 
 describe('aimVector', () => {
   it('points toward the enemy for Past and flips for Future', () => {
@@ -162,6 +162,17 @@ describe('placement', () => {
       expect(t.x).toBe(spot.x);
       expect(t.y).toBeLessThan(spot.y);
       // Close enough that the tail visibly points at the character, not at empty sky.
+      const a = bubbleAnchor(team, PHASE1_LAYOUT);
+      expect(Math.abs(t.x - a.x)).toBeLessThanOrEqual(BUBBLE_MAX_WORLD_W / 2);
+    }
+  });
+  it('aims the tail at the stars over a fallen fighter, out toward the field', () => {
+    for (const team of ['PAST', 'FUTURE'] as const) {
+      const spot = characterSpot(team, PHASE1_LAYOUT);
+      const t = bubbleTailTarget(team, PHASE1_LAYOUT, true);
+      expect(Math.abs(t.x - spot.x)).toBe(FALL_DX);
+      expect(Math.sign(t.x - spot.x)).toBe(team === 'PAST' ? 1 : -1);
+      expect(t.y).toBeLessThan(spot.y);
       const a = bubbleAnchor(team, PHASE1_LAYOUT);
       expect(Math.abs(t.x - a.x)).toBeLessThanOrEqual(BUBBLE_MAX_WORLD_W / 2);
     }

@@ -36,6 +36,9 @@ Each team has five fighters in `src/game/units.ts` (`UNITS`, `unitsOf`, `unitByI
 ## Ammo (rules built, not yet wired into the match)
 `src/game/ammo.ts` holds four kinds: standard, confetti explosives, bouncy plasma spheres and heavy iron bowling balls. Standard is free, unlimited and changes nothing (`tests/game/ammo.test.ts` pins that). The other three cost Scrap to unlock (10, 14, 18) and have 3, 3 and 2 uses per match. `simulateShot({ ..., ammo })` applies speed and wind scales and the plasma bounce (once, off the ground only; the result adds `bounced`). `classifyBlast(impact, base, radiusScale)` widens the blast for confetti. `scaleDamage(base, ammo)` scales and rounds damage. An unknown id counts as standard.
 
+## The hit moment
+A hit gets a burst (`playHitBurst`: a flash, an expanding ring, 14 flying bits and a puff, fire for Team Past and cyan and white for Team Future, gone in under 0.9 s) on top of the explosion, a floating "-N" pip over the base that was hit, and a pop on that base's health number. A near miss also knocks the defender down: a hop, a spin, a bounce, then lying still with 3 circling stars until the next turn, when the fighter stands back up. The fall style (face-plant or backward flop) comes from the match seed (`fallVariantFor`). The wipeout line comes from `tumblePool(team)` in `src/data/copy.ts`: shared lines plus that team's own. All numbers are in `HIT_FX` in `src/game/config.ts`. The plans are pure and tested (`src/scenes/battle/hitFx.ts`, `tumble.ts`). One flash limiter (`flashAllowed`) keeps every screen flash under 3 a second. With reduced motion on: a short fade, the final fallen pose, the bubble and the pip, with no flying or spinning.
+
 ## Key data shapes
 ```ts
 type Team = 'PAST' | 'FUTURE';
