@@ -541,5 +541,448 @@
     "answer": "We packed apples, bread, and cheese.",
     "hint": "Commas go between items in a list.",
     "tags": ["grammar", "punctuation"]
+  },
+  {
+    "id": "reading-5-0041",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "Which detail best shows that Dr. Pim is brave?",
+    "choices": [
+      "She climbs a ladder to look inside a dragon's mouth.",
+      "She is four feet tall.",
+      "She owns a flashlight.",
+      "She likes marshmallows."
+    ],
+    "answer": "She climbs a ladder to look inside a dragon's mouth.",
+    "hint": "Think about what is scary about the job.",
+    "tags": ["inference"],
+    "passage": "Dr. Pim had treated many unusual patients, but nothing prepared her for the day Ember the dragon squeezed through the clinic door. \"It's my back tooth,\" Ember mumbled. Dr. Pim, who was only four feet tall, grabbed a ladder and a very long flashlight and climbed up to look inside Ember's mouth. She found a gigantic cavity, probably caused by years of toasted marshmallows. When the work was done, Ember flashed a gleaming grin and promised to brush every night. Then she sneezed, and a puff of smoke blew the waiting room magazines across the floor. Dr. Pim sighed, but she was smiling."
+  },
+  {
+    "id": "reading-5-0042",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "What caused Ember's cavity, according to Dr. Pim?",
+    "choices": [
+      "Not visiting the dentist",
+      "Years of toasted marshmallows",
+      "Breathing too much fire",
+      "Eating gold coins"
+    ],
+    "answer": "Years of toasted marshmallows",
+    "hint": "Dr. Pim blamed the treats.",
+    "tags": ["cause-and-effect"],
+    "passage": "Dr. Pim had treated many unusual patients, but nothing prepared her for the day Ember the dragon squeezed through the clinic door. \"It's my back tooth,\" Ember mumbled. Dr. Pim, who was only four feet tall, grabbed a ladder and a very long flashlight and climbed up to look inside Ember's mouth. She found a gigantic cavity, probably caused by years of toasted marshmallows. When the work was done, Ember flashed a gleaming grin and promised to brush every night. Then she sneezed, and a puff of smoke blew the waiting room magazines across the floor. Dr. Pim sighed, but she was smiling."
+  },
+  {
+    "id": "reading-5-0043",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "How does Dr. Pim feel at the end?",
+    "choices": ["Furious", "Frightened", "Amused but a little tired", "Bored"],
+    "answer": "Amused but a little tired",
+    "hint": "She sighed, but she was smiling.",
+    "tags": ["character-feelings"],
+    "passage": "Dr. Pim had treated many unusual patients, but nothing prepared her for the day Ember the dragon squeezed through the clinic door. \"It's my back tooth,\" Ember mumbled. Dr. Pim, who was only four feet tall, grabbed a ladder and a very long flashlight and climbed up to look inside Ember's mouth. She found a gigantic cavity, probably caused by years of toasted marshmallows. When the work was done, Ember flashed a gleaming grin and promised to brush every night. Then she sneezed, and a puff of smoke blew the waiting room magazines across the floor. Dr. Pim sighed, but she was smiling."
+  },
+  {
+    "id": "reading-5-0044",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "The word 'gleaming' most nearly means",
+    "choices": ["broken.", "crooked.", "smelly.", "shiny."],
+    "answer": "shiny.",
+    "hint": "Think of a smile with clean, bright teeth.",
+    "tags": ["vocabulary-in-context"],
+    "passage": "Dr. Pim had treated many unusual patients, but nothing prepared her for the day Ember the dragon squeezed through the clinic door. \"It's my back tooth,\" Ember mumbled. Dr. Pim, who was only four feet tall, grabbed a ladder and a very long flashlight and climbed up to look inside Ember's mouth. She found a gigantic cavity, probably caused by years of toasted marshmallows. When the work was done, Ember flashed a gleaming grin and promised to brush every night. Then she sneezed, and a puff of smoke blew the waiting room magazines across the floor. Dr. Pim sighed, but she was smiling."
+  },
+  {
+    "id": "reading-5-0045",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "From whose point of view is this passage written?",
+    "choices": [
+      "Jonah, using first person",
+      "Grandpa, using first person",
+      "Commander Ruiz, using third person",
+      "A narrator who knows everyone's thoughts"
+    ],
+    "answer": "Jonah, using first person",
+    "hint": "Look at words like I and my.",
+    "tags": ["point-of-view"],
+    "passage": "Dear Grandpa, Today I floated into the kitchen and chased my own breakfast. The oatmeal drifted out of its bowl and hovered like a small gray cloud! We do not walk here. We push off the wall and glide. We also sleep in bags attached to the wall, or else we would float away while dreaming. Yesterday I watched the sun rise, and it rises sixteen times every day because the station circles Earth so fast. I love it here, but I miss your pancakes. Love, Jonah"
+  },
+  {
+    "id": "reading-5-0046",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "Why do astronauts sleep in bags attached to the wall?",
+    "choices": [
+      "Because beds are too heavy",
+      "So they will not float away",
+      "Because the bags are warm",
+      "Because they like tight spaces"
+    ],
+    "answer": "So they will not float away",
+    "hint": "Think about what could happen when you sleep in space.",
+    "tags": ["details"],
+    "passage": "Dear Grandpa, Today I floated into the kitchen and chased my own breakfast. The oatmeal drifted out of its bowl and hovered like a small gray cloud! We do not walk here. We push off the wall and glide. We also sleep in bags attached to the wall, or else we would float away while dreaming. Yesterday I watched the sun rise, and it rises sixteen times every day because the station circles Earth so fast. I love it here, but I miss your pancakes. Love, Jonah"
+  },
+  {
+    "id": "reading-5-0047",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "What is the main purpose of the letter?",
+    "choices": [
+      "To ask for pancake recipes",
+      "To argue that space is dangerous",
+      "To tell Grandpa about life on the space station",
+      "To explain how rockets work"
+    ],
+    "answer": "To tell Grandpa about life on the space station",
+    "hint": "Think about why Jonah wrote to Grandpa.",
+    "tags": ["author-s-purpose"],
+    "passage": "Dear Grandpa, Today I floated into the kitchen and chased my own breakfast. The oatmeal drifted out of its bowl and hovered like a small gray cloud! We do not walk here. We push off the wall and glide. We also sleep in bags attached to the wall, or else we would float away while dreaming. Yesterday I watched the sun rise, and it rises sixteen times every day because the station circles Earth so fast. I love it here, but I miss your pancakes. Love, Jonah"
+  },
+  {
+    "id": "reading-5-0048",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "Which word best describes Jonah's feelings about his trip?",
+    "choices": [
+      "angry and bored",
+      "terrified and sorry",
+      "proud and unfriendly",
+      "excited but a little homesick"
+    ],
+    "answer": "excited but a little homesick",
+    "hint": "Jonah loves space but misses something.",
+    "tags": ["inference"],
+    "passage": "Dear Grandpa, Today I floated into the kitchen and chased my own breakfast. The oatmeal drifted out of its bowl and hovered like a small gray cloud! We do not walk here. We push off the wall and glide. We also sleep in bags attached to the wall, or else we would float away while dreaming. Yesterday I watched the sun rise, and it rises sixteen times every day because the station circles Earth so fast. I love it here, but I miss your pancakes. Love, Jonah"
+  },
+  {
+    "id": "reading-5-0049",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "What does the length of the waggle tell the other bees?",
+    "choices": [
+      "How far away the flowers are",
+      "How sweet the nectar is",
+      "Which bee is the leader",
+      "When the sun will set"
+    ],
+    "answer": "How far away the flowers are",
+    "hint": "Read the line about how long she waggles.",
+    "tags": ["details"],
+    "passage": "Honeybees cannot speak, but they have a clever way to share news. When a worker bee finds flowers, she flies back to the hive and does a waggle dance. She moves in a figure eight and wiggles her body in the middle. The angle of the wiggle shows which direction the flowers lie compared to the sun. The longer she waggles, the farther away the flowers are. Other bees feel the dance with their antennae and zoom off to the flowers. A tiny insect brain can pass along surprisingly detailed directions."
+  },
+  {
+    "id": "reading-5-0050",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "Which sentence best states the main idea?",
+    "choices": [
+      "Honeybees live in hives made of wax.",
+      "Honeybees use a dance to tell each other where to find food.",
+      "Karl von Frisch won a prize.",
+      "Bees are bigger than most insects."
+    ],
+    "answer": "Honeybees use a dance to tell each other where to find food.",
+    "hint": "Pick the sentence that covers the whole passage.",
+    "tags": ["main-idea"],
+    "passage": "Honeybees cannot speak, but they have a clever way to share news. When a worker bee finds flowers, she flies back to the hive and does a waggle dance. She moves in a figure eight and wiggles her body in the middle. The angle of the wiggle shows which direction the flowers lie compared to the sun. The longer she waggles, the farther away the flowers are. Other bees feel the dance with their antennae and zoom off to the flowers. A tiny insect brain can pass along surprisingly detailed directions."
+  },
+  {
+    "id": "reading-5-0051",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "How is this passage mostly organized?",
+    "choices": [
+      "It compares bees to birds.",
+      "It tells a funny story.",
+      "It explains how the dance works and why it helps.",
+      "It lists reasons not to study bees."
+    ],
+    "answer": "It explains how the dance works and why it helps.",
+    "hint": "Think about how the passage moves from how to why.",
+    "tags": ["text-structure"],
+    "passage": "Honeybees cannot speak, but they have a clever way to share news. When a worker bee finds flowers, she flies back to the hive and does a waggle dance. She moves in a figure eight and wiggles her body in the middle. The angle of the wiggle shows which direction the flowers lie compared to the sun. The longer she waggles, the farther away the flowers are. Other bees feel the dance with their antennae and zoom off to the flowers. A tiny insect brain can pass along surprisingly detailed directions."
+  },
+  {
+    "id": "reading-5-0052",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "In the passage, 'surprisingly detailed' suggests that the author",
+    "choices": [
+      "thinks bees are confused.",
+      "dislikes insects.",
+      "wants readers to be afraid.",
+      "is impressed by what bees can do."
+    ],
+    "answer": "is impressed by what bees can do.",
+    "hint": "The word surprisingly shows amazement.",
+    "tags": ["author-s-point-of-view"],
+    "passage": "Honeybees cannot speak, but they have a clever way to share news. When a worker bee finds flowers, she flies back to the hive and does a waggle dance. She moves in a figure eight and wiggles her body in the middle. The angle of the wiggle shows which direction the flowers lie compared to the sun. The longer she waggles, the farther away the flowers are. Other bees feel the dance with their antennae and zoom off to the flowers. A tiny insect brain can pass along surprisingly detailed directions."
+  },
+  {
+    "id": "reading-5-0053",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "Which lesson does this story teach?",
+    "choices": [
+      "Steady effort can beat a fast start.",
+      "Polish makes you faster.",
+      "Lettuce gives energy.",
+      "Trumpets scare tortoises."
+    ],
+    "answer": "Steady effort can beat a fast start.",
+    "hint": "Think about who was slow and steady.",
+    "tags": ["theme"],
+    "passage": "Every spring, the village of Slowbrook held the Great Tortoise Race, and Sir Tobias was determined to win. He polished his tortoise Gertrude's shell until it shone, but Gertrude chewed a lettuce leaf and looked unimpressed. When the trumpet blew, most tortoises took one slow step and stopped to nap. Gertrude moved at a steady pace, never stopping and never speeding. Hours later, she crossed the line as the sun set. Sir Tobias cheered so loudly that he fell off his chair. Gertrude simply blinked, ate another lettuce leaf, and went to sleep."
+  },
+  {
+    "id": "reading-5-0054",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "Why does the author write that Gertrude 'looked unimpressed'?",
+    "choices": [
+      "To show Gertrude was angry at Tobias",
+      "To show that Gertrude was calm and not excited",
+      "To show she was sick",
+      "To show the race was cancelled"
+    ],
+    "answer": "To show that Gertrude was calm and not excited",
+    "hint": "Look at what Gertrude did with her lettuce.",
+    "tags": ["inference"],
+    "passage": "Every spring, the village of Slowbrook held the Great Tortoise Race, and Sir Tobias was determined to win. He polished his tortoise Gertrude's shell until it shone, but Gertrude chewed a lettuce leaf and looked unimpressed. When the trumpet blew, most tortoises took one slow step and stopped to nap. Gertrude moved at a steady pace, never stopping and never speeding. Hours later, she crossed the line as the sun set. Sir Tobias cheered so loudly that he fell off his chair. Gertrude simply blinked, ate another lettuce leaf, and went to sleep."
+  },
+  {
+    "id": "reading-5-0055",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "What does 'determined' mean in the first sentence?",
+    "choices": [
+      "Slightly confused",
+      "Very sleepy",
+      "Firmly set on doing something",
+      "Easily bored"
+    ],
+    "answer": "Firmly set on doing something",
+    "hint": "Look at how hard Sir Tobias wanted to win.",
+    "tags": ["vocabulary-in-context"],
+    "passage": "Every spring, the village of Slowbrook held the Great Tortoise Race, and Sir Tobias was determined to win. He polished his tortoise Gertrude's shell until it shone, but Gertrude chewed a lettuce leaf and looked unimpressed. When the trumpet blew, most tortoises took one slow step and stopped to nap. Gertrude moved at a steady pace, never stopping and never speeding. Hours later, she crossed the line as the sun set. Sir Tobias cheered so loudly that he fell off his chair. Gertrude simply blinked, ate another lettuce leaf, and went to sleep."
+  },
+  {
+    "id": "reading-5-0056",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "Which event happens LAST in the story?",
+    "choices": [
+      "The trumpet blows.",
+      "Sir Tobias polishes the shell.",
+      "The tortoises nap.",
+      "Gertrude eats lettuce and goes to sleep."
+    ],
+    "answer": "Gertrude eats lettuce and goes to sleep.",
+    "hint": "Find the sentence at the very end.",
+    "tags": ["sequence"],
+    "passage": "Every spring, the village of Slowbrook held the Great Tortoise Race, and Sir Tobias was determined to win. He polished his tortoise Gertrude's shell until it shone, but Gertrude chewed a lettuce leaf and looked unimpressed. When the trumpet blew, most tortoises took one slow step and stopped to nap. Gertrude moved at a steady pace, never stopping and never speeding. Hours later, she crossed the line as the sun set. Sir Tobias cheered so loudly that he fell off his chair. Gertrude simply blinked, ate another lettuce leaf, and went to sleep."
+  },
+  {
+    "id": "reading-5-0057",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "What is the central message of the story?",
+    "choices": [
+      "Creativity can appear in surprising places.",
+      "Robots should never touch paint.",
+      "Warehouses need more managers.",
+      "Sorting packages is boring."
+    ],
+    "answer": "Creativity can appear in surprising places.",
+    "hint": "Think about where the robot found its talent.",
+    "tags": ["theme"],
+    "passage": "Unit Seven was built to sort packages. One afternoon, a box tipped over and splashed bright blue paint across the warehouse floor. Very carefully, Unit Seven dipped one metal finger into the paint and drew a wobbly wave. Day after day, it sorted packages quickly so it could spend its breaks painting. Soon the gray walls were covered with swirling oceans and grinning cats. The manager, Ms. Okafor, stood silently and then said, \"This is the best thing that has ever happened to this warehouse.\" Unit Seven still sorted perfectly, but now it could make ordinary places beautiful."
+  },
+  {
+    "id": "reading-5-0058",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "What can the reader tell about Ms. Okafor?",
+    "choices": [
+      "She dislikes robots.",
+      "She appreciates the murals.",
+      "She was angry about the paint.",
+      "She plans to fire Unit Seven."
+    ],
+    "answer": "She appreciates the murals.",
+    "hint": "Look at what Ms. Okafor said.",
+    "tags": ["inference"],
+    "passage": "Unit Seven was built to sort packages. One afternoon, a box tipped over and splashed bright blue paint across the warehouse floor. Very carefully, Unit Seven dipped one metal finger into the paint and drew a wobbly wave. Day after day, it sorted packages quickly so it could spend its breaks painting. Soon the gray walls were covered with swirling oceans and grinning cats. The manager, Ms. Okafor, stood silently and then said, \"This is the best thing that has ever happened to this warehouse.\" Unit Seven still sorted perfectly, but now it could make ordinary places beautiful."
+  },
+  {
+    "id": "reading-5-0059",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "What does 'ordinary' mean in the last sentence?",
+    "choices": ["expensive", "enormous", "plain and usual", "dangerous"],
+    "answer": "plain and usual",
+    "hint": "Think of a day that is plain and nothing special.",
+    "tags": ["vocabulary-in-context"],
+    "passage": "Unit Seven was built to sort packages. One afternoon, a box tipped over and splashed bright blue paint across the warehouse floor. Very carefully, Unit Seven dipped one metal finger into the paint and drew a wobbly wave. Day after day, it sorted packages quickly so it could spend its breaks painting. Soon the gray walls were covered with swirling oceans and grinning cats. The manager, Ms. Okafor, stood silently and then said, \"This is the best thing that has ever happened to this warehouse.\" Unit Seven still sorted perfectly, but now it could make ordinary places beautiful."
+  },
+  {
+    "id": "reading-5-0060",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "Which word best describes how Unit Seven first drew the wave?",
+    "choices": ["carelessly", "angrily", "noisily", "cautiously"],
+    "answer": "cautiously",
+    "hint": "Look at how the robot moved its finger.",
+    "tags": ["vocabulary-in-context"],
+    "passage": "Unit Seven was built to sort packages. One afternoon, a box tipped over and splashed bright blue paint across the warehouse floor. Very carefully, Unit Seven dipped one metal finger into the paint and drew a wobbly wave. Day after day, it sorted packages quickly so it could spend its breaks painting. Soon the gray walls were covered with swirling oceans and grinning cats. The manager, Ms. Okafor, stood silently and then said, \"This is the best thing that has ever happened to this warehouse.\" Unit Seven still sorted perfectly, but now it could make ordinary places beautiful."
+  },
+  {
+    "id": "reading-5-0061",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "Why did the Pony Express end after about eighteen months?",
+    "choices": [
+      "The telegraph could send messages faster.",
+      "Horses became too expensive.",
+      "Nobody wrote letters anymore.",
+      "Riders refused to work at night."
+    ],
+    "answer": "The telegraph could send messages faster.",
+    "hint": "Read the end of the passage.",
+    "tags": ["cause-and-effect"],
+    "passage": "Long ago, the Pony Express set out to carry mail across the American West faster than ever before. Riders raced on horseback from Missouri to California, nearly two thousand miles. A letter that once took weeks now took about ten days. Every ten to fifteen miles, a rider stopped at a station and swapped to a fresh horse in less than two minutes. The work was hard, with storms and long nights. Yet the service lasted only about eighteen months, because soon after, the telegraph, which sent messages by wire, linked East and West and was much quicker. The riders became famous symbols of courage."
+  },
+  {
+    "id": "reading-5-0062",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "How did the Pony Express speed up mail delivery?",
+    "choices": [
+      "Riders used trains.",
+      "Riders switched to fresh horses at stations.",
+      "Riders took shorter trips.",
+      "Riders carried only one letter."
+    ],
+    "answer": "Riders switched to fresh horses at stations.",
+    "hint": "Look at what riders did at stations.",
+    "tags": ["details"],
+    "passage": "Long ago, the Pony Express set out to carry mail across the American West faster than ever before. Riders raced on horseback from Missouri to California, nearly two thousand miles. A letter that once took weeks now took about ten days. Every ten to fifteen miles, a rider stopped at a station and swapped to a fresh horse in less than two minutes. The work was hard, with storms and long nights. Yet the service lasted only about eighteen months, because soon after, the telegraph, which sent messages by wire, linked East and West and was much quicker. The riders became famous symbols of courage."
+  },
+  {
+    "id": "reading-5-0063",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "What is the structure of the passage?",
+    "choices": [
+      "A comparison of two riders",
+      "A list of famous horses",
+      "Events in the order they happened, with causes and effects",
+      "A story told by one rider"
+    ],
+    "answer": "Events in the order they happened, with causes and effects",
+    "hint": "Notice the order of events and what happened because of them.",
+    "tags": ["text-structure"],
+    "passage": "Long ago, the Pony Express set out to carry mail across the American West faster than ever before. Riders raced on horseback from Missouri to California, nearly two thousand miles. A letter that once took weeks now took about ten days. Every ten to fifteen miles, a rider stopped at a station and swapped to a fresh horse in less than two minutes. The work was hard, with storms and long nights. Yet the service lasted only about eighteen months, because soon after, the telegraph, which sent messages by wire, linked East and West and was much quicker. The riders became famous symbols of courage."
+  },
+  {
+    "id": "reading-5-0064",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "Which word best describes the riders?",
+    "choices": ["lazy", "silly", "greedy", "brave"],
+    "answer": "brave",
+    "hint": "Think about facing storms and long nights.",
+    "tags": ["inference"],
+    "passage": "Long ago, the Pony Express set out to carry mail across the American West faster than ever before. Riders raced on horseback from Missouri to California, nearly two thousand miles. A letter that once took weeks now took about ten days. Every ten to fifteen miles, a rider stopped at a station and swapped to a fresh horse in less than two minutes. The work was hard, with storms and long nights. Yet the service lasted only about eighteen months, because soon after, the telegraph, which sent messages by wire, linked East and West and was much quicker. The riders became famous symbols of courage."
+  },
+  {
+    "id": "reading-5-0065",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "vocab",
+    "prompt": "Which word means 'to look at again' using the prefix 're-'?",
+    "choices": ["review", "preview", "unview", "overview"],
+    "answer": "review",
+    "hint": "Re- means again.",
+    "tags": ["prefixes"]
+  },
+  {
+    "id": "reading-5-0066",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "vocab",
+    "prompt": "The suffix '-able' in 'readable' means",
+    "choices": ["without", "able to be", "not", "again"],
+    "answer": "able to be",
+    "hint": "The suffix -able means can be done.",
+    "tags": ["suffixes"]
+  },
+  {
+    "id": "reading-5-0067",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "vocab",
+    "prompt": "The root 'aqua' means water. Which word is about water?",
+    "choices": ["aquila", "acorn", "aquarium", "active"],
+    "answer": "aquarium",
+    "hint": "Think of a tank with fish.",
+    "tags": ["root-words"]
+  },
+  {
+    "id": "reading-5-0068",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "grammar",
+    "prompt": "'The wind whispered through the castle.' What kind of figurative language is this?",
+    "choices": ["personification", "simile", "hyperbole", "alliteration"],
+    "answer": "personification",
+    "hint": "Wind cannot whisper. Giving human actions to things is a special kind of language.",
+    "tags": ["figurative-language"]
+  },
+  {
+    "id": "reading-5-0069",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "grammar",
+    "prompt": "Which sentence uses hyperbole (big exaggeration)?",
+    "choices": [
+      "I fed the dragon at noon.",
+      "I have told you a million times to feed the dragon.",
+      "The dragon eats twice a day.",
+      "I will feed the dragon soon."
+    ],
+    "answer": "I have told you a million times to feed the dragon.",
+    "hint": "Exaggeration makes something sound bigger than it is.",
+    "tags": ["figurative-language"]
   }
 ]
