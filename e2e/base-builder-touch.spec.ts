@@ -111,6 +111,8 @@ test('touch: every tool and tray brick is at least 56px, and text is at least 20
     const out: string[] = [];
     for (const el of document.querySelectorAll<HTMLElement>('[data-screen="builder"] button')) {
       const r = el.getBoundingClientRect();
+      // The Clear question is hidden until Clear is tapped.
+      if (r.width === 0 && r.height === 0) continue;
       if (r.width < 56 || r.height < 56) out.push(`${el.dataset.testid}: ${r.width}x${r.height}`);
       const fs = parseFloat(getComputedStyle(el).fontSize);
       if (el.textContent?.trim() && fs < 20) out.push(`${el.dataset.testid}: font ${fs}`);
