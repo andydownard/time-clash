@@ -41,3 +41,13 @@ When recordings are added (see `docs/NARRATION.md`), list each file below with i
 | File | Speaker | Source | License |
 |---|---|---|---|
 | _none yet_ | | | |
+
+## Voice clips (not shipped yet)
+
+Spoken lines for Chrono's intro and the funny knock-down lines are stored in `db/voice.sqlite` (table `voice_clips`). They are not served by the site yet.
+
+| Part | Source | License |
+|---|---|---|
+| All voice clips | Kokoro-82M text-to-speech model, voice `am_michael`, run by `scripts/build-voice-db.py` | Apache-2.0 (model); the generated audio is original to this project |
+
+Why Kokoro: the first voice tried (Piper "ryan") was trained on RyanSpeech, licensed CC BY-NC-SA 4.0, which breaks the original-or-CC0 audio rule. It was dropped and none of its audio is in this repo.
