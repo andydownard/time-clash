@@ -34,17 +34,19 @@ The music starts only after the first tap, is quiet by default, ducks under spok
 
 ## Voice
 
-The "How to Play" voice and the Hear it button use the browser's built-in speech synthesis until recordings exist. No voice files are shipped, and the game sends nothing anywhere. The game asks for an English voice that stays on the device when one exists. A browser may still pick a network voice, which is the browser's choice, not the game's. Captions show every line, with or without sound.
-
-When recordings are added (see `docs/NARRATION.md`), list each file below with its speaker, source, and license.
+The "How to Play" voice plays the five recorded files below. If a file fails to load, the Hear it button and the intro fall back to the browser's built-in speech synthesis. The game sends nothing anywhere. The game asks for an English voice that stays on the device when one exists. A browser may still pick a network voice, which is the browser's choice, not the game's. Captions show every line, with or without sound.
 
 | File | Speaker | Source | License |
 |---|---|---|---|
-| _none yet_ | | | |
+| `voice/intro-01-welcome.m4a` | Chrono (synthetic) | Kokoro-82M, voice `am_michael` | Original to this project |
+| `voice/intro-02-aim.m4a` | Chrono (synthetic) | Kokoro-82M, voice `am_michael` | Original to this project |
+| `voice/intro-03-shoot-twice.m4a` | Chrono (synthetic) | Kokoro-82M, voice `am_michael` | Original to this project |
+| `voice/intro-04-reload.m4a` | Chrono (synthetic) | Kokoro-82M, voice `am_michael` | Original to this project |
+| `voice/intro-05-wipeouts-and-passing-the-screen.m4a` | Chrono (synthetic) | Kokoro-82M, voice `am_michael` | Original to this project |
 
-## Voice clips (not shipped yet)
+## Voice clips (database)
 
-Spoken lines for Chrono's intro and the funny knock-down lines are stored in `db/voice.sqlite` (table `voice_clips`). They are not served by the site yet.
+Spoken lines for Chrono's intro and the funny knock-down lines are stored in `db/voice.sqlite` (table `voice_clips`). Only the five intro clips are served by the site, extracted by `scripts/extract-voice-clips.py`. The knock-down lines are not served yet.
 
 | Part | Source | License |
 |---|---|---|

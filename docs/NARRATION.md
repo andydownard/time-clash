@@ -42,20 +42,21 @@ Card title: "Wipeouts and Turns"
 - Reload tip (5 seconds, plays the first time the Reload modal opens): "Take your time. Fast answers earn bonus scrap, but any answer reloads."
 - Turn tip (4 seconds, first pass screen): "Pass the screen. No peeking!"
 
-## How to make the audio (free options, pick one)
-1. **Best and simplest:** record it with a real voice. A family member reading it in a silly announcer voice is the best fit for a family game. Use the Voice Memos app, export as `.m4a`, then convert to `.mp3` and `.ogg`.
-2. **Free offline text to speech:** run Piper (open source) on the Mac to render each card to `.wav`, then convert to `.mp3` and `.ogg`. Commit the files. No runtime cost.
-3. **Fallback in code:** if an audio file fails to load, use the browser `speechSynthesis` API to read the caption text. This costs nothing and needs no files.
+## How the audio is made
+The clips are generated with the Kokoro text-to-speech model (voice `am_michael`) and stored in `db/voice.sqlite` (see `db/README.md` and `public/audio/CREDITS.md`). The site is static, so `python3 scripts/extract-voice-clips.py` copies the five intro clips into `public/audio/voice/` as `.m4a` files (AAC in an MP4 container). Chromium, WebKit and iPad Safari all play that format. A real family recording can replace any clip later: rebuild the database, run the extract script, and commit the files.
+
+If an audio file fails to load, the game falls back to the browser `speechSynthesis` API and still shows captions.
 
 ## File layout
 ```
-public/audio/voice/intro-01-welcome.mp3   (+ .ogg)
-public/audio/voice/intro-02-aim.mp3
-public/audio/voice/intro-03-two-shots.mp3
-public/audio/voice/intro-04-reload.mp3
-public/audio/voice/intro-05-wipeouts.mp3
+public/audio/voice/intro-01-welcome.m4a
+public/audio/voice/intro-02-aim.m4a
+public/audio/voice/intro-03-shoot-twice.m4a
+public/audio/voice/intro-04-reload.m4a
+public/audio/voice/intro-05-wipeouts-and-passing-the-screen.m4a
 src/data/introScript.ts                    (card title, caption sentences, audio file, duration)
 ```
+`durationMs` in `introScript.ts` is the real clip length, rounded to 100 ms. A test reads each file's MP4 header and fails if the two drift apart by more than 300 ms.
 Splitting by card lets the visuals change exactly when each card starts, and lets Skip jump card by card.
 
 ## Captions data shape
@@ -63,7 +64,7 @@ Splitting by card lets the visuals change exactly when each card starts, and let
 type IntroCard = {
   id: string;            // "aim"
   title: string;         // "Aim"
-  audio: string;         // "/audio/voice/intro-02-aim.mp3"
+  audio: string;         // "/audio/voice/intro-02-aim.m4a"
   fallbackText: string;  // full text for speechSynthesis
   captions: { text: string; startMs: number }[];
   art: string;           // illustration id from the design
