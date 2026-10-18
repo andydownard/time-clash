@@ -299,3 +299,79 @@ export const HIT_FX = {
   /** Small bounce when a fighter lands. */
   landBounce: 22,
 } as const;
+
+// ---------- Practice opponent (the "Computer player") ----------
+export type BotLevel = 'easy' | 'medium' | 'hard';
+export const BOT_LEVELS: readonly BotLevel[] = ['easy', 'medium', 'hard'];
+
+/** How one shooter aims and answers. The three levels and the scripted test player share this shape. */
+export type BotProfile = {
+  /** Spread (one standard deviation) of the angle error, in degrees. */
+  angleSpreadDeg: number;
+  /** Spread of the power error, in power points (0 to 100 scale). */
+  powerSpreadPct: number;
+  /** 0 ignores the wind, 1 reads it fully. */
+  windSkill: number;
+  /** Chance of a right reload answer on a grade 0 question (before the grade drop). */
+  reloadAccuracy: number;
+  /** Think time scale: 1 is a typical child. Bigger is slower. */
+  thinkScale: number;
+};
+
+export const PRACTICE_BOT = {
+  /** Off by default. The UI turns it on later, after the panel review. */
+  enabled: false,
+  /** Shown wherever the opponent appears. Never "bot", "AI" or "assistant". */
+  displayName: 'Computer player',
+  levels: {
+    easy: {
+      angleSpreadDeg: 7.5,
+      powerSpreadPct: 12,
+      windSkill: 0.3,
+      reloadAccuracy: 0.65,
+      thinkScale: 1.4,
+    },
+    medium: {
+      angleSpreadDeg: 5,
+      powerSpreadPct: 9,
+      windSkill: 0.6,
+      reloadAccuracy: 0.8,
+      thinkScale: 1,
+    },
+    hard: {
+      angleSpreadDeg: 2,
+      powerSpreadPct: 4,
+      windSkill: 0.9,
+      reloadAccuracy: 0.92,
+      thinkScale: 0.8,
+    },
+  } as Readonly<Record<BotLevel, BotProfile>>,
+  /** The "decent human" the simulation plays against. Not a level a child can pick. */
+  scriptedHuman: {
+    angleSpreadDeg: 4.5,
+    powerSpreadPct: 9,
+    windSkill: 0.5,
+    reloadAccuracy: 0.75,
+    thinkScale: 1,
+  } as BotProfile,
+  /** Aim search: coarse grid step, then a fine step around the best coarse cell. */
+  search: { angleStepDeg: 5, powerStep: 5, fineRadius: 4, fineStep: 1 },
+  reload: {
+    /** Chance drops by this much per grade level, so harder questions are missed more. */
+    gradeDrop: 0.015,
+    /** Never below a blind guess among four choices. */
+    floor: 0.25,
+    ceiling: 0.97,
+    /** Think time in ms: base, plus per grade, plus per reading kind, with random jitter on top. */
+    thinkBaseMs: 2500,
+    thinkPerGradeMs: 250,
+    thinkReadingExtraMs: 1500,
+    thinkJitterMs: 2000,
+    /** Never answer faster than this, so it does not feel instant. */
+    minDelayMs: 1800,
+    /** Never wait longer than this, so play is never slow. */
+    maxDelayMs: 14000,
+  },
+  /** Safety cap for simulated matches. A real match ends far sooner. */
+  maxSimTurns: 400,
+} as const;

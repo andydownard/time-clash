@@ -129,6 +129,13 @@ export const PAUSE = {
   leaveBody: 'Your match will end. You can start a new one at the Camp.',
 } as const;
 
+// ---------- Turn your iPad ----------
+export const TURN_SCREEN = {
+  title: 'Turn your iPad sideways',
+  body: 'Time Clash plays best on its side. Turn your iPad and your game waits for you.',
+  picture: 'A tablet turning on its side.',
+} as const;
+
 // ---------- Tap to Start ----------
 export const TAP_TO_START = {
   button: 'TAP TO PLAY',
