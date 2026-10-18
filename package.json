@@ -19,10 +19,13 @@
     "check:questions": "tsx scripts/check-questions.ts",
     "check:dist": "tsx scripts/check-dist.ts",
     "blind:export": "tsx scripts/blind-export.ts",
-    "blind:compare": "tsx scripts/blind-compare.ts"
+    "blind:compare": "tsx scripts/blind-compare.ts",
+    "relay": "tsx server/src/main.ts",
+    "relay:test": "vitest run server"
   },
   "dependencies": {
-    "phaser": "3.90.0"
+    "phaser": "3.90.0",
+    "ws": "8.22.0"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
@@ -30,6 +33,7 @@
     "@fontsource/orbitron": "5.3.0",
     "@playwright/test": "1.64.1",
     "@types/node": "22.20.5",
+    "@types/ws": "8.18.2",
     "@vitest/coverage-v8": "5.0.5",
     "eslint": "10.12.0",
     "globals": "17.13.0",
