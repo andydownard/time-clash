@@ -27,7 +27,7 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 - Wood plank and neon pod card skins, bigger castle and rocket pictures on Setup cards, brighter Tap to Play silhouettes with a visual gag, and bouncing victory blocks are new art.
 - Phase 2 base placement, biomes, and evasion abilities (docs/BUILD.md). The Camp Hub is built.
 - Camp scrap counter and saved scrap between matches. The Main board has no scrap counter, so it waits for Phase 3 and the Forge.
-- There are about 40 items per grade and subject. Families who play many rematches will see repeats. K-1 reading is all sight words.
+- There are about 40 items per grade and subject (grades K to 2 now have 62 to 70, with story and word-meaning questions added). Families who play many rematches will see repeats. Grades 3 to 12 still need more.
 - There is no way to end a match early and no setting for match length.
 - Parents must re-pick grades every time (Clear my data now fits on screen with a privacy line).
 - P2: Battle simplification, next steps. Health shows in both the top chips and the base pills, so one of them can go. The richer scenery and the unit picker on the Battle board belong to Phase 5 (Squads).
