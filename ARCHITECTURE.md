@@ -13,6 +13,9 @@ Browser
  └─ Storage wrapper (localStorage, try/catch)       src/storage/
 ```
 
+## Voice clips (content, not wired in yet)
+Read-aloud audio for questions and wipeout lines is pre-made offline and stored in SQLite files under `db/` (`voice-k4.sqlite` for grades K to 4). Each clip id is `t:` plus a 64-bit FNV-1a hash of the exact text (`src/audio/clipId.ts`), so the player can look a clip up from the text it would speak. The voice says a reworded form (`src/audio/toSpoken.ts`); captions and ids use the original text. The game makes no network calls for this and the databases are not in the web bundle. Details: `db/README.md`.
+
 ## Scene flow
 New family: TapToStart → Intro → Loading → Setup → Camp → (Deploy, Phase 2) → Battle → Victory → Rematch or Camp.
 Returning family (intro seen and players saved): Loading → Camp → Battle → Victory → Rematch or Camp. There is no Tap to Play screen for them. The first tap or key press anywhere unlocks sound (`boot.ts`), so nothing plays before a tap.
