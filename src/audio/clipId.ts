@@ -1,14 +1,7 @@
-// Stable id for a spoken clip: "t:" + FNV-1a 64-bit of the UTF-8 text with whitespace collapsed.
-// Shared contract with the voice database builder (scripts/build-voice-index.py). Keep both in step.
-const OFFSET = 0xcbf29ce484222325n;
-const PRIME = 0x100000001b3n;
-const MASK = 0xffffffffffffffffn;
-
+// Clip id: "t:" + FNV-1a 64-bit hex of the text, whitespace squeezed. Shared with the voice service.
 export function clipId(text: string): string {
-  const normal = text.split(/\s+/).filter(Boolean).join(' ');
-  let h = OFFSET;
-  for (const byte of new TextEncoder().encode(normal)) {
-    h = ((h ^ BigInt(byte)) * PRIME) & MASK;
-  }
+  const bytes = new TextEncoder().encode(text.split(/\s+/).filter(Boolean).join(' '));
+  let h = 0xcbf29ce484222325n;
+  for (const b of bytes) h = ((h ^ BigInt(b)) * 0x100000001b3n) & 0xffffffffffffffffn;
   return `t:${h.toString(16).padStart(16, '0')}`;
 }

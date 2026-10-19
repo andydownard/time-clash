@@ -4,7 +4,7 @@
 //   pass screen -> ready() -> banner -> setAim/fire() -> animate path -> shotLanded()
 //   -> (tumble, bubble) -> ... -> pickQuestion -> showReloadModal -> reloadDone() -> pass()
 import type { AudioManager } from '../../audio/types';
-import { DEFAULT_UNIT, unitById, unitsOf, type UnitId } from '../../game/units';
+import { firingOrigin, unitById, unitsOf, type UnitId } from '../../game/units';
 import { kindForRole } from './projectileKinds';
 import { RNG_SALT, TEAM_FACING, TURN } from '../../game/config';
 import { simulateShot } from '../../game/ballistics';
@@ -46,7 +46,7 @@ export type FlowDeps = {
   >;
   view: BattleView;
   audio?: Pick<AudioManager, 'playSfx' | 'speak'> &
-    Partial<Pick<AudioManager, 'setMusicTeam' | 'stopMusic'>>;
+    Partial<Pick<AudioManager, 'setMusicTeam' | 'stopMusic' | 'clipsEnabled'>>;
   bank: QuestionBank;
   history: PickHistory;
   onHistory?: (history: PickHistory) => void;
@@ -202,6 +202,12 @@ export class BattleFlow {
       this.live();
       const text = bubbleText(outcome);
       if (text) {
+        // The funny line is also spoken when the voice service is set up. The bubble is its
+        // caption. A new fall stops the old line (one voice at a time). Muted stays silent.
+        if (audio?.clipsEnabled) {
+          const durationMs = Math.max(1500, text.split(/\s+/).length * 450);
+          audio.speak({ id: 'tumble-line', text, captions: [{ text, startMs: 0 }], durationMs });
+        }
         this.deps.overlay.showSpeechBubble({
           text,
           team: tumbler,
@@ -394,6 +400,7 @@ export class BattleFlow {
       wind: s.wind,
       shotsLeft,
       aim,
+      firingOrigin: this.originFor(team),
     };
     view.syncStatus(status);
   }
@@ -412,11 +419,10 @@ export class BattleFlow {
     view.showPreview(team, previewDots(sim.path));
   }
 
-  /** Same rule as match.fire(): the default fighter keeps the layout launcher. */
+  /** Same function match.fire() uses, so the preview and the guide start at the real muzzle. */
   private originFor(team: Team) {
     const { match } = this.deps;
-    const unit = unitById(match.snapshot().selected[team]);
-    return !unit || unit.id === DEFAULT_UNIT[team] ? match.layout.launchOrigins[team] : unit.origin;
+    return firingOrigin(team, match.snapshot().selected[team], match.layout);
   }
 
   // ---------- helpers ----------

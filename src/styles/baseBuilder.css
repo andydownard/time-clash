@@ -1,0 +1,532 @@
+/* Base builder screen and the Camp thumbnail. Kept in its own file so it merges cleanly.
+   Tokens only: no raw colors, no font under 20px (tests/ui/baseBuilder.test.ts checks both). */
+
+.tc-bb {
+    padding: var(--tc-s-3) var(--tc-s-4) var(--tc-s-3);
+  align-items: stretch;
+  gap: var(--tc-s-3);
+  overflow: hidden;
+  background: linear-gradient(var(--tc-purple-900), var(--tc-ink-deep));
+  -webkit-user-select: none;
+  user-select: none;
+}
+.tc-bb[data-team='FUTURE'] {
+  background: linear-gradient(var(--tc-blue-900), var(--tc-ink-deep));
+}
+.tc-bb-top {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--tc-s-4);
+  /* The fixed ? and gear buttons sit at the top left, so Back starts to their right. */
+  padding-left: var(--tc-chrome-clear);
+}
+.tc-bb-back {
+  align-self: center;
+  white-space: nowrap;
+}
+.tc-bb-slots {
+  display: flex;
+  gap: var(--tc-s-2);
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.tc-bb-slot {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tc-s-2);
+  padding: var(--tc-s-1) var(--tc-s-2);
+  background: var(--tc-parchment-warm);
+  color: var(--tc-ink-deep);
+  border: 4px solid var(--tc-purple-700);
+  border-radius: 20px 20px 8px 8px;
+  font-family: var(--tc-font-voice-old);
+  font-size: var(--tc-fs-button);
+  line-height: 1;
+  cursor: pointer;
+  white-space: nowrap;
+  touch-action: manipulation;
+}
+.tc-bb[data-team='FUTURE'] .tc-bb-slot {
+  font-family: var(--tc-font-voice-new);
+  font-size: var(--tc-fs-label);
+  font-weight: var(--tc-fw-new-heavy);
+  border-color: var(--tc-blue-500);
+}
+.tc-bb-slot[aria-pressed='true'] {
+  background: var(--tc-ember);
+  border: 5px solid var(--tc-ink-deep);
+  box-shadow: 0 0 0 4px var(--tc-purple-700);
+}
+.tc-bb-slot.is-empty {
+  background: var(--tc-ink-deep);
+  color: var(--tc-parchment-warm);
+  border: 4px dashed var(--tc-parchment-warm);
+}
+.tc-bb-slot.is-empty[aria-pressed='true'] {
+  background: var(--tc-ember);
+  color: var(--tc-ink-deep);
+  border-style: solid;
+  border-color: var(--tc-ink-deep);
+}
+.tc-bb-thumb {
+  width: 56px;
+  height: 28px;
+  flex: none;
+  border-radius: 4px;
+  border: 2px solid var(--tc-ink-deep);
+}
+.tc-bb-scrap {
+  margin: 0;
+  align-self: center;
+  padding: var(--tc-s-2) var(--tc-s-3);
+  border: 3px solid var(--tc-ember);
+  border-radius: 12px;
+  background: var(--tc-ink-deep);
+  color: var(--tc-parchment-warm);
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: var(--tc-text-min);
+  white-space: nowrap;
+}
+.tc-bb-scrap-n {
+  color: var(--tc-ember);
+}
+
+.tc-bb-main {
+  flex: 1 1 0;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 156px;
+  gap: var(--tc-s-3);
+}
+.tc-bb-plot {
+  position: relative;
+  min-height: 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tc-bb-plot-art {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  aspect-ratio: 2 / 1;
+  border-radius: 22px;
+  border: 6px solid var(--tc-ink-deep);
+  box-shadow: 0 0 0 3px var(--tc-ember);
+  touch-action: none;
+  background: var(--tc-ink-deep);
+}
+.tc-bb-piece {
+  cursor: grab;
+}
+.tc-bb-piece:focus-visible {
+  outline: var(--tc-focus-width) solid var(--tc-focus-on-dark);
+  outline-offset: 2px;
+}
+.tc-bb-piece[data-selected] {
+  filter: drop-shadow(0 0 8px var(--tc-ember));
+}
+.tc-bb-confirm {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  max-width: 90%;
+  padding: var(--tc-s-4) var(--tc-s-5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--tc-s-3);
+  background: var(--tc-ink-deep);
+  color: var(--tc-parchment-warm);
+  border: 4px solid var(--tc-ember);
+  border-radius: var(--tc-r-card);
+  font-size: var(--tc-fs-body);
+  text-align: center;
+}
+.tc-bb-confirm p {
+  margin: 0;
+}
+
+.tc-bb-tools {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tc-s-2);
+  min-height: 0;
+}
+.tc-bb-tool {
+  flex: 1 1 0;
+  min-height: 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tc-s-1);
+  padding: var(--tc-s-1);
+  background: var(--tc-parchment-warm);
+  color: var(--tc-ink-deep);
+  border: 4px solid var(--tc-purple-700);
+  border-radius: 18px;
+  box-shadow: 0 5px 0 var(--tc-purple-900);
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: var(--tc-fs-label);
+  white-space: nowrap;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.tc-bb-tool svg {
+  width: 32px;
+  height: 32px;
+  flex: none;
+}
+.tc-bb-tool[aria-disabled='true'] {
+  opacity: 0.55;
+}
+.tc-bb-tool-clear {
+  border-color: var(--tc-banner-red);
+}
+.tc-bb-tool[aria-pressed='true'] {
+  background: var(--tc-blue-100);
+}
+.tc-bb-done {
+  flex: 1.6 1 0;
+  background: var(--tc-ember);
+  border: 5px solid var(--tc-ink-deep);
+  box-shadow:
+    0 0 0 4px var(--tc-purple-700),
+    0 0 24px var(--tc-ember);
+  font-size: var(--tc-fs-button);
+}
+.tc-bb-done svg {
+  width: 48px;
+  height: 48px;
+}
+.tc-bb-tool:active {
+  transform: translateY(2px);
+}
+
+.tc-bb-hint {
+  margin: 0;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  padding: 0 var(--tc-s-4);
+  background: var(--tc-ink-deep);
+  color: var(--tc-parchment-warm);
+  border: 3px solid var(--tc-ember);
+  border-radius: 14px;
+  font-family: var(--tc-font-voice-old);
+  font-size: var(--tc-fs-lead);
+}
+.tc-bb[data-team='FUTURE'] .tc-bb-hint {
+  font-family: var(--tc-font-voice-new);
+  font-size: var(--tc-fs-label);
+}
+
+.tc-bb-tray {
+  display: flex;
+  gap: var(--tc-s-2);
+  padding: var(--tc-s-2) var(--tc-s-3);
+  overflow-x: auto;
+  background: var(--tc-ink-deep);
+  border: 4px solid var(--tc-purple-700);
+  border-radius: 22px;
+  box-shadow: 0 0 0 3px var(--tc-ember);
+}
+.tc-bb-brick {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 88px;
+  min-height: 112px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--tc-s-1) var(--tc-s-1) var(--tc-s-2);
+  background: var(--tc-parchment-warm);
+  color: var(--tc-ink-deep);
+  border: 4px solid var(--tc-purple-700);
+  border-radius: 16px;
+  font-family: var(--tc-font-voice-old);
+  font-size: var(--tc-fs-label);
+  line-height: 1;
+  white-space: nowrap;
+  cursor: grab;
+  touch-action: none;
+}
+.tc-bb[data-team='FUTURE'] .tc-bb-brick {
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  border-color: var(--tc-blue-500);
+}
+.tc-bb-brick[aria-pressed='true'] {
+  background: var(--tc-ember);
+  border: 5px solid var(--tc-ink-deep);
+  box-shadow:
+    0 0 0 4px var(--tc-purple-700),
+    0 0 20px var(--tc-purple-700);
+}
+.tc-bb-brick[data-state='locked'] {
+  background: var(--tc-steel-blue);
+  border-style: dashed;
+  cursor: pointer;
+}
+.tc-bb-brick[data-state='locked'] .tc-bb-icon {
+  opacity: 0.6;
+}
+.tc-bb-lock {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+}
+.tc-bb-icon {
+  display: block;
+  pointer-events: none;
+}
+.tc-bb-brick-name {
+  pointer-events: none;
+}
+.tc-bb-ghost {
+  position: fixed;
+  z-index: 200;
+  pointer-events: none;
+  opacity: 0.8;
+}
+.tc-bb-ghost-art {
+  display: block;
+}
+
+/* Camp: a small picture of the chosen base above its Build button. */
+.tc-camp-base {
+  width: 168px;
+  height: 84px;
+  border: 4px solid var(--tc-ember);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--tc-ink-deep);
+}
+.tc-camp-base .tc-bb-thumb {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+}
+
+[data-motion='reduced'] .tc-bb-tool:active {
+  transform: none;
+}
+
+/* Weapon spots: the mode switch, the spots chip, the pads on the plot, and the weapon list. */
+.tc-bb-modebar {
+  position: absolute;
+  top: var(--tc-s-3);
+  left: var(--tc-s-3);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--tc-s-3);
+}
+.tc-bb-mode {
+  display: flex;
+  overflow: hidden;
+  background: var(--tc-parchment-warm);
+  border: 4px solid var(--tc-purple-700);
+  border-radius: 20px;
+}
+.tc-bb[data-team='FUTURE'] .tc-bb-mode {
+  border-color: var(--tc-blue-500);
+}
+.tc-bb-mode-btn {
+  min-width: 56px;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tc-s-2);
+  padding: 0 var(--tc-s-3);
+  background: transparent;
+  color: var(--tc-ink-deep);
+  border: 0;
+  font-family: var(--tc-font-voice-old);
+  font-size: var(--tc-fs-label);
+  line-height: 1;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.tc-bb[data-team='FUTURE'] .tc-bb-mode-btn {
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+}
+.tc-bb-mode-btn[aria-pressed='true'] {
+  background: var(--tc-ember);
+}
+.tc-bb-mode-btn:focus-visible {
+  outline: var(--tc-focus-width) solid var(--tc-ink-deep);
+  outline-offset: -6px;
+}
+.tc-bb-chip {
+  margin: 0;
+  padding: var(--tc-s-2) var(--tc-s-3);
+  background: var(--tc-ink-deep);
+  color: var(--tc-parchment-warm);
+  border: 3px solid var(--tc-ember);
+  border-radius: 12px;
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: var(--tc-text-min);
+  white-space: nowrap;
+}
+
+.tc-bb-spot[data-live='true'] {
+  cursor: pointer;
+}
+.tc-bb-spot[data-live='false'] {
+  pointer-events: none;
+  opacity: 0.85;
+}
+.tc-bb-spot:focus {
+  outline: none;
+}
+.tc-bb-spot:focus-visible .tc-bb-spot-hit {
+  stroke: var(--tc-focus-on-dark);
+  stroke-width: 6px;
+  stroke-dasharray: 10 6;
+}
+.tc-bb-spot[data-selected] {
+  filter: drop-shadow(0 0 8px var(--tc-ember));
+}
+.tc-bb-spot-n {
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: 24px;
+}
+.tc-bb[data-mode='weapons'] .tc-bb-piece {
+  cursor: default;
+}
+
+.tc-bb-weapons {
+  position: absolute;
+  top: var(--tc-s-3);
+  width: min(264px, 34%);
+  max-height: calc(100% - var(--tc-s-3) * 2);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: var(--tc-s-1);
+  padding: var(--tc-s-2);
+  overflow-y: auto;
+  background: var(--tc-ink-deep);
+  border: 4px solid var(--tc-ember);
+  border-radius: 18px;
+  box-shadow: 0 8px 0 rgb(0 0 0 / 35%);
+}
+.tc-bb-weapons[data-side='right'] {
+  right: var(--tc-s-3);
+}
+/* On the left it starts under the mode switch, which sits at the top left. */
+.tc-bb-weapons[data-side='left'] {
+  top: calc(var(--tc-s-3) + 72px);
+  max-height: calc(100% - var(--tc-s-3) * 2 - 72px);
+  left: var(--tc-s-3);
+}
+.tc-bb-weapons-title {
+  margin: 0;
+  color: var(--tc-parchment-warm);
+  font-family: var(--tc-font-voice-old);
+  font-weight: 400;
+  font-size: var(--tc-text-min);
+  line-height: 1.1;
+}
+.tc-bb[data-team='FUTURE'] .tc-bb-weapons-title {
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+}
+/* On a short screen the status line under the plot already says "Spot N chosen. Pick a weapon
+   for it.", so the title steps aside and the whole list fits beside the spot. */
+@media (max-height: 790px) {
+  .tc-bb-weapons-title {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .tc-bb-weapons {
+    gap: 2px;
+  }
+}
+.tc-bb-weapons-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.tc-bb-weapon {
+  position: relative;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  gap: var(--tc-s-2);
+  padding: 0 var(--tc-s-2);
+  background: var(--tc-parchment-warm);
+  color: var(--tc-ink-deep);
+  border: 4px solid var(--tc-purple-700);
+  border-radius: 12px;
+  font-family: var(--tc-font-voice-old);
+  font-size: var(--tc-fs-label);
+  line-height: 1;
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.tc-bb[data-team='FUTURE'] .tc-bb-weapon {
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  border-color: var(--tc-blue-500);
+}
+.tc-bb-weapon:focus-visible {
+  outline: var(--tc-focus-width) solid var(--tc-focus-on-dark);
+  outline-offset: 2px;
+}
+.tc-bb-weapon[data-state='on'] {
+  background: var(--tc-ember);
+  border-color: var(--tc-ink-deep);
+}
+.tc-bb-weapon[data-state='locked'] {
+  background: var(--tc-steel-blue);
+  border-style: dashed;
+}
+.tc-bb-weapon[data-state='locked'] .tc-bb-weapon-icon {
+  opacity: 0.6;
+}
+.tc-bb-weapon-icon {
+  flex: none;
+  width: 40px;
+  height: 40px;
+}
+.tc-bb-weapon-words {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.tc-bb-weapon-clear {
+  justify-content: center;
+  background: var(--tc-parchment-warm);
+  border-color: var(--tc-banner-red);
+}
+.tc-bb-weapon-clear[aria-disabled='true'] {
+  opacity: 0.55;
+}
+.tc-bb[data-mode='weapons'] .tc-bb-tray {
+  opacity: 0.45;
+}

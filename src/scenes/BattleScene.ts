@@ -6,7 +6,7 @@ import Phaser from 'phaser';
 import { BALLISTICS, HIT_FX, WORLD } from '../game/config';
 import type { AimInput, BattleLayout, Rect, ShotResult, Team, Vec2 } from '../game/types';
 import { drawBackdrop, type Backdrop } from './battle/backdrop';
-import { createAimArt, type AimArt } from './battle/aimArt';
+import { createAimArt, type AimArt, type AimArtState } from './battle/aimArt';
 import { effectColor, floatLabel, playDamagePip, playFade } from './battle/effects';
 import { createDamageArt, damageStage, type DamageArt } from './battle/damageArt';
 import {
@@ -206,7 +206,7 @@ export class BattleScene extends Phaser.Scene implements BattleView {
       if (status.baseHp[t] > 0 && this.blownUp[t]) this.restoreBase(t);
     }
     this.lastAim = status.aim;
-    this.aimArt.show(this.dragHandler ? status.activeTeam : null, status.aim);
+    this.aimArt.show(this.dragHandler ? status.activeTeam : null, status.aim, status.firingOrigin);
   }
 
   /** Point the marker at this team's chosen fighter. */
@@ -254,7 +254,7 @@ export class BattleScene extends Phaser.Scene implements BattleView {
     this.dragHandler = handler;
     if (!handler) {
       this.aimArt.pointerUp();
-      this.aimArt.show(null, this.lastAim);
+      this.aimArt.show(null, this.lastAim, this.lastStatus?.firingOrigin);
     }
   }
 
@@ -465,13 +465,16 @@ export class BattleScene extends Phaser.Scene implements BattleView {
   }
 
   /** Read by the e2e hook (never in production). */
+  aimState = (): AimArtState => this.aimArt.state();
+
+  /** Read by the e2e hook (never in production). */
   labels: LabelScaler | null = null;
 
   private refreshLabels = (): void => {
     this.labels?.refresh();
     this.statusArt?.relayout();
     const s = this.lastStatus;
-    if (s) this.aimArt?.show(this.dragHandler ? s.activeTeam : null, this.lastAim);
+    if (s) this.aimArt?.show(this.dragHandler ? s.activeTeam : null, this.lastAim, s.firingOrigin);
   };
 
   /** A world font size that still draws at the 20px floor on this screen. */

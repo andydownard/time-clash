@@ -1,3 +1,5 @@
+import type { ClipPlayer } from './clipPlayer';
+
 // Shared contract for sound. Risk 5 in AGENTS.md: no sound before a tap, captions on
 // every spoken line, Skip/Replay/Mute always work.
 
@@ -68,6 +70,9 @@ export type SpeakOptions = {
  * - Muted: playSfx is a no-op; speak runs 'silent' (captions still show).
  * - Only one voice line at a time. A new speak() stops the old one.
  * - Missing or failing audio file: fall back to speechSynthesis, then to 'silent'.
+ * - Order for a line: its own audioSrc file, else a clip from the voice service (when set up),
+ *   else speechSynthesis. A clip that errors, 404s or is slow to start falls back at once and
+ *   is not asked for again this session.
  */
 export interface AudioManager {
   /** Call from the first user gesture. Idempotent. Resolves even if WebAudio is missing. */
@@ -99,12 +104,16 @@ export interface AudioManager {
   setPageHidden(hidden: boolean): void;
   speak(line: VoiceLine, options?: SpeakOptions): SpeechHandle;
   stopSpeech(): void;
+  /** True when spoken clips come from the voice service (VITE_VOICE_URL is set). */
+  readonly clipsEnabled: boolean;
 }
 
 /** Browser pieces the manager needs. Inject fakes in tests (Vitest runs in node). */
 export type AudioEnv = {
   createAudioContext?: () => AudioContext | null;
   createAudioElement?: (src: string) => HTMLAudioElement | null;
+  /** Spoken clips from the voice service. Missing or disabled: lines use files or speech only. */
+  clips?: ClipPlayer;
   speechSynthesis?: SpeechSynthesis | null;
   createUtterance?: (text: string) => SpeechSynthesisUtterance;
   setTimeout: (fn: () => void, ms: number) => unknown;

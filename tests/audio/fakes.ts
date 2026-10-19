@@ -1,4 +1,5 @@
 // Shared fakes for audio and UI tests. A manual clock replaces real timers, so tests repeat.
+import type { ClipPlayer } from '../../src/audio/clipPlayer';
 import type { AudioEnv } from '../../src/audio/types';
 
 export type FakeClock = {
@@ -164,6 +165,9 @@ export class FakeAudioElement {
   paused = false;
   onended: (() => void) | null = null;
   onerror: (() => void) | null = null;
+  onplaying: (() => void) | null = null;
+  onloadedmetadata: (() => void) | null = null;
+  duration = NaN;
   playResult: 'ok' | 'reject' = 'ok';
   constructor(src: string) {
     this.src = src;
@@ -192,6 +196,7 @@ export function createHarness(
     noSpeech?: boolean;
     noElement?: boolean;
     elementResult?: 'ok' | 'reject';
+    clips?: ClipPlayer;
   } = {},
 ): Harness {
   const clock = createClock();
@@ -214,6 +219,7 @@ export function createHarness(
           elements.push(el);
           return el as unknown as HTMLAudioElement;
         },
+    ...(opts.clips ? { clips: opts.clips } : {}),
     speechSynthesis: opts.noSpeech ? null : (speech as unknown as SpeechSynthesis),
     createUtterance: (text) =>
       ({ text, onend: null, onerror: null }) as unknown as SpeechSynthesisUtterance,

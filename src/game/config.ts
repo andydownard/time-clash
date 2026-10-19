@@ -375,3 +375,66 @@ export const PRACTICE_BOT = {
   /** Safety cap for simulated matches. A real match ends far sooner. */
   maxSimTurns: 400,
 } as const;
+
+// ---------- Base builder ----------
+/**
+ * Before a battle a player builds a castle (Team Past) or a base (Team Future) from bricks on a
+ * grid. Off by default until the panel has reviewed it. `?builder=1` in the address turns it on
+ * for a try-out (see `baseBuilderOn` in baseBuilder.ts).
+ */
+export const BASE_BUILDER = {
+  enabled: false,
+  /** The query-string switch that turns it on without changing this file. */
+  queryParam: 'builder',
+  /** The build plot in grid cells. The bottom `groundRows` rows are the foundation (not buildable). */
+  cols: 24,
+  rows: 12,
+  groundRows: 1,
+  /** One cell is this many steps wide when Snap is off. A free brick sits on this finer grid. */
+  freeSteps: 8,
+  /** Saved bases each player keeps for each side. */
+  slots: 3,
+  /** Most player names whose saved bases we keep. */
+  maxPlayers: 50,
+  /** Most bricks in one base, so a saved base stays small. */
+  maxPieces: 60,
+  /** Steps Undo can go back. */
+  undoDepth: 50,
+  /** How far (in cells) Turn looks for a free spot when a turned brick would overlap. */
+  turnSearchRadius: 3,
+  /** Scrap to unlock a locked piece, by piece id. */
+  pieceScrap: {
+    arch: 6,
+    gate: 10,
+    flag: 4,
+    laserBase: 8,
+    hangarDoor: 10,
+    powerCore: 6,
+  } as Readonly<Record<string, number>>,
+  /** Brick strength in hit points, kept in the save for the battle task. */
+  hp: { light: 10, small: 20, medium: 35, large: 50 },
+  /** Weapon spots: round pads on the base where a weapon can be mounted. */
+  spots: {
+    count: 4,
+    /** Pad radius in free steps (a pad is about one and a quarter cells wide). */
+    padSteps: 5,
+    /** The lowest a pad may sit, in cells from the top, so the mode switch never covers one. */
+    topRows: 2,
+    /** With no bricks, pads sit in a row on the foundation across these columns. */
+    rowFromCol: 6,
+    rowToCol: 18,
+    /** The smallest pad tap area on screen, in pixels (AGENTS.md: 56px targets). */
+    tapPx: 56,
+  },
+  /** Weapons that can be mounted on a spot. `scrap` null means owned from the start. */
+  spotWeapons: [
+    { id: 'cannon', team: 'PAST', name: 'Cannon', scrap: null, role: 'direct', damage: 20, hp: 30 },
+    { id: 'catapult', team: 'PAST', name: 'Catapult', scrap: null, role: 'lob', damage: 25, hp: 25 },
+    { id: 'archerPost', team: 'PAST', name: 'Archer post', scrap: null, role: 'volley', damage: 10, hp: 20 },
+    { id: 'ballista', team: 'PAST', name: 'Ballista', scrap: 35, role: 'direct', damage: 35, hp: 30 },
+    { id: 'laser', team: 'FUTURE', name: 'Laser', scrap: null, role: 'direct', damage: 20, hp: 30 },
+    { id: 'missilePod', team: 'FUTURE', name: 'Missile pod', scrap: null, role: 'lob', damage: 25, hp: 25 },
+    { id: 'turret', team: 'FUTURE', name: 'Turret', scrap: null, role: 'volley', damage: 10, hp: 20 },
+    { id: 'shieldGen', team: 'FUTURE', name: 'Shield generator', scrap: 35, role: 'guard', damage: 0, hp: 40 },
+  ],
+} as const;

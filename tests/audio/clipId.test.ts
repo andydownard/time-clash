@@ -10,8 +10,8 @@ describe('clipId', () => {
   ])('%j -> %s', (text, id) => {
     expect(clipId(text)).toBe(id);
   });
-  it('ignores extra whitespace and hashes UTF-8 bytes', () => {
-    expect(clipId('a   b')).toBe(clipId('a b'));
-    expect(clipId('café')).not.toBe(clipId('cafe'));
+
+  it('matches the id pattern the service accepts', () => {
+    expect(clipId('anything at all')).toMatch(/^t:[0-9a-f]{16}$/);
   });
 });

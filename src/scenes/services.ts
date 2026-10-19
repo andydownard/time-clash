@@ -1,5 +1,6 @@
 // Builds the services every scene shares. Browser pieces are injected so tests can fake them.
 import { createAudioManager } from '../audio/audioManager';
+import { createClipPlayer } from '../audio/clipPlayer';
 import type { AudioEnv } from '../audio/types';
 import { createStorage, loadSettings, saveAudioSettings } from '../storage/storage';
 import type { TypedStorage } from '../storage/types';
@@ -26,8 +27,10 @@ type AudioWindow = Partial<
 const isAutomated = (win: AudioWindow): boolean => win.navigator?.webdriver === true;
 
 /** Nothing here makes sound. The AudioManager only calls these after the first tap. */
-export function createBrowserAudioEnv(win: AudioWindow): AudioEnv {
+export function createBrowserAudioEnv(win: AudioWindow, voiceUrl?: string): AudioEnv {
   return {
+    // Spoken clips come from the voice service only when VITE_VOICE_URL is set (docs/VOICE_SERVICE.md).
+    clips: createClipPlayer(voiceUrl),
     createAudioContext: () => {
       const Ctor = win.AudioContext ?? win.webkitAudioContext;
       if (!Ctor) return null;
@@ -60,6 +63,8 @@ export type ServiceOptions = {
   entropy?: () => number;
   seeds?: SeedSource;
   faults?: LoadFaults;
+  /** Address of the voice service. Default: VITE_VOICE_URL. Empty or unset turns clips off. */
+  voiceUrl?: string;
 };
 
 const defaultLoadBank = async (): Promise<QuestionBank> => (await import('../questions/bank')).BANK;
@@ -82,7 +87,7 @@ export function createServices(opts: ServiceOptions): {
   const storage = opts.storage ?? createStorage();
   const settings = loadSettings(storage);
   const audio = createAudioManager(
-    createBrowserAudioEnv(opts.win),
+    createBrowserAudioEnv(opts.win, opts.voiceUrl ?? import.meta.env.VITE_VOICE_URL),
     { muted: settings.muted, volume: settings.volume, musicOn: settings.musicOn },
     (state) => saveAudioSettings(storage, state),
   );
