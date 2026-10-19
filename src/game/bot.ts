@@ -12,7 +12,7 @@ import {
 import { DEFAULT_EFFECTS, type MatchEffects } from './loadout';
 import { otherTeam } from './types';
 import type { AimInput, BattleLayout, Match, Rect, Rng, Team, Vec2 } from './types';
-import { DEFAULT_UNIT, unitById, type UnitId } from './units';
+import { DEFAULT_UNIT, firingOrigin, unitById, type UnitId } from './units';
 
 export type BotShot = AimInput & { unit: UnitId };
 
@@ -123,7 +123,7 @@ export const chooseShotWith = (
   const unitId = state.selected[side] ?? DEFAULT_UNIT[side];
   const unit =
     unitById(unitId) ?? (unitById(DEFAULT_UNIT[side]) as NonNullable<ReturnType<typeof unitById>>);
-  const origin = unit.id === DEFAULT_UNIT[side] ? layout.launchOrigins[side] : unit.origin;
+  const origin = firingOrigin(side, unit.id, layout);
   const speedScale = effects[side].speedScale * unit.speedScale;
   // The bot reads only a share of the wind, like a child who half-notices the arrows.
   const seenWind = state.wind * profile.windSkill;
