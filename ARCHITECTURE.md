@@ -17,6 +17,9 @@ App server (one Node process on Railway)            app-server/, voice-server/
  └─ GET /v1/clips/:id from db/voice-*.sqlite        voice-server/clips.ts (read-only)
 ```
 
+## Voice clips (content)
+Read-aloud audio for questions and wipeout lines is pre-made offline and stored in SQLite files under `db/` (`voice-k4.sqlite` for grades K to 4). Each clip id is `t:` plus a 64-bit FNV-1a hash of the exact text (`src/audio/clipId.ts`), so the player can look a clip up from the text it would speak. The voice says a reworded form (`src/audio/toSpoken.ts`); captions and ids use the original text. The app server serves them (next section) and the databases are not in the web bundle. Details: `db/README.md`.
+
 ## App server and voice clips
 `app-server/` is a small Node server (`node:http` only) that serves the built site and the recorded lines on one origin: `GET /v1/clips/:id`, `GET /health`, static files with cache headers, compression and Range support. The exact security headers come from `public/_headers`. The game asks for clips only in a build made with `VITE_VOICE=on` (production and e2e builds). `speak(line)` picks the line's own `audioSrc` file, then a clip (`src/audio/clipPlayer.ts`, id from `src/audio/clipId.ts`), then the browser voice. A clip that fails or takes over 1.5 s falls back at once and is not asked for again that session. The funny knock-down line is also spoken through `speak()` when clips are on. The Phase 4 relay will mount at `/ws` in the same process. Full contract, env, and Railway cutover and rollback: [docs/APP_SERVER.md](./docs/APP_SERVER.md).
 

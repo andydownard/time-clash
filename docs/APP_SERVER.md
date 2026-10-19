@@ -46,7 +46,7 @@ Note for the cutover: the old Caddy host ignored `_headers`, so production sent 
 - `GET /v1/clips/:id` returns the bytes: `Content-Type: audio/mp4`, `Accept-Ranges: bytes`, `Content-Length`, `Cache-Control: public, max-age=31536000, immutable` (ids are content hashes). `206` with `Content-Range` for a Range request, `416` past the end.
 - `404` unknown id. `400` for a bad id or any query string. `405` for methods other than GET and HEAD. `429` after 120 clip requests a minute from one IP (in memory; behind Railway's proxy the last `X-Forwarded-For` entry). The limit covers clips only, not the site.
 
-Heads up: the repo's `db/voice.sqlite` has a different table (`voice_clips`) and a name the store ignores. There is no `db/voice-*.sqlite` yet, so `/health` shows `clips: 0` and every clip request is a `404` until one is committed. The game handles that (browser voice).
+The repo ships `db/voice-k4.sqlite` (grades K to 4). `db/voice.sqlite` (the original five intro cards and knock-down lines) uses a different table and a name the store ignores, so it is not served.
 
 ## What it keeps and logs
 
