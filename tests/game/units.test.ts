@@ -11,7 +11,7 @@ import {
   WORLD,
 } from '../../src/game/config';
 import { classifyBlast } from '../../src/game/damage';
-import { DEFAULT_UNIT, UNITS, unitById, unitsOf } from '../../src/game/units';
+import { DEFAULT_UNIT, UNITS, firingOrigin, unitById, unitsOf } from '../../src/game/units';
 import { TEAMS, otherTeam } from '../../src/game/types';
 import { windForTurn } from '../../src/game/wind';
 
@@ -138,5 +138,32 @@ describe('every fighter can score a direct hit on the enemy base', () => {
       expect(found, `${u.id} at wind ${wind}`).toBe(true);
     }
     expect(DAMAGE.directRadius).toBeGreaterThan(0);
+  });
+});
+
+describe('firingOrigin', () => {
+  const layout = { launchOrigins: LAUNCH_ORIGINS };
+  it('gives the default fighter the layout launcher, even if the layout moves it', () => {
+    for (const team of TEAMS) {
+      expect(firingOrigin(team, DEFAULT_UNIT[team], layout)).toEqual(LAUNCH_ORIGINS[team]);
+      const moved = { launchOrigins: { ...LAUNCH_ORIGINS, [team]: { x: 7, y: 9 } } };
+      expect(firingOrigin(team, DEFAULT_UNIT[team], moved)).toEqual({ x: 7, y: 9 });
+    }
+  });
+  it('gives every other fighter its own spot (balloon, archer, catapult, spear, helicopter, bunkers, saber, laser)', () => {
+    for (const u of UNITS) {
+      if (u.id === DEFAULT_UNIT[u.team]) continue;
+      expect(firingOrigin(u.team, u.id, layout)).toEqual(u.origin);
+    }
+  });
+  it('keeps the mirrored facing: Past fires from the left half, Future from the right', () => {
+    for (const u of UNITS) {
+      const o = firingOrigin(u.team, u.id, layout);
+      expect(TEAM_FACING[u.team] === 1 ? o.x < WORLD.width / 2 : o.x > WORLD.width / 2).toBe(true);
+    }
+  });
+  it('falls back to the launcher for an unknown fighter or one from the other team', () => {
+    expect(firingOrigin('PAST', 'nope', layout)).toEqual(LAUNCH_ORIGINS.PAST);
+    expect(firingOrigin('PAST', '2', layout)).toEqual(LAUNCH_ORIGINS.PAST);
   });
 });
