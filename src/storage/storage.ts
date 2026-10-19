@@ -9,6 +9,7 @@ import {
   type TeamLoadout,
   type Wallet,
 } from '../game/loadout';
+import { DEFAULT_PRACTICE, isBotLevel, type PracticeChoice } from '../game/practice';
 import type { Grade, Player, Players, Subject, Team } from '../game/types';
 import { FORGE, WEAPONS, type WeaponId } from '../game/weapons';
 import { UPGRADES, UPGRADE_MAX_LEVEL, type UpgradeId } from '../game/upgrades';
@@ -246,6 +247,17 @@ export function loadLevels(storage: TypedStorage): Levels {
   return storage.get('timeclash.levels') ?? {};
 }
 
+function parsePractice(v: unknown): PracticeChoice | null {
+  if (!isObject(v)) return null;
+  if (v.opponent !== 'person' && v.opponent !== 'computer') return null;
+  return { opponent: v.opponent, level: isBotLevel(v.level) ? v.level : DEFAULT_PRACTICE.level };
+}
+
+/** The saved Play with choice, or null when nothing (or junk) is saved. Never throws. */
+export function loadPractice(storage: TypedStorage): PracticeChoice | null {
+  return storage.get('timeclash.practice');
+}
+
 /** Each key has a shape guard. It returns the clean value, or null if the shape is wrong. */
 const GUARDS: { [K in StorageKey]: (v: unknown) => StorageSchema[K] | null } = {
   'timeclash.players': parsePlayers,
@@ -254,6 +266,7 @@ const GUARDS: { [K in StorageKey]: (v: unknown) => StorageSchema[K] | null } = {
   'timeclash.history': parseHistory,
   'timeclash.camp': parseCamp,
   'timeclash.levels': parseLevels,
+  'timeclash.practice': parsePractice,
 };
 
 function defaultBacking(): BackingStore | null {

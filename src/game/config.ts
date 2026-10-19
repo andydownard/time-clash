@@ -109,6 +109,8 @@ export const RNG_SALT = {
   bubbles: 0x42554242,
   questions: 0x51554553,
   lines: 0x4c494e45,
+  /** The Computer player's aim and answers. */
+  computer: 0x434f4d50,
 } as const;
 
 // ---------- Layout (logical world, scaled to fit by Phaser) ----------
@@ -374,4 +376,20 @@ export const PRACTICE_BOT = {
   },
   /** Safety cap for simulated matches. A real match ends far sooner. */
   maxSimTurns: 400,
+  /** How the screen paces the Computer player's turn, so a child can follow it and never waits long. */
+  pace: {
+    /** The dial and power meter move by themselves for this long before Fire, by level speed. */
+    aimBaseMs: 1500,
+    aimMinMs: 1200,
+    aimMaxMs: 2000,
+    /** How many small moves the dial makes on the way to the chosen shot. */
+    aimSteps: 14,
+    /** The reload "thinking" wait never passes this, even when the answer model wants longer. */
+    reloadCapMs: 2500,
+    reloadMinMs: 900,
+    /** All the thinking in one computer turn (aiming plus reload) stays under this. */
+    turnBudgetMs: 8000,
+    /** With reduced motion the dial jumps, and the banner still shows for this long. */
+    reducedBeatMs: 700,
+  },
 } as const;
