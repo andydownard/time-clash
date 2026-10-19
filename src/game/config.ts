@@ -431,4 +431,28 @@ export const BASE_BUILDER = {
   } as Readonly<Record<string, number>>,
   /** Brick strength in hit points, kept in the save for the battle task. */
   hp: { light: 10, small: 20, medium: 35, large: 50 },
+  /** Weapon spots: round pads on the base where a weapon can be mounted. */
+  spots: {
+    count: 4,
+    /** Pad radius in free steps (a pad is about one and a quarter cells wide). */
+    padSteps: 5,
+    /** The lowest a pad may sit, in cells from the top, so the mode switch never covers one. */
+    topRows: 2,
+    /** With no bricks, pads sit in a row on the foundation across these columns. */
+    rowFromCol: 6,
+    rowToCol: 18,
+    /** The smallest pad tap area on screen, in pixels (AGENTS.md: 56px targets). */
+    tapPx: 56,
+  },
+  /** Weapons that can be mounted on a spot. `scrap` null means owned from the start. */
+  spotWeapons: [
+    { id: 'cannon', team: 'PAST', name: 'Cannon', scrap: null, role: 'direct', damage: 20, hp: 30 },
+    { id: 'catapult', team: 'PAST', name: 'Catapult', scrap: null, role: 'lob', damage: 25, hp: 25 },
+    { id: 'archerPost', team: 'PAST', name: 'Archer post', scrap: null, role: 'volley', damage: 10, hp: 20 },
+    { id: 'ballista', team: 'PAST', name: 'Ballista', scrap: 35, role: 'direct', damage: 35, hp: 30 },
+    { id: 'laser', team: 'FUTURE', name: 'Laser', scrap: null, role: 'direct', damage: 20, hp: 30 },
+    { id: 'missilePod', team: 'FUTURE', name: 'Missile pod', scrap: null, role: 'lob', damage: 25, hp: 25 },
+    { id: 'turret', team: 'FUTURE', name: 'Turret', scrap: null, role: 'volley', damage: 10, hp: 20 },
+    { id: 'shieldGen', team: 'FUTURE', name: 'Shield generator', scrap: 35, role: 'guard', damage: 0, hp: 40 },
+  ],
 } as const;

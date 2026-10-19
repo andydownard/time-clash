@@ -11,6 +11,7 @@ import {
   placePiece,
   saveSlot,
   slotPieces,
+  slotSpots,
   type BasesState,
 } from '../../src/game/baseBuilder';
 import { BASE_BUILDER as B, UI } from '../../src/game/config';
@@ -515,5 +516,208 @@ describe('look rules (baseBuilder.css)', () => {
   it('touch dragging turns off page scroll on the plot and the tray bricks', () => {
     expect(css).toMatch(/\.tc-bb-plot-art \{[^}]*touch-action: none/);
     expect(css).toMatch(/\.tc-bb-brick \{[^}]*touch-action: none/);
+  });
+});
+
+describe('weapon spots', () => {
+  const pad = (n: number) => document.querySelector<SVGElement>(`.tc-bb-spot[data-spot="${n - 1}"]`)!;
+  const weapons = () => q('bb-weapon-panel')!;
+  const toWeapons = () => click(q('bb-mode-weapons'));
+  // jsdom SVG nodes have no click(), so send the event a tap makes.
+  const tap = (el: Element): void => {
+    el.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+  };
+
+  it('starts in Build mode: pads are drawn but not buttons, no list, a chip counts them', () => {
+    open();
+    expect(q('bb-mode-build')!.getAttribute('aria-pressed')).toBe('true');
+    expect(q('bb-spots-chip')!.textContent).toBe(BUILDER_COPY.spotsChip(0, B.spots.count));
+    expect(qa('.tc-bb-spot')).toHaveLength(B.spots.count);
+    expect(pad(1).getAttribute('role')).toBeNull();
+    expect(pad(1).getAttribute('tabindex')).toBeNull();
+    expect(weapons().hidden).toBe(true);
+  });
+  it('Weapons mode makes the pads buttons with names, shows the hint, and parks the tray', () => {
+    open();
+    toWeapons();
+    expect(q('bb-mode-weapons')!.getAttribute('aria-pressed')).toBe('true');
+    expect(status()).toBe(BUILDER_COPY.spotHint);
+    expect(pad(2).getAttribute('role')).toBe('button');
+    expect(pad(2).getAttribute('tabindex')).toBe('0');
+    expect(pad(2).getAttribute('aria-label')).toBe('Spot 2, empty');
+    expect(q('bb-weapon-panel')!.hidden).toBe(true);
+    expect(document.querySelector('.tc-bb-tray')!.hasAttribute('inert')).toBe(true);
+    click(q('bb-mode-build'));
+    expect(status()).toBe(BUILDER_COPY.hint);
+    expect(document.querySelector('.tc-bb-tray')!.hasAttribute('inert')).toBe(false);
+  });
+  it('tapping a pad opens the list for that spot with this side\'s four weapons', () => {
+    open('FUTURE');
+    toWeapons();
+    tap(pad(2));
+    expect(weapons().hidden).toBe(false);
+    expect(weapons().textContent).toContain(BUILDER_COPY.spotTitle(2));
+    expect(pad(2).getAttribute('aria-label')).toBe('Spot 2, empty, selected');
+    expect(qa('.tc-bb-weapon[data-weapon]').map((b) => b.getAttribute('data-weapon'))).toEqual([
+      'laser',
+      'missilePod',
+      'turret',
+      'shieldGen',
+    ]);
+    expect(q('bb-weapon-shieldGen')!.getAttribute('data-state')).toBe('locked');
+    expect(q('bb-weapon-shieldGen')!.textContent).toContain('35 Scrap');
+  });
+  it('picking a weapon mounts it, saves it, marks it "On this spot", and counts it', () => {
+    const o = open();
+    toWeapons();
+    tap(pad(2));
+    click(q('bb-weapon-catapult'));
+    expect(status()).toBe(BUILDER_COPY.weaponPlaced('Catapult', 2));
+    expect(pad(2).getAttribute('aria-label')).toBe('Spot 2, catapult, selected');
+    expect(pad(2).getAttribute('data-weapon')).toBe('catapult');
+    expect(q('bb-weapon-catapult')!.textContent).toContain(BUILDER_COPY.onThisSpot);
+    expect(q('bb-spots-chip')!.textContent).toBe(BUILDER_COPY.spotsChip(1, B.spots.count));
+    const last = o.saved[o.saved.length - 1]!;
+    expect(slotSpots(last, 'Alex', 'PAST', 0)[1]?.weapon).toBe('catapult');
+  });
+  it('picking the same weapon again saves nothing new, and another weapon replaces it', () => {
+    const o = open();
+    toWeapons();
+    tap(pad(1));
+    click(q('bb-weapon-cannon'));
+    const n = o.saved.length;
+    click(q('bb-weapon-cannon'));
+    expect(o.saved.length).toBe(n);
+    click(q('bb-weapon-archerPost'));
+    expect(pad(1).getAttribute('data-weapon')).toBe('archerPost');
+    expect(q('bb-spots-chip')!.textContent).toBe(BUILDER_COPY.spotsChip(1, B.spots.count));
+  });
+  it('Clear spot empties the pad; clearing an empty spot says so and saves nothing', () => {
+    const o = open();
+    toWeapons();
+    tap(pad(3));
+    click(q('bb-spot-clear'));
+    expect(status()).toBe(BUILDER_COPY.spotAlreadyEmpty(3));
+    expect(o.saved).toHaveLength(0);
+    click(q('bb-weapon-cannon'));
+    click(q('bb-spot-clear'));
+    expect(status()).toBe(BUILDER_COPY.weaponCleared(3));
+    expect(pad(3).getAttribute('data-weapon')).toBe('');
+  });
+  it('Undo takes back a weapon change', () => {
+    open();
+    toWeapons();
+    tap(pad(2));
+    click(q('bb-weapon-cannon'));
+    click(q('bb-undo'));
+    expect(pad(2).getAttribute('data-weapon')).toBe('');
+    expect(q('bb-spots-chip')!.textContent).toBe(BUILDER_COPY.spotsChip(0, B.spots.count));
+  });
+  it('a locked weapon needs Scrap: short changes nothing, enough unlocks once, then it mounts', () => {
+    const o = open('PAST', campWith(40));
+    toWeapons();
+    tap(pad(1));
+    click(q('bb-weapon-ballista'));
+    expect(status()).toBe(BUILDER_COPY.weaponUnlocked('Ballista', 1));
+    expect(o.camps).toHaveLength(1);
+    expect(walletOf(o.camps[0]!, 'Alex').scrap).toBe(5);
+    expect(q('bb-weapon-ballista')!.getAttribute('data-state')).toBe('owned');
+    expect(pad(1).getAttribute('data-weapon')).toBe('');
+    click(q('bb-weapon-ballista'));
+    expect(pad(1).getAttribute('data-weapon')).toBe('ballista');
+    expect(o.camps).toHaveLength(1);
+  });
+  it('with too little Scrap a locked weapon says how many more are needed', () => {
+    const o = open('PAST', campWith(10));
+    toWeapons();
+    tap(pad(1));
+    click(q('bb-weapon-ballista'));
+    expect(status()).toBe(FORGE_COPY.needMore(25));
+    expect(o.camps).toHaveLength(0);
+    expect(q('bb-weapon-ballista')!.getAttribute('data-state')).toBe('locked');
+  });
+  it('the list sits on the side away from the chosen spot', () => {
+    open();
+    toWeapons();
+    tap(pad(1));
+    expect(weapons().getAttribute('data-side')).toBe('right');
+    tap(pad(4));
+    expect(weapons().getAttribute('data-side')).toBe('left');
+  });
+  it('tapping the plot away from a pad lets go of the spot', () => {
+    open();
+    toWeapons();
+    tap(pad(1));
+    tap(plot());
+    expect(weapons().hidden).toBe(true);
+  });
+  it('bricks cannot be dragged in Weapons mode', () => {
+    open();
+    drag(brick('stone'), mid(6, 9, 2, 1));
+    expect(pieces()).toHaveLength(1);
+    toWeapons();
+    const before = pieces()[0]!.getAttribute('transform');
+    drag(pieces()[0]!, mid(12, 9, 2, 1), [260, 380]);
+    expect(pieces()[0]!.getAttribute('transform')).toBe(before);
+  });
+  it('shows weapons saved earlier, and an old save with no spots opens with empty pads', () => {
+    const bricks = newBuild('PAST');
+    const r = placePiece(bricks, 'stone', { x: 2, y: 3, ox: 0, oy: 0 });
+    if (!r.ok) throw new Error('place');
+    const old = saveSlot(freshBases(), 'Alex', 'PAST', 0, r.state.pieces);
+    open('PAST', campWith(0, 0), old);
+    expect(q('bb-spots-chip')!.textContent).toBe(BUILDER_COPY.spotsChip(0, B.spots.count));
+    expect(pieces()).toHaveLength(1);
+    const withSpot = saveSlot(old, 'Alex', 'PAST', 0, r.state.pieces, [
+      {},
+      { weapon: 'cannon' },
+      {},
+      {},
+    ]);
+    document.body.innerHTML = '';
+    s = setup();
+    open('PAST', campWith(0, 0), withSpot);
+    expect(pad(2).getAttribute('data-weapon')).toBe('cannon');
+  });
+  it('keyboard: Enter on a pad opens the list, arrows move, Enter mounts, Delete clears, Escape closes', () => {
+    open('FUTURE');
+    toWeapons();
+    key(pad(3), 'ArrowRight');
+    expect(document.activeElement).toBe(pad(4));
+    key(pad(4), 'ArrowLeft');
+    expect(document.activeElement).toBe(pad(3));
+    key(pad(3), 'Enter');
+    expect(weapons().hidden).toBe(false);
+    expect(document.activeElement).toBe(q('bb-weapon-laser'));
+    key(q('bb-weapon-laser')!, 'ArrowDown');
+    expect(document.activeElement).toBe(q('bb-weapon-missilePod'));
+    click(q('bb-weapon-missilePod'));
+    expect(pad(3).getAttribute('aria-label')).toBe('Spot 3, missile pod, selected');
+    key(q('bb-weapon-missilePod')!, 'Delete');
+    expect(pad(3).getAttribute('data-weapon')).toBe('');
+    key(q('bb-weapon-laser')!, 'Escape');
+    expect(weapons().hidden).toBe(true);
+    expect(document.activeElement).toBe(pad(3));
+  });
+  it('Delete on a focused pad clears it without opening the list', () => {
+    open();
+    toWeapons();
+    tap(pad(2));
+    click(q('bb-weapon-cannon'));
+    tap(plot());
+    key(pad(2), 'Delete');
+    expect(pad(2).getAttribute('data-weapon')).toBe('');
+    expect(weapons().hidden).toBe(true);
+  });
+  it('switching saved bases lets go of the spot and shows that base\'s weapons', () => {
+    open();
+    toWeapons();
+    tap(pad(1));
+    click(q('bb-weapon-cannon'));
+    click(q('bb-slot-2'));
+    expect(weapons().hidden).toBe(true);
+    expect(pad(1).getAttribute('data-weapon')).toBe('');
+    click(q('bb-slot-1'));
+    expect(pad(1).getAttribute('data-weapon')).toBe('cannon');
   });
 });

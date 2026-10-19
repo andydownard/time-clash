@@ -198,6 +198,28 @@ describe('BattleFlow: hits', () => {
     expect(w.match.snapshot().baseHp.FUTURE).toBe(DAMAGE.startingBaseHp - DAMAGE.direct);
   });
 
+  it('with the voice service set up, the bubble line is also spoken, same text, with its caption', async () => {
+    const near = findAim(SEED, 0, 'PAST', 'near');
+    const miss = findAim(SEED, 0, 'PAST', 'miss');
+    const w = makeWorld({ seed: SEED, script: [near, miss], clips: true });
+    void w.flow.run();
+    await settle();
+    expect(w.spoken).toHaveLength(1);
+    expect(w.spoken[0]!.text).toBe(w.bubbles[0]!.text);
+    expect(w.spoken[0]!.captions[0]!.text).toBe(w.bubbles[0]!.text);
+    expect(w.log.indexOf('speak')).toBeLessThan(w.log.indexOf('bubble:FUTURE'));
+  });
+
+  it('without the voice service the funny line is not spoken (game unchanged)', async () => {
+    const near = findAim(SEED, 0, 'PAST', 'near');
+    const miss = findAim(SEED, 0, 'PAST', 'miss');
+    const w = makeWorld({ seed: SEED, script: [near, miss] });
+    void w.flow.run();
+    await settle();
+    expect(w.bubbles).toHaveLength(1);
+    expect(w.spoken).toHaveLength(0);
+  });
+
   it('a near miss makes the defender tumble and say a line from copy.ts', async () => {
     const near = findAim(SEED, 0, 'PAST', 'near');
     const miss = findAim(SEED, 0, 'PAST', 'miss');

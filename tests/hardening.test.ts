@@ -42,6 +42,17 @@ describe('public/_headers', () => {
   ])('sends %s', (line) => {
     expect(headers).toContain(line);
   });
+  it('lets the planned voice service origin supply audio and nothing else', () => {
+    const csp = /Content-Security-Policy: (.+)/.exec(headers)![1]!;
+    const voice = 'https://voice.timeclash.rallytasks.com';
+    const withVoice = csp
+      .split(';')
+      .map((s) => s.trim())
+      .filter((d) => d.includes(voice))
+      .map((d) => d.split(' ')[0]);
+    expect(withVoice.sort()).toEqual(['connect-src', 'media-src']);
+    expect(csp).toContain("script-src 'self';");
+  });
   it('sends the same Content-Security-Policy as the page meta tag', () => {
     const meta = /http-equiv="Content-Security-Policy"\s+content="([^"]+)"/.exec(
       read('index.html'),

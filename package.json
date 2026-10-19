@@ -16,6 +16,7 @@
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit",
     "e2e": "playwright test",
+    "voice:start": "tsx voice-server/main.ts",
     "check:questions": "tsx scripts/check-questions.ts",
     "check:dist": "tsx scripts/check-dist.ts",
     "blind:export": "tsx scripts/blind-export.ts",

@@ -14,6 +14,8 @@ export type TeamLoadout = {
   upgrades: Partial<Record<UpgradeId, number>>;
   /** Base-builder pieces unlocked with Scrap. The free pieces are never listed. */
   pieces?: string[];
+  /** Weapons for base spots unlocked with Scrap. The free ones are never listed. */
+  mounts?: string[];
 };
 
 /**

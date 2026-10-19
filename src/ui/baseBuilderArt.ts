@@ -3,7 +3,15 @@
 // Team Future bricks use the same outlines in the hologram and metal palette. Nothing is fetched,
 // and no text a player typed ever goes into the markup (only fixed piece ids).
 import { BASE_BUILDER as B } from '../game/config';
-import { footprint, pieceById, rectOf, type Placed, type PieceDef } from '../game/baseBuilder';
+import {
+  footprint,
+  pieceById,
+  rectOf,
+  spotWeaponById,
+  type PieceDef,
+  type Placed,
+  type ResolvedSpot,
+} from '../game/baseBuilder';
 import type { Team } from '../game/types';
 import { svgFromString } from './svg';
 
@@ -161,7 +169,7 @@ ${team === 'PAST' ? PAST_SCENE : FUTURE_SCENE}
 ${gridLines()}
 ${foundation(team)}
 <path d="${SILHOUETTE[team]}" fill="#f7ebcb" fill-opacity=".07" stroke="#f7ebcb" stroke-opacity=".6" stroke-width="4" stroke-dasharray="4 10" stroke-linecap="round" stroke-linejoin="round"/>
-<g class="tc-bb-pieces"></g><g class="tc-bb-preview"></g>
+<g class="tc-bb-pieces"></g><g class="tc-bb-spots"></g><g class="tc-bb-preview"></g>
 </svg>`,
   );
 }
@@ -186,4 +194,77 @@ export function baseThumb(doc: Document, team: Team, pieces: readonly Placed[]):
     doc,
     `<svg viewBox="0 0 ${PLOT_W} ${PLOT_H}" preserveAspectRatio="xMidYMid meet" class="tc-bb-thumb"><rect width="${PLOT_W}" height="${PLOT_H}" fill="${sky}"/><rect y="${PLOT_H - B.groundRows * CELL}" width="${PLOT_W}" height="${B.groundRows * CELL}" fill="${ground}"/>${bricks}</svg>`,
   );
+}
+
+// ---------- Weapon spots ----------
+
+/** The weapon pictures (48 by 48), from the design boards. Outlines use the ink colour. */
+const WEAPON_ART: Record<string, string> = {
+  cannon:
+    '<rect x="4" y="16" width="32" height="14" rx="5" transform="rotate(-16 20 23)" fill="#6f7c93"/><path d="M32,12 l8,-2"/><circle cx="19" cy="35" r="9" fill="#a8672b"/><circle cx="19" cy="35" r="2.5" fill="#12102b"/><circle cx="42" cy="8" r="4" fill="#12102b"/>',
+  catapult:
+    '<rect x="4" y="34" width="38" height="8" rx="2" fill="#a8672b"/><path d="M12,34 L32,8 L39,13 L19,38 Z" fill="#a8672b"/><path d="M27,5 h14 l-2,8 h-10 z" fill="#8c84a8"/><circle cx="12" cy="43" r="4" fill="#9aa8bd"/><circle cx="36" cy="43" r="4" fill="#9aa8bd"/>',
+  archerPost:
+    '<rect x="12" y="20" width="18" height="24" fill="#9aa8bd"/><path d="M8,20 V8 h6 v5 h4 V8 h4 v5 h4 V8 h6 v12 z" fill="#b4bfd0"/><path d="M36,14 q10,10 0,22" fill="none" stroke-width="4"/><path d="M36,14 L36,36" stroke-width="2"/><path d="M18,34 V44"/>',
+  ballista:
+    '<path d="M6,16 Q24,4 42,16" fill="none" stroke="#a8672b" stroke-width="6"/><rect x="20" y="12" width="8" height="26" rx="2" fill="#a8672b"/><path d="M24,1 L30,12 H18 Z" fill="#f7ebcb"/><path d="M14,46 L24,36 L34,46" fill="none"/>',
+  laser:
+    '<rect x="6" y="32" width="36" height="10" rx="3" fill="#8fa3c4"/><path d="M10,32 A14,12 0 0 1 38,32 Z" fill="#5a6f9a"/><rect x="24" y="12" width="20" height="7" rx="3" transform="rotate(-24 24 15)" fill="#c9d6ee"/><circle cx="43" cy="6" r="4" fill="#4fd8ff"/>',
+  missilePod:
+    '<rect x="6" y="20" width="36" height="22" rx="3" fill="#5a6f9a"/><circle cx="16" cy="28" r="4" fill="#0a1236"/><circle cx="32" cy="28" r="4" fill="#0a1236"/><circle cx="16" cy="36" r="2" fill="#4fd8ff"/><circle cx="32" cy="36" r="2" fill="#4fd8ff"/><path d="M19,20 V12 L24,4 L29,12 V20" fill="#ff4fa8"/>',
+  turret:
+    '<rect x="8" y="34" width="32" height="9" rx="3" fill="#8fa3c4"/><path d="M12,34 A12,12 0 0 1 36,34 Z" fill="#5a6f9a"/><rect x="26" y="14" width="18" height="6" rx="2" fill="#c9d6ee"/><rect x="26" y="23" width="18" height="6" rx="2" fill="#c9d6ee"/>',
+  shieldGen:
+    '<path d="M24,3 L41,9 V24 Q41,39 24,45 Q7,39 7,24 V9 Z" fill="#7fe8ff"/><path d="M27,13 L18,26 H25 L22,37 L32,22 H26 Z" fill="#0a1236"/>',
+};
+
+const inkFor = (id: string): string => (spotWeaponById(id)?.team === 'FUTURE' ? '#0a1236' : INK);
+
+/** The picture of one weapon, as markup for a 48 by 48 box. */
+const weaponInner = (id: string): string =>
+  `<g stroke="${inkFor(id)}" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">${WEAPON_ART[id] ?? ''}</g>`;
+
+/** A weapon icon for the panel and the mode switch. */
+export function weaponIcon(doc: Document, id: string, size = 44): SVGElement {
+  return svgFromString(
+    doc,
+    `<svg viewBox="0 0 48 48" width="${size}" height="${size}" aria-hidden="true" class="tc-bb-weapon-icon">${weaponInner(id)}</svg>`,
+  );
+}
+
+const PAD_R = B.spots.padSteps * STEP;
+
+/**
+ * The weapon pads, as markup in picture units. With `interactive` each pad is a focusable button
+ * with a transparent tap circle of radius `hitR` (never smaller than the pad). Without it the pads
+ * are only drawn (Build mode).
+ */
+export function spotsMarkup(
+  spots: readonly ResolvedSpot[],
+  label: (spot: ResolvedSpot, selected: boolean) => string,
+  selected: number | null,
+  interactive: boolean,
+  hitR: number,
+): string {
+  return spots
+    .map((sp) => {
+      const cx = sp.x * STEP;
+      const cy = sp.y * STEP;
+      const on = sp.index === selected;
+      const body = sp.weapon
+        ? `<circle cx="${cx}" cy="${cy}" r="${PAD_R}" fill="#f7ebcb" stroke="${INK}" stroke-width="4"/><g transform="translate(${cx - PAD_R * 0.72} ${cy - PAD_R * 0.72}) scale(${(PAD_R * 1.44) / 48})">${weaponInner(sp.weapon)}</g>`
+        : `<circle cx="${cx}" cy="${cy}" r="${PAD_R}" fill="${INK}" fill-opacity=".85" stroke="#f7ebcb" stroke-width="4" stroke-dasharray="7 5"/><path d="M${cx},${cy - 9} V${cy + 9} M${cx - 9},${cy} H${cx + 9}" stroke="#f7ebcb" stroke-width="4" stroke-linecap="round"/>`;
+      const ring = on
+        ? `<circle class="tc-bb-spot-ring" cx="${cx}" cy="${cy}" r="${PAD_R + 6}" fill="none" stroke="#ffb23e" stroke-width="6"/>`
+        : '';
+      const badge = `<circle cx="${cx - PAD_R * 0.8}" cy="${cy - PAD_R * 0.8}" r="14" fill="${INK}" stroke="#f7ebcb" stroke-width="3"/><text class="tc-bb-spot-n" x="${cx - PAD_R * 0.8}" y="${cy - PAD_R * 0.8}" text-anchor="middle" dominant-baseline="central" fill="#f7ebcb">${sp.index + 1}</text>`;
+      const hit = interactive
+        ? `<circle class="tc-bb-spot-hit" data-spot-hit="true" cx="${cx}" cy="${cy}" r="${Math.max(PAD_R + 6, hitR)}" fill="transparent"/>`
+        : '';
+      const attrs = interactive
+        ? `tabindex="0" role="button" aria-pressed="${on}" aria-label="${label(sp, on)}"`
+        : 'aria-hidden="true"';
+      return `<g class="tc-bb-spot" data-spot="${sp.index}" data-weapon="${sp.weapon ?? ''}"${on ? ' data-selected="true"' : ''} data-live="${interactive}" ${attrs}>${hit}${ring}${body}${badge}</g>`;
+    })
+    .join('');
 }

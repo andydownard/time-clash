@@ -1,7 +1,7 @@
 // Scrap and what it buys, by player name. Pure functions: each takes the Camp state and returns a
 // new one, or a plain reason why not. Scrap never goes below zero, nothing is bought twice, and a
 // bad input (wrong team, unknown id, NaN, an empty name) changes nothing.
-import { pieceById, pieceScrap } from './baseBuilder';
+import { pieceById, pieceScrap, spotWeaponById } from './baseBuilder';
 import { walletOf, withWallet, walletKey, type CampState, type Wallet } from './loadout';
 import type { Team } from './types';
 import { TEAMS } from './types';
@@ -97,6 +97,26 @@ export function forgeWeapon(camp: CampState, name: string, team: Team): Outcome 
   return {
     ok: true,
     camp: withWallet(camp, withLoadout({ ...paid, name: name.trim() }, team, { owned })),
+  };
+}
+
+/** Unlocks a weapon for base spots. Free weapons and ones already unlocked are never paid for. */
+export function unlockSpotWeapon(camp: CampState, name: string, team: Team, id: string): Outcome {
+  const def = spotWeaponById(id);
+  if (!hasName(name) || !isTeam(team) || !def) return { ok: false, reason: 'unknown' };
+  if (def.team !== team) return { ok: false, reason: 'wrong_team' };
+  if (def.scrap === null) return { ok: false, reason: 'already_owned' };
+  const wallet = walletOf(camp, name);
+  const have = wallet.loadout[team].mounts ?? [];
+  if (have.includes(id)) return { ok: false, reason: 'already_owned' };
+  const paid = pay(wallet, def.scrap);
+  if (!paid) return { ok: false, reason: 'not_enough_scrap' };
+  return {
+    ok: true,
+    camp: withWallet(
+      camp,
+      withLoadout({ ...paid, name: name.trim() }, team, { mounts: [...have, id] }),
+    ),
   };
 }
 

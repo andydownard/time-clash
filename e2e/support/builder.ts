@@ -65,3 +65,17 @@ export async function openBuilder(page: Page, team: 'PAST' | 'FUTURE'): Promise<
 }
 
 export const bricks = (page: Page) => page.locator('.tc-bb-piece');
+
+/** A weapon pad by its number (1 to 4). Only Weapons mode makes the pads buttons. */
+export const spotPad = (page: Page, n: number) => page.locator(`.tc-bb-spot[data-spot="${n - 1}"]`);
+
+/** Switch to Weapons mode and choose a spot. Pass `tap` to use the touchscreen. */
+export async function chooseSpot(page: Page, n: number, tap = false): Promise<void> {
+  const mode = tid(page, 'bb-mode-weapons');
+  if (tap) await mode.tap();
+  else await mode.click();
+  await expect(mode).toHaveAttribute('aria-pressed', 'true');
+  if (tap) await spotPad(page, n).tap();
+  else await spotPad(page, n).click();
+  await expect(tid(page, 'bb-weapon-panel')).toBeVisible();
+}
