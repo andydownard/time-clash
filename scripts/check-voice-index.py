@@ -4,6 +4,8 @@ import argparse, json, sqlite3, subprocess, sys
 ap = argparse.ArgumentParser()
 ap.add_argument("db")
 ap.add_argument("--grades", default="0-4")
+ap.add_argument("--min-ms", type=int, default=500)
+ap.add_argument("--max-ms", type=int, default=40000)
 a = ap.parse_args()
 manifest = json.loads(subprocess.run(["npx", "tsx", "scripts/voice-manifest.ts", "--grades", a.grades],
                                      check=True, capture_output=True, text=True).stdout)
@@ -14,7 +16,7 @@ for e in manifest:
     if r is None: bad.append((e["id"], "missing", e["text"][:60])); continue
     nbytes, ms, kind, alen = r
     if nbytes <= 0 or alen != nbytes: bad.append((e["id"], "bytes", nbytes, alen))
-    elif not 500 <= ms <= 40000: bad.append((e["id"], "duration", ms, e["text"][:60]))
+    elif not a.min_ms <= ms <= a.max_ms: bad.append((e["id"], "duration", ms, e["text"][:60]))
     elif kind != e["kind"]: bad.append((e["id"], "kind", kind, e["kind"]))
 for b in bad: print("BAD", b)
 kinds = {}
