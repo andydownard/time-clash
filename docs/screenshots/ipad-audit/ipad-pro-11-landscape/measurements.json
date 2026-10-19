@@ -227,12 +227,7 @@
     "screen": "15-leave-dialog",
     "viewport": "1194x834",
     "smallTargets": [],
-    "smallText": [
-      {
-        "what": "Your match will end. You can start a new",
-        "detail": "16px"
-      }
-    ],
+    "smallText": [],
     "sidewaysScroll": 0,
     "verticalScroll": 0,
     "offscreen": [],

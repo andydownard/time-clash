@@ -342,7 +342,8 @@ body {
   position: absolute;
   inset: 0;
   /* Content starts below the fixed ? and gear row. The background still fills the screen. */
-  padding: var(--tc-chrome-row) var(--tc-s-6) var(--tc-s-5);
+  padding: var(--tc-chrome-row) max(var(--tc-s-6), var(--tc-safe-right))
+    max(var(--tc-s-5), var(--tc-safe-bottom)) max(var(--tc-s-6), var(--tc-safe-left));
   overflow: auto;
   background: var(--tc-screen-dark-bg);
   color: var(--tc-on-dark);
@@ -398,6 +399,10 @@ body {
 }
 .tc-cover-card h2 {
   font-family: var(--tc-font-voice-old);
+}
+/* The pause panel is built outside the app root, so its text needs the body size set here. */
+.tc-cover-card p {
+  font-size: var(--tc-fs-body);
 }
 
 /* Pass the mouse */
@@ -798,7 +803,8 @@ body {
   gap: var(--tc-s-2) var(--tc-s-4);
   align-items: flex-end;
   justify-content: center;
-  padding: 0 var(--tc-s-3) var(--tc-s-2);
+  padding: 0 max(var(--tc-s-3), var(--tc-safe-right)) max(var(--tc-s-2), var(--tc-safe-bottom))
+    max(var(--tc-s-3), var(--tc-safe-left));
 }
 .tc-hud-bottom > .tc-turn-strip {
   order: -1;
@@ -903,6 +909,29 @@ body {
    It stays for screen readers. */
 @media (max-height: 790px) {
   [data-tc-root] .tc-setup-sub {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+/* iPad mini landscape is 744 tall: tighten Setup so Clear my data keeps a margin above the
+   bottom edge and the home bar (iPad audit defect 2). */
+@media (max-height: 760px) {
+  .tc-setup {
+    gap: var(--tc-s-1);
+    padding-bottom: max(var(--tc-s-3), var(--tc-safe-bottom));
+  }
+  .tc-setup-form {
+    gap: var(--tc-s-1);
+  }
+  .tc-team-card {
+    padding-block: var(--tc-s-2);
+  }
+  /* The summary line repeats the choices on the cards. It stays for screen readers. */
+  .tc-match-helper {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -1869,17 +1898,23 @@ body {
 }
 /* Arrows, the cannonball and missiles fly with real physics from ambientFlights.ts. They stay
    hidden until the script moves them, and forever when motion is reduced. The hawk is moved by the
-   same script; its three groups need no style of their own. */
+   same script. The hawk has two layers: the scene's own (under the title) and a second svg after the
+   title (over it). The script shows one at a time, so he passes over the name, then behind it. */
 .tc-camp-arrow,
 .tc-camp-ball,
 .tc-camp-miss {
   opacity: 0;
 }
-.tc-camp-hawk,
-.tc-camp-hawk-y,
-.tc-camp-hawk-flip,
-.tc-camp-hawk-bank {
+.tc-camp-hawk {
   will-change: transform;
+}
+.tc-camp-hawk-paths,
+.tc-camp-hawk-shade {
+  pointer-events: none;
+}
+/* The over-the-title layer must not catch taps (the buttons are above it anyway). */
+.tc-camp-hawk-layer {
+  pointer-events: none;
 }
 .tc-camp-puff {
   transform-box: fill-box;
@@ -3344,7 +3379,7 @@ button.tc-forge-row[aria-disabled='true'],
     text-align: center;
   }
   .tc-screen {
-    padding-inline: var(--tc-s-4);
+    padding-inline: max(var(--tc-s-4), var(--tc-safe-left)) max(var(--tc-s-4), var(--tc-safe-right));
   }
   .tc-setup {
     padding-top: var(--tc-s-3);

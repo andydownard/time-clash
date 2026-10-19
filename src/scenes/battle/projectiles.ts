@@ -24,7 +24,11 @@ interface Drawn {
   spins?: boolean;
 }
 
-type Draw = (g: Phaser.GameObjects.Graphics, team: Team, add: () => Phaser.GameObjects.Graphics) => Drawn;
+type Draw = (
+  g: Phaser.GameObjects.Graphics,
+  team: Team,
+  add: () => Phaser.GameObjects.Graphics,
+) => Drawn;
 
 const INK = PALETTE.shared.ink;
 const LINE = 2;
