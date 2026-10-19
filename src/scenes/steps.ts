@@ -73,9 +73,13 @@ const namesOf = (players: Players): Record<Team, string> => ({
 export async function runSetupStep(s: AppServices): Promise<SceneRoute> {
   const saved = s.storage.get('timeclash.players');
   // A family that has played before can go Back to the Camp. A new family has nowhere to go back to.
+  // The Computer player choice only exists when the flag is on. Off is exactly today's Setup.
+  const computer = s.computerPlayer === true;
   const players = saved
-    ? await s.overlay.showSetup(saved, { back: true })
-    : await s.overlay.showSetup(null);
+    ? await s.overlay.showSetup(saved, computer ? { back: true, computer } : { back: true })
+    : computer
+      ? await s.overlay.showSetup(null, { computer })
+      : await s.overlay.showSetup(null);
   if (players === null) return { key: SCENE_KEYS.camp };
   s.storage.set('timeclash.players', players);
   return routeAfterSetup();

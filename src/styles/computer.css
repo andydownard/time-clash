@@ -1,0 +1,204 @@
+/* Computer player: the Play with choice on Setup, its card, its picture and the thinking banner.
+   A separate file so other Setup work can merge cleanly. Only tokens from tokens.css are used. */
+
+.tc-play-with {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tc-s-2) var(--tc-s-4);
+  margin: 0;
+}
+.tc-play-with .tc-label {
+  margin: 0;
+  color: var(--tc-on-dark);
+}
+.tc-play-with .tc-chip {
+  min-height: var(--tc-tap);
+  min-width: 200px;
+  padding-inline: var(--tc-s-5);
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new);
+  font-size: var(--tc-fs-button);
+  letter-spacing: 0.02em;
+}
+
+/* The Computer player's card takes the place of a human card. Same colors as the team. */
+.tc-computer-card {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.tc-computer-card .tc-label {
+  text-align: center;
+}
+.tc-computer-card .tc-chips {
+  justify-content: center;
+}
+.tc-computer-card .tc-chip {
+  min-width: 112px;
+  min-height: var(--tc-tap);
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new);
+  font-size: var(--tc-fs-button);
+}
+.tc-computer-name {
+  margin: 0;
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: var(--tc-fs-heading);
+  letter-spacing: var(--tc-ls-caps);
+  text-transform: uppercase;
+  line-height: var(--tc-lh-tight);
+}
+.tc-computer-card[data-team='PAST'] .tc-computer-name {
+  color: var(--tc-eyebrow-past);
+}
+.tc-computer-card[data-team='FUTURE'] .tc-computer-name {
+  color: var(--tc-eyebrow-future);
+}
+.tc-computer-note {
+  margin: 0;
+  font-family: var(--tc-font-voice-old);
+  font-size: var(--tc-fs-lead);
+}
+
+/* The picture. Drawn from shapes, no emoji. */
+.tc-cp-face {
+  width: 96px;
+  height: 96px;
+  flex: none;
+}
+.tc-cp-face--small {
+  width: 48px;
+  height: 48px;
+}
+.tc-cp-body {
+  fill: var(--tc-steel-blue);
+  stroke: var(--tc-ink-deep);
+  stroke-width: 5;
+  stroke-linejoin: round;
+}
+.tc-cp-trim {
+  fill: var(--tc-blue-500);
+  stroke: var(--tc-ink-deep);
+  stroke-width: 5;
+  stroke-linejoin: round;
+}
+.tc-cp-plume {
+  fill: var(--tc-purple-500);
+  stroke: var(--tc-ink-deep);
+  stroke-width: 5;
+  stroke-linejoin: round;
+}
+.tc-cp-metal {
+  fill: var(--tc-parchment-warm);
+  stroke: var(--tc-ink-deep);
+  stroke-width: 5;
+  stroke-linejoin: round;
+}
+.tc-cp-eye {
+  fill: var(--tc-ink-deep);
+}
+.tc-cp-glint {
+  fill: var(--tc-white);
+}
+.tc-cp-bulb {
+  fill: var(--tc-ember);
+  stroke: var(--tc-ink-deep);
+  stroke-width: 5;
+}
+.tc-cp-mouth {
+  fill: none;
+  stroke: var(--tc-ink-deep);
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+.tc-cp-line {
+  fill: none;
+  stroke: var(--tc-ink-deep);
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+
+/* "Computer player is thinking": a short banner above the control bar. It sits under the cards
+   and never over a base. It is polite text, not a dialog, and never holds a question. */
+.tc-thinking {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--tc-tap) * 3 + var(--tc-s-6));
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: var(--tc-s-3);
+  padding: var(--tc-s-1) var(--tc-s-4) var(--tc-s-1) var(--tc-s-2);
+  border: var(--tc-banner-turn-border);
+  border-radius: var(--tc-r-pill);
+  background: var(--tc-parchment-warm);
+  color: var(--tc-ink-deep);
+  box-shadow: 0 4px 0 var(--tc-purple-700);
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: var(--tc-fs-label);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.tc-thinking-dots {
+  display: inline-flex;
+  gap: var(--tc-s-1);
+}
+.tc-thinking-dots i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--tc-ink-deep);
+  animation: tc-thinking-dot 1.2s ease-in-out infinite;
+}
+.tc-thinking-dots i:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.tc-thinking-dots i:nth-child(3) {
+  animation-delay: 0.4s;
+}
+@keyframes tc-thinking-dot {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+.tc-thinking[data-motion='reduced'] .tc-thinking-dots i {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tc-thinking-dots i {
+    animation: none;
+  }
+}
+
+/* With the Play with row on Setup there is one more row to fit. Setup must not scroll at 1024x768
+   (regression 13), so this screen packs its spacing a little tighter. Only on the flagged screen. */
+.tc-setup-choice .tc-setup-form {
+  gap: var(--tc-s-1);
+}
+.tc-setup-choice .tc-team-card {
+  gap: 2px;
+  padding-block: var(--tc-s-2);
+}
+.tc-setup-choice .tc-team-card .tc-label {
+  margin-top: 2px;
+}
+.tc-setup-choice .tc-chips-grades {
+  gap: var(--tc-s-1);
+}
+.tc-setup-choice .tc-match-helper {
+  font-size: var(--tc-fs-body);
+}
+.tc-setup.tc-setup-choice {
+  gap: var(--tc-s-1);
+  padding-bottom: var(--tc-s-1);
+}

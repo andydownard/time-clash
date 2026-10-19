@@ -10,7 +10,11 @@ import { SCENES } from './scenes';
 import { createServices } from './scenes/services';
 import { installTestHook, type ActiveScene, type TimeClashHook } from './scenes/testHook';
 
-const { services, seeds, faults } = createServices({ doc: document, win: window });
+const { services, seeds, faults } = createServices({
+  doc: document,
+  win: window,
+  search: window.location.search,
+});
 
 const game = new Phaser.Game({
   // The e2e build draws on a 2D canvas: CI has no GPU, and software WebGL is far slower.
