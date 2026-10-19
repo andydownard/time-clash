@@ -4,16 +4,19 @@
 import '../styles/baseBuilder.css';
 import { BUILDER_COPY, FORGE_COPY } from '../data/copy';
 import {
+  assignWeapon,
   basesOf,
   chooseSlot,
   clampToPlot,
   clearBuild,
+  clearSpot,
   check,
   findSpot,
   footprint,
   movePiece,
   newBuild,
   ownedPieceIds,
+  ownedSpotWeaponIds,
   pieceById,
   pieceScrap,
   piecesOf,
@@ -21,19 +24,25 @@ import {
   positionFromPoint,
   rectOf,
   removePiece,
+  resolveSpots,
   saveSlot,
   slotPieces,
+  slotSpots,
+  spotWeaponById,
+  spotWeaponsOf,
+  spotsUsed,
   turnPiece,
   undoBuild,
   type BasesState,
   type BuildState,
   type PieceDef,
   type Placed,
+  type SpotWeaponDef,
   type Pos,
   type Rotation,
 } from '../game/baseBuilder';
 import { BASE_BUILDER as B } from '../game/config';
-import { unlockPiece } from '../game/economy';
+import { unlockPiece, unlockSpotWeapon } from '../game/economy';
 import { walletOf, type CampState } from '../game/loadout';
 import type { UiCtx } from './ctx';
 import { h } from './dom';
@@ -44,6 +53,8 @@ import {
   nodesFromMarkup,
   placedMarkup,
   plotScene,
+  spotsMarkup,
+  weaponIcon,
   PLOT_H,
   PLOT_W,
   STEP,
@@ -113,9 +124,19 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<vo
     let cursor: { x: number; y: number } | null = null;
     let drag: Drag | null = null;
     let dragRot: Rotation = 0;
+    /** Build moves bricks. Weapons picks what is mounted on each spot. */
+    let mode: 'build' | 'weapons' = 'build';
+    let selSpot: number | null = null;
 
     const owned = (): Set<string> => ownedPieceIds(team, walletOf(camp, name).loadout[team].pieces);
-    const loadSlot = (): BuildState => newBuild(team, slotPieces(bases, name, team, slot, owned()));
+    const ownedWeapons = (): Set<string> =>
+      ownedSpotWeaponIds(team, walletOf(camp, name).loadout[team].mounts);
+    const loadSlot = (): BuildState =>
+      newBuild(
+        team,
+        slotPieces(bases, name, team, slot, owned()),
+        slotSpots(bases, name, team, slot, ownedWeapons()),
+      );
     let build = loadSlot();
 
     // ---------- Static parts ----------
@@ -130,7 +151,7 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<vo
       status.textContent = text;
     };
     const hintDefault = (): void => {
-      status.textContent = BUILDER_COPY.hint;
+      status.textContent = mode === 'weapons' ? BUILDER_COPY.spotHint : BUILDER_COPY.hint;
     };
 
     const back = h(doc, 'button', {
@@ -156,6 +177,7 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<vo
     plotArt.removeAttribute('aria-hidden');
     plotArt.setAttribute('data-testid', 'bb-plot');
     const piecesLayer = plotArt.querySelector('.tc-bb-pieces') as SVGGElement;
+    const spotsLayer = plotArt.querySelector('.tc-bb-spots') as SVGGElement;
     const previewLayer = plotArt.querySelector('.tc-bb-preview') as SVGGElement;
 
     const confirm = h(
@@ -188,7 +210,69 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<vo
         }),
       ),
     );
-    const plotWrap = h(doc, 'div', { class: 'tc-bb-plot' }, plotArt, confirm);
+    // Mode switch, spots chip and the weapon list sit over the plot.
+    const modeBtn = (id: 'build' | 'weapons', label: string, aria: string): HTMLButtonElement => {
+      const b = h(doc, 'button', {
+        type: 'button',
+        class: 'tc-bb-mode-btn',
+        'data-testid': `bb-mode-${id}`,
+        'aria-label': aria,
+      });
+      b.append(
+        svgFromString(
+          doc,
+          id === 'build'
+            ? '<svg viewBox="0 0 48 48" width="32" height="32" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="4" stroke-linejoin="round"><rect x="5" y="14" width="38" height="22" rx="3"/><path d="M5,25 H43 M24,14 V25 M15,25 V36 M33,25 V36"/></svg>'
+            : '<svg viewBox="0 0 48 48" width="32" height="32" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round"><circle cx="24" cy="24" r="15" stroke-dasharray="7 5"/><path d="M24,16 V32 M16,24 H32"/></svg>',
+        ),
+        h(doc, 'span', { text: label }),
+      );
+      return b;
+    };
+    const buildModeBtn = modeBtn('build', BUILDER_COPY.modeBuild, BUILDER_COPY.modeBuildLabel);
+    const weaponsModeBtn = modeBtn(
+      'weapons',
+      BUILDER_COPY.modeWeapons,
+      BUILDER_COPY.modeWeaponsLabel,
+    );
+    const spotChip = h(doc, 'p', { class: 'tc-bb-chip', 'data-testid': 'bb-spots-chip' });
+    const modeBar = h(
+      doc,
+      'div',
+      { class: 'tc-bb-modebar' },
+      h(
+        doc,
+        'div',
+        { class: 'tc-bb-mode', role: 'group', 'aria-label': BUILDER_COPY.mode },
+        buildModeBtn,
+        weaponsModeBtn,
+      ),
+      spotChip,
+    );
+    const panelTitle = h(doc, 'h2', { class: 'tc-bb-weapons-title' });
+    const panelList = h(doc, 'div', { class: 'tc-bb-weapons-list' });
+    const clearSpotBtn = h(doc, 'button', {
+      type: 'button',
+      class: 'tc-bb-weapon tc-bb-weapon-clear',
+      'data-testid': 'bb-spot-clear',
+    });
+    clearSpotBtn.append(
+      svgFromString(
+        doc,
+        '<svg viewBox="0 0 48 48" width="32" height="32" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M10,14 H38 M19,14 V8 H29 V14 M14,14 L16,40 H32 L34,14"/></svg>',
+      ),
+      h(doc, 'span', { text: BUILDER_COPY.clearSpot }),
+    );
+    clearSpotBtn.setAttribute('aria-label', BUILDER_COPY.clearSpot);
+    const weaponPanel = h(
+      doc,
+      'section',
+      { class: 'tc-bb-weapons', 'data-testid': 'bb-weapon-panel', hidden: true },
+      panelTitle,
+      panelList,
+      clearSpotBtn,
+    );
+    const plotWrap = h(doc, 'div', { class: 'tc-bb-plot' }, plotArt, modeBar, weaponPanel, confirm);
 
     const toolIcons: Record<string, string> = {
       turn: '<path d="M38,24 A14,14 0 1 1 30,11"/><path d="M26,3 L32,11 L23,15"/>',
@@ -232,6 +316,7 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<vo
     const tray = h(doc, 'section', { class: 'tc-bb-tray', 'aria-label': BUILDER_COPY.tray });
     const ghost = h(doc, 'div', { class: 'tc-bb-ghost', 'aria-hidden': 'true', hidden: true });
     const keys = h(doc, 'p', { class: 'tc-sr-only', text: BUILDER_COPY.keys });
+    const spotKeys = h(doc, 'p', { class: 'tc-sr-only', text: BUILDER_COPY.spotKeys });
 
     const screen = h(
       doc,
@@ -247,13 +332,19 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<vo
       h(doc, 'div', { class: 'tc-bb-main' }, plotWrap, tools),
       status,
       keys,
+      spotKeys,
       tray,
       ghost,
     );
 
     // ---------- Saving ----------
     const persist = (): void => {
-      bases = chooseSlot(saveSlot(bases, name, team, slot, build.pieces), name, team, slot);
+      bases = chooseSlot(
+        saveSlot(bases, name, team, slot, build.pieces, build.spots),
+        name,
+        team,
+        slot,
+      );
       options.saveBases(bases);
     };
 
@@ -388,7 +479,184 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<vo
       clearBtn.setAttribute('aria-disabled', String(build.pieces.length === 0));
     }
 
+    // ---------- Weapon spots ----------
+    const spotName = (i: number): string | null => {
+      const id = build.spots[i]?.weapon;
+      return id ? (spotWeaponById(id)?.name ?? null) : null;
+    };
+
+    /** The pads on the plot. Tap circles are at least 56px on screen, whatever the plot size. */
+    function renderSpots(): void {
+      const live = mode === 'weapons';
+      const { scale } = plotPoint(plotBox(), 0, 0);
+      const hitR = (B.spots.tapPx / 2 + 2) / scale;
+      const resolved = resolveSpots(build.pieces, build.spots);
+      spotsLayer.replaceChildren(
+        ...nodesFromMarkup(
+          doc,
+          spotsMarkup(
+            resolved,
+            (sp, on) => BUILDER_COPY.spotLabel(sp.index + 1, spotName(sp.index), on),
+            live ? selSpot : null,
+            live,
+            hitR,
+          ),
+        ),
+      );
+      spotChip.textContent = BUILDER_COPY.spotsChip(spotsUsed(build.spots), B.spots.count);
+    }
+
+    function renderPanel(): void {
+      const open = mode === 'weapons' && selSpot !== null;
+      weaponPanel.hidden = !open;
+      if (!open || selSpot === null) return;
+      const n = selSpot + 1;
+      const here = build.spots[selSpot]?.weapon;
+      const have = ownedWeapons();
+      const scrap = walletOf(camp, name).scrap;
+      scrapValue.textContent = String(scrap);
+      // The list sits on the side away from the chosen spot, so it never covers it.
+      const pad = resolveSpots(build.pieces, build.spots)[selSpot];
+      weaponPanel.setAttribute('data-side', pad && pad.x * STEP < PLOT_W / 2 ? 'right' : 'left');
+      weaponPanel.setAttribute('aria-label', BUILDER_COPY.spotPanel(n));
+      panelTitle.textContent = BUILDER_COPY.spotTitle(n);
+      panelList.replaceChildren(
+        ...spotWeaponsOf(team).map((def) => {
+          const open = have.has(def.id);
+          const on = here === def.id;
+          const b = h(doc, 'button', {
+            type: 'button',
+            class: 'tc-bb-weapon',
+            'data-weapon': def.id,
+            'data-state': open ? (on ? 'on' : 'owned') : 'locked',
+            'aria-pressed': open ? String(on) : null,
+            'aria-label': open
+              ? BUILDER_COPY.weaponLabel(def.name, on)
+              : BUILDER_COPY.weaponLockedLabel(def.name, def.scrap ?? 0),
+            'data-testid': `bb-weapon-${def.id}`,
+          });
+          const words = h(
+            doc,
+            'span',
+            { class: 'tc-bb-weapon-words' },
+            h(doc, 'span', { class: 'tc-bb-weapon-name', text: def.name }),
+          );
+          if (!open) words.append(h(doc, 'span', { text: BUILDER_COPY.unlockCost(def.scrap ?? 0) }));
+          else if (on) words.append(h(doc, 'span', { text: BUILDER_COPY.onThisSpot }));
+          b.append(weaponIcon(doc, def.id, 44), words);
+          if (!open) {
+            b.append(
+              svgFromString(
+                doc,
+                '<svg viewBox="0 0 32 32" width="28" height="28" class="tc-bb-lock" aria-hidden="true"><rect x="6" y="14" width="20" height="14" rx="3" fill="#ffb23e" stroke="#12102b" stroke-width="3"/><path d="M10,14 V10 a6,6 0 0 1 12,0 V14" fill="none" stroke="#12102b" stroke-width="3"/></svg>',
+              ),
+            );
+          }
+          b.addEventListener('click', () => pickWeapon(def));
+          return b;
+        }),
+      );
+      clearSpotBtn.setAttribute('aria-label', BUILDER_COPY.clearSpotLabel(n));
+      clearSpotBtn.setAttribute('aria-disabled', String(here === undefined));
+    }
+
+    function renderMode(): void {
+      const weapons = mode === 'weapons';
+      buildModeBtn.setAttribute('aria-pressed', String(!weapons));
+      weaponsModeBtn.setAttribute('aria-pressed', String(weapons));
+      screen.setAttribute('data-mode', mode);
+      // Bricks and the tray wait while weapons are picked.
+      tray.toggleAttribute('inert', weapons);
+      turnBtn.setAttribute('aria-disabled', String(weapons));
+      snapBtn.setAttribute('aria-disabled', String(weapons));
+    }
+
+    function setMode(next: 'build' | 'weapons'): void {
+      if (next === mode) return;
+      mode = next;
+      armed = null;
+      cursor = null;
+      selected = null;
+      selSpot = null;
+      hintDefault();
+      renderAll();
+    }
+
+    /** Chooses a spot. `focus` moves the keyboard to the weapon list. */
+    function selectSpot(i: number, focus: boolean): void {
+      selSpot = i;
+      say(BUILDER_COPY.spotChosen(i + 1));
+      renderSpots();
+      renderPanel();
+      if (focus) {
+        const target =
+          weaponPanel.querySelector<HTMLElement>('.tc-bb-weapon[data-state="on"]') ??
+          weaponPanel.querySelector<HTMLElement>('.tc-bb-weapon[data-state="owned"]');
+        target?.focus();
+      }
+    }
+
+    function focusSpot(i: number | null): void {
+      if (i === null) return;
+      (spotsLayer.querySelector(`[data-spot="${i}"]`) as SVGElement | null)?.focus();
+    }
+
+    function keepFocus(el: Element | null, fallback: () => void): void {
+      const weapon = el?.getAttribute('data-weapon');
+      const again = weapon
+        ? weaponPanel.querySelector<HTMLElement>(`[data-weapon="${weapon}"]`)
+        : null;
+      if (again) again.focus();
+      else fallback();
+    }
+
+    function pickWeapon(def: SpotWeaponDef): void {
+      if (selSpot === null) return;
+      const n = selSpot + 1;
+      const had = doc.activeElement;
+      if (!ownedWeapons().has(def.id)) {
+        const outcome = unlockSpotWeapon(camp, name, team, def.id);
+        if (outcome.ok) {
+          camp = outcome.camp;
+          options.saveCamp(camp);
+          say(BUILDER_COPY.weaponUnlocked(def.name, n));
+        } else if (outcome.reason === 'not_enough_scrap') {
+          say(FORGE_COPY.needMore(Math.max(1, (def.scrap ?? 0) - walletOf(camp, name).scrap)));
+        }
+        renderTray();
+        renderPanel();
+        keepFocus(had, () => undefined);
+        return;
+      }
+      const result = assignWeapon(build, selSpot, def.id, ownedWeapons());
+      if (!result.ok) return;
+      if (result.state !== build) {
+        build = result.state;
+        persist();
+      }
+      say(BUILDER_COPY.weaponPlaced(def.name, n));
+      renderAll();
+      keepFocus(had, () => focusSpot(selSpot));
+    }
+
+    function doClearSpot(): void {
+      if (selSpot === null) return;
+      const n = selSpot + 1;
+      const result = clearSpot(build, selSpot);
+      if (!result.ok) {
+        say(BUILDER_COPY.spotAlreadyEmpty(n));
+        return;
+      }
+      build = result.state;
+      persist();
+      say(BUILDER_COPY.weaponCleared(n));
+      renderAll();
+    }
+
     function renderAll(): void {
+      renderMode();
+      renderSpots();
+      renderPanel();
       renderPlot();
       renderSlots();
       renderTray();
@@ -498,6 +766,7 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<vo
       options.saveBases(bases);
       build = loadSlot();
       selected = null;
+      selSpot = null;
       armed = null;
       cursor = null;
       hintDefault();
@@ -733,6 +1002,7 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<vo
     // ---------- Plot events ----------
     plotArt.addEventListener('pointerdown', (e) => {
       if ((e.button ?? 0) !== 0 || drag) return;
+      if (mode === 'weapons') return;
       const hit = (e.target as Element | null)?.closest?.('.tc-bb-piece');
       if (hit) {
         startDrag(e, { kind: 'move', index: Number(hit.getAttribute('data-index')) });
@@ -752,11 +1022,31 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<vo
         .forEach((n) => n.removeAttribute('data-selected'));
     });
     plotArt.addEventListener('dragstart', (e) => e.preventDefault());
+    // Weapons mode: a tap on a pad chooses it. A tap anywhere else on the plot lets go of it.
+    plotArt.addEventListener('click', (e) => {
+      if (mode !== 'weapons') return;
+      const pad = (e.target as Element | null)?.closest?.('.tc-bb-spot');
+      if (pad) selectSpot(Number(pad.getAttribute('data-spot')), e.detail === 0);
+      else if (selSpot !== null) {
+        selSpot = null;
+        hintDefault();
+        renderSpots();
+        renderPanel();
+      }
+    });
+    buildModeBtn.addEventListener('click', () => setMode('build'));
+    weaponsModeBtn.addEventListener('click', () => setMode('weapons'));
+    clearSpotBtn.addEventListener('click', doClearSpot);
+    const onResize = (): void => renderSpots();
+    doc.defaultView?.addEventListener('resize', onResize);
 
     // ---------- Tools ----------
-    turnBtn.addEventListener('click', doTurn);
+    turnBtn.addEventListener('click', () => {
+      if (mode === 'build') doTurn();
+    });
     undoBtn.addEventListener('click', doUndo);
     snapBtn.addEventListener('click', () => {
+      if (mode !== 'build') return;
       snap = !snap;
       say(BUILDER_COPY.snapLabel(snap));
       renderTools();
@@ -781,6 +1071,52 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<vo
     });
 
     // ---------- Keyboard ----------
+    function weaponKeys(e: KeyboardEvent): void {
+      const k = e.key;
+      const target = e.target as Element;
+      const pad = target.closest?.('.tc-bb-spot');
+      if (pad) {
+        const i = Number(pad.getAttribute('data-spot'));
+        if (k === 'Enter' || k === ' ') {
+          e.preventDefault();
+          selectSpot(i, true);
+        } else if (k === 'ArrowLeft' || k === 'ArrowRight') {
+          e.preventDefault();
+          const next = (i + (k === 'ArrowRight' ? 1 : -1) + B.spots.count) % B.spots.count;
+          focusSpot(next);
+        } else if (k === 'Delete' || k === 'Backspace') {
+          e.preventDefault();
+          const keep = selSpot;
+          selSpot = i;
+          doClearSpot();
+          selSpot = keep;
+          renderAll();
+          focusSpot(i);
+        }
+        return;
+      }
+      if (!weaponPanel.contains(target)) return;
+      const rows = [...weaponPanel.querySelectorAll<HTMLElement>('.tc-bb-weapon')];
+      const at = rows.indexOf(target.closest('.tc-bb-weapon') as HTMLElement);
+      if (k === 'ArrowDown' || k === 'ArrowUp') {
+        e.preventDefault();
+        rows[(at + (k === 'ArrowDown' ? 1 : -1) + rows.length) % rows.length]?.focus();
+      } else if (k === 'Delete' || k === 'Backspace') {
+        e.preventDefault();
+        const keep = selSpot;
+        doClearSpot();
+        focusSpot(keep);
+      } else if (k === 'Escape') {
+        e.preventDefault();
+        const keep = selSpot;
+        selSpot = null;
+        hintDefault();
+        renderSpots();
+        renderPanel();
+        focusSpot(keep);
+      }
+    }
+
     screen.addEventListener('keydown', (e) => {
       const k = e.key;
       if ((e.ctrlKey || e.metaKey) && (k === 'z' || k === 'Z')) {
@@ -790,6 +1126,10 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<vo
       }
       if (drag && (k === 'r' || k === 'R')) {
         dragRot = rotate(dragRot);
+        return;
+      }
+      if (mode === 'weapons') {
+        weaponKeys(e);
         return;
       }
       const onPiece = (e.target as Element).closest?.('.tc-bb-piece');
@@ -869,6 +1209,7 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<vo
     const close = ctx.openScreen(screen);
     const finish = (): void => {
       endDrag();
+      doc.defaultView?.removeEventListener('resize', onResize);
       close();
       resolve();
     };

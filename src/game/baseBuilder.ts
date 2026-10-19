@@ -438,7 +438,8 @@ export function clearSpot(state: BuildState, index: number): SpotResult {
   const cur = state.spots[index];
   if (!cur) return { ok: false, reason: 'nospot' };
   if (cur.weapon === undefined) return { ok: false, reason: 'empty' };
-  const { weapon: _gone, ...rest } = cur;
+  const rest: Spot = { ...cur };
+  delete rest.weapon;
   return { ok: true, state: withSpot(state, index, rest) };
 }
 
@@ -451,7 +452,9 @@ export function moveSpot(
   const cur = state.spots[index];
   if (!cur) return { ok: false, reason: 'nospot' };
   if (to === null) {
-    const { x: _x, y: _y, ...rest } = cur;
+    const rest: Spot = { ...cur };
+    delete rest.x;
+    delete rest.y;
     return { ok: true, state: withSpot(state, index, rest) };
   }
   if (!padFits(to.x, to.y)) return { ok: false, reason: 'outside' };

@@ -325,3 +325,191 @@
 [data-motion='reduced'] .tc-bb-tool:active {
   transform: none;
 }
+
+/* Weapon spots: the mode switch, the spots chip, the pads on the plot, and the weapon list. */
+.tc-bb-modebar {
+  position: absolute;
+  top: var(--tc-s-3);
+  left: var(--tc-s-3);
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: var(--tc-s-3);
+}
+.tc-bb-mode {
+  display: flex;
+  overflow: hidden;
+  background: var(--tc-parchment-warm);
+  border: 4px solid var(--tc-purple-700);
+  border-radius: 20px;
+}
+.tc-bb[data-team='FUTURE'] .tc-bb-mode {
+  border-color: var(--tc-blue-500);
+}
+.tc-bb-mode-btn {
+  min-width: 56px;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tc-s-2);
+  padding: 0 var(--tc-s-3);
+  background: transparent;
+  color: var(--tc-ink-deep);
+  border: 0;
+  font-family: var(--tc-font-voice-old);
+  font-size: var(--tc-fs-label);
+  line-height: 1;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.tc-bb[data-team='FUTURE'] .tc-bb-mode-btn {
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+}
+.tc-bb-mode-btn[aria-pressed='true'] {
+  background: var(--tc-ember);
+}
+.tc-bb-mode-btn:focus-visible {
+  outline: var(--tc-focus-width) solid var(--tc-ink-deep);
+  outline-offset: -6px;
+}
+.tc-bb-chip {
+  margin: 0;
+  padding: var(--tc-s-2) var(--tc-s-3);
+  background: var(--tc-ink-deep);
+  color: var(--tc-parchment-warm);
+  border: 3px solid var(--tc-ember);
+  border-radius: 12px;
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: var(--tc-text-min);
+  white-space: nowrap;
+}
+
+.tc-bb-spot[data-live='true'] {
+  cursor: pointer;
+}
+.tc-bb-spot[data-live='false'] {
+  pointer-events: none;
+  opacity: 0.85;
+}
+.tc-bb-spot:focus {
+  outline: none;
+}
+.tc-bb-spot:focus-visible .tc-bb-spot-hit {
+  stroke: var(--tc-focus-on-dark);
+  stroke-width: 6px;
+  stroke-dasharray: 10 6;
+}
+.tc-bb-spot[data-selected] {
+  filter: drop-shadow(0 0 8px var(--tc-ember));
+}
+.tc-bb-spot-n {
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: 24px;
+}
+.tc-bb[data-mode='weapons'] .tc-bb-piece {
+  cursor: default;
+}
+
+.tc-bb-weapons {
+  position: absolute;
+  top: calc(var(--tc-s-3) + 72px);
+  bottom: var(--tc-s-3);
+  width: min(300px, 38%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: var(--tc-s-1);
+  padding: var(--tc-s-2);
+  overflow-y: auto;
+  background: var(--tc-ink-deep);
+  border: 4px solid var(--tc-ember);
+  border-radius: 18px;
+  box-shadow: 0 8px 0 rgb(0 0 0 / 35%);
+}
+.tc-bb-weapons[data-side='right'] {
+  right: var(--tc-s-3);
+}
+.tc-bb-weapons[data-side='left'] {
+  left: var(--tc-s-3);
+}
+.tc-bb-weapons-title {
+  margin: 0;
+  color: var(--tc-parchment-warm);
+  font-family: var(--tc-font-voice-old);
+  font-weight: 400;
+  font-size: var(--tc-fs-label);
+  line-height: 1.1;
+}
+.tc-bb[data-team='FUTURE'] .tc-bb-weapons-title {
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+}
+.tc-bb-weapons-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tc-s-1);
+}
+.tc-bb-weapon {
+  position: relative;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  gap: var(--tc-s-2);
+  padding: 0 var(--tc-s-2);
+  background: var(--tc-parchment-warm);
+  color: var(--tc-ink-deep);
+  border: 4px solid var(--tc-purple-700);
+  border-radius: 12px;
+  font-family: var(--tc-font-voice-old);
+  font-size: var(--tc-fs-label);
+  line-height: 1;
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.tc-bb[data-team='FUTURE'] .tc-bb-weapon {
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  border-color: var(--tc-blue-500);
+}
+.tc-bb-weapon:focus-visible {
+  outline: var(--tc-focus-width) solid var(--tc-focus-on-dark);
+  outline-offset: 2px;
+}
+.tc-bb-weapon[data-state='on'] {
+  background: var(--tc-ember);
+  border-color: var(--tc-ink-deep);
+}
+.tc-bb-weapon[data-state='locked'] {
+  background: var(--tc-steel-blue);
+  border-style: dashed;
+}
+.tc-bb-weapon[data-state='locked'] .tc-bb-weapon-icon {
+  opacity: 0.6;
+}
+.tc-bb-weapon-icon {
+  flex: none;
+  width: 40px;
+  height: 40px;
+}
+.tc-bb-weapon-words {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.tc-bb-weapon-clear {
+  justify-content: center;
+  background: var(--tc-parchment-warm);
+  border-color: var(--tc-banner-red);
+}
+.tc-bb-weapon-clear[aria-disabled='true'] {
+  opacity: 0.55;
+}
+.tc-bb[data-mode='weapons'] .tc-bb-tray {
+  opacity: 0.45;
+}

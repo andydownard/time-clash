@@ -1,7 +1,15 @@
 // Base builder: drag bricks onto the plot, turn, undo, keep three saved bases, and see the chosen
 // base again after a reload. The builder is behind ?builder=1 until the panel has reviewed it.
 import { expect, test } from './fixtures';
-import { bricks, cellPoint, dragBrick, openBuilder, toBuilderCamp } from './support/builder';
+import {
+  bricks,
+  cellPoint,
+  chooseSpot,
+  dragBrick,
+  openBuilder,
+  spotPad,
+  toBuilderCamp,
+} from './support/builder';
 import { giveScrap } from './support/camp';
 import { tid } from './support/game';
 import { saveShot } from './support/shots';
@@ -151,5 +159,158 @@ for (const team of ['PAST', 'FUTURE'] as const) {
     await saveShot(page, browserName, `base-builder-${team.toLowerCase()}`);
     await tid(page, 'bb-done').click();
     await saveShot(page, browserName, `base-builder-camp-${team.toLowerCase()}`);
+  });
+}
+
+test('weapons: pick spot 2, mount a weapon, reload, and it is still there', async ({ page }) => {
+  await toBuilderCamp(page);
+  await openBuilder(page, 'PAST');
+  await expect(tid(page, 'bb-spots-chip')).toHaveText('Spots 0 of 4 used');
+  await expect(tid(page, 'bb-weapon-panel')).toBeHidden();
+  await chooseSpot(page, 2);
+  await expect(tid(page, 'bb-weapon-panel')).toContainText('Spot 2: pick a weapon');
+  await expect(spotPad(page, 2)).toHaveAttribute('aria-label', 'Spot 2, empty, selected');
+  await tid(page, 'bb-weapon-catapult').click();
+  await expect(tid(page, 'bb-status')).toHaveText('Catapult is on spot 2.');
+  await expect(spotPad(page, 2)).toHaveAttribute('aria-label', 'Spot 2, catapult, selected');
+  await expect(tid(page, 'bb-weapon-catapult')).toContainText('On this spot');
+  await expect(tid(page, 'bb-spots-chip')).toHaveText('Spots 1 of 4 used');
+
+  // Replace it, then Undo brings the Catapult back.
+  await tid(page, 'bb-weapon-cannon').click();
+  await expect(spotPad(page, 2)).toHaveAttribute('aria-label', 'Spot 2, cannon, selected');
+  await tid(page, 'bb-undo').click();
+  await expect(spotPad(page, 2)).toHaveAttribute('aria-label', 'Spot 2, catapult, selected');
+
+  await tid(page, 'bb-done').click();
+  await page.reload();
+  await expect(tid(page, 'camp-start')).toBeVisible({ timeout: 10_000 });
+  await openBuilder(page, 'PAST');
+  await expect(tid(page, 'bb-spots-chip')).toHaveText('Spots 1 of 4 used');
+  await tid(page, 'bb-mode-weapons').click();
+  await expect(spotPad(page, 2)).toHaveAttribute('aria-label', 'Spot 2, catapult');
+  await expect(spotPad(page, 1)).toHaveAttribute('aria-label', 'Spot 1, empty');
+  // Clear spot empties it and the weapon stays gone after a reload.
+  await spotPad(page, 2).click();
+  await tid(page, 'bb-spot-clear').click();
+  await expect(tid(page, 'bb-spots-chip')).toHaveText('Spots 0 of 4 used');
+  await tid(page, 'bb-done').click();
+  await page.reload();
+  await expect(tid(page, 'camp-start')).toBeVisible({ timeout: 10_000 });
+  await openBuilder(page, 'PAST');
+  await expect(tid(page, 'bb-spots-chip')).toHaveText('Spots 0 of 4 used');
+});
+
+test('weapons: the list never covers the chosen spot, and pads have a 56px tap area', async ({
+  page,
+}) => {
+  await toBuilderCamp(page);
+  await openBuilder(page, 'FUTURE');
+  for (const n of [1, 2, 3, 4]) {
+    await chooseSpot(page, n);
+    const panel = (await tid(page, 'bb-weapon-panel').boundingBox())!;
+    const pad = (await spotPad(page, n).locator('.tc-bb-spot-ring').boundingBox())!;
+    const apart =
+      pad.x + pad.width <= panel.x ||
+      pad.x >= panel.x + panel.width ||
+      pad.y + pad.height <= panel.y ||
+      pad.y >= panel.y + panel.height;
+    expect(apart, `spot ${n} is covered by the list`).toBe(true);
+    const tap = (await spotPad(page, n).locator('[data-spot-hit]').boundingBox())!;
+    expect(Math.min(tap.width, tap.height)).toBeGreaterThanOrEqual(56);
+  }
+});
+
+test('weapons: a locked weapon needs Scrap, once, and then mounts', async ({ page }) => {
+  await toBuilderCamp(page);
+  await giveScrap(page, 20, 0);
+  await page.reload();
+  await expect(tid(page, 'camp-start')).toBeVisible({ timeout: 10_000 });
+  await openBuilder(page, 'PAST');
+  await chooseSpot(page, 1);
+  await expect(tid(page, 'bb-weapon-ballista')).toHaveAttribute('data-state', 'locked');
+  await tid(page, 'bb-weapon-ballista').click();
+  await expect(tid(page, 'bb-status')).toHaveText('Not yet. You need 15 more Scrap.');
+  await expect(tid(page, 'bb-scrap')).toContainText('20');
+  await expect(spotPad(page, 1)).toHaveAttribute('aria-label', 'Spot 1, empty, selected');
+
+  await tid(page, 'bb-done').click();
+  await giveScrap(page, 40, 0);
+  await page.reload();
+  await expect(tid(page, 'camp-start')).toBeVisible({ timeout: 10_000 });
+  await openBuilder(page, 'PAST');
+  await chooseSpot(page, 1);
+  await tid(page, 'bb-weapon-ballista').click();
+  await expect(tid(page, 'bb-status')).toContainText('You unlocked Ballista!');
+  await expect(tid(page, 'bb-scrap')).toContainText('5');
+  await expect(tid(page, 'bb-weapon-ballista')).toHaveAttribute('data-state', 'owned');
+  await tid(page, 'bb-weapon-ballista').click();
+  await expect(spotPad(page, 1)).toHaveAttribute('aria-label', 'Spot 1, ballista, selected');
+  await expect(tid(page, 'bb-scrap')).toContainText('5');
+});
+
+test('weapons keyboard: Tab to a spot, Enter, arrows, Enter to mount, Delete to clear', async ({
+  page,
+}) => {
+  await toBuilderCamp(page);
+  await openBuilder(page, 'FUTURE');
+  await tid(page, 'bb-mode-weapons').click();
+  await spotPad(page, 3).focus();
+  await page.keyboard.press('ArrowLeft');
+  await expect(spotPad(page, 2)).toBeFocused();
+  await page.keyboard.press('ArrowRight');
+  await page.keyboard.press('Enter');
+  await expect(tid(page, 'bb-weapon-laser')).toBeFocused();
+  await page.keyboard.press('ArrowDown');
+  await expect(tid(page, 'bb-weapon-missilePod')).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(spotPad(page, 3)).toHaveAttribute('aria-label', 'Spot 3, missile pod, selected');
+  await expect(tid(page, 'bb-weapon-missilePod')).toBeFocused();
+  await page.keyboard.press('Delete');
+  await expect(spotPad(page, 3)).toHaveAttribute('aria-label', 'Spot 3, empty, selected');
+  await expect(spotPad(page, 3)).toBeFocused();
+  await page.keyboard.press('Enter');
+  await page.keyboard.press('Escape');
+  await expect(tid(page, 'bb-weapon-panel')).toBeHidden();
+  await expect(spotPad(page, 3)).toBeFocused();
+});
+
+for (const team of ['PAST', 'FUTURE'] as const) {
+  test(`${team} builder looks right in Weapons mode`, async ({ page, browserName }) => {
+    await toBuilderCamp(page);
+    await giveScrap(page, 40, 40);
+    await page.reload();
+    await expect(tid(page, 'camp-start')).toBeVisible({ timeout: 10_000 });
+    await openBuilder(page, team);
+    const set =
+      team === 'PAST'
+        ? ([
+            ['long', 7, 10, 4, 1],
+            ['long', 12, 10, 4, 1],
+            ['tower', 7, 8, 1, 2],
+            ['tower', 14, 8, 1, 2],
+            ['wallTop', 9, 9, 3, 1],
+            ['stone', 9, 8, 2, 1],
+          ] as const)
+        : ([
+            ['beam', 7, 10, 4, 1],
+            ['beam', 12, 10, 4, 1],
+            ['antenna', 7, 8, 1, 2],
+            ['solar', 9, 9, 3, 1],
+            ['panel', 14, 9, 2, 1],
+          ] as const);
+    for (const [id, c, r, pw, ph] of set) await dragBrick(page, id, c, r, pw, ph);
+    const weapons =
+      team === 'PAST'
+        ? (['cannon', 'catapult', 'archerPost'] as const)
+        : (['laser', 'missilePod', 'turret'] as const);
+    await tid(page, 'bb-mode-weapons').click();
+    for (const [i, w] of weapons.entries()) {
+      await spotPad(page, i + 1).click();
+      await tid(page, `bb-weapon-${w}`).click();
+    }
+    await spotPad(page, 2).click();
+    await expect(tid(page, 'bb-spots-chip')).toHaveText('Spots 3 of 4 used');
+    await saveShot(page, browserName, `base-builder-weapons-${team.toLowerCase()}`);
   });
 }

@@ -473,4 +473,30 @@ export const BUILDER_COPY = {
   unlocked: (name: string): string => `You unlocked ${name}!`,
   ghostAt: (name: string, x: number, y: number): string =>
     `${name} at column ${x + 1}, row ${y + 1}. Enter puts it down.`,
+  // Weapon spots
+  mode: 'Mode',
+  modeBuild: 'Build',
+  modeWeapons: 'Weapons',
+  modeBuildLabel: 'Build mode, bricks',
+  modeWeaponsLabel: 'Weapons mode, pick weapon spots',
+  spotsChip: (used: number, total: number): string => `Spots ${used} of ${total} used`,
+  spotHint: 'Tap a spot. Pick a weapon for it.',
+  spotKeys:
+    'Weapon keys: Tab or arrows go to a spot. Enter chooses it. Then arrows pick a weapon and Enter puts it on. Delete clears the spot. Escape closes the list.',
+  spotTitle: (n: number): string => `Spot ${n}: pick a weapon`,
+  spotPanel: (n: number): string => `Pick a weapon for spot ${n}`,
+  onThisSpot: 'On this spot',
+  clearSpot: 'Clear spot',
+  clearSpotLabel: (n: number): string => `Clear spot ${n}`,
+  spotLabel: (n: number, weapon: string | null, selected: boolean): string =>
+    `Spot ${n}, ${weapon ? weapon.toLowerCase() : 'empty'}${selected ? ', selected' : ''}`,
+  weaponLabel: (name: string, onSpot: boolean): string =>
+    onSpot ? `${name}, on this spot` : name,
+  weaponLockedLabel: (name: string, n: number): string => `${name}, locked. Costs ${n} Scrap.`,
+  weaponPlaced: (name: string, n: number): string => `${name} is on spot ${n}.`,
+  weaponCleared: (n: number): string => `Spot ${n} is empty now.`,
+  spotAlreadyEmpty: (n: number): string => `Spot ${n} is already empty.`,
+  spotChosen: (n: number): string => `Spot ${n} chosen. Pick a weapon for it.`,
+  weaponUnlocked: (name: string, n: number): string =>
+    `You unlocked ${name}! Tap it to put it on spot ${n}.`,
 } as const;
