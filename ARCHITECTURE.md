@@ -12,12 +12,13 @@ Browser
  ├─ Sound manager (unlock on tap, mute, volume)     src/audio/
  └─ Storage wrapper (localStorage, try/catch)       src/storage/
 
-Voice service (second Railway service, optional)    voice-server/
- └─ GET /v1/clips/:id from db/voice-*.sqlite, read-only
+App server (one Node process on Railway)            app-server/, voice-server/
+ ├─ Static files from dist/ + security headers      app-server/static.ts, headers.ts
+ └─ GET /v1/clips/:id from db/voice-*.sqlite        voice-server/clips.ts (read-only)
 ```
 
-## Voice clips (optional second service)
-`voice-server/` is a small Node service that serves recorded lines by id (`GET /v1/clips/:id`, `GET /health`, Range support). The game uses it only when `VITE_VOICE_URL` is set; otherwise nothing changes. `speak(line)` picks the line's own `audioSrc` file, then a clip (`src/audio/clipPlayer.ts`, id from `src/audio/clipId.ts`), then the browser voice. A clip that fails or takes over 1.5 s falls back at once and is not asked for again that session. The funny knock-down line is also spoken through `speak()` when the service is on. Full contract, env and deploy steps: [docs/VOICE_SERVICE.md](./docs/VOICE_SERVICE.md).
+## App server and voice clips
+`app-server/` is a small Node server (`node:http` only) that serves the built site and the recorded lines on one origin: `GET /v1/clips/:id`, `GET /health`, static files with cache headers, compression and Range support. The exact security headers come from `public/_headers`. The game asks for clips only in a build made with `VITE_VOICE=on` (production and e2e builds). `speak(line)` picks the line's own `audioSrc` file, then a clip (`src/audio/clipPlayer.ts`, id from `src/audio/clipId.ts`), then the browser voice. A clip that fails or takes over 1.5 s falls back at once and is not asked for again that session. The funny knock-down line is also spoken through `speak()` when clips are on. The Phase 4 relay will mount at `/ws` in the same process. Full contract, env, and Railway cutover and rollback: [docs/APP_SERVER.md](./docs/APP_SERVER.md).
 
 ## Scene flow
 New family: TapToStart → Intro → Loading → Setup → Camp → (Deploy, Phase 2) → Battle → Victory → Rematch or Camp.
@@ -80,4 +81,4 @@ Wind, question order, and speech bubble choice use a seeded RNG (`src/game/rng.t
 A small Node relay (`ws`) pairs two clients by a 4-letter room code. The server owns turn order and checks every move. Clients send inputs only. See Phase 4 in [docs/BUILD.md](./docs/BUILD.md).
 
 ## Hosting
-Static files on Cloudflare Pages or GitHub Pages. Build output in `dist/`. `/version.txt` holds the build SHA.
+One Node app server on Railway (`npm start`, health check `/health`) serves `dist/` and the clips. `railway.json` pins the start command. Build output in `dist/`, compiled server in `dist-server/`. `/version.txt` holds the build SHA.

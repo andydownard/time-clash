@@ -17,10 +17,10 @@ The game is **free**. No ads. No accounts. No purchases. No tracking. The player
 Owner: Andy Downard. Built for and with his family. Stack choices favor simple, free, and fast to change.
 
 ## Stack
-TypeScript · Vite · Phaser 3 (game canvas) · plain DOM and CSS for menus and modals · Vitest (unit) · Playwright (browser). Static site with no server through Phase 3. Phase 4 adds one small Node WebSocket relay (`ws`). Host on Cloudflare Pages or GitHub Pages (free). Scope key: none (no accounts). Phase 4 uses `room_code`.
+TypeScript · Vite · Phaser 3 (game canvas) · plain DOM and CSS for menus and modals · Vitest (unit) · Playwright (browser). Served by one small Node app server (`app-server/`, `node:http` only) that serves the built site and the spoken clips (`/v1/clips/:id`) on the same origin, on Railway. Phase 4 adds a WebSocket relay (`ws`) to that same process. Scope key: none (no accounts). Phase 4 uses `room_code`.
 
 ## Commands
-test: `npm test` · lint: `npm run lint` · typecheck: `npm run typecheck` · build: `npm run build` · run: `npm run dev` · browser tests: `npm run e2e` · question check: `npm run check:questions` · bundle check: `npm run check:dist`
+test: `npm test` · lint: `npm run lint` · typecheck: `npm run typecheck` · build: `npm run build` · run: `npm run dev` · browser tests: `npm run e2e` · question check: `npm run check:questions` · bundle check: `npm run check:dist` · start the built site: `npm start` · server smoke test: `npm run smoke:server`
 
 ## Vocabulary
 | User sees | Code uses | NEVER say in UI |
@@ -56,7 +56,7 @@ test: `npm test` · lint: `npm run lint` · typecheck: `npm run typecheck` · bu
 - Override MONEY: not applicable. The game is free. Never add ads, payments, or paywalls.
 - Override PII: do not log names. Phase 4 relay logs hold room code and event type only. No IPs kept.
 - Override AI: no model calls at runtime. Any future AI feature needs Andy's approval and a panel review first.
-- Override GIT: one deploy branch. PR into `main` with green CI, then the static host deploys `main`. No staging hop. Confirm the deployed build shows its SHA on `/version.txt` after every deploy (`VERIFY`).
+- Override GIT: one deploy branch. PR into `main` with green CI, then Railway builds `main` and runs `npm start` (the app server, health check `/health`). No staging hop. Confirm the deployed build shows its SHA on `/version.txt` after every deploy (`VERIFY`).
 - Override CI cost: a pull request runs the full browser matrix (Chromium and WebKit at three sizes, WebKit in two shards each). After the merge, `main` runs one Chromium job plus the unit, lint and build checks. New pushes cancel older pull request runs. Put more into each pull request: every PR costs one full matrix.
 - Override UI: the supported screens are iPad landscape (1024x768 and up, including iPad mini 1133x744 and iPad Pro 13in 1376x1032) plus laptop. iPad portrait is not played: a touch tablet held upright (short side 600px or more, `pointer: coarse`) shows a full-screen "Turn your iPad sideways" screen (`src/ui/turnScreen.ts`) and pauses a running battle. Laptops and tall desktop windows with a mouse are unaffected. Phone is not supported through Phase 3. Screenshot at 1280x800 and 1024x768 before calling any visual change done. The latest iPad audit is [docs/IPAD_AUDIT.md](./docs/IPAD_AUDIT.md).
 - Override TRACKING: use `INBOX.md` and `BACKLOG.md`. Never create new tracking files.
@@ -150,6 +150,7 @@ New ideas go in [INBOX.md](./INBOX.md) (raw, 30-day expiry). Triage moves them t
 | Get running in 10 minutes | [QUICKSTART.md](./QUICKSTART.md) |
 | Architecture and data shapes | [ARCHITECTURE.md](./ARCHITECTURE.md) |
 | Privacy and child safety | [SECURITY.md](./SECURITY.md) |
+| App server: site + spoken clips, headers, Railway cutover and rollback | [docs/APP_SERVER.md](./docs/APP_SERVER.md) |
 | iPad layout audit (all sizes, both orientations) | [docs/IPAD_AUDIT.md](./docs/IPAD_AUDIT.md) |
 | Original game spec | [docs/GAME_SPEC.md](./docs/GAME_SPEC.md) |
 | Design guidance from the canvas comments | [docs/DESIGN_GUIDANCE.md](./docs/DESIGN_GUIDANCE.md) |
