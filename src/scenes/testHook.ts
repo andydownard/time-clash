@@ -19,6 +19,8 @@ export type TimeClashHook = {
   players(): Players | null;
   /** Smallest size, in screen pixels, of any label drawn on the canvas, or null. */
   labelPx(): number | null;
+  /** What the angle guide on the board shows: the team, its firing point, and its texts. */
+  aim(): { team: string | null; origin: { x: number; y: number } | null; texts: string[] } | null;
 };
 
 export function e2eEnabled(search: string, mode: string): boolean {
@@ -57,6 +59,7 @@ export type ActiveScene = {
   scene?: { key?: string };
   controller?: unknown;
   labels?: { minRenderedPx(): number | null } | null;
+  aimState?: () => { team: string | null; origin: { x: number; y: number } | null; texts: string[] };
 };
 
 export type HookDeps = {
@@ -87,6 +90,7 @@ export function installTestHook(win: { __timeclash?: TimeClashHook }, deps: Hook
     match: () => findController()?.snapshot() ?? null,
     players: () => deps.storage.get('timeclash.players'),
     labelPx: () => deps.activeScenes()[0]?.labels?.minRenderedPx() ?? null,
+    aim: () => deps.activeScenes()[0]?.aimState?.() ?? null,
   };
   return true;
 }

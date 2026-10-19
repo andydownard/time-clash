@@ -12,6 +12,8 @@ export type TeamLoadout = {
   owned: Partial<Record<WeaponId, number>>;
   /** Upgrade levels (1 to 3). Missing means level 0. */
   upgrades: Partial<Record<UpgradeId, number>>;
+  /** Base-builder pieces unlocked with Scrap. The free pieces are never listed. */
+  pieces?: string[];
 };
 
 /**

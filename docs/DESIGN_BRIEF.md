@@ -87,7 +87,7 @@ Left: ornate medieval castle. Right: futuristic Austin cyber-base under a glowin
 Include these elements:
 - **Turn banner**, top center, drops in with a cartoon horn: "ALEX, YOUR TURN! (SHOT 1 OF 2)" with glowing arrows toward the active side. Use the active team's accent color.
 - **Active player glow**: bright animated frame around the active side. The waiting side dims about 25%.
-- **Aim controls**: angle dial and power meter, each with big touch-friendly drag handles and number readouts. Also arrow-key and mouse support hints. Trajectory dotted arc preview (short, fades out).
+- **Aim controls**: a small angle guide on the board at the muzzle (short arc, short line, tiny handle with a big invisible grab area, one number), plus the bottom-bar Angle and Power sliders. Power is shown only in the bottom bar. Also arrow-key and mouse support hints. Trajectory dotted arc preview (short, fades out).
 - **Wind**: a windsock or leaf that shows direction and strength, plus a small number.
 - **Health bars** for each base: 100 HP, shaped like a candle on the Past side and a battery on the Future side.
 - **Shots left**: two cannonball (Past) or plasma orb (Future) icons.
