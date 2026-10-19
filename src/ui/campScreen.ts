@@ -4,7 +4,7 @@
 import { BUILDER_COPY, CAMP, GAME_TITLE } from '../data/copy';
 import type { Team } from '../game/types';
 import { baseThumb } from './baseBuilderArt';
-import { campScene } from './campArt';
+import { campScene, hawkFrontLayer } from './campArt';
 import { campScheduler, flyOverCamp } from './campFlights';
 import type { UiCtx } from './ctx';
 import { h } from './dom';
@@ -84,6 +84,8 @@ export function showCamp(ctx: UiCtx, options?: CampOptions): Promise<CampChoice>
         ' ',
         h(doc, 'span', { class: 'tc-camp-clash', text: CAMP.logoClash }),
       ),
+      // The hawk's near-side layer sits over the name, so he passes in front of it.
+      hawkFrontLayer(doc),
       h(doc, 'div', { class: 'tc-camp-start-slot' }, start),
       h(
         doc,

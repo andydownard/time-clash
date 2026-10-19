@@ -108,3 +108,20 @@ export function bubbleAnchor(team: Team, layout: BattleLayout): Vec2 {
     team === 'PAST' ? base.x + base.w + BUBBLE_MAX_WORLD_W / 2 : base.x - BUBBLE_MAX_WORLD_W / 2;
   return { x, y: spot.y - BUBBLE_RISE };
 }
+
+/** How far the power meter slides back from the launcher, away from the enemy. */
+const METER_SHIFT = 72;
+
+/**
+ * Left edge of the power meter. It sits above the launcher but slides back, away from the
+ * enemy, so it clears the balloon drawn over the launcher (iPad mini audit, defect 5).
+ */
+export function meterLeft(
+  originX: number,
+  facing: 1 | -1,
+  worldWidth: number,
+  meterW: number,
+): number {
+  const x = originX - meterW / 2 - facing * METER_SHIFT;
+  return Math.min(worldWidth - meterW - 8, Math.max(8, x));
+}
