@@ -10,7 +10,7 @@ import {
   type Wallet,
 } from '../game/loadout';
 import type { Grade, Player, Players, Subject, Team } from '../game/types';
-import { freshBases, parseBases, pieceById, type BasesState } from '../game/baseBuilder';
+import { freshBases, parseBases, pieceById, spotWeaponById, type BasesState } from '../game/baseBuilder';
 import { FORGE, WEAPONS, type WeaponId } from '../game/weapons';
 import { UPGRADES, UPGRADE_MAX_LEVEL, type UpgradeId } from '../game/upgrades';
 import { CALIBRATION, type CalibrationState, type Levels } from '../questions/calibration';
@@ -132,7 +132,22 @@ function parseLoadout(v: unknown, team: Team): TeamLoadout {
       if (def && def.team === team && !def.free && !pieces.includes(def.id)) pieces.push(def.id);
     }
   }
-  return pieces.length > 0 ? { weapon, owned, upgrades, pieces } : { weapon, owned, upgrades };
+  const mounts: string[] = [];
+  if (Array.isArray(v.mounts)) {
+    for (const id of v.mounts) {
+      const def = spotWeaponById(id);
+      if (def && def.team === team && def.scrap !== null && !mounts.includes(def.id)) {
+        mounts.push(def.id);
+      }
+    }
+  }
+  return {
+    weapon,
+    owned,
+    upgrades,
+    ...(pieces.length > 0 ? { pieces } : {}),
+    ...(mounts.length > 0 ? { mounts } : {}),
+  };
 }
 
 /** One wallet, cleaned. Bad numbers become 0 and the starter weapons are always owned. */

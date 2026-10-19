@@ -2,6 +2,7 @@
 // (Team Past) or a base (Team Future) before a battle. Anything goes: bricks may stand on each
 // other, stick out sideways, or lean on a wall. The only rules are "inside the plot" and "no two
 // bricks in the same spot". Every function returns a new state and never changes the old one.
+// A base also has four weapon spots: round pads where a cannon, laser or other weapon is mounted.
 import { BASE_BUILDER as B } from './config';
 import { walletKey } from './loadout';
 import type { Team } from './types';
@@ -67,6 +68,47 @@ export function ownedPieceIds(team: Team, unlocked: readonly string[] | undefine
   );
   for (const id of unlocked ?? []) {
     const def = pieceById(id);
+    if (def && def.team === team) owned.add(id);
+  }
+  return owned;
+}
+
+// ---------- Weapon spots: the weapons that can be mounted ----------
+
+export type SpotRole = 'direct' | 'lob' | 'volley' | 'guard';
+
+export type SpotWeaponDef = Readonly<{
+  id: string;
+  team: Team;
+  /** Words for a screen reader and the panel. */
+  name: string;
+  /** Scrap to unlock, or null when it is owned from the start. */
+  scrap: number | null;
+  /** How it fires in a later battle task: straight, in an arc, many small shots, or a shield. */
+  role: SpotRole;
+  damage: number;
+  /** Hit points it starts with. */
+  hp: number;
+}>;
+
+export const SPOT_WEAPONS: readonly SpotWeaponDef[] = B.spotWeapons.map((w) => ({ ...w }));
+export const spotWeaponById = (id: unknown): SpotWeaponDef | undefined =>
+  SPOT_WEAPONS.find((w) => w.id === id);
+export const spotWeaponsOf = (team: Team): readonly SpotWeaponDef[] =>
+  SPOT_WEAPONS.filter((w) => w.team === team);
+
+/** The spot weapons a player has: the free ones, plus any unlocked with Scrap. */
+export function ownedSpotWeaponIds(
+  team: Team,
+  unlocked: readonly string[] | undefined,
+): Set<string> {
+  const owned = new Set(
+    spotWeaponsOf(team)
+      .filter((w) => w.scrap === null)
+      .map((w) => w.id),
+  );
+  for (const id of unlocked ?? []) {
+    const def = spotWeaponById(id);
     if (def && def.team === team) owned.add(id);
   }
   return owned;
@@ -197,25 +239,46 @@ export function findSpot(
 
 // ---------- The build state and its operations ----------
 
+/** One weapon spot. `x` and `y` (the pad's middle, in steps) are only set when the player pinned it. */
+export type Spot = { weapon?: string; x?: number; y?: number };
+
+/** A spot with its place worked out. `weapon` is null for an empty pad. */
+export type ResolvedSpot = { index: number; x: number; y: number; weapon: string | null };
+
+type Snapshot = { pieces: readonly Placed[]; spots: readonly Spot[] };
+
 export type BuildState = {
   team: Team;
   pieces: readonly Placed[];
-  /** Earlier piece lists, newest last. */
-  undo: ReadonlyArray<readonly Placed[]>;
+  /** Always `B.spots.count` long. */
+  spots: readonly Spot[];
+  /** Earlier states, newest last. Bricks and weapons are undone together. */
+  undo: readonly Snapshot[];
 };
 
 export type BuildResult =
   { ok: true; state: BuildState; index: number } | { ok: false; reason: PlaceRefusal };
 
-export const newBuild = (team: Team, pieces: readonly Placed[] = []): BuildState => ({
+export const emptySpots = (): Spot[] => Array.from({ length: B.spots.count }, () => ({}));
+
+export const newBuild = (
+  team: Team,
+  pieces: readonly Placed[] = [],
+  spots: readonly Spot[] = emptySpots(),
+): BuildState => ({
   team,
   pieces,
+  spots: normalizeSpots(spots),
   undo: [],
 });
 
-function commit(state: BuildState, pieces: readonly Placed[]): BuildState {
-  const undo = [...state.undo, state.pieces].slice(-B.undoDepth);
-  return { team: state.team, pieces, undo };
+function commit(
+  state: BuildState,
+  pieces: readonly Placed[],
+  spots: readonly Spot[] = state.spots,
+): BuildState {
+  const undo = [...state.undo, { pieces: state.pieces, spots: state.spots }].slice(-B.undoDepth);
+  return { team: state.team, pieces, spots, undo };
 }
 
 /** Puts a new brick on the plot. The piece must be the state's team and not break a rule. */
@@ -288,21 +351,188 @@ export function clearBuild(state: BuildState): BuildState {
 export function undoBuild(state: BuildState): BuildState {
   const last = state.undo[state.undo.length - 1];
   if (!last) return state;
-  return { team: state.team, pieces: last, undo: state.undo.slice(0, -1) };
+  return {
+    team: state.team,
+    pieces: last.pieces,
+    spots: last.spots,
+    undo: state.undo.slice(0, -1),
+  };
+}
+
+// ---------- Weapon spots ----------
+
+const PAD = B.spots.padSteps;
+const padX = (x: number): number => Math.min(Math.max(x, PAD), PLOT_STEPS.w - PAD);
+const padY = (y: number): number => Math.min(Math.max(y, PAD), PLOT_STEPS.h - PAD);
+
+/** Pads sit about this far apart at the least, so a narrow base still shows four clear pads. */
+const MIN_SPAN = B.spots.count * (2 * PAD + 2);
+
+/**
+ * Where each pad is. A pinned spot keeps its place. Any other pad is spread across the built base
+ * and rests on the highest brick under it, or on the foundation. With no bricks the pads make a
+ * row on the foundation. The bases never need to be tidy: a pad may sit on any brick.
+ */
+export function resolveSpots(pieces: readonly Placed[], spots: readonly Spot[]): ResolvedSpot[] {
+  const rects = pieces.map(rectOf).filter((r): r is Rect => r !== null);
+  let from = B.spots.rowFromCol * S;
+  let to = B.spots.rowToCol * S;
+  if (rects.length > 0) {
+    from = Math.min(...rects.map((r) => r.l));
+    to = Math.max(...rects.map((r) => r.r));
+  }
+  if (to - from < MIN_SPAN) {
+    const mid = (from + to) / 2;
+    from = mid - MIN_SPAN / 2;
+    to = mid + MIN_SPAN / 2;
+  }
+  const floor = B.spots.topRows * S + PAD;
+  return normalizeSpots(spots).map((spot, index) => {
+    const weapon = spot.weapon ?? null;
+    if (spot.x !== undefined && spot.y !== undefined) {
+      return { index, x: padX(spot.x), y: padY(spot.y), weapon };
+    }
+    const x = padX(Math.round(from + ((to - from) * (index + 0.5)) / B.spots.count));
+    const under = rects.filter((r) => r.l < x + PAD && r.r > x - PAD).map((r) => r.t);
+    const rest = under.length ? Math.min(...under) : PLOT_STEPS.h;
+    return { index, x, y: Math.max(floor, padY(rest - PAD)), weapon };
+  });
+}
+
+/** Spots that hold a weapon. */
+export const spotsUsed = (spots: readonly Spot[]): number =>
+  spots.filter((s) => s.weapon !== undefined).length;
+
+export type SpotRefusal = 'nospot' | 'unknown' | 'locked' | 'empty' | 'outside';
+export type SpotResult =
+  { ok: true; state: BuildState } | { ok: false; reason: SpotRefusal };
+
+const withSpot = (state: BuildState, index: number, next: Spot): BuildState =>
+  commit(
+    state,
+    state.pieces,
+    state.spots.map((s, i) => (i === index ? next : s)),
+  );
+
+/**
+ * Puts a weapon on a spot, replacing any weapon there. A weapon the player has not unlocked is
+ * refused when `owned` is given. The same weapon on the same spot changes nothing.
+ */
+export function assignWeapon(
+  state: BuildState,
+  index: number,
+  weaponId: string,
+  owned?: ReadonlySet<string>,
+): SpotResult {
+  const cur = state.spots[index];
+  if (!cur) return { ok: false, reason: 'nospot' };
+  const def = spotWeaponById(weaponId);
+  if (!def || def.team !== state.team) return { ok: false, reason: 'unknown' };
+  if (owned && !owned.has(def.id)) return { ok: false, reason: 'locked' };
+  if (cur.weapon === def.id) return { ok: true, state };
+  return { ok: true, state: withSpot(state, index, { ...cur, weapon: def.id }) };
+}
+
+/** Takes the weapon off a spot. The pad stays. */
+export function clearSpot(state: BuildState, index: number): SpotResult {
+  const cur = state.spots[index];
+  if (!cur) return { ok: false, reason: 'nospot' };
+  if (cur.weapon === undefined) return { ok: false, reason: 'empty' };
+  const { weapon: _gone, ...rest } = cur;
+  return { ok: true, state: withSpot(state, index, rest) };
+}
+
+/** Pins a pad's middle (in steps) or, with null, lets it follow the base again. */
+export function moveSpot(
+  state: BuildState,
+  index: number,
+  to: { x: number; y: number } | null,
+): SpotResult {
+  const cur = state.spots[index];
+  if (!cur) return { ok: false, reason: 'nospot' };
+  if (to === null) {
+    const { x: _x, y: _y, ...rest } = cur;
+    return { ok: true, state: withSpot(state, index, rest) };
+  }
+  if (!padFits(to.x, to.y)) return { ok: false, reason: 'outside' };
+  return { ok: true, state: withSpot(state, index, { ...cur, x: to.x, y: to.y }) };
+}
+
+const padFits = (x: unknown, y: unknown): x is number =>
+  isWhole(x, PAD, PLOT_STEPS.w - PAD) && isWhole(y, PAD, PLOT_STEPS.h - PAD);
+
+/** Exactly `count` spots: extras dropped, missing ones empty, bad fields removed. */
+function normalizeSpots(spots: readonly Spot[]): Spot[] {
+  return Array.from({ length: B.spots.count }, (_, i) => {
+    const s = spots[i];
+    const out: Spot = {};
+    if (s && spotWeaponById(s.weapon)) out.weapon = s.weapon;
+    if (s && padFits(s.x, s.y)) {
+      out.x = s.x;
+      out.y = s.y;
+    }
+    return out;
+  });
 }
 
 // ---------- Saving and loading ----------
 
 /** [piece, x, y, ox, oy, rot, hp] */
 export type SavedPiece = [string, number, number, number, number, number, number];
-export type SavedBase = { v: 1; p: SavedPiece[] };
+/** A weapon spot in a save: weapon id and, if pinned, the pad's middle in steps. */
+export type SavedSpot = { w?: string; x?: number; y?: number };
+/** `s` is new and optional, so a base saved before weapon spots still loads. */
+export type SavedBase = { v: 1; p: SavedPiece[]; s?: SavedSpot[] };
 
-export const toSaved = (pieces: readonly Placed[]): SavedBase => ({
-  v: 1,
-  p: pieces.map((q) => [q.piece, q.x, q.y, q.ox, q.oy, q.rot, q.hp]),
-});
+const spotHasData = (s: Spot): boolean => s.weapon !== undefined || s.x !== undefined;
 
-export const serializeBase = (pieces: readonly Placed[]): string => JSON.stringify(toSaved(pieces));
+export const toSaved = (pieces: readonly Placed[], spots?: readonly Spot[]): SavedBase => {
+  const base: SavedBase = {
+    v: 1,
+    p: pieces.map((q) => [q.piece, q.x, q.y, q.ox, q.oy, q.rot, q.hp]),
+  };
+  const clean = normalizeSpots(spots ?? []);
+  if (clean.some(spotHasData)) {
+    base.s = clean.map((c) => ({
+      ...(c.weapon !== undefined ? { w: c.weapon } : {}),
+      ...(c.x !== undefined ? { x: c.x, y: c.y } : {}),
+    }));
+  }
+  return base;
+};
+
+export const serializeBase = (pieces: readonly Placed[], spots?: readonly Spot[]): string =>
+  JSON.stringify(toSaved(pieces, spots));
+
+/**
+ * Cleans the weapon spots of a saved base (an object or its JSON text). Nothing is trusted: an
+ * unknown weapon, one for the other side, or one not owned (when `owned` is given) is dropped,
+ * and a pad that sits outside the plot goes back to its automatic place. Always `count` spots.
+ */
+export function repairSpots(raw: unknown, team: Team, owned?: ReadonlySet<string>): Spot[] {
+  let data = raw;
+  if (typeof raw === 'string') {
+    try {
+      data = JSON.parse(raw) as unknown;
+    } catch {
+      return emptySpots();
+    }
+  }
+  const list = typeof data === 'object' && data !== null ? (data as { s?: unknown }).s : undefined;
+  return Array.from({ length: B.spots.count }, (_, i) => {
+    const row: unknown = Array.isArray(list) ? list[i] : undefined;
+    const out: Spot = {};
+    if (typeof row !== 'object' || row === null || Array.isArray(row)) return out;
+    const { w, x, y } = row as Record<string, unknown>;
+    const def = spotWeaponById(w);
+    if (def && def.team === team && (!owned || owned.has(def.id))) out.weapon = def.id;
+    if (padFits(x, y)) {
+      out.x = x;
+      out.y = y as number;
+    }
+    return out;
+  });
+}
 
 /**
  * Cleans a saved base. Nothing from storage is trusted: a bad brick is dropped, the rest stay.
@@ -376,18 +606,23 @@ const withTeamBases = (
   return { players: { ...state.players, [key]: { ...cur, [team]: next } } };
 };
 
-/** Keeps a base in a slot. An empty base empties the slot. */
+/**
+ * Keeps a base in a slot. A base with no bricks and no weapons empties the slot. Without `spots`,
+ * the spots already saved in the slot stay as they are.
+ */
 export function saveSlot(
   state: BasesState,
   name: string,
   team: Team,
   slot: number,
   pieces: readonly Placed[],
+  spots?: readonly Spot[],
 ): BasesState {
   if (!isWhole(slot, 0, B.slots - 1)) return state;
   const cur = basesOf(state, name, team);
+  const keep = spots ?? repairSpots(cur.slots[slot], team);
   const slots = cur.slots.map((s, i) =>
-    i === slot ? (pieces.length ? toSaved(pieces) : null) : s,
+    i === slot ? (pieces.length || keep.some(spotHasData) ? toSaved(pieces, keep) : null) : s,
   );
   return withTeamBases(state, name, team, { ...cur, slots });
 }
@@ -406,6 +641,26 @@ export function slotPieces(
   owned?: ReadonlySet<string>,
 ): Placed[] {
   return repairBase(basesOf(state, name, team).slots[slot], team, owned);
+}
+
+/** The weapon spots in one slot, cleaned. */
+export function slotSpots(
+  state: BasesState,
+  name: string,
+  team: Team,
+  slot: number,
+  owned?: ReadonlySet<string>,
+): Spot[] {
+  return repairSpots(basesOf(state, name, team).slots[slot], team, owned);
+}
+
+/**
+ * The weapon spots this player takes into battle, each with its place on the plot (in steps) and
+ * the weapon id, or null when the pad is empty (the battle task reads this with `chosenBase`).
+ */
+export function chosenSpots(state: BasesState, name: string, team: Team): ResolvedSpot[] {
+  const { chosen } = basesOf(state, name, team);
+  return resolveSpots(chosenBase(state, name, team), slotSpots(state, name, team, chosen));
 }
 
 /** The base this player takes into battle for this side (the battle task reads this). */
@@ -435,7 +690,8 @@ export function parseBases(raw: unknown): BasesState | null {
         chosen: isWhole(t.chosen, 0, B.slots - 1) ? t.chosen : 0,
         slots: Array.from({ length: B.slots }, (_, i) => {
           const pieces = repairBase(slots[i], team);
-          return pieces.length ? toSaved(pieces) : null;
+          const spots = repairSpots(slots[i], team);
+          return pieces.length || spots.some(spotHasData) ? toSaved(pieces, spots) : null;
         }),
       };
     }
