@@ -14,17 +14,6 @@ import { makeFixtureDir, removeDir } from '../tests/voice-server/fixture';
 import { installSilent } from './support/silent';
 import { fillTeam, playShots, readyUp, startMatch, tid } from './support/game';
 
-// Chromium treats a page it was handed through page.route() as a public page and blocks its
-// calls to localhost (Local Network Access). Turn those checks off for this spec only.
-test.use({
-  launchOptions: {
-    args: [
-      '--mute-audio',
-      '--disable-features=LocalNetworkAccessChecks,BlockInsecurePrivateNetworkRequests,PrivateNetworkAccessSendPreflights',
-    ],
-  },
-});
-
 type Seen = { url: string; range: string | undefined };
 
 const M4A = readFileSync(new URL('../public/audio/voice/intro-01-welcome.m4a', import.meta.url));
@@ -74,6 +63,7 @@ const kinder = { name: 'Alex', grade: 0, subject: 'reading' as const };
 async function toReloadQuestion(page: import('@playwright/test').Page, query: string) {
   // The page's CSP names the planned production voice origin. Allow this test server too,
   // by rewriting the page's meta tag in flight (the shipped CSP is checked in tests/hardening).
+  // Chromium's Local Network Access checks are off in playwright.config.ts (Chromium projects only).
   await page.route(
     (u) => u.pathname === '/',
     async (route) => {

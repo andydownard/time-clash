@@ -11,7 +11,16 @@ const sizes = [
 const portrait = { name: '768x1024', viewport: { width: 768, height: 1024 } };
 
 // Chromium also runs muted. The page-level stubs in e2e/support/silent.ts cover WebKit.
-const quiet = { launchOptions: { args: ['--mute-audio'] } };
+// Chromium treats a page handed over by page.route() as public and blocks its calls to localhost
+// (Local Network Access), which e2e/voice-clips.spec.ts needs. These flags are Chromium-only.
+const quiet = {
+  launchOptions: {
+    args: [
+      '--mute-audio',
+      '--disable-features=LocalNetworkAccessChecks,BlockInsecurePrivateNetworkRequests,PrivateNetworkAccessSendPreflights',
+    ],
+  },
+};
 
 export default defineConfig({
   testDir: './e2e',
