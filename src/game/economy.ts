@@ -1,6 +1,7 @@
 // Scrap and what it buys, by player name. Pure functions: each takes the Camp state and returns a
 // new one, or a plain reason why not. Scrap never goes below zero, nothing is bought twice, and a
 // bad input (wrong team, unknown id, NaN, an empty name) changes nothing.
+import { pieceById, pieceScrap } from './baseBuilder';
 import { walletOf, withWallet, walletKey, type CampState, type Wallet } from './loadout';
 import type { Team } from './types';
 import { TEAMS } from './types';
@@ -115,5 +116,27 @@ export function buyUpgrade(camp: CampState, name: string, team: Team, id: Upgrad
   return {
     ok: true,
     camp: withWallet(camp, withLoadout({ ...paid, name: name.trim() }, team, { upgrades })),
+  };
+}
+
+/** Unlocks a base-builder piece. Free pieces and pieces already unlocked are never paid for. */
+export function unlockPiece(camp: CampState, name: string, team: Team, id: string): Outcome {
+  const def = pieceById(id);
+  if (!hasName(name) || !isTeam(team) || !def) return { ok: false, reason: 'unknown' };
+  if (def.team !== team) return { ok: false, reason: 'wrong_team' };
+  const cost = pieceScrap(def);
+  if (def.free) return { ok: false, reason: 'already_owned' };
+  if (cost === null) return { ok: false, reason: 'unknown' };
+  const wallet = walletOf(camp, name);
+  const have = wallet.loadout[team].pieces ?? [];
+  if (have.includes(id)) return { ok: false, reason: 'already_owned' };
+  const paid = pay(wallet, cost);
+  if (!paid) return { ok: false, reason: 'not_enough_scrap' };
+  return {
+    ok: true,
+    camp: withWallet(
+      camp,
+      withLoadout({ ...paid, name: name.trim() }, team, { pieces: [...have, id] }),
+    ),
   };
 }
