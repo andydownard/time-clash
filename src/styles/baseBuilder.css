@@ -415,10 +415,11 @@
 }
 
 .tc-bb-weapons {
+  --tc-bb-panel-top: var(--tc-s-3);
   position: absolute;
-  top: calc(var(--tc-s-3) + 72px);
-  bottom: var(--tc-s-3);
-  width: min(300px, 38%);
+  top: var(--tc-bb-panel-top);
+  width: min(264px, 34%);
+  max-height: calc(100% - var(--tc-bb-panel-top) - var(--tc-s-3));
   z-index: 2;
   display: flex;
   flex-direction: column;
@@ -433,7 +434,9 @@
 .tc-bb-weapons[data-side='right'] {
   right: var(--tc-s-3);
 }
+/* On the left it starts under the mode switch, which sits at the top left. */
 .tc-bb-weapons[data-side='left'] {
+  --tc-bb-panel-top: calc(var(--tc-s-3) + 72px);
   left: var(--tc-s-3);
 }
 .tc-bb-weapons-title {
@@ -441,17 +444,31 @@
   color: var(--tc-parchment-warm);
   font-family: var(--tc-font-voice-old);
   font-weight: 400;
-  font-size: var(--tc-fs-label);
+  font-size: var(--tc-text-min);
   line-height: 1.1;
 }
 .tc-bb[data-team='FUTURE'] .tc-bb-weapons-title {
   font-family: var(--tc-font-voice-new);
   font-weight: var(--tc-fw-new-heavy);
 }
+/* On a short screen the status line under the plot already says "Spot N chosen. Pick a weapon
+   for it.", so the title steps aside and the whole list fits beside the spot. */
+@media (max-height: 790px) {
+  .tc-bb-weapons-title {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  .tc-bb-weapons {
+    gap: 2px;
+  }
+}
 .tc-bb-weapons-list {
   display: flex;
   flex-direction: column;
-  gap: var(--tc-s-1);
+  gap: 2px;
 }
 .tc-bb-weapon {
   position: relative;
