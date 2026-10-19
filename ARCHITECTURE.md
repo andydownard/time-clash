@@ -16,6 +16,9 @@ Voice service (second Railway service, optional)    voice-server/
  └─ GET /v1/clips/:id from db/voice-*.sqlite, read-only
 ```
 
+## Voice clips (content, not wired in yet)
+Read-aloud audio for questions and wipeout lines is pre-made offline and stored in SQLite files under `db/` (`voice-k4.sqlite` for grades K to 4). Each clip id is `t:` plus a 64-bit FNV-1a hash of the exact text (`src/audio/clipId.ts`), so the player can look a clip up from the text it would speak. The voice says a reworded form (`src/audio/toSpoken.ts`); captions and ids use the original text. The game makes no network calls for this and the databases are not in the web bundle. Details: `db/README.md`.
+
 ## Voice clips (optional second service)
 `voice-server/` is a small Node service that serves recorded lines by id (`GET /v1/clips/:id`, `GET /health`, Range support). The game uses it only when `VITE_VOICE_URL` is set; otherwise nothing changes. `speak(line)` picks the line's own `audioSrc` file, then a clip (`src/audio/clipPlayer.ts`, id from `src/audio/clipId.ts`), then the browser voice. A clip that fails or takes over 1.5 s falls back at once and is not asked for again that session. The funny knock-down line is also spoken through `speak()` when the service is on. Full contract, env and deploy steps: [docs/VOICE_SERVICE.md](./docs/VOICE_SERVICE.md).
 

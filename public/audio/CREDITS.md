@@ -51,5 +51,6 @@ Spoken lines for Chrono's intro and the funny knock-down lines are stored in `db
 | Part | Source | License |
 |---|---|---|
 | All voice clips | Kokoro-82M text-to-speech model, voice `am_michael`, run by `scripts/build-voice-db.py` | Apache-2.0 (model); the generated audio is original to this project |
+| Question read-aloud and wipeout clips (`db/voice-k4.sqlite`, table `voice_clip_index`) | Same Kokoro-82M model and voice, run by `scripts/build-voice-index.py` | Apache-2.0 (model); the generated audio is original to this project |
 
 Why Kokoro: the first voice tried (Piper "ryan") was trained on RyanSpeech, licensed CC BY-NC-SA 4.0, which breaks the original-or-CC0 audio rule. It was dropped and none of its audio is in this repo.
