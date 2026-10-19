@@ -162,7 +162,7 @@ Screen 3: Battle Screen & Turn Transition
 ⚬ Slapstick Moment: A character who was just knocked over lies hilariously flat on their stomach with arms spread out, a cartoon speech bubble above them saying: "Just checking the lawn for four-leaf clovers!"
 ## Practice opponent
 
-A rules-based opponent so one child can play alone, and later fill a seat when no second player is there. Pure logic in `src/game/bot.ts` (and `botPlay.ts` for simulated matches). No screens yet. Off by default: `PRACTICE_BOT.enabled = false` in `src/game/config.ts`.
+A rules-based opponent so one child can play alone, and later fill a seat when no second player is there. Pure logic in `src/game/bot.ts` (and `botPlay.ts` for simulated matches, `practice.ts` for turn ownership and pacing). Off by default: `PRACTICE_BOT.enabled = false` in `src/game/config.ts`. `?computer=1` on the address shows the choice for testing before the panel review. With it off the game is exactly as before.
 
 Rules:
 - It sees only what a child can see: the bases, wind, health and its own fighter. It never sees the other player's reload question.
@@ -170,7 +170,11 @@ Rules:
 - It finds a good aim on a copy of the physics, then adds a human-sized error. The error spread (degrees and power points) and how much wind it reads are set per level.
 - `answerReload(question, level, rng)` answers only its own question. The chance of a right answer falls with the question's grade (never below a blind guess among four). It also returns a think time in ms (1.8 s to 14 s), longer for older grades and reading questions, so the screen can pace it.
 - Randomness is seeded. Same seed, same game.
-- The screen must say "Computer player" (never "bot", "AI" or "assistant") and show it all the time. No data model change was needed.
+- The screen must say "Computer player" (never "bot", "AI" or "assistant") and show it all the time. One storage key, `timeclash.practice`, remembers Play with and the level.
+- What a child sees: Setup has a "Play with" choice with two big buttons, "Another player" and "Computer player". Computer player adds "How hard?" (Easy, Medium, Hard; Medium to start) on the Computer player's card, which has a friendly robot face (Team Future) or helmet (Team Past). The child is Team Past and types one name and picks one grade and subject. The Computer player copies that grade and subject for its own reload question. The last choice is remembered on the device.
+- On the computer's turn there is no pass screen. The child keeps the screen. A note says "Computer player is aiming" while the dial and power meter move by themselves for about 1.2 to 2 seconds (shorter on Hard), then it fires. The turn strip says "Computer player's turn", and its Fire, sliders and keys are locked. With reduced motion the dial jumps and the note still shows for a moment.
+- The Computer player's reload shows "Computer player is thinking" for up to 2.5 seconds. The child never sees its question, choices or answer. A wrong answer still reloads (Gate 2). All thinking in one computer turn, including the reload and a Power Shot aim, is under 8 seconds. The child's own reload questions, history and level nudges are unchanged.
+- With one child alone, the pass-the-mouse cover is not shown at all (nobody to hide the board from). Two players still get it.
 - The rules have no turn cap. Matches end because shots hit. A test plays 1,000 seeded matches and all end with a winner.
 
 Levels (tunables in `PRACTICE_BOT.levels`):

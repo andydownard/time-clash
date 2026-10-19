@@ -65,6 +65,8 @@ export type AppServices = {
   loadBank: () => Promise<QuestionBank>;
   /** A fresh match seed. The e2e hook can pin it. */
   newSeed: () => number;
+  /** True when Setup offers the Computer player (config flag or `?computer=1`). Off means today's game. */
+  computerPlayer?: boolean;
 };
 
 export const SERVICES_KEY = 'timeclash.services';

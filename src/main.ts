@@ -23,6 +23,7 @@ const voiceUrl =
 const { services, seeds, faults } = createServices({
   doc: document,
   win: window,
+  search: window.location.search,
   ...(voiceUrl ? { voiceUrl } : {}),
 });
 

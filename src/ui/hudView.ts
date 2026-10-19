@@ -1,5 +1,6 @@
 // Battle HUD: base health, scrap, wind, aim sliders, Fire, and the corner buttons.
 // Keyboard: Up/Down = angle, Left/Right = power (Shift = bigger steps), Space = fire.
+import { COMPUTER, computerTurnBanner } from '../data/computerCopy';
 import { BUTTONS, HUD, TEAM_NAMES, turnBanner, windLabel } from '../data/copy';
 import { AIM, TIMING, TURN, WIND } from '../game/config';
 import { TEAMS, type Team } from '../game/types';
@@ -413,8 +414,11 @@ export function createHud(ctx: UiCtx) {
       parts.strip.setAttribute('data-team', who ?? 'none');
       // Shot 1 until the first shot is fired, then shot 2.
       const shot = Math.min(TURN.shotsPerTurn, TURN.shotsPerTurn - state.shotsLeft + 1);
+      const turnShot = state.bonus ? 'POWER' : shot;
       parts.turnText.textContent = who
-        ? turnBanner(state.names[who], state.bonus ? 'POWER' : shot)
+        ? state.computerTeam === who
+          ? computerTurnBanner(turnShot)
+          : turnBanner(state.names[who], turnShot)
         : '';
       paintPips(parts.pips, state.shotsLeft, state.bonus);
       for (const t of TEAMS) {
@@ -428,7 +432,14 @@ export function createHud(ctx: UiCtx) {
         parts.scrap[t].textContent = String(state.scrap[t]);
         parts.panel[t].setAttribute('data-active', String(state.activeTeam === t));
         const turn = parts.panel[t].querySelector('[data-role="turn-text"]');
-        if (turn) turn.textContent = state.activeTeam === t ? HUD.yourTurn : '';
+        if (turn) {
+          turn.textContent =
+            state.activeTeam === t
+              ? state.computerTeam === t
+                ? COMPUTER.playingNow
+                : HUD.yourTurn
+              : '';
+        }
       }
     },
     /** A new turn starts: the horn sounds and the strip flashes for a moment. */

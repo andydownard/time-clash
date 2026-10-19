@@ -117,6 +117,8 @@ export type ReloadAnswer = {
   choice: string;
 };
 
+export type ThinkingOptions = { text: string; team: Team };
+
 export type BubbleOptions = {
   text: string;
   team: Team;
@@ -146,6 +148,8 @@ export type HudState = {
   selected: UnitId;
   /** The active team's five fighters. Empty when no team is up. */
   units: ReadonlyArray<{ id: UnitId; name: string }>;
+  /** The side the Computer player plays, when one child plays alone. */
+  computerTeam?: Team;
 };
 
 export type HudHandlers = {
@@ -231,7 +235,12 @@ export interface Overlay {
   /** Resolves with validated players (index 0 PAST, 1 FUTURE). */
   showSetup(initial: Players | null): Promise<Players>;
   /** With a Back button. Resolves null when Back is tapped, and saves nothing. */
-  showSetup(initial: Players | null, options: { back: true }): Promise<Players | null>;
+  showSetup(
+    initial: Players | null,
+    options: { back: true; computer?: boolean },
+  ): Promise<Players | null>;
+  /** Offers the Computer player choice. Only used when the flag is on. */
+  showSetup(initial: Players | null, options: { computer: boolean }): Promise<Players>;
   /** The Camp hub. Resolves when the big "Time to Clash!" button is tapped. */
   showCamp(options?: CampOptions): Promise<CampChoice>;
   /** Forge Weapon. Changes go through `save`. Resolves when Back is tapped. */
@@ -258,6 +267,8 @@ export interface Overlay {
    */
   showReloadModal(options: ReloadModalOptions): Promise<ReloadAnswer>;
   showSpeechBubble(options: BubbleOptions): void;
+  /** "Computer player is thinking". Pass null to hide it. Text only, never a question. */
+  showThinking(options: ThinkingOptions | null): void;
 
   // Captions (Z.caption). Hidden when captions are off.
   setCaption(text: string | null): void;

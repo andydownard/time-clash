@@ -20,6 +20,7 @@ import { showPassScreen } from './passScreen';
 import { showReloadModal } from './reloadModal';
 import { showSetup } from './setupScreen';
 import { showLoading, showTapToStart, showVictory } from './simpleScreens';
+import { createThinking } from './computerPlayer';
 import { showSpeechBubble } from './transient';
 import { awayMs } from './turnScreen';
 import { TEST_IDS, Z, type CoverKind, type CreateOverlay, type Overlay } from './types';
@@ -194,6 +195,7 @@ export const createOverlay: CreateOverlayWithDeps = (
   };
 
   const hud = createHud(ctx);
+  const thinking = createThinking(ctx);
 
   return {
     mount(root, canvas) {
@@ -213,8 +215,10 @@ export const createOverlay: CreateOverlayWithDeps = (
     showTapToStart: (handlers) => showTapToStart(ctx, handlers),
     showIntro: (script, play) => showIntro(ctx, script, play),
     showLoading: (messages) => showLoading(ctx, messages),
-    showSetup: ((initial: Players | null, options?: { back: true }) =>
-      options ? showSetup(ctx, initial, options) : showSetup(ctx, initial)) as Overlay['showSetup'],
+    showSetup: ((initial: Players | null, options?: { back?: true; computer?: boolean }) =>
+      options
+        ? showSetup(ctx, initial, options as { back: true; computer?: boolean })
+        : showSetup(ctx, initial)) as Overlay['showSetup'],
     showCamp: (options) => showCamp(ctx, options),
     showForge: (options) => showForge(ctx, options),
     showUpgrade: (options) => showUpgrade(ctx, options),
@@ -229,6 +233,7 @@ export const createOverlay: CreateOverlayWithDeps = (
     showReloadModal: (options) => showReloadModal(ctx, options),
     showSpeechBubble: (options) => showSpeechBubble(ctx, options, () => canvasEl),
     setCaption: (text) => ctx.setCaption(text),
+    showThinking: (options) => thinking.show(options?.text ?? null, options?.team ?? 'FUTURE'),
     get cover() {
       return ctx.coverKind();
     },

@@ -2,6 +2,7 @@
 import { createAudioManager } from '../audio/audioManager';
 import { createClipPlayer } from '../audio/clipPlayer';
 import type { AudioEnv } from '../audio/types';
+import { practiceEnabled } from '../game/practice';
 import { createStorage, loadSettings, saveAudioSettings } from '../storage/storage';
 import type { TypedStorage } from '../storage/types';
 import type { QuestionBank } from '../questions/types';
@@ -63,6 +64,8 @@ export type ServiceOptions = {
   entropy?: () => number;
   seeds?: SeedSource;
   faults?: LoadFaults;
+  /** The page address query (`?computer=1` shows the Computer player choice). */
+  search?: string;
   /** Address of the voice service. Default: VITE_VOICE_URL. Empty or unset turns clips off. */
   voiceUrl?: string;
 };
@@ -112,6 +115,7 @@ export function createServices(opts: ServiceOptions): {
       return realLoad();
     },
     newSeed: () => seeds.next(),
+    computerPlayer: practiceEnabled(opts.search ?? ''),
   };
   return { services, seeds, faults };
 }

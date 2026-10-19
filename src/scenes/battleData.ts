@@ -1,7 +1,8 @@
 // Builds what BattleScene needs to start: a fresh match plus the services it talks to.
+import { practiceRun } from '../game/practice';
 import { walletOf } from '../game/loadout';
 import { createMatch } from '../game/match';
-import { loadCamp } from '../storage/storage';
+import { loadCamp, loadPractice } from '../storage/storage';
 import { EMPTY_HISTORY, type QuestionBank } from '../questions/types';
 import type { BattleSceneData } from './battle/types';
 import type { AppServices, MatchSetup } from './registry';
@@ -18,7 +19,10 @@ export function buildBattleData(
   // Each player's Scrap in hand, found by name. The HUD adds what they earn in this match.
   const camp = loadCamp(s.storage);
   const [past, future] = setup.players;
+  // Off unless the flag is on, the family picked the Computer player, and one side is it.
+  const run = practiceRun(loadPractice(s.storage), setup.players, s.computerPlayer === true);
   return {
+    ...(run ? { practice: { ...run, ...(setup.effects ? { effects: setup.effects } : {}) } } : {}),
     match,
     overlay: s.overlay,
     audio: s.audio,
