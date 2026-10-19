@@ -1,4 +1,5 @@
 // Shared contract for the localStorage wrapper. Nothing here ever leaves the device.
+import type { BasesState } from '../game/baseBuilder';
 import type { CampState } from '../game/loadout';
 import type { PracticeChoice } from '../game/practice';
 import type { Players } from '../game/types';
@@ -28,6 +29,8 @@ export type StorageSchema = {
   'timeclash.levels': Levels;
   /** Play with another player or the Computer player, and how hard. Only used while the choice is on. */
   'timeclash.practice': PracticeChoice;
+  /** Up to three saved bases per player name and side. Saved on this device only. */
+  'timeclash.bases': BasesState;
 };
 
 export type StorageKey = keyof StorageSchema;
@@ -40,6 +43,7 @@ export const STORAGE_KEYS: readonly StorageKey[] = [
   'timeclash.camp',
   'timeclash.levels',
   'timeclash.practice',
+  'timeclash.bases',
 ];
 
 /** The subset of window.localStorage we use. Inject a fake in tests. */

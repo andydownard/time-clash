@@ -4,7 +4,7 @@
 //   pass screen -> ready() -> banner -> setAim/fire() -> animate path -> shotLanded()
 //   -> (tumble, bubble) -> ... -> pickQuestion -> showReloadModal -> reloadDone() -> pass()
 import type { AudioManager } from '../../audio/types';
-import { DEFAULT_UNIT, unitById, unitsOf, type UnitId } from '../../game/units';
+import { firingOrigin, unitById, unitsOf, type UnitId } from '../../game/units';
 import { answerReload, chooseShot } from '../../game/bot';
 import { COMPUTER } from '../../data/computerCopy';
 import {
@@ -537,6 +537,7 @@ export class BattleFlow {
       wind: s.wind,
       shotsLeft,
       aim,
+      firingOrigin: this.originFor(team),
     };
     view.syncStatus(status);
   }
@@ -555,11 +556,10 @@ export class BattleFlow {
     view.showPreview(team, previewDots(sim.path));
   }
 
-  /** Same rule as match.fire(): the default fighter keeps the layout launcher. */
+  /** Same function match.fire() uses, so the preview and the guide start at the real muzzle. */
   private originFor(team: Team) {
     const { match } = this.deps;
-    const unit = unitById(match.snapshot().selected[team]);
-    return !unit || unit.id === DEFAULT_UNIT[team] ? match.layout.launchOrigins[team] : unit.origin;
+    return firingOrigin(team, match.snapshot().selected[team], match.layout);
   }
 
   // ---------- helpers ----------

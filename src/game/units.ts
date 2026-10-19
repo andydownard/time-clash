@@ -2,7 +2,7 @@
 // Mirror pairs (A~2, B~5, C~1, D~3, E~4) share speedScale and damageScale, so neither side is favored.
 // The default fighters (C and 1) are today's launchers, so a fresh game plays exactly as before.
 import { LAUNCH_ORIGINS } from './config';
-import type { Team, Vec2 } from './types';
+import type { BattleLayout, Team, Vec2 } from './types';
 
 export type UnitId = 'A' | 'B' | 'C' | 'D' | 'E' | '1' | '2' | '3' | '4' | '5';
 
@@ -131,3 +131,20 @@ export const unitsOf = (team: Team): UnitDef[] => UNITS.filter((u) => u.team ===
 
 /** The fighter with this id, or null for an unknown id. */
 export const unitById = (id: string): UnitDef | null => UNITS.find((u) => u.id === id) ?? null;
+
+/**
+ * Where this fighter's shot really starts. The default fighter shoots from the layout's own
+ * launcher (so a fresh game is unchanged). Every other fighter shoots from its own spot.
+ * The shot, the bot and the angle guide on the board all read this one function.
+ */
+export function firingOrigin(
+  team: Team,
+  unitId: string,
+  layout: Pick<BattleLayout, 'launchOrigins'>,
+): Vec2 {
+  const unit = unitById(unitId);
+  if (!unit || unit.team !== team || unit.id === DEFAULT_UNIT[team]) {
+    return layout.launchOrigins[team];
+  }
+  return unit.origin;
+}

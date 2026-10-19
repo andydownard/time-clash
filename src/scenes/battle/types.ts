@@ -56,6 +56,8 @@ export type ViewStatus = {
   wind: number;
   shotsLeft: 0 | 1 | 2;
   aim: AimInput;
+  /** Where the active fighter's shot starts. The angle guide is drawn here. */
+  firingOrigin?: Vec2;
 };
 
 /** The drawing side of the scene. BattleScene implements it with Phaser; tests use a fake. */

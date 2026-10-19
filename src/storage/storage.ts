@@ -11,6 +11,7 @@ import {
 } from '../game/loadout';
 import { DEFAULT_PRACTICE, isBotLevel, type PracticeChoice } from '../game/practice';
 import type { Grade, Player, Players, Subject, Team } from '../game/types';
+import { freshBases, parseBases, pieceById, type BasesState } from '../game/baseBuilder';
 import { FORGE, WEAPONS, type WeaponId } from '../game/weapons';
 import { UPGRADES, UPGRADE_MAX_LEVEL, type UpgradeId } from '../game/upgrades';
 import { CALIBRATION, type CalibrationState, type Levels } from '../questions/calibration';
@@ -125,7 +126,14 @@ function parseLoadout(v: unknown, team: Team): TeamLoadout {
       if (level !== null) upgrades[u.id] = level;
     }
   }
-  return { weapon, owned, upgrades };
+  const pieces: string[] = [];
+  if (Array.isArray(v.pieces)) {
+    for (const id of v.pieces) {
+      const def = pieceById(id);
+      if (def && def.team === team && !def.free && !pieces.includes(def.id)) pieces.push(def.id);
+    }
+  }
+  return pieces.length > 0 ? { weapon, owned, upgrades, pieces } : { weapon, owned, upgrades };
 }
 
 /** One wallet, cleaned. Bad numbers become 0 and the starter weapons are always owned. */
@@ -242,6 +250,11 @@ function parseLevels(v: unknown): Levels | null {
   return out;
 }
 
+/** Saved bases for every player, or an empty state. Never throws. */
+export function loadBases(storage: TypedStorage): BasesState {
+  return storage.get('timeclash.bases') ?? freshBases();
+}
+
 /** Saved level nudges, or an empty record. Never throws. */
 export function loadLevels(storage: TypedStorage): Levels {
   return storage.get('timeclash.levels') ?? {};
@@ -267,6 +280,7 @@ const GUARDS: { [K in StorageKey]: (v: unknown) => StorageSchema[K] | null } = {
   'timeclash.camp': parseCamp,
   'timeclash.levels': parseLevels,
   'timeclash.practice': parsePractice,
+  'timeclash.bases': parseBases,
 };
 
 function defaultBacking(): BackingStore | null {

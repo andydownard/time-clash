@@ -393,3 +393,42 @@ export const PRACTICE_BOT = {
     reducedBeatMs: 700,
   },
 } as const;
+
+// ---------- Base builder ----------
+/**
+ * Before a battle a player builds a castle (Team Past) or a base (Team Future) from bricks on a
+ * grid. Off by default until the panel has reviewed it. `?builder=1` in the address turns it on
+ * for a try-out (see `baseBuilderOn` in baseBuilder.ts).
+ */
+export const BASE_BUILDER = {
+  enabled: false,
+  /** The query-string switch that turns it on without changing this file. */
+  queryParam: 'builder',
+  /** The build plot in grid cells. The bottom `groundRows` rows are the foundation (not buildable). */
+  cols: 24,
+  rows: 12,
+  groundRows: 1,
+  /** One cell is this many steps wide when Snap is off. A free brick sits on this finer grid. */
+  freeSteps: 8,
+  /** Saved bases each player keeps for each side. */
+  slots: 3,
+  /** Most player names whose saved bases we keep. */
+  maxPlayers: 50,
+  /** Most bricks in one base, so a saved base stays small. */
+  maxPieces: 60,
+  /** Steps Undo can go back. */
+  undoDepth: 50,
+  /** How far (in cells) Turn looks for a free spot when a turned brick would overlap. */
+  turnSearchRadius: 3,
+  /** Scrap to unlock a locked piece, by piece id. */
+  pieceScrap: {
+    arch: 6,
+    gate: 10,
+    flag: 4,
+    laserBase: 8,
+    hangarDoor: 10,
+    powerCore: 6,
+  } as Readonly<Record<string, number>>,
+  /** Brick strength in hit points, kept in the save for the battle task. */
+  hp: { light: 10, small: 20, medium: 35, large: 50 },
+} as const;

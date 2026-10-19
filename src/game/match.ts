@@ -14,7 +14,7 @@ import { scoreReload } from './reload';
 import { createShuffleBag } from './bag';
 import { createRng } from './rng';
 import { createTurn, transition } from './turn';
-import { DEFAULT_UNIT, unitById, type UnitDef, type UnitId } from './units';
+import { DEFAULT_UNIT, firingOrigin, unitById, type UnitDef, type UnitId } from './units';
 import { IllegalTransitionError, MatchOverError, otherTeam } from './types';
 import type {
   AimInput,
@@ -138,8 +138,7 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       const team = turn.team;
       const { angleDeg, power } = aim[team];
       const unit = unitOf(team);
-      // The default fighter shoots from the layout's own launcher, so a fresh game is unchanged.
-      const origin = unit.id === DEFAULT_UNIT[team] ? layout.launchOrigins[team] : unit.origin;
+      const origin = firingOrigin(team, unit.id, layout);
       const result = simulateShot({
         angleDeg,
         power,
