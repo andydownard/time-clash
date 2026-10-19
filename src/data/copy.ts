@@ -488,7 +488,7 @@ export const BUILDER_COPY = {
   onThisSpot: 'On this spot',
   clearSpot: 'Clear spot',
   clearSpotLabel: (n: number): string => `Clear spot ${n}`,
-  spotLabel: (n: number, weapon: string | null, selected: boolean): string =>
+  spotLabel: (weapon: string | null, n: number, selected: boolean): string =>
     `Spot ${n}, ${weapon ? weapon.toLowerCase() : 'empty'}${selected ? ', selected' : ''}`,
   weaponLabel: (name: string, onSpot: boolean): string =>
     onSpot ? `${name}, on this spot` : name,

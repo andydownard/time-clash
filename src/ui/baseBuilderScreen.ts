@@ -496,7 +496,7 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<vo
           doc,
           spotsMarkup(
             resolved,
-            (sp, on) => BUILDER_COPY.spotLabel(sp.index + 1, spotName(sp.index), on),
+            (sp, on) => BUILDER_COPY.spotLabel(spotName(sp.index), sp.index + 1, on),
             live ? selSpot : null,
             live,
             hitR,
