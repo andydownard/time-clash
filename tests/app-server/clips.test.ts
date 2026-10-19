@@ -3,19 +3,27 @@ import type { AddressInfo } from 'node:net';
 import type { Server } from 'node:http';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { clipId } from '../../src/audio/clipId';
-import { createVoiceServer } from '../../voice-server/app';
+import { createAppServer } from '../../app-server/app';
 import { openClipStore, type ClipStore } from '../../voice-server/store';
 import { FIXTURE_TEXTS, fixtureBytes, makeFixtureDir, removeDir } from './fixture';
+import { makeSite } from './site';
 
 let dir: string;
+let site: string;
 let store: ClipStore;
 let server: Server;
 let base: string;
 const logs: string[] = [];
 const ID = clipId(FIXTURE_TEXTS[0]!);
 
-async function start(extra: { ratePerMinute?: number; allowedOrigin?: string } = {}) {
-  server = createVoiceServer({ store, build: 'abc123', log: (l) => logs.push(l), ...extra });
+async function start(extra: { ratePerMinute?: number } = {}) {
+  server = createAppServer({
+    distDir: site,
+    store,
+    build: 'abc123',
+    log: (l: string) => logs.push(l),
+    ...extra,
+  });
   await new Promise<void>((r) => server.listen(0, '127.0.0.1', r));
   base = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
 }
@@ -24,12 +32,14 @@ const bytes = async (r: Response) => new Uint8Array(await r.arrayBuffer());
 beforeEach(() => {
   logs.length = 0;
   dir = makeFixtureDir();
+  site = makeSite();
   store = openClipStore(dir);
 });
 afterEach(async () => {
   await new Promise((r) => server.close(r));
   store.close();
   removeDir(dir);
+  removeDir(site);
 });
 
 describe('GET /v1/clips/:id', () => {
@@ -42,16 +52,10 @@ describe('GET /v1/clips/:id', () => {
     expect(r.headers.get('content-length')).toBe('100');
     expect(r.headers.get('cache-control')).toBe('public, max-age=31536000, immutable');
     expect(r.headers.get('x-content-type-options')).toBe('nosniff');
-    expect(r.headers.get('cross-origin-resource-policy')).toBe('cross-origin');
-    expect(r.headers.get('access-control-allow-origin')).toBe('https://timeclash.rallytasks.com');
+    // Same origin as the game: no CORS headers are needed, so none are sent.
+    expect(r.headers.get('access-control-allow-origin')).toBeNull();
     expect(r.headers.get('set-cookie')).toBeNull();
     expect(await bytes(r)).toEqual(fixtureBytes());
-  });
-
-  it('uses ALLOWED_ORIGIN for CORS', async () => {
-    await start({ allowedOrigin: 'http://localhost:5173' });
-    const r = await fetch(`${base}/v1/clips/${ID}`);
-    expect(r.headers.get('access-control-allow-origin')).toBe('http://localhost:5173');
   });
 
   it('404 for an unknown id, 400 for a bad id', async () => {
@@ -83,6 +87,7 @@ describe('GET /v1/clips/:id', () => {
       '/db/voice-test.sqlite',
       '/v1/clips',
       '/v1/clips/',
+      '/v1/other',
     ]) {
       const r = await fetch(`${base}${p}`, { redirect: 'manual' });
       expect([400, 404], p).toContain(r.status);
@@ -113,10 +118,12 @@ describe('GET /v1/clips/:id', () => {
     }
   });
 
-  it('any other path is 404 and there is no listing', async () => {
+  it('no clip listing, and nothing under /v1 except a clip', async () => {
     await start();
-    for (const p of ['/', '/v1', '/v1/clips', '/robots.txt', '/index.html', '/v2/clips/' + ID]) {
-      expect((await fetch(`${base}${p}`)).status, p).toBe(404);
+    for (const p of ['/v1', '/v1/clips', '/v1/clips/', '/v1/x']) {
+      const r = await fetch(`${base}${p}`, { headers: { Accept: 'text/html' } });
+      expect([400, 404], p).toContain(r.status);
+      expect(r.headers.get('content-type'), p).not.toBe('audio/mp4');
     }
   });
 
@@ -194,26 +201,44 @@ describe('health, limits, logging', () => {
     await start();
     const r = await fetch(`${base}/health`);
     expect(r.status).toBe(200);
+    expect(r.headers.get('cache-control')).toBe('no-store');
+    expect(await r.json()).toEqual({ ok: true, clips: 3, build: 'abc123' });
+    const head = await fetch(`${base}/health`, { method: 'HEAD' });
+    expect(head.status).toBe(200);
+    expect((await bytes(head)).length).toBe(0);
+    expect((await fetch(`${base}/health`, { method: 'POST' })).status).toBe(405);
+  });
+
+  it('/health reads the build from dist/version.txt when none is given', async () => {
+    server = createAppServer({ distDir: site, store, log: () => {} });
+    await new Promise<void>((r) => server.listen(0, '127.0.0.1', r));
+    const port = (server.address() as AddressInfo).port;
+    const r = await fetch(`http://127.0.0.1:${port}/health`);
     expect(await r.json()).toEqual({ ok: true, clips: 3, build: 'abc123' });
   });
 
-  it('rate limits one IP with 429, and the limit is per IP', async () => {
+  it('rate limits clip requests per IP with 429, but never the site or /health', async () => {
     await start({ ratePerMinute: 3 });
     const codes: number[] = [];
-    for (let i = 0; i < 5; i++) codes.push((await fetch(`${base}/health`)).status);
+    for (let i = 0; i < 5; i++) codes.push((await fetch(`${base}/v1/clips/${ID}`)).status);
     expect(codes).toEqual([200, 200, 200, 429, 429]);
-    const other = await fetch(`${base}/health`, { headers: { 'X-Forwarded-For': '9.9.9.9' } });
+    const other = await fetch(`${base}/v1/clips/${ID}`, {
+      headers: { 'X-Forwarded-For': '9.9.9.9' },
+    });
     expect(other.status).toBe(200);
+    expect((await fetch(`${base}/health`)).status).toBe(200);
+    expect((await fetch(`${base}/`)).status).toBe(200);
   });
 
   it('logs only method, status class and duration', async () => {
     await start();
     await fetch(`${base}/v1/clips/${ID}`);
     await fetch(`${base}/v1/clips/t:0000000000000000`);
+    await fetch(`${base}/assets/index-AbC123.js?x=secret`);
     await new Promise((r) => setTimeout(r, 20));
-    expect(logs.length).toBe(2);
+    expect(logs.length).toBe(3);
     for (const l of logs) expect(l).toMatch(/^(GET|HEAD) [1-5]xx \d+ms$/);
-    expect(logs.join(' ')).not.toMatch(/127\.0\.0\.1|t:|clips/);
+    expect(logs.join(' ')).not.toMatch(/127\.0\.0\.1|t:|clips|assets|secret|index/);
   });
 });
 
