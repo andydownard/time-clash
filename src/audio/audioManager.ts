@@ -1,6 +1,7 @@
 // One AudioManager for the whole app. See src/audio/types.ts for the rules (risk 5):
 // no sound before a tap, captions on every line, Mute always works.
 import { AUDIO } from '../game/config';
+import { CLIP_START_TIMEOUT_MS } from './clipPlayer';
 import { createMusicPlayer, type MusicPlayer } from './music';
 import type { Flavor } from './musicData';
 import { playSynth } from './sfx';
@@ -116,6 +117,9 @@ export const createAudioManager: CreateAudioManagerWithSave = (
     let element: HTMLAudioElement | null = null;
     let utterance: SpeechSynthesisUtterance | null = null;
     const timers: unknown[] = [];
+    // Caption and end timers. They are rebuilt when a clip reports its real length.
+    let timeline: unknown[] = [];
+    const startedAt = env.now();
     const sorted = [...line.captions].sort((a, b) => a.startMs - b.startMs);
     let resolveDone: (e: SpeechEnd) => void = () => undefined;
     const done = new Promise<SpeechEnd>((r) => (resolveDone = r));
@@ -139,6 +143,8 @@ export const createAudioManager: CreateAudioManagerWithSave = (
         }
         element.onended = null;
         element.onerror = null;
+        element.onplaying = null;
+        element.onloadedmetadata = null;
         element = null;
       }
       if (utterance) {
@@ -161,6 +167,7 @@ export const createAudioManager: CreateAudioManagerWithSave = (
       if (ended) return;
       ended = true;
       timers.splice(0).forEach((id) => env.clearTimeout(id));
+      timeline.splice(0).forEach((id) => env.clearTimeout(id));
       // A fast voice can end before the last captions are due. Show them, so none go missing.
       if (end === 'ended') {
         sorted.forEach((c, i) => {
@@ -212,15 +219,41 @@ export const createAudioManager: CreateAudioManagerWithSave = (
     };
 
     const tryFile = (): boolean => {
-      if (!line.audioSrc || !env.createAudioElement || muted) return false;
+      // Order: the line's own file, else a clip from the voice service, else speech.
+      const clipUrl = line.audioSrc ? null : (env.clips?.urlFor(line.text) ?? null);
+      const src = line.audioSrc ?? clipUrl;
+      if (!src || !env.createAudioElement || muted) return false;
       try {
-        const el = env.createAudioElement(line.audioSrc);
+        const el = env.createAudioElement(src);
         if (!el) return false;
+        const missClip = (): void => {
+          if (clipUrl) env.clips?.markMissed(line.text);
+        };
         el.volume = clamp01(volume * AUDIO.voiceGain);
         el.onended = () => finish('ended');
         el.onerror = () => {
-          if (element === el) fallBack();
+          if (element !== el) return;
+          missClip();
+          fallBack();
         };
+        let started = false;
+        if (clipUrl) {
+          el.onplaying = () => {
+            started = true;
+          };
+          // The real length is known now, so captions follow the real voice.
+          el.onloadedmetadata = () => {
+            if (element === el && Number.isFinite(el.duration) && el.duration > 0) {
+              schedule(Math.round(el.duration * 1000));
+            }
+          };
+          // A slow clip must never leave a child waiting in silence.
+          later(() => {
+            if (element !== el || started) return;
+            missClip();
+            fallBack();
+          }, CLIP_START_TIMEOUT_MS);
+        }
         element = el;
         const p = el.play();
         if (p && typeof p.catch === 'function') {
@@ -256,17 +289,34 @@ export const createAudioManager: CreateAudioManagerWithSave = (
     }
 
     // Captions run on a timeline for every path, so they never depend on sound.
-    sorted.forEach((c, i) => {
-      if (c.startMs <= 0) showCaption(i, c.text);
-      else later(() => showCaption(i, c.text), c.startMs);
-    });
-    const length = Math.max(0, line.durationMs);
-    // Silent lines end at their nominal length. A file or voice that never reports
-    // "ended" is cut off after a short grace period.
-    later(() => {
-      if (source === 'silent') finish('ended');
-    }, length);
-    later(() => finish('ended'), length + STALL_GRACE_MS);
+    // A clip that reports its real length re-times the timeline (see tryFile).
+    function schedule(length: number): void {
+      timeline.splice(0).forEach((id) => env.clearTimeout(id));
+      timeline = [];
+      const scale = line.durationMs > 0 ? length / line.durationMs : 1;
+      const elapsed = env.now() - startedAt;
+      sorted.forEach((c, i) => {
+        if (shown.has(i)) return;
+        const due = c.startMs * scale;
+        if (due <= 0) showCaption(i, c.text);
+        else
+          timeline.push(env.setTimeout(() => showCaption(i, c.text), Math.max(0, due - elapsed)));
+      });
+      // Silent lines end at their nominal length. A file or voice that never reports
+      // "ended" is cut off after a short grace period.
+      timeline.push(
+        env.setTimeout(
+          () => {
+            if (source === 'silent') finish('ended');
+          },
+          Math.max(0, length - elapsed),
+        ),
+      );
+      timeline.push(
+        env.setTimeout(() => finish('ended'), Math.max(0, length + STALL_GRACE_MS - elapsed)),
+      );
+    }
+    schedule(Math.max(0, line.durationMs));
 
     return {
       done,
@@ -373,6 +423,9 @@ export const createAudioManager: CreateAudioManagerWithSave = (
     },
     stopSpeech(): void {
       active?.finish('stopped');
+    },
+    get clipsEnabled() {
+      return env.clips?.enabled ?? false;
     },
   };
 };

@@ -46,7 +46,7 @@ export type FlowDeps = {
   >;
   view: BattleView;
   audio?: Pick<AudioManager, 'playSfx' | 'speak'> &
-    Partial<Pick<AudioManager, 'setMusicTeam' | 'stopMusic'>>;
+    Partial<Pick<AudioManager, 'setMusicTeam' | 'stopMusic' | 'clipsEnabled'>>;
   bank: QuestionBank;
   history: PickHistory;
   onHistory?: (history: PickHistory) => void;
@@ -202,6 +202,12 @@ export class BattleFlow {
       this.live();
       const text = bubbleText(outcome);
       if (text) {
+        // The funny line is also spoken when the voice service is set up. The bubble is its
+        // caption. A new fall stops the old line (one voice at a time). Muted stays silent.
+        if (audio?.clipsEnabled) {
+          const durationMs = Math.max(1500, text.split(/\s+/).length * 450);
+          audio.speak({ id: 'tumble-line', text, captions: [{ text, startMs: 0 }], durationMs });
+        }
         this.deps.overlay.showSpeechBubble({
           text,
           team: tumbler,
