@@ -28,12 +28,6 @@ export function e2eEnabled(search: string, mode: string): boolean {
   return new URLSearchParams(search).get('e2e') === '1';
 }
 
-/** ?e2e=1&voice=<url> points a test build at a voice service started by the test. */
-export function e2eVoiceUrl(search: string, mode: string): string | undefined {
-  if (!e2eEnabled(search, mode)) return undefined;
-  return new URLSearchParams(search).get('voice') ?? undefined;
-}
-
 export type LoadFaults = {
   failNext(count: number): void;
   /** True if this load should fail. Uses one up. */

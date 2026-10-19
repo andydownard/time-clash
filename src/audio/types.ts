@@ -104,7 +104,7 @@ export interface AudioManager {
   setPageHidden(hidden: boolean): void;
   speak(line: VoiceLine, options?: SpeakOptions): SpeechHandle;
   stopSpeech(): void;
-  /** True when spoken clips come from the voice service (VITE_VOICE_URL is set). */
+  /** True when spoken clips come from the voice service (the build has VITE_VOICE=on). */
   readonly clipsEnabled: boolean;
 }
 

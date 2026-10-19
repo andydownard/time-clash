@@ -8,23 +8,9 @@ import { PALETTE } from './scenes/palette';
 import { SERVICES_KEY } from './scenes/registry';
 import { SCENES } from './scenes';
 import { createServices } from './scenes/services';
-import {
-  e2eVoiceUrl,
-  installTestHook,
-  type ActiveScene,
-  type TimeClashHook,
-} from './scenes/testHook';
+import { installTestHook, type ActiveScene, type TimeClashHook } from './scenes/testHook';
 
-// Only a non-production build lets a test choose the voice service (?e2e=1&voice=...).
-const voiceUrl =
-  import.meta.env.MODE !== 'production'
-    ? e2eVoiceUrl(window.location.search, import.meta.env.MODE)
-    : undefined;
-const { services, seeds, faults } = createServices({
-  doc: document,
-  win: window,
-  ...(voiceUrl ? { voiceUrl } : {}),
-});
+const { services, seeds, faults } = createServices({ doc: document, win: window });
 
 const game = new Phaser.Game({
   // The e2e build draws on a 2D canvas: CI has no GPU, and software WebGL is far slower.
