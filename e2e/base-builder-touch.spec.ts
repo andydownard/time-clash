@@ -3,7 +3,8 @@
 // finger makes) and the taps use the real touchscreen.
 import type { Page } from '@playwright/test';
 import { expect, test } from './fixtures';
-import { bricks, cellPoint, toBuilderCamp } from './support/builder';
+import { bricks, cellPoint, chooseSpot, spotPad, toBuilderCamp } from './support/builder';
+import { giveScrap } from './support/camp';
 import { tid } from './support/game';
 
 test.use({ hasTouch: true, viewport: { width: 1024, height: 768 } });
@@ -132,4 +133,58 @@ test('touch: every tool and tray brick is at least 56px, and text is at least 20
   });
   expect(overflow).toBe(false);
   expect(box!.width).toBe(1024);
+});
+
+test('touch: tap Weapons, tap spot 2, tap a weapon, reload, and it is still there', async ({
+  page,
+}) => {
+  await toBuilderCamp(page);
+  await giveScrap(page, 10, 0);
+  await page.reload();
+  await expect(tid(page, 'camp-start')).toBeVisible({ timeout: 10_000 });
+  await page.getByTestId('camp-build-PAST').tap();
+  await expect(page.locator('[data-screen="builder"]')).toBeVisible();
+  await chooseSpot(page, 2, true);
+  await tid(page, 'bb-weapon-archerPost').tap();
+  await expect(spotPad(page, 2)).toHaveAttribute('aria-label', 'Spot 2, archer post, selected');
+  // A locked weapon needs Scrap: 10 is not enough for the Ballista (35).
+  await tid(page, 'bb-weapon-ballista').tap();
+  await expect(tid(page, 'bb-status')).toHaveText('Not yet. You need 25 more Scrap.');
+  await expect(spotPad(page, 2)).toHaveAttribute('aria-label', 'Spot 2, archer post, selected');
+  await tid(page, 'bb-done').tap();
+  await page.reload();
+  await expect(tid(page, 'camp-start')).toBeVisible({ timeout: 10_000 });
+  await page.getByTestId('camp-build-PAST').tap();
+  await tid(page, 'bb-mode-weapons').tap();
+  await expect(spotPad(page, 2)).toHaveAttribute('aria-label', 'Spot 2, archer post');
+  await expect(tid(page, 'bb-spots-chip')).toHaveText('Spots 1 of 4 used');
+});
+
+test('touch: weapon pads and the weapon list meet the 56px and 20px rules', async ({ page }) => {
+  await toBuilderCamp(page);
+  await page.getByTestId('camp-build-FUTURE').tap();
+  await chooseSpot(page, 4, true);
+  const problems = await page.evaluate(() => {
+    const out: string[] = [];
+    for (const el of document.querySelectorAll<HTMLElement>('[data-screen="builder"] button')) {
+      const r = el.getBoundingClientRect();
+      if (r.width === 0 && r.height === 0) continue;
+      if (r.width < 56 || r.height < 56) out.push(`${el.dataset.testid}: ${r.width}x${r.height}`);
+      if (el.textContent?.trim() && parseFloat(getComputedStyle(el).fontSize) < 20)
+        out.push(`${el.dataset.testid}: small font`);
+    }
+    for (const el of document.querySelectorAll<SVGElement>('.tc-bb-spot-hit')) {
+      const r = el.getBoundingClientRect();
+      if (r.width < 56 || r.height < 56) out.push(`pad tap ${r.width}x${r.height}`);
+    }
+    for (const el of document.querySelectorAll<SVGTextElement>('.tc-bb-spot-n')) {
+      const r = el.getBoundingClientRect();
+      if (r.height < 14) out.push(`pad number ${r.height}`);
+    }
+    const s = document.querySelector<HTMLElement>('[data-screen="builder"]')!;
+    if (s.scrollHeight > s.clientHeight + 1 || s.scrollWidth > s.clientWidth + 1)
+      out.push('screen overflows');
+    return out;
+  });
+  expect(problems).toEqual([]);
 });

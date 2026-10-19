@@ -2,6 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   PIECES,
+  emptySpots,
   PLOT_STEPS,
   baseBuilderOn,
   basesOf,
@@ -249,7 +250,7 @@ describe('turning', () => {
     pieces = pieces.filter((p) => !(p.y === 3 && p.x >= 4 && p.x <= 6));
     pieces.push({ piece: 'plank', x: 4, y: 3, ox: 0, oy: 0, rot: 0, hp: 1 });
     pieces = pieces.slice(0, B.maxPieces + 100);
-    const s: BuildState = { team: 'PAST', pieces, undo: [] };
+    const s: BuildState = { team: 'PAST', pieces, spots: emptySpots(), undo: [] };
     const idx = pieces.length - 1;
     expect(turnPiece(s, idx)).toEqual({ ok: false, reason: 'overlap' });
   });
