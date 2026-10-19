@@ -176,6 +176,8 @@ export class BattleScene extends Phaser.Scene implements BattleView {
       onHistory: this.data0.onHistory,
       onMuteToggle: this.data0.onMuteToggle,
       ...(this.data0.scrapBase ? { scrapBase: this.data0.scrapBase } : {}),
+      ...(this.data0.practice ? { practice: this.data0.practice } : {}),
+      reducedMotion: () => this.reduced(),
       ...(this.data0.levels ? { levels: this.data0.levels } : {}),
       ...(this.data0.onLevels ? { onLevels: this.data0.onLevels } : {}),
       onFinished: (result) => {

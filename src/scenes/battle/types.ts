@@ -14,6 +14,8 @@ import type {
 import type { UnitId } from '../../game/units';
 import type { Levels } from '../../questions/calibration';
 import type { PickHistory, QuestionBank } from '../../questions/types';
+import type { MatchEffects } from '../../game/loadout';
+import type { PracticeRun } from '../../game/practice';
 import type { Overlay } from '../../ui/types';
 import type { ProjectileKind } from './projectileKinds';
 
@@ -106,4 +108,6 @@ export type BattleSceneData = {
   onLeave?: () => void;
   /** Each player's Scrap in hand when the match began. The HUD shows this plus what they earn. */
   scrapBase?: Record<Team, number>;
+  /** Set when one child plays alone against the Computer player. */
+  practice?: PracticeRun & { effects?: MatchEffects };
 };
