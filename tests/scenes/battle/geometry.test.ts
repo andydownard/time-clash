@@ -3,27 +3,27 @@ import {
   AIM,
   BASES,
   DAMAGE,
-  LAUNCH_ORIGINS,
   PHASE1_LAYOUT,
-  TEAM_FACING,
   TIMING,
   TURN,
   WIND,
   WORLD,
 } from '../../../src/game/config';
 import {
-  aimFromDrag,
+  angleArc,
+  angleFromDrag,
+  angleLabelSpot,
+  guideTip,
   bubbleTailTarget,
   aimVector,
   bubbleAnchor,
   characterSpot,
-  dialHandle,
   hpFraction,
   shotIcons,
   sideAlpha,
   windArrow,
 } from '../../../src/scenes/battle/geometry';
-import { BUBBLE_MAX_WORLD_W, FALL_DX } from '../../../src/scenes/battle/visual';
+import { BUBBLE_MAX_WORLD_W, DIAL, FALL_DX } from '../../../src/scenes/battle/visual';
 
 describe('aimVector', () => {
   it('points toward the enemy for Past and flips for Future', () => {
@@ -40,50 +40,44 @@ describe('aimVector', () => {
   });
 });
 
-describe('dialHandle and aimFromDrag', () => {
-  const origin = LAUNCH_ORIGINS.PAST;
-  it('round-trips every whole aim for both teams', () => {
-    for (const team of ['PAST', 'FUTURE'] as const) {
-      const o = LAUNCH_ORIGINS[team];
-      const facing = TEAM_FACING[team];
-      for (let angle = AIM.angleMinDeg; angle <= AIM.angleMaxDeg; angle += 9) {
-        for (let power = 10; power <= AIM.powerMax; power += 18) {
-          const handle = dialHandle(o, angle, power, facing);
-          const back = aimFromDrag(o, handle, facing, { angleDeg: 1, power: 1 });
-          expect(back.angleDeg).toBe(angle);
-          expect(back.power).toBe(power);
-        }
+describe('the small angle guide', () => {
+  const o = { x: 200, y: 500 };
+  it('puts the tip guideLength from the muzzle along the aim, both facings', () => {
+    for (const facing of [1, -1] as const) {
+      for (const angle of [0, 30, 45, 90]) {
+        const t = guideTip(o, angle, facing);
+        expect(Math.hypot(t.x - o.x, t.y - o.y)).toBeCloseTo(DIAL.guideLength, 6);
+        expect(Math.sign(t.x - o.x) || facing).toBe(facing);
+        expect(t.y).toBeLessThanOrEqual(o.y + 1e-9);
       }
     }
   });
-  it('clamps a drag behind the launcher to flat or straight up', () => {
-    const behind = aimFromDrag(origin, { x: origin.x - 100, y: origin.y + 5 }, 1, {
-      angleDeg: 40,
-      power: 50,
-    });
-    expect(behind.angleDeg).toBeGreaterThanOrEqual(AIM.angleMinDeg);
-    expect(behind.angleDeg).toBeLessThanOrEqual(AIM.angleMaxDeg);
-    const above = aimFromDrag(origin, { x: origin.x - 5, y: origin.y - 100 }, 1, {
-      angleDeg: 40,
-      power: 50,
-    });
-    expect(above.angleDeg).toBe(AIM.angleMaxDeg);
+  it('sweeps the arc from flat up to the aim, mirrored for Team Future', () => {
+    expect(angleArc(45, 1)).toEqual({ start: -Math.PI / 4, end: 0 });
+    const f = angleArc(45, -1);
+    expect(f.start).toBeCloseTo(Math.PI, 9);
+    expect(f.end).toBeCloseTo(Math.PI + Math.PI / 4, 9);
   });
-  it('caps power at the maximum for a very long drag', () => {
-    const far = aimFromDrag(origin, { x: origin.x + 5000, y: origin.y - 5000 }, 1, {
-      angleDeg: 40,
-      power: 50,
-    });
-    expect(far.power).toBe(AIM.powerMax);
+  it('puts the number just past the tip, away from the launcher', () => {
+    const past = angleLabelSpot(o, 45, 1);
+    expect(past.x).toBeGreaterThan(guideTip(o, 45, 1).x);
+    expect(past.anchorX).toBe(0);
+    const future = angleLabelSpot(o, 45, -1);
+    expect(future.x).toBeLessThan(guideTip(o, 45, -1).x);
+    expect(future.anchorX).toBe(1);
   });
-  it('keeps the current angle when the pointer sits on the launcher', () => {
-    const same = aimFromDrag(origin, origin, 1, { angleDeg: 33, power: 70 });
-    expect(same.angleDeg).toBe(33);
-    expect(same.power).toBe(AIM.powerMin);
+  it('turns a pointer into a whole-degree angle and round-trips the tip', () => {
+    for (const facing of [1, -1] as const) {
+      for (let angle = AIM.angleMinDeg; angle <= AIM.angleMaxDeg; angle += 5) {
+        expect(angleFromDrag(o, guideTip(o, angle, facing), facing, 1)).toBe(angle);
+      }
+    }
   });
-  it('never returns NaN for NaN input', () => {
-    const bad = aimFromDrag(origin, { x: NaN, y: NaN }, 1, { angleDeg: 33, power: 70 });
-    expect(bad).toEqual({ angleDeg: 33, power: 70 });
+  it('clamps behind and above the launcher and ignores bad numbers', () => {
+    expect(angleFromDrag(o, { x: o.x - 100, y: o.y + 5 }, 1, 40)).toBe(AIM.angleMinDeg);
+    expect(angleFromDrag(o, { x: o.x - 5, y: o.y - 100 }, 1, 40)).toBe(AIM.angleMaxDeg);
+    expect(angleFromDrag(o, o, 1, 33)).toBe(33);
+    expect(angleFromDrag(o, { x: NaN, y: NaN }, 1, 33)).toBe(33);
   });
 });
 
