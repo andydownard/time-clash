@@ -11,7 +11,13 @@ Browser
  ├─ Question bank + picker (tested)                 src/questions/
  ├─ Sound manager (unlock on tap, mute, volume)     src/audio/
  └─ Storage wrapper (localStorage, try/catch)       src/storage/
+
+Voice service (second Railway service, optional)    voice-server/
+ └─ GET /v1/clips/:id from db/voice-*.sqlite, read-only
 ```
+
+## Voice clips (optional second service)
+`voice-server/` is a small Node service that serves recorded lines by id (`GET /v1/clips/:id`, `GET /health`, Range support). The game uses it only when `VITE_VOICE_URL` is set; otherwise nothing changes. `speak(line)` picks the line's own `audioSrc` file, then a clip (`src/audio/clipPlayer.ts`, id from `src/audio/clipId.ts`), then the browser voice. A clip that fails or takes over 1.5 s falls back at once and is not asked for again that session. The funny knock-down line is also spoken through `speak()` when the service is on. Full contract, env and deploy steps: [docs/VOICE_SERVICE.md](./docs/VOICE_SERVICE.md).
 
 ## Scene flow
 New family: TapToStart → Intro → Loading → Setup → Camp → (Deploy, Phase 2) → Battle → Victory → Rematch or Camp.

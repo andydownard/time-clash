@@ -10,7 +10,11 @@ export const FIXTURE_TEXTS = ['What is 7 x 8?', 'I meant to do that!', 'Ouch, my
 /** 100 recognizable bytes: byte i has value i. */
 export const fixtureBytes = (): Uint8Array => Uint8Array.from({ length: 100 }, (_, i) => i);
 
-export function makeFixtureDir(file = 'voice-test.sqlite', texts = FIXTURE_TEXTS): string {
+export function makeFixtureDir(
+  file = 'voice-test.sqlite',
+  texts = FIXTURE_TEXTS,
+  audio: Uint8Array = fixtureBytes(),
+): string {
   const dir = mkdtempSync(join(tmpdir(), 'tc-voice-'));
   const db = new DatabaseSync(join(dir, file));
   db.exec(`CREATE TABLE voice_clip_index (id TEXT PRIMARY KEY, kind TEXT, text TEXT, text_sha256 TEXT,
@@ -18,7 +22,7 @@ export function makeFixtureDir(file = 'voice-test.sqlite', texts = FIXTURE_TEXTS
   const ins = db.prepare(
     `INSERT INTO voice_clip_index (id, kind, text, mime, duration_ms, bytes, audio) VALUES (?, 'q', ?, 'audio/mp4', 1234, 100, ?)`,
   );
-  for (const t of texts) ins.run(clipId(t), t, fixtureBytes());
+  for (const t of texts) ins.run(clipId(t), t, audio);
   db.close();
   return dir;
 }
