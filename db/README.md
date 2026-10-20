@@ -28,4 +28,4 @@
 
 The build is resumable: it keeps rows whose spoken text is unchanged and rebuilds the rest (3 worker processes by default). The check confirms every manifest id has audio, 0.5 s to 40 s long, and prints totals. Defaults are 0.5 s to 40 s; K to 4 has one 0.43 s sight word ("as") and 11 long reading passages up to 47.6 s, so run it with `--min-ms 300 --max-ms 60000`. The build stops if the file passes 80 MB (GitHub rejects 100 MB); delete it and rerun with `--bitrate 32000`.
 
-**Phases.** Phase 1 is grades K to 4 (`db/voice-k4.sqlite`, wipeout lines included). Phase 2 is `--grades 5-12 --out db/voice-5-12.sqlite`. `--grades` also takes one grade (`7`) or `all`.
+**Phases.** Phase 1 is grades K to 4 (`db/voice-k4.sqlite`, wipeout lines included). Phase 2 is two volumes so no file nears GitHub's 100 MB limit: `--grades 5-8 --out db/voice-5-8.sqlite` (586 clips, 64.6 MB) and `--grades 9-12 --out db/voice-9-12.sqlite` (350 clips, 25.4 MB). Check them with `--min-ms 300 --max-ms 90000`. Each volume repeats the 30 wipeout lines (same text, same id); the app server uses the first copy it finds. `--grades` also takes one grade (`7`) or `all`.
