@@ -1,4 +1,4 @@
-// Upgrade Base: opens from the Camp, spends Scrap, and the upgrade shows up in the next match.
+// Build Base (old shop, builder off): opens from the Camp, spends Scrap, and the upgrade shows up in the next match.
 import { expect, test } from './fixtures';
 import { giveScrap } from './support/camp';
 import { FUTURE_SIDE, PAST_SIDE, fillTeam, snap, tid, toSetup } from './support/game';
@@ -70,7 +70,7 @@ test('Upgrade the Tower gives more base health in the next match, shown in the H
   await expect(tid(page, 'base-hp-FUTURE')).toContainText('100 / 100');
 });
 
-test('the keyboard can use Upgrade Base', async ({ page }) => {
+test('the keyboard can use Build Base', async ({ page }) => {
   await toCamp(page);
   await giveScrap(page, 30, 0);
   await page.reload();

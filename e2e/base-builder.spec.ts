@@ -18,6 +18,21 @@ test('the Camp has no Build buttons unless the builder is switched on', async ({
   await page.goto('/?e2e=1');
   await page.waitForFunction(() => Boolean(window.__timeclash));
   await expect(tid(page, 'camp-build-PAST')).toHaveCount(0);
+  await expect(tid(page, 'camp-build-FUTURE')).toHaveCount(0);
+  // The old shop button stays, under the new name.
+  await expect(tid(page, 'camp-upgrade')).toHaveText('Build Base');
+});
+
+test('with the builder on, each side has one Build Base button and no old shop button', async ({
+  page,
+}) => {
+  await toBuilderCamp(page);
+  await expect(tid(page, 'camp-upgrade')).toHaveCount(0);
+  await expect(tid(page, 'camp-build-PAST')).toHaveText('Build Base');
+  await expect(tid(page, 'camp-build-FUTURE')).toHaveText('Build Base');
+  await tid(page, 'camp-build-FUTURE').click();
+  await expect(page.locator('[data-screen="builder"]')).toBeVisible();
+  await expect(page.locator('[data-screen="upgrade"]')).toHaveCount(0);
 });
 
 test('drag, turn, undo, save to slot 2, reload and see the base again', async ({ page }) => {

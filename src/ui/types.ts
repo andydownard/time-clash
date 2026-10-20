@@ -245,7 +245,7 @@ export interface Overlay {
   showCamp(options?: CampOptions): Promise<CampChoice>;
   /** Forge Weapon. Changes go through `save`. Resolves when Back is tapped. */
   showForge(options: ForgeOptions): Promise<void>;
-  /** Upgrade Base. Same options as the Forge. Resolves when Back is tapped. */
+  /** Build Base (old shop). Same options as the Forge. Resolves when Back is tapped. */
   showUpgrade(options: ForgeOptions): Promise<void>;
   /** The base builder. Changes go through `saveBases` and `saveCamp`. Resolves on Done or Back. */
   showBaseBuilder(options: BuilderOptions): Promise<void>;

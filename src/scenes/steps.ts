@@ -125,7 +125,7 @@ export async function runCampStep(s: AppServices): Promise<SceneRoute> {
     };
     if (choice === 'forge') await s.overlay.showForge(options);
     else await s.overlay.showUpgrade(options);
-    // Back from the Forge or Upgrade Base: the Camp again, which shows what the family now has.
+    // Back from the Forge or Build Base: the Camp again, which shows what the family now has.
     return { key: SCENE_KEYS.camp };
   }
   // The weapons and upgrades the family chose at the Camp go into the match.
