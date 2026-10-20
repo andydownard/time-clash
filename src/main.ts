@@ -8,23 +8,12 @@ import { PALETTE } from './scenes/palette';
 import { SERVICES_KEY } from './scenes/registry';
 import { SCENES } from './scenes';
 import { createServices } from './scenes/services';
-import {
-  e2eVoiceUrl,
-  installTestHook,
-  type ActiveScene,
-  type TimeClashHook,
-} from './scenes/testHook';
+import { installTestHook, type ActiveScene, type TimeClashHook } from './scenes/testHook';
 
-// Only a non-production build lets a test choose the voice service (?e2e=1&voice=...).
-const voiceUrl =
-  import.meta.env.MODE !== 'production'
-    ? e2eVoiceUrl(window.location.search, import.meta.env.MODE)
-    : undefined;
 const { services, seeds, faults } = createServices({
   doc: document,
   win: window,
   search: window.location.search,
-  ...(voiceUrl ? { voiceUrl } : {}),
 });
 
 const game = new Phaser.Game({

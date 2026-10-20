@@ -1,15 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { createAudioManager } from '../../src/audio/audioManager';
-import {
-  CLIP_START_TIMEOUT_MS,
-  createClipPlayer,
-  normalizeVoiceUrl,
-} from '../../src/audio/clipPlayer';
+import { CLIP_START_TIMEOUT_MS, createClipPlayer } from '../../src/audio/clipPlayer';
 import { clipId } from '../../src/audio/clipId';
 import type { VoiceLine } from '../../src/audio/types';
 import { createHarness } from './fakes';
 
-const BASE = 'https://voice.example.test';
 const init = { muted: false, volume: 0.7 };
 const TEXT = 'What is 7 x 8?';
 const line: VoiceLine = {
@@ -23,36 +18,33 @@ const line: VoiceLine = {
 };
 
 describe('clip url', () => {
-  it('builds base + /v1/clips/ + clipId(text)', () => {
-    const p = createClipPlayer(BASE);
+  it('is the same-origin path /v1/clips/ + clipId(text), with no host in it', () => {
+    const p = createClipPlayer(true);
     expect(p.enabled).toBe(true);
-    expect(p.urlFor(TEXT)).toBe(`${BASE}/v1/clips/${clipId(TEXT)}`);
-    expect(p.urlFor(TEXT)).toBe('https://voice.example.test/v1/clips/t:a080310abdfed25d');
+    expect(p.urlFor(TEXT)).toBe(`/v1/clips/${clipId(TEXT)}`);
+    expect(p.urlFor(TEXT)).toBe('/v1/clips/t:a080310abdfed25d');
+    expect(p.urlFor(TEXT)).not.toMatch(/https?:|\/\//);
   });
 
-  it('tidies the base and ignores whitespace differences in the text', () => {
-    expect(createClipPlayer(` ${BASE}/ `).urlFor('a  b')).toBe(`${BASE}/v1/clips/${clipId('a b')}`);
-    expect(normalizeVoiceUrl('http://localhost:8080//')).toBe('http://localhost:8080');
+  it('ignores whitespace differences in the text', () => {
+    expect(createClipPlayer(true).urlFor('a  b')).toBe(`/v1/clips/${clipId('a b')}`);
   });
 
-  it.each([undefined, null, '', '   ', 'not a url', 'javascript:alert(1)', 'ftp://x.test'])(
-    'is OFF for %j',
-    (v) => {
-      const p = createClipPlayer(v);
-      expect(p.enabled).toBe(false);
-      expect(p.urlFor(TEXT)).toBeNull();
-    },
-  );
+  it('is OFF when the build flag is off', () => {
+    const p = createClipPlayer(false);
+    expect(p.enabled).toBe(false);
+    expect(p.urlFor(TEXT)).toBeNull();
+  });
 
   it('does not offer a text again after a miss', () => {
-    const p = createClipPlayer(BASE);
+    const p = createClipPlayer(true);
     p.markMissed(TEXT);
     expect(p.urlFor(TEXT)).toBeNull();
     expect(p.urlFor('another line')).not.toBeNull();
   });
 });
 
-async function unlocked(clips = createClipPlayer(BASE), opts = {}) {
+async function unlocked(clips = createClipPlayer(true), opts = {}) {
   const h = createHarness({ clips, ...opts });
   const a = createAudioManager(h.env, init);
   await a.unlock();
@@ -70,7 +62,7 @@ describe('fallback order', () => {
     const { h, a } = await unlocked();
     const handle = a.speak(line);
     expect(handle.source).toBe('file');
-    expect(h.elements.map((e) => e.src)).toEqual([`${BASE}/v1/clips/${clipId(TEXT)}`]);
+    expect(h.elements.map((e) => e.src)).toEqual([`/v1/clips/${clipId(TEXT)}`]);
     expect(h.elements[0]!.played).toBe(1);
     expect(h.speech.spoken).toHaveLength(0);
     h.elements[0]!.onplaying?.();
@@ -79,7 +71,7 @@ describe('fallback order', () => {
   });
 
   it('feature off: speech only, exactly as before', async () => {
-    const { h, a } = await unlocked(createClipPlayer(''));
+    const { h, a } = await unlocked(createClipPlayer(false));
     const handle = a.speak(line);
     expect(h.elements).toHaveLength(0);
     expect(handle.source).toBe('synthesis');
@@ -120,7 +112,7 @@ describe('fallback order', () => {
   });
 
   it('a play() rejection falls back to speech', async () => {
-    const { h, a } = await unlocked(createClipPlayer(BASE), { elementResult: 'reject' });
+    const { h, a } = await unlocked(createClipPlayer(true), { elementResult: 'reject' });
     const handle = a.speak(line);
     await Promise.resolve();
     await Promise.resolve();
@@ -129,7 +121,7 @@ describe('fallback order', () => {
   });
 
   it('no speech and a dead clip: captions still run silently', async () => {
-    const { h, a } = await unlocked(createClipPlayer(BASE), { noSpeech: true });
+    const { h, a } = await unlocked(createClipPlayer(true), { noSpeech: true });
     const seen: Array<string | null> = [];
     const handle = a.speak(line, { onCaption: (t) => seen.push(t) });
     h.elements[0]!.onerror?.();
@@ -142,7 +134,7 @@ describe('fallback order', () => {
 
 describe('rules that keep working with clips', () => {
   it('before the first tap: no request, captions still show', () => {
-    const h = createHarness({ clips: createClipPlayer(BASE) });
+    const h = createHarness({ clips: createClipPlayer(true) });
     const a = createAudioManager(h.env, init);
     const handle = a.speak(line);
     expect(h.elements).toHaveLength(0);
@@ -150,7 +142,7 @@ describe('rules that keep working with clips', () => {
   });
 
   it('muted: no request and no speech', async () => {
-    const h = createHarness({ clips: createClipPlayer(BASE) });
+    const h = createHarness({ clips: createClipPlayer(true) });
     const a = createAudioManager(h.env, { ...init, muted: true });
     await a.unlock();
     const handle = a.speak(line);

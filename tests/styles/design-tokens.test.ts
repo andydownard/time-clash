@@ -134,9 +134,6 @@ function walk(dir: string, out: string[] = []): string[] {
   return out;
 }
 
-// The one outside origin allowed anywhere: the planned voice service (docs/VOICE_SERVICE.md).
-const VOICE_ORIGIN = 'https://voice.timeclash.rallytasks.com';
-
 describe('no network references', () => {
   const files = [
     ...walk(join(root, 'src')),
@@ -148,9 +145,7 @@ describe('no network references', () => {
   });
   it('no http(s) URL in css or html except the xmlns attribute', () => {
     for (const f of files) {
-      const text = readFileSync(f, 'utf8')
-        .replace(/xmlns(:\w+)?="[^"]*"/g, '')
-        .replaceAll(VOICE_ORIGIN, '');
+      const text = readFileSync(f, 'utf8').replace(/xmlns(:\w+)?="[^"]*"/g, '');
       expect(text, f).not.toMatch(/https?:\/\//);
     }
   });
@@ -166,8 +161,7 @@ describe('Content-Security-Policy', () => {
   const csp = /http-equiv="Content-Security-Policy"\s+content="([^"]+)"/.exec(html)?.[1] ?? '';
   it('has font-src self and no external origin', () => {
     expect(csp).toContain("font-src 'self'");
-    // The one allowed outside origin is the planned voice service (docs/VOICE_SERVICE.md).
-    expect(csp.replaceAll(VOICE_ORIGIN, '')).not.toMatch(/https?:|\/\/|\*/);
+    expect(csp).not.toMatch(/https?:|\/\/|\*/);
   });
 });
 

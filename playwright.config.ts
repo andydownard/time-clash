@@ -2,6 +2,8 @@ import { defineConfig, devices } from '@playwright/test';
 
 // The e2e build uses vite's "e2e" mode (not "production"), because the ?e2e=1 test hook is
 // switched off in production builds. It goes to node_modules/.e2e-dist (ignored by git and eslint), never to dist/.
+// The pages are served by the real production app server (app-server/), so e2e also checks the
+// security headers and the same-origin clip route that production sends.
 const PORT = Number(process.env.E2E_PORT ?? 4173);
 
 const sizes = [
@@ -11,16 +13,7 @@ const sizes = [
 const portrait = { name: '768x1024', viewport: { width: 768, height: 1024 } };
 
 // Chromium also runs muted. The page-level stubs in e2e/support/silent.ts cover WebKit.
-// Chromium treats a page handed over by page.route() as public and blocks its calls to localhost
-// (Local Network Access), which e2e/voice-clips.spec.ts needs. These flags are Chromium-only.
-const quiet = {
-  launchOptions: {
-    args: [
-      '--mute-audio',
-      '--disable-features=LocalNetworkAccessChecks,BlockInsecurePrivateNetworkRequests,PrivateNetworkAccessSendPreflights',
-    ],
-  },
-};
+const quiet = { launchOptions: { args: ['--mute-audio'] } };
 
 export default defineConfig({
   testDir: './e2e',
@@ -71,7 +64,7 @@ export default defineConfig({
   webServer: {
     command:
       'npx vite build --mode e2e --outDir node_modules/.e2e-dist --emptyOutDir && echo e2e > node_modules/.e2e-dist/version.txt && ' +
-      `npx vite preview --mode e2e --outDir node_modules/.e2e-dist --port ${PORT} --strictPort`,
+      `PORT=${PORT} DIST_DIR=node_modules/.e2e-dist npx tsx app-server/server.ts`,
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI && process.env.E2E_REUSE_SERVER === '1',
     timeout: 180_000,

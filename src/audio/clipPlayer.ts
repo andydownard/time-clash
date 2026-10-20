@@ -1,4 +1,4 @@
-// Spoken clips from the voice service (voice-server/, docs/VOICE_SERVICE.md).
+// Spoken clips from the app server's /v1/clips route (voice-server/, docs/APP_SERVER.md).
 // This file only decides WHICH url a line uses and remembers misses. The AudioManager plays it,
 // so mute, volume, Skip, one-voice-at-a-time and captions all keep working.
 // The url holds a hash of the line's text and nothing else: no names, no player data.
@@ -8,7 +8,7 @@ import { clipId } from './clipId';
 export const CLIP_START_TIMEOUT_MS = 1500;
 
 export type ClipPlayer = {
-  /** True when a voice service is configured. When false the game behaves as it always did. */
+  /** True when this build was made with VITE_VOICE=on. When false the game behaves as it always did. */
   readonly enabled: boolean;
   /** The clip url for this exact spoken text, or null when off or the clip already missed. */
   urlFor(text: string): string | null;
@@ -16,29 +16,19 @@ export type ClipPlayer = {
   markMissed(text: string): void;
 };
 
-/** Reads the service address. Anything that is not an http(s) address turns the feature off. */
-export function normalizeVoiceUrl(raw: string | undefined | null): string | null {
-  const value = (raw ?? '').trim();
-  if (!value) return null;
-  try {
-    const u = new URL(value);
-    if (u.protocol !== 'https:' && u.protocol !== 'http:') return null;
-    return `${u.origin}${u.pathname.replace(/\/+$/, '')}`;
-  } catch {
-    return null;
-  }
-}
+/** Where the app server hands out clips: the SAME origin as the game, so no CORS and no extra CSP. */
+export const CLIP_PATH = '/v1/clips';
 
-export function createClipPlayer(rawBase: string | undefined | null): ClipPlayer {
-  const base = normalizeVoiceUrl(rawBase);
+/** `enabled` comes from the build flag VITE_VOICE=on (set for production builds). */
+export function createClipPlayer(enabled: boolean): ClipPlayer {
   const missed = new Set<string>();
   return {
-    enabled: base !== null,
+    enabled,
     urlFor(text) {
-      if (base === null) return null;
+      if (!enabled) return null;
       const id = clipId(text);
       if (missed.has(id)) return null;
-      return `${base}/v1/clips/${id}`;
+      return `${CLIP_PATH}/${id}`;
     },
     markMissed(text) {
       missed.add(clipId(text));
