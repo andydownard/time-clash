@@ -54,49 +54,69 @@ const PAST_SCENE = `<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid sl
 <path d="M90,806 V630 Q90,520 170,520 Q250,520 250,630 V806 Z" fill="#ff7a1a" class="tc-forge-glow"/>
 <path d="M120,806 V650 Q120,570 170,570 Q220,570 220,650 V806 Z" fill="#ffd27a" class="tc-forge-glow"/>
 <g fill="#ffb23e"><circle class="tc-forge-spark" cx="150" cy="600" r="4" style="--dx:-30px"/><circle class="tc-forge-spark" cx="190" cy="620" r="3" style="--dx:40px;animation-delay:.8s"/></g>
-<!-- anvil -->
-<g transform="translate(540 800)">
-<ellipse cx="0" cy="8" rx="110" ry="14" fill="#05061a" opacity=".45"/>
-<path d="M-62,0 H62 L46,-30 H-46 Z" fill="#3a3550" stroke="#12102b" stroke-width="4"/>
-<rect x="-34" y="-72" width="68" height="44" fill="#5d6c8c" stroke="#12102b" stroke-width="4"/>
-<path d="M-82,-110 L-130,-104 Q-112,-86 -82,-84 Z" fill="#7f8ca8" stroke="#12102b" stroke-width="5" stroke-linejoin="round"/>
-<rect x="-82" y="-110" width="160" height="26" rx="4" fill="#7f8ca8" stroke="#12102b" stroke-width="5"/>
-<rect x="-78" y="-108" width="152" height="5" fill="#cfd9ee" opacity=".55"/>
-</g>
-<!-- flat sword on the anvil -->
+<!-- bowyer's bench -->
+<g transform="translate(55 22)">
+<ellipse cx="625" cy="808" rx="230" ry="12" fill="#05061a" opacity=".45"/>
+<rect x="440" y="762" width="22" height="44" fill="#5a3a2a" stroke="#12102b" stroke-width="3"/><rect x="790" y="762" width="22" height="44" fill="#5a3a2a" stroke="#12102b" stroke-width="3"/>
+<rect x="450" y="786" width="352" height="12" fill="#5b3418" stroke="#12102b" stroke-width="3"/>
+<rect x="420" y="742" width="410" height="22" rx="4" fill="#a8672b" stroke="#12102b" stroke-width="4"/>
+<rect x="428" y="746" width="394" height="4" rx="2" fill="#ffd27a" opacity=".4"/>
+<!-- the bow stave, held at the left end by a clamp, with the bowstring looped at the right end -->
+<path d="M440,732 Q620,690 800,732" fill="none" stroke="#12102b" stroke-width="24" stroke-linecap="round"/>
+<path d="M440,732 Q620,690 800,732" fill="none" stroke="#a8672b" stroke-width="16" stroke-linecap="round"/>
+<path d="M446,727 Q620,685 794,727" fill="none" stroke="#ffd27a" stroke-width="3" stroke-linecap="round" opacity=".5"/>
+<rect x="438" y="716" width="28" height="10" rx="3" fill="#7f8ca8" stroke="#12102b" stroke-width="3"/>
+<rect x="462" y="716" width="9" height="66" rx="3" fill="#5d6c8c" stroke="#12102b" stroke-width="3"/>
+<rect x="438" y="772" width="33" height="10" rx="3" fill="#7f8ca8" stroke="#12102b" stroke-width="3"/>
+<circle cx="452" cy="708" r="6" fill="#ffd23e" stroke="#12102b" stroke-width="2.5"/>
+<ellipse cx="808" cy="726" rx="8" ry="12" fill="none" stroke="#12102b" stroke-width="7"/><ellipse cx="808" cy="726" rx="8" ry="12" fill="none" stroke="#fff6d0" stroke-width="3"/>
+<path d="M808,738 Q814,766 828,774 T842,800" fill="none" stroke="#12102b" stroke-width="7" stroke-linecap="round"/><path d="M808,738 Q814,766 828,774 T842,800" fill="none" stroke="#fff6d0" stroke-width="3" stroke-linecap="round"/>
+<!-- barrel of finished arrows -->
 <g>
-<rect x="436" y="679" width="30" height="10" rx="4" fill="#7a4a24" stroke="#12102b" stroke-width="2"/>
-<circle cx="432" cy="684" r="7" fill="#ffb23e" stroke="#12102b" stroke-width="2"/>
-<rect x="464" y="668" width="12" height="32" rx="3" fill="#5a28b8" stroke="#12102b" stroke-width="2.5"/>
-<path d="M476,675 H592 L640,684 L592,693 H476 Z" fill="url(#tcForgePFBlade)" stroke="#12102b" stroke-width="2.5" stroke-linejoin="round"/>
-<path d="M480,684 H620" stroke="#12102b" stroke-width="1.5" opacity=".5"/>
-<path class="tc-forge-hot" d="M476,675 H592 L640,684 L592,693 H476 Z" fill="#fff6d0" opacity=".5"/>
+<ellipse cx="960" cy="808" rx="64" ry="11" fill="#05061a" opacity=".45"/>
+<path d="M925.8,724 L916,700" stroke="#12102b" stroke-width="8" stroke-linecap="round"/><path d="M925.8,724 L916,700" stroke="#ffd27a" stroke-width="4" stroke-linecap="round"/><path d="M916,700 l-9,-8 M916,700 l9,-8 M916,708 l-9,-8 M916,708 l9,-8" stroke="#ff5fb0" stroke-width="5" stroke-linecap="round"/><path d="M941.6,724 L936,688" stroke="#12102b" stroke-width="8" stroke-linecap="round"/><path d="M941.6,724 L936,688" stroke="#ffd27a" stroke-width="4" stroke-linecap="round"/><path d="M936,688 l-9,-8 M936,688 l9,-8 M936,696 l-9,-8 M936,696 l9,-8" stroke="#ff5fb0" stroke-width="5" stroke-linecap="round"/><path d="M957.4,724 L956,682" stroke="#12102b" stroke-width="8" stroke-linecap="round"/><path d="M957.4,724 L956,682" stroke="#ffd27a" stroke-width="4" stroke-linecap="round"/><path d="M956,682 l-9,-8 M956,682 l9,-8 M956,690 l-9,-8 M956,690 l9,-8" stroke="#ff5fb0" stroke-width="5" stroke-linecap="round"/><path d="M973.8,724 L978,688" stroke="#12102b" stroke-width="8" stroke-linecap="round"/><path d="M973.8,724 L978,688" stroke="#ffd27a" stroke-width="4" stroke-linecap="round"/><path d="M978,688 l-9,-8 M978,688 l9,-8 M978,696 l-9,-8 M978,696 l9,-8" stroke="#ff5fb0" stroke-width="5" stroke-linecap="round"/><path d="M989.6,724 L998,696" stroke="#12102b" stroke-width="8" stroke-linecap="round"/><path d="M989.6,724 L998,696" stroke="#ffd27a" stroke-width="4" stroke-linecap="round"/><path d="M998,696 l-9,-8 M998,696 l9,-8 M998,704 l-9,-8 M998,704 l9,-8" stroke="#ff5fb0" stroke-width="5" stroke-linecap="round"/><path d="M1002.8,724 L1014,706" stroke="#12102b" stroke-width="8" stroke-linecap="round"/><path d="M1002.8,724 L1014,706" stroke="#ffd27a" stroke-width="4" stroke-linecap="round"/><path d="M1014,706 l-9,-8 M1014,706 l9,-8 M1014,714 l-9,-8 M1014,714 l9,-8" stroke="#ff5fb0" stroke-width="5" stroke-linecap="round"/>
+<path d="M912,806 Q896,760 912,716 H1008 Q1024,760 1008,806 Z" fill="#8a4f2a" stroke="#12102b" stroke-width="4" stroke-linejoin="round"/>
+<path d="M906,738 H1014 M906,786 H1014" stroke="#3a3550" stroke-width="7"/>
+<path d="M928,722 V800" stroke="#ffd27a" stroke-width="4" opacity=".3"/>
+<ellipse cx="960" cy="716" rx="48" ry="8" fill="#5b3418" stroke="#12102b" stroke-width="4"/>
 </g>
-<!-- blacksmith -->
+</g>
+<!-- bowyer -->
 <g>
 <ellipse cx="362" cy="806" rx="70" ry="12" fill="#05061a" opacity=".45"/>
 <rect x="334" y="730" width="22" height="70" fill="#5a3a2a" stroke="#12102b" stroke-width="3"/><rect x="368" y="730" width="22" height="70" fill="#5a3a2a" stroke="#12102b" stroke-width="3"/>
 <rect x="328" y="788" width="32" height="16" rx="5" fill="#25104f" stroke="#12102b" stroke-width="3"/><rect x="366" y="788" width="32" height="16" rx="5" fill="#25104f" stroke="#12102b" stroke-width="3"/>
+<path d="M338,622 Q312,640 318,668" fill="none" stroke="#12102b" stroke-width="14" stroke-linecap="round"/><path d="M338,622 Q312,640 318,668" fill="none" stroke="#7a4a24" stroke-width="8" stroke-linecap="round"/>
 <rect x="326" y="640" width="72" height="100" rx="16" fill="#8a4f2a" stroke="#12102b" stroke-width="4"/>
 <path d="M334,662 h56 v84 h-56 Z" fill="#5b3418" stroke="#12102b" stroke-width="3"/>
 <path d="M346,662 L362,640 L378,662" fill="none" stroke="#12102b" stroke-width="3"/>
-<path d="M346,668 L412,688 L444,688" fill="none" stroke="#12102b" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M346,668 L412,688 L444,688" fill="none" stroke="#8a4f2a" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
-<circle cx="448" cy="686" r="10" fill="#f5c9a0" stroke="#12102b" stroke-width="3"/>
 <circle cx="362" cy="614" r="28" fill="#f5c9a0" stroke="#12102b" stroke-width="4"/>
 <path d="M334,608 Q362,566 390,608 Z" fill="#5a28b8" stroke="#12102b" stroke-width="3" stroke-linejoin="round"/>
-<path d="M336,624 Q362,664 388,624 Q362,640 336,624 Z" fill="#7a4a24" stroke="#12102b" stroke-width="3" stroke-linejoin="round"/>
+<path d="M352,630 Q364,640 378,628" fill="none" stroke="#12102b" stroke-width="3" stroke-linecap="round"/>
 <ellipse cx="352" cy="613" rx="3.5" ry="5" fill="#12102b"/><ellipse cx="374" cy="613" rx="3.5" ry="5" fill="#12102b"/>
 <path d="M348,603 Q353,599 358,602 M366,602 Q371,599 376,603" fill="none" stroke="#12102b" stroke-width="3" stroke-linecap="round"/>
-<g transform="translate(388 664)"><g class="tc-forge-hammer">
-<path d="M0,0 L60,0" stroke="#12102b" stroke-width="24" stroke-linecap="round"/><path d="M0,0 L60,0" stroke="#8a4f2a" stroke-width="16" stroke-linecap="round"/>
-<rect x="56" y="-5" width="100" height="10" rx="5" fill="#a8672b" stroke="#12102b" stroke-width="2.5"/>
-<circle cx="62" cy="0" r="10" fill="#f5c9a0" stroke="#12102b" stroke-width="3"/>
-<rect x="150" y="-24" width="32" height="48" rx="5" fill="#5d6c8c" stroke="#12102b" stroke-width="4"/>
-<rect x="154" y="-20" width="8" height="40" fill="#cfd9ee" opacity=".5"/>
-</g></g>
 </g>
-<g fill="#ffd36b"><circle class="tc-forge-sp" cx="566" cy="676" r="4" style="--dx:-50px;--dy:-60px"/><circle class="tc-forge-sp" cx="566" cy="676" r="4" style="--dx:-30px;--dy:-85px"/><circle class="tc-forge-sp" cx="566" cy="676" r="4" style="--dx:0px;--dy:-95px"/><circle class="tc-forge-sp" cx="566" cy="676" r="4" style="--dx:30px;--dy:-85px"/><circle class="tc-forge-sp" cx="566" cy="676" r="4" style="--dx:55px;--dy:-55px"/><circle class="tc-forge-sp" cx="566" cy="676" r="4" style="--dx:70px;--dy:-20px"/><circle class="tc-forge-sp" cx="566" cy="676" r="4" style="--dx:-70px;--dy:-25px"/></g>
+<!-- the two-handled carving knife (a draw knife) lies on the stave and strokes along it -->
+<g transform="translate(55 22)"><g class="tc-forge-knife">
+<rect x="500" y="695" width="86" height="11" rx="4" fill="#cfd9ee" stroke="#12102b" stroke-width="3"/>
+<rect x="505" y="697.5" width="76" height="2.5" fill="#fff6d0"/>
+<rect x="515" y="646" width="10" height="53" rx="4" fill="#7a4a24" stroke="#12102b" stroke-width="3"/><rect x="555" y="646" width="10" height="53" rx="4" fill="#7a4a24" stroke="#12102b" stroke-width="3"/>
+</g></g>
+<!-- arms: shoulder, elbow, hand. The far arm is behind the near one. -->
+<g transform="translate(385 692)"><g class="tc-forge-far-upper" transform="rotate(25.01)">
+<g class="tc-forge-far-bone" transform="scale(130.42 1)"><rect x="0" y="-6.5" width="1" height="13" fill="#12102b"/><rect x="0" y="-3" width="1" height="6" fill="#5b3418"/></g>
+<g class="tc-forge-far-reach" transform="translate(130.42 0)"><circle r="10" fill="#5b3418" stroke="#12102b" stroke-width="3"/><g transform="rotate(-56)">
+<g class="tc-forge-far-bone" transform="scale(130.42 1)"><rect x="0" y="-6.5" width="1" height="13" fill="#12102b"/><rect x="0" y="-3" width="1" height="6" fill="#f5c9a0"/></g>
+<g class="tc-forge-far-reach" transform="translate(130.42 0)"><circle r="11" fill="#f5c9a0" stroke="#12102b" stroke-width="3"/></g>
+</g></g></g></g>
+<g transform="translate(385 692)"><g class="tc-forge-near-upper" transform="rotate(24.39)">
+<g class="tc-forge-near-bone" transform="scale(107.81 1)"><rect x="0" y="-7" width="1" height="14" fill="#12102b"/><rect x="0" y="-3.5" width="1" height="7" fill="#8a4f2a"/></g>
+<g class="tc-forge-near-reach" transform="translate(107.81 0)"><circle r="11" fill="#8a4f2a" stroke="#12102b" stroke-width="3"/><g transform="rotate(-56)">
+<g class="tc-forge-near-bone" transform="scale(107.81 1)"><rect x="0" y="-7" width="1" height="14" fill="#12102b"/><rect x="0" y="-3.5" width="1" height="7" fill="#f5c9a0"/></g>
+<g class="tc-forge-near-reach" transform="translate(107.81 0)"><circle r="12" fill="#f5c9a0" stroke="#12102b" stroke-width="3"/></g>
+</g></g></g></g>
+<!-- wood chips pop up with each stroke (none when motion is reduced) -->
+<g transform="translate(55 22)"><rect class="tc-forge-chip" x="563" y="694" width="9" height="5" rx="1.5" fill="#ffd27a" stroke="#12102b" stroke-width="1.5" style="--dx:-26px;--dy:-34px;animation-delay:0.36s"/><rect class="tc-forge-chip" x="550" y="694" width="9" height="5" rx="1.5" fill="#ffd27a" stroke="#12102b" stroke-width="1.5" style="--dx:-14px;--dy:-44px;animation-delay:0.53s"/><rect class="tc-forge-chip" x="536" y="694" width="9" height="5" rx="1.5" fill="#ffd27a" stroke="#12102b" stroke-width="1.5" style="--dx:16px;--dy:-40px;animation-delay:0.72s"/><rect class="tc-forge-chip" x="521" y="694" width="9" height="5" rx="1.5" fill="#ffd27a" stroke="#12102b" stroke-width="1.5" style="--dx:-22px;--dy:-30px;animation-delay:0.91s"/><rect class="tc-forge-chip" x="511" y="694" width="9" height="5" rx="1.5" fill="#ffd27a" stroke="#12102b" stroke-width="1.5" style="--dx:24px;--dy:-36px;animation-delay:1.06s"/></g>
 </svg>`;
 
 const FUTURE_SCENE = `<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice">
@@ -158,11 +178,20 @@ const FUTURE_SCENE = `<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid 
 <path d="M-34,-98 H34 L40,-170 Q0,-188 -40,-170 Z" fill="#2f6bff" stroke="#0a1a4f" stroke-width="4" stroke-linejoin="round"/><path d="M-30,-126 H30" stroke="#4fd8ff" stroke-width="4"/><rect x="-6" y="-166" width="12" height="38" rx="5" fill="#8247e8"/>
 <circle cx="0" cy="-206" r="30" fill="#f5c9a0" stroke="#0a1a4f" stroke-width="4"/><path d="M-32,-212 Q0,-246 32,-212 L32,-204 H-32 Z" fill="#12102b" stroke="#0a1a4f" stroke-width="3"/>
 <rect x="-34" y="-216" width="38" height="14" rx="7" fill="#4fd8ff" stroke="#0a1a4f" stroke-width="3"/><circle cx="-20" cy="-209" r="3" fill="#12102b"/><path d="M-22,-186 Q-12,-180 -4,-186" fill="none" stroke="#0a1a4f" stroke-width="3" stroke-linecap="round"/>
-<path d="M-30,-160 L-60,-128 L-30,-112" fill="none" stroke="#0a1a4f" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/><path d="M-30,-160 L-60,-128 L-30,-112" fill="none" stroke="#2f6bff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M30,-160 L60,-128 L28,-112" fill="none" stroke="#0a1a4f" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/><path d="M30,-160 L60,-128 L28,-112" fill="none" stroke="#2f6bff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
-<g transform="translate(0 -112)"><rect x="-44" y="-16" width="88" height="34" rx="14" fill="#12102b" stroke="#4fd8ff" stroke-width="3.5"/><circle cx="-26" cy="1" r="8" fill="#5d6c8c" stroke="#0a1a4f" stroke-width="2"/><circle cx="26" cy="1" r="8" fill="#5d6c8c" stroke="#0a1a4f" stroke-width="2"/><path d="M-8,-4 h6 M-5,-7 v6" stroke="#cfd9ee" stroke-width="2.5" stroke-linecap="round"/><circle class="tc-forge-btn" cx="10" cy="-4" r="4" fill="#ff5fb0"/><circle class="tc-forge-btn" cx="18" cy="2" r="4" fill="#4fd8ff" style="animation-delay:.4s"/><circle class="tc-forge-btn" cx="10" cy="8" r="4" fill="#ffd23e" style="animation-delay:.8s"/><circle cx="2" cy="-12" r="3" fill="#4fd8ff"/></g>
-<g fill="none" stroke="#4fd8ff" stroke-width="3" stroke-linecap="round"><path class="tc-forge-sig" d="M-62,-134 Q-72,-148 -62,-162"/><path class="tc-forge-sig" d="M-76,-128 Q-92,-148 -76,-168" style="animation-delay:.25s"/><path class="tc-forge-sig" d="M-90,-122 Q-112,-148 -90,-174" style="animation-delay:.5s"/></g></g>
-
+<path d="M-30,-160 L-62,-130 L-52,-110" fill="none" stroke="#0a1a4f" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/><path d="M-30,-160 L-62,-130 L-52,-110" fill="none" stroke="#2f6bff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M30,-160 L62,-130 L52,-110" fill="none" stroke="#0a1a4f" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/><path d="M30,-160 L62,-130 L52,-110" fill="none" stroke="#2f6bff" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+<g transform="translate(0 -112) scale(1.4)"><rect x="-44" y="-16" width="88" height="34" rx="14" fill="#12102b" stroke="#4fd8ff" stroke-width="3.5"/><circle cx="-26" cy="1" r="8" fill="#5d6c8c" stroke="#0a1a4f" stroke-width="2"/><circle cx="26" cy="1" r="8" fill="#5d6c8c" stroke="#0a1a4f" stroke-width="2"/><path d="M-8,-4 h6 M-5,-7 v6" stroke="#cfd9ee" stroke-width="2.5" stroke-linecap="round"/>
+<circle class="tc-forge-lit" cx="10" cy="-4" r="7" fill="#ff5fb0"/><circle class="tc-forge-lit" cx="18" cy="2" r="7" fill="#4fd8ff" style="animation-delay:.59s"/><circle class="tc-forge-lit" cx="10" cy="8" r="7" fill="#ffd23e" style="animation-delay:1.19s"/>
+<circle cx="10" cy="-4" r="4" fill="#ff5fb0"/><circle cx="18" cy="2" r="4" fill="#4fd8ff"/><circle cx="10" cy="8" r="4" fill="#ffd23e"/><circle cx="2" cy="-12" r="3" fill="#4fd8ff"/>
+<g class="tc-forge-thumb" transform="translate(13 -9)"><ellipse rx="8" ry="5.5" transform="rotate(-25)" fill="#f5c9a0" stroke="#0a1a4f" stroke-width="2"/></g></g>
+<circle cx="-52" cy="-110" r="9" fill="#f5c9a0" stroke="#0a1a4f" stroke-width="3"/><circle cx="52" cy="-110" r="9" fill="#f5c9a0" stroke="#0a1a4f" stroke-width="3"/>
+</g>
+<!-- a loose floor cable with a plug at each end, from the controller to the base of the robot arm -->
+<path d="M820,726 C822,780 836,826 770,832 C700,838 640,812 560,826 C480,840 420,818 372,792 L364,784" fill="none" stroke="#05061a" stroke-width="10" stroke-linecap="round"/>
+<path d="M820,726 C822,780 836,826 770,832 C700,838 640,812 560,826 C480,840 420,818 372,792 L364,784" fill="none" stroke="#8a97b3" stroke-width="5" stroke-linecap="round"/>
+<path class="tc-forge-pulse" pathLength="100" d="M820,726 C822,780 836,826 770,832 C700,838 640,812 560,826 C480,840 420,818 372,792 L364,784" fill="none" stroke="#4fd8ff" stroke-width="3" stroke-linecap="round" stroke-dasharray="7 93" stroke-dashoffset="-40"/>
+<rect x="810" y="716" width="20" height="14" rx="3" fill="#12102b" stroke="#4fd8ff" stroke-width="2.5"/>
+<rect x="346" y="776" width="20" height="16" rx="3" fill="#12102b" stroke="#4fd8ff" stroke-width="2.5"/>
 </svg>`;
 
 /** In the order of the Forge's lists: starter, long range, far range. */

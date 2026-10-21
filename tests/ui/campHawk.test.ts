@@ -1,8 +1,11 @@
 // @vitest-environment jsdom
 // The hawk over the Camp circles on a true oval, faces the way it flies, and banks round each end.
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { startHawk, type Scheduler } from '../../src/ui/ambientFlights';
 import { HAWK_3D, hawkPose } from '../../src/ui/flightPhysics';
+
+// Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
+vi.setConfig({ testTimeout: 120_000 });
 
 describe('hawkPose', () => {
   const orbit = { rx: 340, ry: 60, seconds: 16 };

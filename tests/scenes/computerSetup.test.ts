@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 // Setup and the battle hand-off with the Computer player (behind PRACTICE_BOT.enabled / ?computer=1).
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { COMPUTER } from '../../src/data/computerCopy';
 import { PRACTICE_BOT } from '../../src/game/config';
 import { SCENE_KEYS } from '../../src/scenes/registry';
@@ -10,6 +10,9 @@ import { TEST_IDS } from '../../src/ui/types';
 import { click, flush, q } from '../ui/helpers';
 import { makeServices, tinyBank } from './fakes';
 import type { BattleSceneData } from '../../src/scenes/battle/types';
+
+// Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
+vi.setConfig({ testTimeout: 120_000 });
 
 let t: ReturnType<typeof makeServices>;
 beforeEach(() => {

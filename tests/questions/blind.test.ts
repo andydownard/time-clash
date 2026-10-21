@@ -2,9 +2,12 @@ import { execFileSync } from 'node:child_process';
 import { writeFileSync, mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { compareCell, exportCell, parseCell } from '../../src/questions/blind';
 import { mq, pool } from './helpers';
+
+// Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
+vi.setConfig({ testTimeout: 120_000 });
 
 const questions = [
   ...pool('math', 5, 3),

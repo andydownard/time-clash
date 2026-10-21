@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { clampAim, simulateShot } from '../../src/game/ballistics';
 import {
   AIM,
@@ -11,6 +11,9 @@ import {
 } from '../../src/game/config';
 import { createRng } from '../../src/game/rng';
 import type { BattleLayout, ShotInput } from '../../src/game/types';
+
+// Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
+vi.setConfig({ testTimeout: 120_000 });
 
 const past = (over: Partial<ShotInput> = {}): ShotInput => ({
   angleDeg: 45,

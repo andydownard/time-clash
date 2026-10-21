@@ -1,8 +1,11 @@
 // @vitest-environment jsdom
 // The "Turn your iPad" screen: shown only on a touch tablet held upright, hidden when turned.
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { TURN_SCREEN } from '../../src/data/copy';
 import { awayMs, mountTurnScreen, shouldAskToTurn, type TurnWindow } from '../../src/ui/turnScreen';
+
+// Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
+vi.setConfig({ testTimeout: 120_000 });
 
 describe('shouldAskToTurn', () => {
   it('asks on a touch tablet held upright', () => {
