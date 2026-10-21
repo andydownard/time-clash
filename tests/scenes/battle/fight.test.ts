@@ -4,6 +4,7 @@ import {
   fallFrame,
   fallPose,
   fallVariantFor,
+  FALL_PHASES,
   standUpFrame,
   starOffsets,
   headPosition,
@@ -11,7 +12,7 @@ import {
   vanishFrame,
 } from '../../../src/scenes/battle/tumble';
 import { HIT_FX } from '../../../src/game/config';
-import { FALL_DX, FALL_MS } from '../../../src/scenes/battle/visual';
+import { BOUNCE_HEIGHT, FALL_DX, FALL_HEIGHT, FALL_MS } from '../../../src/scenes/battle/visual';
 
 describe('explosionPlan', () => {
   it('is deterministic', () => {
@@ -88,11 +89,37 @@ describe('fallFrame', () => {
         expect(last.squashY).toBe(1);
         expect(last.scale).toBe(HIT_FX.fallScale);
       });
-      it('goes through fly, land, wobble, topple in order', () => {
-        const order = ['fly', 'land', 'wobble', 'topple'];
-        const seen = frames.map((f) => order.indexOf(f.phase));
+      it('goes through teeter, fly, land, bounce, wobble, topple in order', () => {
+        expect(FALL_PHASES).toEqual(['teeter', 'fly', 'land', 'bounce', 'wobble', 'topple']);
+        const seen = frames.map((f) => FALL_PHASES.indexOf(f.phase));
         expect([...seen].sort((a, b) => a - b)).toEqual(seen);
-        expect(new Set(seen).size).toBe(4);
+        expect(new Set(seen).size).toBe(FALL_PHASES.length);
+      });
+      it('sets up with a teeter: it stays put at normal size, rocks, flails, looks both ways', () => {
+        const teeter = frames.filter((f) => f.phase === 'teeter');
+        expect(teeter.length).toBeGreaterThan(5);
+        for (const f of teeter) {
+          expect(f.dx).toBe(0);
+          expect(f.lift).toBe(0);
+          expect(f.scale).toBe(1);
+        }
+        expect(Math.max(...teeter.map((f) => Math.abs(f.rotationDeg)))).toBeGreaterThan(5);
+        expect(new Set(teeter.map((f) => Math.round(f.armSwingDeg))).size).toBeGreaterThan(3);
+        const looks = new Set(teeter.map((f) => f.lookDir));
+        expect(looks.has(-1) && looks.has(1)).toBe(true);
+        expect(Math.abs(teeter[teeter.length - 1]!.rotationDeg)).toBeLessThan(3);
+      });
+      it('pays off with a bounce: up off the ground after landing, and back down', () => {
+        const bounce = frames.filter((f) => f.phase === 'bounce');
+        expect(bounce.length).toBeGreaterThan(5);
+        const peak = Math.max(...bounce.map((f) => f.lift));
+        expect(peak).toBeGreaterThan(BOUNCE_HEIGHT * 0.8);
+        expect(peak).toBeLessThan(FALL_HEIGHT);
+        for (const f of bounce) expect(f.dx).toBe(FALL_DX);
+        expect(bounce[0]!.lift).toBeLessThan(peak / 2);
+        expect(bounce[bounce.length - 1]!.lift).toBeLessThan(peak / 2);
+        const land = frames.filter((f) => f.phase === 'land');
+        expect(Math.min(...land.map((f) => f.squashY))).toBeLessThan(0.7);
       });
       it('is deterministic', () => {
         expect(fallFrame(500, variant)).toEqual(fallFrame(500, variant));
@@ -103,10 +130,22 @@ describe('fallFrame', () => {
     expect(fallFrame(FALL_MS, 'flop').rotationDeg).toBeLessThan(0);
     expect(fallFrame(FALL_MS, 'face').rotationDeg).toBeGreaterThan(0);
   });
-  it('bounces on landing: a little lift right after the land', () => {
-    const f = fallFrame(FALL_MS * 0.645, 'face');
+  it('hops once more after the big bounce: a little lift in the wobble', () => {
+    const f = fallFrame(FALL_MS * 0.78, 'face');
     expect(f.phase).toBe('wobble');
     expect(f.lift).toBeGreaterThan(5);
+  });
+  it('a face-plant bounces flat like a plank; a flop rolls over once in the bounce', () => {
+    const sample = (v: 'face' | 'flop') =>
+      Array.from({ length: 301 }, (_, i) => fallFrame((i * FALL_MS) / 300, v)).filter(
+        (f) => f.phase === 'bounce',
+      );
+    for (const f of sample('face')) expect(f.rotationDeg).toBeCloseTo(LYING_DEG);
+    const roll = sample('flop').map((f) => f.rotationDeg);
+    expect(Math.max(...roll) - Math.min(...roll)).toBeGreaterThan(300);
+  });
+  it('keeps the whole tumble short so play keeps moving', () => {
+    expect(FALL_MS).toBeLessThanOrEqual(2500);
   });
   it('clamps time and bad input', () => {
     expect(fallFrame(-5, 'face').dx).toBe(0);

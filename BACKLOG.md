@@ -9,7 +9,6 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 
 ## P1
 - The intro runs about 60 seconds. Card 4 (Reload) has 7 captions over 15 seconds and only one joke.
-- The shot has no build-up, and Fire! is a plain red box.
 - Caption times are still estimated from sentence length across the real clip length. Measure real sentence times (for example from the TTS output) if a caption looks early or late.
 
 ## P2

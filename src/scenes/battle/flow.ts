@@ -1,7 +1,7 @@
 // BattleFlow: the whole battle loop with no Phaser in it.
 // It talks to MatchController (rules), the Overlay (DOM), the BattleView (drawing) and audio.
 // The loop follows docs/CONTRACTS.md:
-//   pass screen -> ready() -> banner -> setAim/fire() -> animate path -> shotLanded()
+//   pass screen -> ready() -> banner -> setAim -> wind-up -> fire() -> animate path -> shotLanded()
 //   -> (tumble, bubble) -> ... -> pickQuestion -> showReloadModal -> reloadDone() -> pass()
 import type { AudioManager } from '../../audio/types';
 import { firingOrigin, unitById, unitsOf, type UnitId } from '../../game/units';
@@ -257,6 +257,9 @@ export class BattleFlow {
     view.setAimDragHandler(null);
     view.showPreview(team, null);
     this.pushStatus(false);
+    await this.gate();
+    // The wind-up: Fire is already off, and the shot is not taken until the glow is done.
+    await view.playCharge(team, this.originFor(team));
     await this.gate();
     const result = match.fire();
     audio?.playSfx(team === 'PAST' ? 'cannonBoom' : 'laserPew');

@@ -71,6 +71,8 @@ export interface BattleView {
   showPreview(team: Team, dots: readonly PreviewDot[] | null): void;
   /** The player dragged the dial handle. Pass null to turn dragging off. */
   setAimDragHandler(handler: ((aim: AimInput) => void) | null): void;
+  /** The wind-up glow at the launch point before a shot. Resolves when the shot should go. */
+  playCharge(team: Team, from: Vec2): Promise<void>;
   /** Fly the projectile along result.path. Resolves when it lands. */
   animateShot(shooter: Team, result: ShotResult, kind?: ProjectileKind): Promise<void>;
   playImpact(info: ImpactInfo): Promise<void>;

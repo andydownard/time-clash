@@ -12,6 +12,7 @@ import { createDamageArt, damageStage, type DamageArt } from './battle/damageArt
 import {
   playBaseBlast,
   playBlastFade,
+  playCharge,
   playExplosion,
   playHitBurst,
   playVanish,
@@ -265,6 +266,10 @@ export class BattleScene extends Phaser.Scene implements BattleView {
       this.aimArt.pointerUp();
       this.aimArt.show(null, this.lastAim, this.lastStatus?.firingOrigin);
     }
+  }
+
+  playCharge(team: Team, from: Vec2): Promise<void> {
+    return playCharge(this, from, TEAM_COLOR[team], this.reduced());
   }
 
   animateShot(
