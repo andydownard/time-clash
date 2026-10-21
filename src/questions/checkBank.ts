@@ -1,4 +1,5 @@
 // Whole-bank checks for `npm run check:questions`. Pure: callers pass in parsed file contents.
+import { TOPIC_FOCUS, TOPIC_IDS } from '../game/config';
 import { areHomophones } from './homophones';
 import { validateQuestion } from './validate';
 
@@ -14,7 +15,12 @@ export function parseBankFileName(
   return m ? { subject: m[1] as 'math' | 'reading', grade: Number(m[2]) } : null;
 }
 
-export function checkBankFiles(files: readonly BankFile[]): BankCheck {
+export type CheckOptions = {
+  /** Also require every math grade to hold enough questions for each topic. */
+  requireTopics?: boolean;
+};
+
+export function checkBankFiles(files: readonly BankFile[], options: CheckOptions = {}): BankCheck {
   const problems: string[] = [];
   const counts: Record<string, number> = {};
   const ids = new Map<string, string>(); // id -> file
@@ -86,6 +92,27 @@ export function checkBankFiles(files: readonly BankFile[]): BankCheck {
         else prompts.set(promptKey, id);
       }
     });
+  }
+
+  if (options.requireTopics) {
+    for (const topic of TOPIC_IDS) {
+      const tag = TOPIC_FOCUS.tags[topic];
+      for (const { file, data } of files) {
+        const cell = parseBankFileName(file);
+        if (!cell || cell.subject !== 'math' || !Array.isArray(data)) continue;
+        const n = data.filter(
+          (e: unknown) =>
+            typeof e === 'object' &&
+            e !== null &&
+            ((e as { tags?: unknown }).tags as unknown[] | undefined)?.includes?.(tag),
+        ).length;
+        if (n < TOPIC_FOCUS.minPerGrade) {
+          problems.push(
+            `${file}: only ${n} ${topic} questions (tag "${tag}"). Each grade needs at least ${TOPIC_FOCUS.minPerGrade}`,
+          );
+        }
+      }
+    }
   }
   return { problems, counts };
 }

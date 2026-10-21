@@ -1,7 +1,7 @@
 // Every balance number and layout constant lives here (AGENTS.md "Config in one place").
 // Phase 1 numbers come from docs/BUILD.md. Tune here only.
 import type { Settings } from '../storage/types';
-import type { BattleLayout, Polygon, Rect, Team, Vec2 } from './types';
+import type { BattleLayout, Polygon, Rect, Team, Topic, Vec2 } from './types';
 
 // ---------- Physics ----------
 export const BALLISTICS = {
@@ -128,6 +128,21 @@ export const TURN = {
 export const GRADE = { min: 0, max: 12 } as const;
 export const NAME = { minLength: 1, maxLength: 12 } as const;
 export const DEFAULT_NAMES: Record<Team, string> = { PAST: 'Knight', FUTURE: 'Rocket' };
+
+// ---------- Topic focus ----------
+/**
+ * A parent can focus one side's math questions on a topic. Off by default for every player.
+ * `offer` lists the topics Setup shows on each side. Team Future has none yet (Andy's call).
+ */
+export const TOPIC_FOCUS = {
+  enabled: true,
+  offer: { PAST: ['multiplication'], FUTURE: [] } as Record<Team, readonly Topic[]>,
+  /** The tag a bank question carries when it belongs to a topic. */
+  tags: { multiplication: 'topic:multiplication' } as Record<Topic, string>,
+  /** Every math grade, K to 12, must hold at least this many questions for each topic. */
+  minPerGrade: 20,
+} as const;
+export const TOPIC_IDS: readonly Topic[] = ['multiplication'];
 
 // ---------- Seeds ----------
 /** Salts mixed into the match seed so each stream is separate but repeatable. */

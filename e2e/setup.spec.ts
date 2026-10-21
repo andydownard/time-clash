@@ -82,7 +82,31 @@ test('names, grades and subjects are remembered after a reload', async ({ page }
   await expect(tid(page, 'setup-subject-PAST-math')).toHaveAttribute('aria-checked', 'true');
 });
 
-test('Loading shows for at least 1.5 seconds before Setup', async ({ page }) => {
+test('the multiplication focus is off, is Team Past only, and is remembered', async ({ page }) => {
+  await toSetup(page);
+  const chip = tid(page, 'setup-topic-PAST-multiplication');
+  await expect(chip).toHaveAttribute('aria-checked', 'false');
+  await expect(tid(page, 'setup-topic-FUTURE-multiplication')).toHaveCount(0);
+  const box = await chip.boundingBox();
+  expect(box!.height).toBeGreaterThanOrEqual(56);
+  await fillTeam(page, 'PAST', PAST_SIDE);
+  await fillTeam(page, 'FUTURE', FUTURE_SIDE);
+  await chip.click();
+  await expect(chip).toHaveAttribute('aria-checked', 'true');
+  await tid(page, 'setup-next').click();
+  await expect(tid(page, 'camp-start')).toBeVisible();
+
+  await page.reload();
+  await expect(tid(page, 'camp-start')).toBeVisible({ timeout: 10_000 });
+  await tid(page, 'camp-players').click();
+  await expect(tid(page, 'setup-topic-PAST-multiplication')).toHaveAttribute(
+    'aria-checked',
+    'true',
+  );
+  await expect(tid(page, 'setup-grade-FUTURE-3')).toHaveAttribute('aria-checked', 'true');
+});
+
+test('Loading shows for at least 1.5 seconds before Setup',async ({ page }) => {
   await page.goto('/');
   await tid(page, 'tap-to-play').click();
   // Stamp the two moments inside the page, so a slow test runner cannot shorten the gap.

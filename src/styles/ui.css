@@ -972,6 +972,17 @@ body {
     white-space: nowrap;
   }
 }
+/* The read-back line repeats the cards, so on a 768 or 800 tall screen, or a portrait one, it goes too. Screen readers keep it. */
+@media (max-height: 810px), (orientation: portrait) {
+  .tc-match-helper {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
 /* iPad mini landscape is 744 tall: tighten Setup so Clear my data keeps a margin above the
    bottom edge and the home bar (iPad audit defect 2). */
 @media (max-height: 760px) {
@@ -1083,6 +1094,19 @@ body {
   letter-spacing: 0;
   font-family: var(--tc-font-voice-old);
   font-weight: 400;
+}
+.tc-subject-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--tc-s-1) var(--tc-s-2);
+}
+.tc-subject-head .tc-label {
+  margin: 0;
+}
+.tc-subject-head .tc-chips {
+  flex: 0 1 auto;
 }
 .tc-label {
   display: block;

@@ -32,7 +32,7 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 
 ## Phase 5: Squads
 Plan only: docs/SQUADS_PLAN.md. Squads starts after the look and feel phase, which is built. Each milestone ships behind `SQUADS.enabled`.
-- P1: Topic focus. Team Past math is multiplication (topic tag, grade-scaled multiplication sets, checker patterns). Team Future topic is still to be decided.
+- P1: Topic focus for Team Future. Team Past multiplication is built (see AGENTS.md). The Future topic is still Andy's call. Add it to `TOPIC_FOCUS.offer`, tag a set per grade, and the checker and Setup control pick it up.
 - P1: S1 Pick a helper. Each side gets a launcher and one dasher. Two taps per go, a "GO 1 OF 2" banner with dots, and reload after go 2.
 - P2: S2 Flyers. Hot Air Balloon and Space Plane drop payloads from sky spots.
 - P2: S3 Full crew of 4. Slingshot Squire, Laser Zapper, and Rocket Button, with fairness and no-stalemate tests.

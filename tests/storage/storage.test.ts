@@ -36,6 +36,20 @@ const players: Players = [
   { name: 'Sam', team: 'FUTURE', grade: 8, subject: 'math' },
 ];
 
+describe('storage: players with a topic focus', () => {
+  const withTopic: Players = [{ ...players[0], topic: 'multiplication' }, players[1]];
+  it('round-trips the topic', () => {
+    const s = createStorage(fakeBacking());
+    s.set('timeclash.players', withTopic);
+    expect(s.get('timeclash.players')).toEqual(withTopic);
+  });
+  it('drops an unknown saved topic and keeps the player', () => {
+    const raw = JSON.stringify([{ ...players[0], topic: 'juggling' }, players[1]]);
+    const s = createStorage(fakeBacking({ 'timeclash.players': raw }));
+    expect(s.get('timeclash.players')).toEqual(players);
+  });
+});
+
 describe('storage: normal backing store', () => {
   it('round-trips players', () => {
     const s = createStorage(fakeBacking());

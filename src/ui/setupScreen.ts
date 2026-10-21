@@ -11,9 +11,16 @@ import {
   gradeLabel,
 } from '../data/copy';
 import { COMPUTER } from '../data/computerCopy';
-import { DEFAULT_NAMES, GRADE, NAME, PRACTICE_BOT } from '../game/config';
+import { DEFAULT_NAMES, GRADE, NAME, PRACTICE_BOT, TOPIC_FOCUS } from '../game/config';
 import { withComputer } from '../game/practice';
-import { TEAMS, type Grade, type Players, type Subject, type Team } from '../game/types';
+import {
+  TEAMS,
+  type Grade,
+  type Players,
+  type Subject,
+  type Team,
+  type Topic,
+} from '../game/types';
 import { clearMyData, loadPractice } from '../storage/storage';
 import { skyline } from './art';
 import { COMPUTER_TEAM, createPracticeSetup } from './computerPlayer';
@@ -30,7 +37,7 @@ import { TEST_IDS } from './types';
 const START_PICK = { grade: 2 as Grade, subject: 'both' as Subject };
 const SUBJECTS: readonly Subject[] = ['reading', 'math', 'both'];
 
-type TeamState = { name: string; grade: Grade; subject: Subject };
+type TeamState = { name: string; grade: Grade; subject: Subject; topic?: Topic };
 
 export function showSetup(ctx: UiCtx, initial: Players | null): Promise<Players>;
 export function showSetup(
@@ -59,7 +66,7 @@ export function showSetup(
     // The Computer player is not a name to type back in. Its side starts fresh.
     for (const p of initial) {
       if (p.name === PRACTICE_BOT.displayName) continue;
-      state[p.team] = { name: p.name, grade: p.grade, subject: p.subject };
+      state[p.team] = { name: p.name, grade: p.grade, subject: p.subject, topic: p.topic };
     }
   }
 
@@ -192,6 +199,50 @@ export function showSetup(
     grades.el.classList.add('tc-chips-grades');
     painters.push(grades.paint, subjects.paint);
 
+    // Optional math focus. Off at first. Only sides the config offers a topic to show it.
+    const topics = TOPIC_FOCUS.enabled ? TOPIC_FOCUS.offer[team] : [];
+    const topicRow =
+      topics.length === 0
+        ? null
+        : h(
+            doc,
+            'div',
+            { class: 'tc-topic' },
+            h(
+              doc,
+              'div',
+              {
+                class: 'tc-chips',
+                role: 'group',
+                'aria-label': `${TEAM_NAMES[team]} ${SETUP.topicLabel}`,
+              },
+              ...topics.map((topic) => {
+                const chip = h(doc, 'button', {
+                  type: 'button',
+                  class: 'tc-chip tc-chip-wide',
+                  role: 'switch',
+                  'aria-describedby': `tc-topic-help-${lower}`,
+                  'data-testid': TEST_IDS.setupTopic(team, topic),
+                  text: SETUP.topicChips[topic] ?? topic,
+                });
+                const paint = (): void =>
+                  chip.setAttribute('aria-checked', String(state[team].topic === topic));
+                chip.addEventListener('click', () => {
+                  state[team].topic = state[team].topic === topic ? undefined : topic;
+                  paint();
+                  onPick();
+                });
+                painters.push(paint);
+                return chip;
+              }),
+            ),
+            h(doc, 'p', {
+              class: 'tc-sr-only',
+              id: `tc-topic-help-${lower}`,
+              text: SETUP.topicHelper,
+            }),
+          );
+
     return h(
       doc,
       'div',
@@ -221,7 +272,14 @@ export function showSetup(
       grades.el,
       // Heard by screen readers on the grade chips. The line everyone sees is under the cards.
       h(doc, 'p', { class: 'tc-sr-only', id: `tc-grade-help-${lower}`, text: SETUP.gradeHelper }),
-      h(doc, 'p', { class: 'tc-label', text: SETUP.subjectLabel }),
+      // The Focus switch shares the Subject label's line, so Setup keeps fitting a 768 tall screen.
+      h(
+        doc,
+        'div',
+        { class: 'tc-subject-head' },
+        h(doc, 'p', { class: 'tc-label', text: SETUP.subjectLabel }),
+        ...(topicRow ? [topicRow] : []),
+      ),
       subjects.el,
       h(doc, 'p', { class: 'tc-muted tc-subject-help', text: SETUP.subjectHelper }),
     );
@@ -370,7 +428,12 @@ export function showSetup(
       e.preventDefault();
       const alone = practice?.isComputer() === true;
       const result = validateSetup({
-        PAST: { name: inputs.PAST.value, grade: state.PAST.grade, subject: state.PAST.subject },
+        PAST: {
+          name: inputs.PAST.value,
+          grade: state.PAST.grade,
+          subject: state.PAST.subject,
+          topic: state.PAST.topic,
+        },
         // Playing alone: the other side is not typed, so check it with the default name.
         FUTURE: alone
           ? { name: DEFAULT_NAMES.FUTURE, grade: state.PAST.grade, subject: state.PAST.subject }
@@ -378,6 +441,7 @@ export function showSetup(
               name: inputs.FUTURE.value,
               grade: state.FUTURE.grade,
               subject: state.FUTURE.subject,
+              topic: state.FUTURE.topic,
             },
       });
       if (result.ok) {

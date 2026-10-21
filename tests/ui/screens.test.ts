@@ -357,6 +357,43 @@ describe('setup screen', () => {
     expect(text.split(SETUP.subjectHelper).length - 1).toBe(2); // once per team card
   });
 
+  it('offers the multiplication focus to Team Past only, and it starts off', async () => {
+    const p = s.overlay.showSetup(null);
+    const chip = q(TEST_IDS.setupTopic('PAST', 'multiplication'))!;
+    expect(chip.getAttribute('aria-checked')).toBe('false');
+    expect(q(TEST_IDS.setupTopic('FUTURE', 'multiplication'))).toBeNull();
+    next();
+    const players = await p;
+    expect(players[0]).not.toHaveProperty('topic');
+  });
+
+  it('turns the focus on and off, keeps it with different grades, and hands it to the game', async () => {
+    const p = s.overlay.showSetup(null);
+    click(q(TEST_IDS.setupGrade('PAST', 3)));
+    click(q(TEST_IDS.setupGrade('FUTURE', 8)));
+    const chip = q(TEST_IDS.setupTopic('PAST', 'multiplication'))!;
+    click(chip);
+    expect(chip.getAttribute('aria-checked')).toBe('true');
+    click(chip);
+    expect(chip.getAttribute('aria-checked')).toBe('false');
+    click(chip);
+    next();
+    const players = await p;
+    expect(players[0].topic).toBe('multiplication');
+    expect([players[0].grade, players[1].grade]).toEqual([3, 8]);
+  });
+
+  it('shows a saved focus as on', () => {
+    const players: Players = [
+      { name: 'Alex', team: 'PAST', grade: 3, subject: 'math', topic: 'multiplication' },
+      { name: 'Sam', team: 'FUTURE', grade: 8, subject: 'math' },
+    ];
+    void s.overlay.showSetup(players);
+    expect(q(TEST_IDS.setupTopic('PAST', 'multiplication'))!.getAttribute('aria-checked')).toBe(
+      'true',
+    );
+  });
+
   it('shows saved players when given', () => {
     const players: Players = [
       { name: 'Alex', team: 'PAST', grade: 2, subject: 'reading' },
