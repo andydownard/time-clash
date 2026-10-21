@@ -51,7 +51,9 @@ export function createGear(ctx: UiCtx, on: { ammo: (id: AmmoId) => void; evasion
     ammoCount,
   );
   const evaIcon = h(doc, 'span', { class: 'tc-gear-icon', 'aria-hidden': 'true' });
-  const evaWord = h(doc, 'span', { class: 'tc-gear-word', 'aria-hidden': 'true' });
+  const evaWord = h(doc, 'span', { class: 'tc-gear-word tc-gear-long', 'aria-hidden': 'true' });
+  /** The short form for a narrow screen: a check mark, the turns left, or a dash. */
+  const evaMark = h(doc, 'span', { class: 'tc-gear-word tc-gear-short', 'aria-hidden': 'true' });
   const evasion = h(
     doc,
     'button',
@@ -63,6 +65,7 @@ export function createGear(ctx: UiCtx, on: { ammo: (id: AmmoId) => void; evasion
     },
     evaIcon,
     evaWord,
+    evaMark,
   );
   const root = h(doc, 'div', { class: 'tc-gear', role: 'group', hidden: true }, ammo, evasion);
 
@@ -119,6 +122,14 @@ export function createGear(ctx: UiCtx, on: { ammo: (id: AmmoId) => void; evasion
           : e.phase === 'recharging'
             ? `${words.short} ${e.turnsLeft}`
             : words.short;
+      evaMark.textContent =
+        e.phase === 'armed'
+          ? '\u2713'
+          : e.phase === 'recharging'
+            ? String(e.turnsLeft)
+            : e.phase === 'used'
+              ? '\u2013'
+              : '';
       evasion.setAttribute('aria-label', label);
       evasion.title = label;
       evasion.setAttribute('aria-pressed', String(e.phase === 'armed'));
@@ -126,29 +137,53 @@ export function createGear(ctx: UiCtx, on: { ammo: (id: AmmoId) => void; evasion
       evasion.disabled = !canFire || (e.phase !== 'ready' && e.phase !== 'armed');
     },
     /**
-     * Sits centered over `fire`. If that spot would cover another part of the bar, it goes under
-     * Fire instead. Positions are relative to the bar (`fire.offsetParent`).
+     * Sits by Fire without covering another part of the bar or leaving the window. It tries, in
+     * order: centered over Fire, right-aligned over Fire, centered under Fire. Positions are set
+     * relative to the bar (`fire.offsetParent`).
      */
-    place(fire: HTMLElement, others: readonly HTMLElement[]): void {
+    place(fire: HTMLElement, others: readonly HTMLElement[], fresh = true): void {
       if (root.hidden) return;
+      if (fresh) delete root.dataset.compact;
       const w = root.offsetWidth;
       const hgt = root.offsetHeight;
-      const left = fire.offsetLeft + fire.offsetWidth / 2 - w / 2;
-      const above = fire.offsetTop - hgt - GAP;
-      const box = (top: number): Rectish => ({ left, top, right: left + w, bottom: top + hgt });
-      const blocked = others.some((o) => {
-        if (o.offsetWidth === 0 || o.hidden) return false;
-        const r = {
-          left: o.offsetLeft,
-          top: o.offsetTop,
-          right: o.offsetLeft + o.offsetWidth,
-          bottom: o.offsetTop + o.offsetHeight,
-        };
-        return overlaps(box(above), r);
+      const parentWidth = (fire.offsetParent as HTMLElement | null)?.offsetWidth ?? 0;
+      const rectOf = (o: HTMLElement): Rectish => ({
+        left: o.offsetLeft,
+        top: o.offsetTop,
+        right: o.offsetLeft + o.offsetWidth,
+        bottom: o.offsetTop + o.offsetHeight,
       });
-      const top = blocked ? fire.offsetTop + fire.offsetHeight + GAP : above;
-      root.style.left = `${Math.round(left)}px`;
-      root.style.top = `${Math.round(top)}px`;
+      const f = rectOf(fire);
+      const centered = f.left + (f.right - f.left) / 2 - w / 2;
+      const candidates: Array<{ left: number; top: number }> = [
+        { left: centered, top: f.top - hgt - GAP },
+        { left: f.right - w, top: f.top - hgt - GAP },
+        { left: centered, top: f.bottom + GAP },
+      ];
+      // The bar's top in window terms, so "under Fire" can be checked against the window height.
+      const barTop = (fire.offsetParent as HTMLElement | null)?.getBoundingClientRect().top ?? 0;
+      const winH = doc.defaultView?.innerHeight ?? 0;
+      const fits = ({ left, top }: { left: number; top: number }): boolean => {
+        const box: Rectish = { left, top, right: left + w, bottom: top + hgt };
+        if (left < 0 || (parentWidth > 0 && box.right > parentWidth)) return false;
+        if (winH > 0 && barTop + box.bottom > winH) return false;
+        return !others.some((o) => o.offsetWidth > 0 && !o.hidden && overlaps(box, rectOf(o)));
+      };
+      let pick = candidates.find(fits);
+      if (!pick && root.dataset.compact !== 'true') {
+        // No room: drop the words (the icon and a mark stay, the full name is the label) and retry.
+        root.dataset.compact = 'true';
+        this.place(fire, others, false);
+        return;
+      }
+      if (!pick) {
+        // Still no room: keep it over Fire, but inside the bar.
+        const first = candidates[0]!;
+        const max = parentWidth > 0 ? parentWidth - w : first.left;
+        pick = { left: Math.max(0, Math.min(first.left, max)), top: first.top };
+      }
+      root.style.left = `${Math.round(pick.left)}px`;
+      root.style.top = `${Math.round(pick.top)}px`;
     },
   };
 }

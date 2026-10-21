@@ -443,17 +443,22 @@ export const PLAN_COPY = {
     temple: { name: 'Ruined Temple', note: 'A tall old pillar.' },
   },
   spots: {
-    skyscraper: { name: 'Skyscraper', height: 'Height: high', note: 'Best view. No cover.' },
-    foodTruck: { name: 'Food Trucks', height: 'Height: middle', note: 'A low wall. Tacos too.' },
-    bridge: { name: 'Bridge', height: 'Height: low', note: 'The bridge blocks flat shots.' },
+    skyscraper: { name: 'Skyscraper', height: 'Height: high', note: 'No cover.' },
+    foodTruck: { name: 'Food Trucks', height: 'Height: middle', note: 'A low wall.' },
+    bridge: { name: 'Bridge', height: 'Height: low', note: 'Blocks flat shots.' },
   },
   ammo: {
     confetti: { name: 'Confetti', note: 'Bigger blast.' },
-    plasma: { name: 'Bouncy Plasma', note: 'Bounces once.' },
-    bowling: { name: 'Bowling Ball', note: 'Hits hard. Wind barely moves it.' },
+    plasma: { name: 'Plasma', note: 'Bounces once.' },
+    bowling: { name: 'Bowling', note: 'Hits hard. Wind barely moves it.' },
   },
-  unlock: (cost: number): string => `Unlock: ${cost} Scrap`,
-  owned: (uses: number): string => `Ready: ${uses} shots`,
+  unlock: (cost: number): string => `${cost} Scrap`,
+  owned: (uses: number): string => `${uses} shots`,
+  /** What a screen reader hears for one ammo button. */
+  ammoLabel: (name: string, note: string, owned: boolean, cost: number, uses: number): string =>
+    owned
+      ? `${name}. ${note} Unlocked: ${uses} shots each match.`
+      : `${name}. ${note} Unlock it for ${cost} Scrap.`,
   unlocked: (name: string): string => `${name} unlocked!`,
   needScrap: (cost: number): string => `You need ${cost} Scrap for that. Answer fast to earn more.`,
 } as const;

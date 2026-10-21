@@ -4260,6 +4260,11 @@ button.tc-forge-row[aria-disabled='true'],
 .tc-plan {
   background: linear-gradient(180deg, var(--tc-purple-900), var(--tc-ink-deep));
   gap: var(--tc-s-2);
+  /* The header row sits beside the fixed ? and gear buttons, not under them. */
+  padding-top: var(--tc-s-3);
+}
+.tc-plan-head {
+  padding-left: var(--tc-chrome-clear);
 }
 .tc-plan-head {
   width: min(1000px, 100%);
@@ -4276,7 +4281,7 @@ button.tc-forge-row[aria-disabled='true'],
   color: var(--tc-parchment-warm);
   font-family: var(--tc-font-voice-old);
   font-weight: 400;
-  font-size: calc(var(--tc-text-min) * 1.6);
+  font-size: calc(var(--tc-text-min) * 1.4);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -4297,6 +4302,15 @@ button.tc-forge-row[aria-disabled='true'],
 .tc-plan-hint {
   margin: 0;
   font-size: var(--tc-text-min);
+}
+/* The ammo heading and its one-line note share a row, to save height on a short screen. */
+.tc-plan-ammo-group {
+  grid-template-columns: auto 1fr;
+  align-items: baseline;
+  column-gap: var(--tc-s-3);
+}
+.tc-plan-ammo-group .tc-plan-teams {
+  grid-column: 1 / -1;
 }
 .tc-plan-cards {
   display: grid;
@@ -4368,8 +4382,15 @@ button.tc-forge-row[aria-disabled='true'],
 .tc-plan-ammo {
   justify-content: flex-start;
   gap: var(--tc-s-1);
+  min-width: 0;
   padding: var(--tc-s-1) var(--tc-s-2);
   text-align: left;
+  text-transform: none;
+  letter-spacing: 0;
+  font-family: var(--tc-font);
+}
+.tc-plan-ammo .tc-plan-icon {
+  font-size: var(--tc-text-min);
 }
 /* An unlocked kind shows a check mark and an Ember edge, not color alone. */
 .tc-plan-ammo[data-owned='true'] {
@@ -4415,10 +4436,17 @@ button.tc-forge-row[aria-disabled='true'],
   font-size: calc(var(--tc-text-min) * 1.2);
   line-height: 1;
 }
+.tc-gear-short:empty,
+.tc-gear:not([data-compact='true']) .tc-gear-short,
+.tc-gear[data-compact='true'] .tc-gear-long {
+  display: none;
+}
 /* Armed shows a check mark and a bright ring, not color alone. */
 .tc-gear-btn[aria-pressed='true'] {
   border-color: var(--tc-ember);
   box-shadow: 0 0 0 3px var(--tc-ember);
+}
+
 /* ---------- Turn your iPad (portrait on a touch tablet) ---------- */
 .tc-turn {
   position: fixed;

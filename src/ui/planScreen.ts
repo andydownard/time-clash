@@ -79,7 +79,7 @@ export function showPlan(ctx: UiCtx, options: PlanOptions): Promise<BattlePlan |
         card(
           TEST_IDS.planSpot(id),
           SPOT_ICON[id],
-          [PLAN_COPY.spots[id].name, PLAN_COPY.spots[id].height, PLAN_COPY.spots[id].note],
+          [PLAN_COPY.spots[id].name, `${PLAN_COPY.spots[id].height}. ${PLAN_COPY.spots[id].note}`],
           () => {
             plan.spot = id;
             paint();
@@ -162,6 +162,10 @@ export function showPlan(ctx: UiCtx, options: PlanOptions): Promise<BattlePlan |
             ),
           );
           el.title = words.note;
+          el.setAttribute(
+            'aria-label',
+            PLAN_COPY.ammoLabel(words.name, words.note, has, a.cost, a.uses),
+          );
         }
       }
     };

@@ -64,7 +64,7 @@ test('Back on the Battle Plan returns to the Camp and starts nothing', async ({ 
   expect(await page.evaluate(() => window.__timeclash!.match())).toBeNull();
 });
 
-test('special ammo: unlock with Scrap, load it in battle, and it runs out', async ({ page }) => {
+test('special ammo: unlock with Scrap, load it in battle, and a shot uses one', async ({ page }) => {
   await toCamp(page);
   await giveScrap(page, 20, 0);
   await page.reload();
