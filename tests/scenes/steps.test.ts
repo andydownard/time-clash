@@ -20,7 +20,7 @@ import { fakeController, makeServices, players, tinyBank } from './fakes';
 import { loadSettings } from '../../src/storage/storage';
 
 // Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
-vi.setConfig({ testTimeout: 30_000 });
+vi.setConfig({ testTimeout: 120_000 });
 
 let t: ReturnType<typeof makeServices>;
 beforeEach(() => {

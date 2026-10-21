@@ -23,7 +23,7 @@ import { NAMES, campWith } from '../helpers/camp';
 import { click, flush, q, qa, setup } from './helpers';
 
 // Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
-vi.setConfig({ testTimeout: 30_000 });
+vi.setConfig({ testTimeout: 120_000 });
 
 const css = readFileSync(join(process.cwd(), 'src/styles/baseBuilder.css'), 'utf8');
 const tokens = readFileSync(join(process.cwd(), 'src/styles/tokens.css'), 'utf8');

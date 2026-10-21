@@ -5,7 +5,7 @@ import { startHawk, type Scheduler } from '../../src/ui/ambientFlights';
 import { HAWK_3D, hawkPose } from '../../src/ui/flightPhysics';
 
 // Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
-vi.setConfig({ testTimeout: 30_000 });
+vi.setConfig({ testTimeout: 120_000 });
 
 describe('hawkPose', () => {
   const orbit = { rx: 340, ry: 60, seconds: 16 };

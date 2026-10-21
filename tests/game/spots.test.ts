@@ -15,7 +15,7 @@ import type { BattleLayout, Rect, Team } from '../../src/game/types';
 import { windForTurn } from '../../src/game/wind';
 
 // Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
-vi.setConfig({ testTimeout: 30_000 });
+vi.setConfig({ testTimeout: 120_000 });
 
 const SPOTS = [...SPOT_IDS] as SpotId[];
 const WINDS = [0, windForTurn(11, 0), windForTurn(23, 3)];

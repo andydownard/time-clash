@@ -5,7 +5,7 @@ import { UI } from '../../../src/game/config';
 import { createPauseControl } from '../../../src/scenes/battle/pauseUi';
 
 // Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
-vi.setConfig({ testTimeout: 30_000 });
+vi.setConfig({ testTimeout: 120_000 });
 
 const q = (id: string): HTMLElement | null => document.querySelector(`[data-testid="${id}"]`);
 

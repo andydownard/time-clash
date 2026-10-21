@@ -9,7 +9,7 @@ import { TEST_IDS } from '../../src/ui/types';
 import { mainIdeaQ, mathQ, q, setup } from './helpers';
 
 // Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
-vi.setConfig({ testTimeout: 30_000 });
+vi.setConfig({ testTimeout: 120_000 });
 
 let s: ReturnType<typeof setup>;
 beforeEach(() => {

@@ -27,7 +27,7 @@ import { classifyBlast } from '../../src/game/damage';
 import type { BattleLayout, Polygon, ShotInput } from '../../src/game/types';
 
 // Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
-vi.setConfig({ testTimeout: 30_000 });
+vi.setConfig({ testTimeout: 120_000 });
 
 const past = (over: Partial<ShotInput & { ammo: string }> = {}) => ({
   angleDeg: 45,

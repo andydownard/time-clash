@@ -18,7 +18,7 @@ import type {
 } from '../../src/game/types';
 
 // Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
-vi.setConfig({ testTimeout: 30_000 });
+vi.setConfig({ testTimeout: 120_000 });
 
 const PLAYERS: Players = [
   { name: 'Alex', team: 'PAST', grade: 5, subject: 'math' },

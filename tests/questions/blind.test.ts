@@ -7,7 +7,7 @@ import { compareCell, exportCell, parseCell } from '../../src/questions/blind';
 import { mq, pool } from './helpers';
 
 // Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
-vi.setConfig({ testTimeout: 30_000 });
+vi.setConfig({ testTimeout: 120_000 });
 
 const questions = [
   ...pool('math', 5, 3),

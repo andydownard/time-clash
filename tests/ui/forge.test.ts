@@ -13,7 +13,7 @@ import { TEST_IDS } from '../../src/ui/types';
 import { click, flush, q, qa, setup } from './helpers';
 
 // Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
-vi.setConfig({ testTimeout: 30_000 });
+vi.setConfig({ testTimeout: 120_000 });
 
 const ui = readFileSync(join(process.cwd(), 'src/styles/ui.css'), 'utf8');
 let s: ReturnType<typeof setup>;

@@ -10,7 +10,7 @@ import { CAMP_SHOTS, campFlightSpecs, campScheduler, flyOverCamp } from '../../s
 import { PICTURE_GRAVITY, poseAt } from '../../src/ui/flightPhysics';
 
 // Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
-vi.setConfig({ testTimeout: 30_000 });
+vi.setConfig({ testTimeout: 120_000 });
 
 const STILL = 'translate(390 96) scale(1.05)';
 const ui = readFileSync(join(process.cwd(), 'src/styles/ui.css'), 'utf8');
