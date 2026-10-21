@@ -12,7 +12,7 @@ import {
   GAME_TITLE,
 } from '../data/copy';
 import { pickAwards } from '../game/awards';
-import { TIMING } from '../game/config';
+import { CELEBRATE, TIMING } from '../game/config';
 import { TEAMS, otherTeam } from '../game/types';
 import { chronoFace, loadingScene, loadingTimeline, skyline } from './art';
 import { LOCAL_IDS } from './constants';
@@ -215,6 +215,18 @@ function toyBlocks(doc: Document): HTMLElement {
   return h(doc, 'div', { class: 'tc-blocks', 'aria-hidden': 'true' }, ...blocks);
 }
 
+/** Paper bits that tumble down once. Decoration only: no text, no clicks, out of the layout. */
+function confetti(doc: Document): HTMLElement {
+  const bits = Array.from({ length: CELEBRATE.confettiCount }, (_, i) =>
+    h(doc, 'span', { class: 'tc-confetti-bit', 'data-bit': i % 6 }),
+  );
+  bits.forEach((b, i) => {
+    b.style.setProperty('--tc-bit-x', `${((i * 37) % 100) + 0.5}%`);
+    b.style.setProperty('--tc-bit-delay', `${(i % 8) * 0.12}s`);
+  });
+  return h(doc, 'div', { class: 'tc-confetti', 'data-role': 'confetti', 'aria-hidden': 'true' }, ...bits);
+}
+
 export function showVictory(ctx: UiCtx, options: VictoryOptions): Promise<VictoryChoice> {
   const { doc } = ctx;
   const { winner, names, stats } = options;
@@ -286,6 +298,7 @@ export function showVictory(ctx: UiCtx, options: VictoryOptions): Promise<Victor
         'data-team': winner,
         'data-motion': ctx.motion(),
       },
+      confetti(doc),
       toyBlocks(doc),
       h(doc, 'p', {
         class: 'tc-team-eyebrow',

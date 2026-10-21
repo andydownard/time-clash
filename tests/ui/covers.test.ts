@@ -387,6 +387,34 @@ describe('reload modal', () => {
       await expect(p).resolves.toEqual({ correct: true, elapsedMs: 3000, choice: '5' });
     });
 
+    it('fast right answer pops a scrap burst with a caption and a bonus sound', () => {
+      let t = 0;
+      void open(mathQ, { now: () => t });
+      t = 1000;
+      click(q(TEST_IDS.reloadChoice(1)));
+      const burst = q('reload-feedback')!.querySelector('[data-role="bonus-burst"]')!;
+      expect(burst).not.toBeNull();
+      expect(burst.textContent).toContain(RELOAD_COPY.bonusPop);
+      expect(burst.textContent).toContain(RELOAD_COPY.bonusSound);
+      expect(s.sfx).toContain('bonus');
+    });
+
+    it('slow and wrong answers get no burst and no bonus sound', () => {
+      let t = 0;
+      void open(mathQ, { now: () => t });
+      t = 9000;
+      click(q(TEST_IDS.reloadChoice(1)));
+      expect(q('reload-feedback')!.querySelector('[data-role="bonus-burst"]')).toBeNull();
+      expect(s.sfx).not.toContain('bonus');
+    });
+
+    it('a wrong answer never plays the bonus sound or shows a burst', () => {
+      void open();
+      click(q(TEST_IDS.reloadChoice(0)));
+      expect(q('reload-feedback')!.querySelector('[data-role="bonus-burst"]')).toBeNull();
+      expect(s.sfx).not.toContain('bonus');
+    });
+
     it('slow right answer shows the smaller bonus', async () => {
       let t = 0;
       const p = open(mathQ, { now: () => t });
