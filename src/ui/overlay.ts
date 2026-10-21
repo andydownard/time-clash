@@ -126,8 +126,8 @@ export const createOverlay: CreateOverlayWithDeps = (
   };
 
   const raiseCaptions = (): void => {
-    // The question cover reads its text aloud, so its captions must show above it.
-    const above = covers.some((c) => c.kind === 'reload') ? Z.cover + 1 : null;
+    // Both covers speak (the question, and the pass line), so their captions show above them.
+    const above = covers.length > 0 ? Z.cover + 1 : null;
     layer.caption.style.zIndex = String(above ?? (screensOpen > 0 ? Z.screen + 1 : Z.caption));
   };
 

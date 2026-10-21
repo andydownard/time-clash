@@ -98,7 +98,7 @@ describe('ui.css: colors, fonts, network', () => {
     const used = new Set([...ui.matchAll(/var\((--tc-[\w-]+)/g)].map((m) => m[1] as string));
     const defined = new Set(Object.keys(parseCssVars(tokens)));
     // --tc-fast-ms (reload modal) and --tc-tail-shift (speech bubble) are set per element.
-    const perElement = new Set(['--tc-fast-ms', '--tc-tail-shift']);
+    const perElement = new Set(['--tc-fast-ms', '--tc-tail-shift', '--tc-bit-x', '--tc-bit-delay']);
     const missing = [...used].filter((v) => !defined.has(v) && !perElement.has(v));
     expect(missing).toEqual([]);
   });

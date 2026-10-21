@@ -1,5 +1,6 @@
 // Pass-the-mouse cover. Opaque and full viewport. It never holds question text.
 import { PASS_SCREEN, TEAM_NAMES } from '../data/copy';
+import { TIMING } from '../game/config';
 import type { UiCtx } from './ctx';
 import { h } from './dom';
 import { createCoverMute } from './muteButton';
@@ -48,12 +49,47 @@ export function showPassScreen(ctx: UiCtx, options: PassScreenOptions): Promise<
       ),
     );
     const close = ctx.openCover('pass', el);
+    const stopLine = sayPassLine(ctx);
     ready.addEventListener('click', () => {
       ctx.sfx('click');
       mute.dispose();
+      stopLine();
       close();
       resolve();
     });
     ready.focus();
   });
+}
+
+/**
+ * Chrono reads the cover's own words aloud, with a caption. The AudioManager keeps it silent
+ * before the first tap, while muted, and in a browser driven by a test tool. The caption shows
+ * either way. The line is fixed text: no name (names never leave the device) and no question.
+ * It never asks the voice service for a clip: only a tap on "Hear it" may make that request.
+ * Returns a function that stops the line and clears the caption ("I'm ready!" is the Skip).
+ */
+function sayPassLine(ctx: UiCtx): () => void {
+  const text = `${PASS_SCREEN.heading} ${PASS_SCREEN.noPeeking}`;
+  const durationMs = Math.max(
+    TIMING.bubbleHoldMs,
+    text.split(/\s+/).length * TIMING.bubbleMsPerWord,
+  );
+  ctx.setCaption(text);
+  try {
+    ctx.audio?.speak(
+      // noClip: the cover opens on its own, so it never makes a network request.
+      { id: 'pass-line', text, captions: [{ text, startMs: 0 }], durationMs, noClip: true },
+      { onCaption: (t) => ctx.setCaption(t) },
+    );
+  } catch {
+    /* no voice: the caption still shows */
+  }
+  return () => {
+    try {
+      ctx.audio?.stopSpeech();
+    } catch {
+      /* nothing to stop */
+    }
+    ctx.setCaption(null);
+  };
 }

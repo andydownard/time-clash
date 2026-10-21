@@ -295,12 +295,27 @@ export function showReloadModal(ctx: UiCtx, options: ReloadModalOptions): Promis
       });
       if (correct) {
         ctx.sfx('clunk');
-        const bonus = elapsedMs < fastMs ? COPY.fastBonus : COPY.slowCorrect;
+        const isFast = elapsedMs < fastMs;
+        const bonus = isFast ? COPY.fastBonus : COPY.slowCorrect;
         feedback.setAttribute('data-state', 'right');
         feedback.replaceChildren(
           h(doc, 'p', { class: 'tc-big', text: COPY.reloaded }),
           h(doc, 'p', { text: bonus }),
         );
+        if (isFast) {
+          // The extra scrap pops up big, rings, and the sound has a written caption too.
+          feedback.append(
+            h(
+              doc,
+              'div',
+              { class: 'tc-bonus-burst', 'data-role': 'bonus-burst' },
+              h(doc, 'span', { class: 'tc-bonus-coin', 'aria-hidden': 'true' }),
+              h(doc, 'span', { class: 'tc-bonus-pop', text: COPY.bonusPop }),
+              h(doc, 'span', { class: 'tc-bonus-sound', 'aria-hidden': 'true', text: COPY.bonusSound }),
+            ),
+          );
+          ctx.sfx('bonus');
+        }
         addQuip(elapsedMs < fastMs ? 'fast' : 'slow');
       } else {
         ctx.sfx('boing');

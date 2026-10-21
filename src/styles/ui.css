@@ -1582,6 +1582,95 @@ body {
   padding: 0 4px;
 }
 
+/* ---------- Celebration: confetti on Victory, scrap burst on a fast answer ---------- */
+.tc-screen > .tc-confetti {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.tc-confetti-bit {
+  position: absolute;
+  top: -24px;
+  left: var(--tc-bit-x);
+  width: 14px;
+  height: 20px;
+  border: 3px solid var(--tc-ink-deep);
+  border-radius: 4px;
+  background: var(--tc-ember);
+  opacity: 0;
+  animation: tc-confetti-fall 2.6s ease-in var(--tc-bit-delay) 1 both;
+}
+.tc-confetti-bit[data-bit='1'] {
+  background: var(--tc-pulse);
+}
+.tc-confetti-bit[data-bit='2'] {
+  background: var(--tc-purple-300);
+}
+.tc-confetti-bit[data-bit='3'] {
+  background: var(--tc-blue-500);
+}
+.tc-confetti-bit[data-bit='4'] {
+  background: var(--tc-purple-500);
+}
+.tc-confetti-bit[data-bit='5'] {
+  background: var(--tc-steel);
+}
+@keyframes tc-confetti-fall {
+  0% {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg);
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(110vh) rotate(540deg);
+  }
+}
+[data-motion='reduced'] .tc-confetti {
+  display: none;
+}
+.tc-bonus-burst {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tc-s-3);
+  margin-top: var(--tc-s-2);
+  animation: tc-bonus-pop 0.5s ease-out 1 both;
+}
+.tc-bonus-coin {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border: 4px solid var(--tc-ink-deep);
+  border-radius: 50%;
+  background: var(--tc-ember);
+}
+.tc-bonus-pop {
+  font-family: var(--tc-font-display);
+  font-size: var(--tc-fs-title);
+  font-weight: 700;
+}
+.tc-bonus-sound {
+  font-weight: 700;
+  font-style: italic;
+}
+@keyframes tc-bonus-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  70% {
+    transform: scale(1.15);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 /* ---------- Wipeout (end of match) ---------- */
 .tc-victory {
   gap: var(--tc-s-2);
