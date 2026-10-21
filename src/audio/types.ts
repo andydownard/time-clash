@@ -37,6 +37,8 @@ export type VoiceLine = {
   id: string;
   /** e.g. "/audio/voice/intro-02-aim.mp3". Optional: no file means speech synthesis. */
   audioSrc?: string;
+  /** True: never ask the voice service for this line (no network request). The device voice reads it. */
+  noClip?: boolean;
   /** Full text, read by speechSynthesis when the file is missing or fails. */
   text: string;
   /** Shown in the caption bar on the audio timeline. At least one entry. */
