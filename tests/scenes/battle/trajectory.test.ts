@@ -7,7 +7,7 @@ import {
   TEAM_FACING,
 } from '../../../src/game/config';
 import { simulateShot } from '../../../src/game/ballistics';
-import { flightDurationMs, pointAtTime, previewDots } from '../../../src/scenes/battle/trajectory';
+import { flightDurationMs, pointAtTime, previewDots, traceDots } from '../../../src/scenes/battle/trajectory';
 
 const shot = simulateShot({
   angleDeg: 50,
@@ -76,5 +76,18 @@ describe('previewDots', () => {
     }
     expect(previewDots([])).toEqual([]);
     expect(previewDots([{ x: 1, y: 2 }])).toHaveLength(1);
+  });
+});
+
+describe('traceDots', () => {
+  it('keeps the whole arc: starts at the muzzle and ends on the landing spot', () => {
+    const dots = traceDots(shot.path);
+    expect(dots[0]).toEqual(shot.path[0]);
+    expect(dots[dots.length - 1]).toEqual(shot.path[shot.path.length - 1]);
+    expect(dots.length).toBeGreaterThan(previewDots(shot.path).length);
+  });
+  it('copes with empty and tiny paths', () => {
+    expect(traceDots([])).toEqual([]);
+    expect(traceDots([{ x: 1, y: 2 }])).toEqual([{ x: 1, y: 2 }]);
   });
 });

@@ -161,6 +161,52 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
   /** The field right now: the layout plus a stone wall that is standing. */
   const currentLayout = () => withWalls(layout, wallsFor(evasion));
   const unitHp = freshUnitHp();
+  /** Flies the active fighter (or weapon) with the current aim. Changes nothing, so a preview can use it. */
+  const flyCurrent = (mount: ReturnType<typeof mountOf> | undefined) => {
+    let nextSource: ShellSource | null = null;
+    const team = turn.team;
+    const unit = unitOf(team);
+    const shotAim = mount ? mountAim(mount.role, aim[team]) : aim[team];
+    const { angleDeg, power } = shotAim;
+    const origin = mount ? mount.origin : firingOrigin(team, unit.id, layout);
+    // A mounted weapon fires its own shells. Fighters fire the loaded ammo.
+    const ammo: AmmoId = mount ? 'standard' : loaded[team];
+    const walls = wallsFor(evasion);
+    const speedScale = mount
+      ? BASE_IN_BATTLE.mountSpeedScale
+      : effects[team].speedScale * unit.speedScale;
+    const fly = (angle: number): ShotResult =>
+      simulateShot({
+        angleDeg: angle,
+        power,
+        origin,
+        facing: TEAM_FACING[team],
+        wind,
+        layout: walls.length > 0 ? withWalls(flightLay, walls) : flightLay,
+        speedScale,
+        ...(ammo === 'standard' ? {} : { ammo }),
+      });
+    let result: ShotResult;
+    if (built) {
+      const walls = wallsOf(built[otherTeam(team)]);
+      // A lob, and a shot from a flier, arc over walls and only meet one coming down.
+      const arcs = mount ? mount.role === 'lob' : BASE_IN_BATTLE.flierRoles.includes(unit.role);
+      const volley = mount?.role === 'volley';
+      const shells = (volley ? volleyAngles(angleDeg) : [angleDeg]).map((a) =>
+        cutAtWalls(fly(a), walls, arcs),
+      );
+      result = volley
+        ? { ...(shells[0] as ShotResult), volley: shells }
+        : (shells[0] as ShotResult);
+      nextSource = mount
+        ? { kind: 'mount', damage: mount.damage, role: mount.role, volley }
+        : { kind: 'fighter', damageScale: unit.damageScale, volley: false };
+    } else {
+      result = fly(angleDeg);
+    }
+    return { result, ammo, unit, angleDeg, power, team, nextSource };
+  };
+
   /** Keeps a team's pick on a fighter that is still standing. */
   const keepSelectionStanding = (team: Team): void => {
     const picked = selectedMount[team];
@@ -413,6 +459,12 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       evasion = { ...evasion, [turn.team]: disarm(evasion[turn.team]) };
     },
 
+    previewShot(): ShotResult {
+      const mountId = built ? selectedMount[turn.team] : null;
+      const mount = built && mountId ? mountOf(built[turn.team], mountId) : undefined;
+      return flyCurrent(mount).result;
+    },
+
     fire(): ShotResult {
       guard('fire');
       const mountId = built ? selectedMount[turn.team] : null;
@@ -424,46 +476,8 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
         throw new RangeError(`Fighter ${selected[turn.team]} is knocked out and cannot fire`);
       }
       step({ type: 'FIRE' });
-      const team = turn.team;
-      const unit = unitOf(team);
-      const shotAim = mount ? mountAim(mount.role, aim[team]) : aim[team];
-      const { angleDeg, power } = shotAim;
-      const origin = mount ? mount.origin : firingOrigin(team, unit.id, layout);
-      // A mounted weapon fires its own shells. Fighters fire the loaded ammo.
-      const ammo: AmmoId = mount ? 'standard' : loaded[team];
-      const walls = wallsFor(evasion);
-      const speedScale = mount
-        ? BASE_IN_BATTLE.mountSpeedScale
-        : effects[team].speedScale * unit.speedScale;
-      const fly = (angle: number): ShotResult =>
-        simulateShot({
-          angleDeg: angle,
-          power,
-          origin,
-          facing: TEAM_FACING[team],
-          wind,
-          layout: walls.length > 0 ? withWalls(flightLay, walls) : flightLay,
-          speedScale,
-          ...(ammo === 'standard' ? {} : { ammo }),
-        });
-      let result: ShotResult;
-      if (built) {
-        const walls = wallsOf(built[otherTeam(team)]);
-        // A lob, and a shot from a flier, arc over walls and only meet one coming down.
-        const arcs = mount ? mount.role === 'lob' : BASE_IN_BATTLE.flierRoles.includes(unit.role);
-        const volley = mount?.role === 'volley';
-        const shells = (volley ? volleyAngles(angleDeg) : [angleDeg]).map((a) =>
-          cutAtWalls(fly(a), walls, arcs),
-        );
-        result = volley
-          ? { ...(shells[0] as ShotResult), volley: shells }
-          : (shells[0] as ShotResult);
-        source = mount
-          ? { kind: 'mount', damage: mount.damage, role: mount.role, volley }
-          : { kind: 'fighter', damageScale: unit.damageScale, volley: false };
-      } else {
-        result = fly(angleDeg);
-      }
+      const { result, ammo, unit, angleDeg, power, team, nextSource } = flyCurrent(mount);
+      if (nextSource) source = nextSource;
       inFlight = result;
       inFlightAmmo = ammo;
       if (ammo !== 'standard') {

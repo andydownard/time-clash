@@ -25,7 +25,6 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 - Phase 2 Battle Plan, biomes, base spots, ammo and evasion are wired in. Open calls for Andy: one ability per team (Past wall, Future dodge) or both for each side; wall size and once per match versus dodge every 3rd turn (balance); Food Trucks as the default spot (it adds a low wall that Phase 1 did not have); ammo unlock lives on the Battle Plan, not the Forge.
 - P2: Portrait (768x1024) with the Skyscraper spot: the Team Future card covers the tank and laser robot on top of the tower. Move the top cards or lower the tower in portrait.
 - P2: Biome art is simple: cherry trees recolor the aspens and the temple uses plain columns. The spot shapes (tower, bridge deck, food truck wall) are plain steel blocks. Real art from a design board would help.
-- P3: The aim preview ignores the weapon and fighter range scale (it did before Phase 2 too). It does use the ammo and any standing wall.
 - P3: The Computer player does not aim around a standing stone wall.
 - P3: Ammo and the dodge only change damage in the base-health game. With character health (flag off) ammo still changes the flight, but not damage.
 - Camp scrap counter and saved scrap between matches. The Main board has no scrap counter, so it waits for Phase 3 and the Forge.
@@ -39,7 +38,6 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 
 ## Phase 5: Squads
 Plan only: docs/SQUADS_PLAN.md. Squads starts after the look and feel phase, which is built. Each milestone ships behind `SQUADS.enabled`.
-- P1: Learning aim. Show a short fading trajectory stub before a shot, then the full arc after it, with wind as arrows and a number. The reload question stays the heart of the loop.
 - P1: Topic focus. Team Past math is multiplication (topic tag, grade-scaled multiplication sets, checker patterns). Team Future topic is still to be decided.
 - P1: S1 Pick a helper. Each side gets a launcher and one dasher. Two taps per go, a "GO 1 OF 2" banner with dots, and reload after go 2.
 - P2: S2 Flyers. Hot Air Balloon and Space Plane drop payloads from sky spots.

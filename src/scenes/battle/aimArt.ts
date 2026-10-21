@@ -9,7 +9,7 @@ import { angleArc, angleFromDrag, angleLabelSpot, guideTip } from './geometry';
 import type { PreviewDot } from './types';
 import type { LabelScaler } from './textScale';
 import { TEXT_ROLES, textStyle, type TextRole } from './textStyle';
-import { DIAL, PALETTE, TEAM_COLOR } from './visual';
+import { DIAL, PALETTE, TEAM_COLOR, TRACE_ALPHA } from './visual';
 
 const GRAB = DIAL.grabRadius;
 const readoutRole = (t: Team): TextRole => (t === 'PAST' ? 'readoutPast' : 'readoutFuture');
@@ -28,6 +28,8 @@ export type AimArt = {
   show(team: Team | null, aim: AimInput, origin?: Vec2): void;
   state(): AimArtState;
   showPreview(team: Team, dots: readonly PreviewDot[] | null): void;
+  /** Leave the whole arc of the last shot on screen as a guide, or clear it with null. */
+  showTrace(team: Team, points: readonly Vec2[] | null): void;
   /** Pointer events. Return true if the pointer grabbed the handle. */
   pointerDown(p: Vec2): boolean;
   pointerMove(p: Vec2): AimInput | null;
@@ -42,6 +44,7 @@ export function createAimArt(
 ): AimArt {
   const dial = scene.add.graphics().setDepth(20);
   const preview = scene.add.graphics().setDepth(19);
+  const trace = scene.add.graphics().setDepth(18);
   const angleText = scene.add
     .text(0, 0, '', textStyle('readoutPast'))
     .setDepth(21)
@@ -130,6 +133,16 @@ export function createAimArt(
         preview.strokeCircle(d.x, d.y, 6);
       }
     },
+    showTrace(t, points) {
+      trace.clear();
+      if (!points || points.length < 2) return;
+      const color = TEAM_COLOR[t];
+      // Small dots keep the full arc quiet, so the live preview stays the loudest thing.
+      for (const p of points) {
+        trace.fillStyle(color, TRACE_ALPHA);
+        trace.fillCircle(p.x, p.y, 4);
+      }
+    },
     pointerDown(p) {
       if (!team) return false;
       const h = guideTip(origin(team), aim.angleDeg, TEAM_FACING[team]);
@@ -148,6 +161,7 @@ export function createAimArt(
     destroy() {
       dial.destroy();
       preview.destroy();
+      trace.destroy();
       angleText.destroy();
     },
   };

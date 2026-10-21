@@ -414,6 +414,21 @@ describe('BattleFlow: the board stays hidden under a cover', () => {
     expect(iBanner).toBeGreaterThan(iPass);
   });
 
+  it('leaves the full arc up after a shot, and clears it before the reload and pass covers', async () => {
+    const miss = findAim(SEED, 0, 'PAST', 'miss');
+    const w = makeWorld({ seed: SEED, script: [miss, miss] });
+    void w.flow.run();
+    await settle();
+    const drawn = w.traces.filter((t) => t.points);
+    expect(drawn.length).toBeGreaterThanOrEqual(2);
+    expect(drawn[0]!.team).toBe('PAST');
+    expect(drawn[0]!.points!.length).toBeGreaterThan(4);
+    // The last PAST arc is cleared before the question cover, so no cover ever saw it.
+    const lastDrawn = w.traces.lastIndexOf(drawn[drawn.length - 1]!);
+    expect(w.traces.slice(lastDrawn + 1).some((t) => t.points === null)).toBe(true);
+    expect(w.coverViolations).toEqual([]);
+  });
+
   it('uses the player names on the pass screen text only through the overlay', () => {
     expect(PASS_SCREEN.upNext('Sam')).toContain('Sam');
   });
