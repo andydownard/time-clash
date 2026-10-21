@@ -89,7 +89,11 @@ export const TEAM_COLOR: Record<Team, number> = {
  * Aim dial: the handle sits between these distances from the launcher. grabRadius is how close a
  * pointer must land to pick the handle up: 2 x 48 x (768 / 1280) = 57.6 screen px on portrait iPad.
  */
-export const DIAL = { minRadius: 40, maxRadius: 150, handleRadius: 22, grabRadius: 48 } as const;
+/**
+ * The small angle guide at the muzzle, in world px. The visible handle is small. The invisible
+ * grab circle around it is at least 56px across on every supported screen.
+ */
+export const DIAL = { arcRadius: 52, guideLength: 108, handleRadius: 9, grabRadius: 48, labelGap: 14 } as const;
 
 /**
  * Panel geometry in world px. The strip below the ground line (y 620 to 720) holds the panels.
@@ -136,12 +140,10 @@ export const REDUCED_FADE_MS = 250;
  * topple. All in ms and px.
  */
 export const FALL_MS = 2100;
-export const FALL_DX = 110;
+export const FALL_DX = 230;
 export const FALL_HEIGHT = 120;
 /** How high the fighter bounces after the first landing. */
 export const BOUNCE_HEIGHT = 36;
-/** Dizzy stars circle just above the fallen fighter after the bounce, then fade. */
-export const DIZZY = { orbitX: 22, orbitY: 6, rise: 30, spins: 2, ms: 1100 } as const;
 /** The wind-up glow at the launcher before a shot. Matches --tc-fire-charge in tokens.css. */
 export const CHARGE_MS = 380;
 /** The vanish puff after the tumble. */

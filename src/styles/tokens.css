@@ -1,6 +1,12 @@
 /* Design tokens. Palette from docs/DESIGN_BRIEF.md. No external fonts or images.
    tests/ui/contrast.test.ts checks the text pairs below. */
 :root {
+  /* Screen edges to keep clear (notch, rounded corners, home bar). The page opts in with
+     viewport-fit=cover in index.html. Zero in a desktop browser. */
+  --tc-safe-top: env(safe-area-inset-top, 0px);
+  --tc-safe-right: env(safe-area-inset-right, 0px);
+  --tc-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --tc-safe-left: env(safe-area-inset-left, 0px);
   /* Brief palette: Past */
   --tc-parchment: #f3e3c3;
   --tc-stone: #8c8a84;

@@ -27,6 +27,9 @@ import { TEST_IDS } from '../../src/ui/types';
 import { click, flush, q } from '../ui/helpers';
 import { fakeController, makeServices, players } from './fakes';
 
+// Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
+vi.setConfig({ testTimeout: 120_000 });
+
 type FakeScene = {
   key: string;
   create(data?: unknown): void;

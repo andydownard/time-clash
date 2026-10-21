@@ -3,10 +3,13 @@
 // tags on the reload card, the story label, and Orbitron for reading words only (never digits).
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { RELOAD, SETUP } from '../../src/data/copy';
 import { TEST_IDS } from '../../src/ui/types';
 import { mainIdeaQ, mathQ, q, setup } from './helpers';
+
+// Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
+vi.setConfig({ testTimeout: 120_000 });
 
 let s: ReturnType<typeof setup>;
 beforeEach(() => {

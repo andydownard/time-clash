@@ -17,5 +17,5 @@
     "noEmit": true,
     "allowImportingTsExtensions": true
   },
-  "include": ["src", "tests", "e2e", "scripts", "*.ts"]
+  "include": ["src", "tests", "e2e", "scripts", "voice-server", "app-server", "*.ts"]
 }

@@ -51,6 +51,33 @@ export const DAMAGE = {
   near: 10,
 } as const;
 
+// ---------- Character health ----------
+/**
+ * Every fighter has its own health. It REPLACES base health for the win (owner decision,
+ * 2026-10-20). Off until the scene and HUD land. The flag is read only as the default of
+ * `MatchOptions.characterHealth`; tests pass the option and never change this constant.
+ */
+export const CHARACTER_HEALTH = {
+  enabled: false,
+  /** Health each fighter starts with. */
+  hp: 3,
+  /** Health lost to a direct hit. */
+  directHit: 1,
+  /**
+   * Health lost to a Power Shot direct hit. The Power Shot is 1.5 times as hard
+   * (BONUS.damageMultiplier). Health is whole numbers, so 1 x 1.5 rounds up to 2.
+   */
+  powerHit: 2,
+  /** A near miss does no damage. The fighter tumbles. */
+  nearHit: 0,
+  /** A fighter's hit box, centered on its firing spot, in world px. */
+  box: { w: 64, h: 64 },
+  /** Scales DAMAGE.directRadius around a fighter box. 0.5 means 24 px of slack. */
+  directScale: 0.5,
+  /** Scales DAMAGE.nearRadius around a fighter box. 0.75 means 90 px. */
+  nearScale: 0.75,
+} as const;
+
 // ---------- Reload and scrap ----------
 export const RELOAD = {
   /** Answers strictly under this many ms are "fast". */
@@ -109,6 +136,8 @@ export const RNG_SALT = {
   bubbles: 0x42554242,
   questions: 0x51554553,
   lines: 0x4c494e45,
+  /** The Computer player's aim and answers. */
+  computer: 0x434f4d50,
 } as const;
 
 // ---------- Layout (logical world, scaled to fit by Phaser) ----------
@@ -255,4 +284,257 @@ export const DEFAULT_SETTINGS: Readonly<Settings> = {
 };
 
 /** How many tumble speech bubbles exist. Must equal TUMBLE_LINES.length in src/data/copy.ts (a test pins it). */
-export const TUMBLE_LINE_COUNT = 12;
+export const TUMBLE_LINE_COUNT = 21;
+
+// ---------- Hit effects (drawing numbers; the burst, the pip, the funny fall) ----------
+export const HIT_FX = {
+  /** Flying bits in the impact burst. */
+  particleCount: 14,
+  /** The whole burst is gone by this time. */
+  burstMaxMs: 850,
+  flashMs: 120,
+  ringMs: 420,
+  ringStartRadius: 14,
+  ringEndScale: 9,
+  smokeMs: 800,
+  particleMinDist: 80,
+  particleMaxDist: 190,
+  particleMinMs: 450,
+  particleMaxMs: 800,
+  /** Photosensitivity: no more than this many flashes in any one second. */
+  maxFlashesPerSecond: 3,
+  /** The floating "-N" over the hit base. */
+  pipRisePx: 70,
+  pipHoldMs: 350,
+  pipFadeMs: 750,
+  /** Health text pops to this scale when it drops, then settles. */
+  hpPopScale: 1.3,
+  hpPopMs: 260,
+  /** Little stars circling a fallen fighter. */
+  starCount: 3,
+  starRadiusPx: 34,
+  starSquash: 0.35,
+  starPeriodMs: 1400,
+  starSizePx: 11,
+  /** How far above the lying head the stars circle. */
+  starLiftPx: 44,
+  /** Standing back up after the fall. */
+  standUpMs: 600,
+  standUpHop: 18,
+  /** A fighter in a fall is drawn this many times bigger, so the slapstick can be seen. */
+  fallScale: 2,
+  /** The speech bubble tail aims this far above a fallen fighter's feet (clears the stars). */
+  fallenTailRise: 72,
+  /** Small bounce when a fighter lands. */
+  landBounce: 22,
+} as const;
+
+// ---------- Practice opponent (the "Computer player") ----------
+export type BotLevel = 'easy' | 'medium' | 'hard';
+export const BOT_LEVELS: readonly BotLevel[] = ['easy', 'medium', 'hard'];
+
+/** How one shooter aims and answers. The three levels and the scripted test player share this shape. */
+export type BotProfile = {
+  /** Spread (one standard deviation) of the angle error, in degrees. */
+  angleSpreadDeg: number;
+  /** Spread of the power error, in power points (0 to 100 scale). */
+  powerSpreadPct: number;
+  /** 0 ignores the wind, 1 reads it fully. */
+  windSkill: number;
+  /** Chance of a right reload answer on a grade 0 question (before the grade drop). */
+  reloadAccuracy: number;
+  /** Think time scale: 1 is a typical child. Bigger is slower. */
+  thinkScale: number;
+};
+
+export const PRACTICE_BOT = {
+  /** Off by default. The UI turns it on later, after the panel review. */
+  enabled: false,
+  /** Shown wherever the opponent appears. Never "bot", "AI" or "assistant". */
+  displayName: 'Computer player',
+  levels: {
+    easy: {
+      angleSpreadDeg: 7.5,
+      powerSpreadPct: 12,
+      windSkill: 0.3,
+      reloadAccuracy: 0.65,
+      thinkScale: 1.4,
+    },
+    medium: {
+      angleSpreadDeg: 5,
+      powerSpreadPct: 9,
+      windSkill: 0.6,
+      reloadAccuracy: 0.8,
+      thinkScale: 1,
+    },
+    hard: {
+      angleSpreadDeg: 2,
+      powerSpreadPct: 4,
+      windSkill: 0.9,
+      reloadAccuracy: 0.92,
+      thinkScale: 0.8,
+    },
+  } as Readonly<Record<BotLevel, BotProfile>>,
+  /** The "decent human" the simulation plays against. Not a level a child can pick. */
+  scriptedHuman: {
+    angleSpreadDeg: 4.5,
+    powerSpreadPct: 9,
+    windSkill: 0.5,
+    reloadAccuracy: 0.75,
+    thinkScale: 1,
+  } as BotProfile,
+  /** Aim search: coarse grid step, then a fine step around the best coarse cell. */
+  search: { angleStepDeg: 5, powerStep: 5, fineRadius: 4, fineStep: 1 },
+  reload: {
+    /** Chance drops by this much per grade level, so harder questions are missed more. */
+    gradeDrop: 0.015,
+    /** Never below a blind guess among four choices. */
+    floor: 0.25,
+    ceiling: 0.97,
+    /** Think time in ms: base, plus per grade, plus per reading kind, with random jitter on top. */
+    thinkBaseMs: 2500,
+    thinkPerGradeMs: 250,
+    thinkReadingExtraMs: 1500,
+    thinkJitterMs: 2000,
+    /** Never answer faster than this, so it does not feel instant. */
+    minDelayMs: 1800,
+    /** Never wait longer than this, so play is never slow. */
+    maxDelayMs: 14000,
+  },
+  /** Safety cap for simulated matches. A real match ends far sooner. */
+  maxSimTurns: 400,
+  /** How the screen paces the Computer player's turn, so a child can follow it and never waits long. */
+  pace: {
+    /** The dial and power meter move by themselves for this long before Fire, by level speed. */
+    aimBaseMs: 1500,
+    aimMinMs: 1200,
+    aimMaxMs: 2000,
+    /** How many small moves the dial makes on the way to the chosen shot. */
+    aimSteps: 14,
+    /** The reload "thinking" wait never passes this, even when the answer model wants longer. */
+    reloadCapMs: 2500,
+    reloadMinMs: 900,
+    /** All the thinking in one computer turn (aiming plus reload) stays under this. */
+    turnBudgetMs: 8000,
+    /** With reduced motion the dial jumps, and the banner still shows for this long. */
+    reducedBeatMs: 700,
+  },
+} as const;
+
+// ---------- Base builder ----------
+/**
+ * Before a battle a player builds a castle (Team Past) or a base (Team Future) from bricks on a
+ * grid. Off by default until the panel has reviewed it. `?builder=1` in the address turns it on
+ * for a try-out (see `baseBuilderOn` in baseBuilder.ts).
+ */
+export const BASE_BUILDER = {
+  enabled: false,
+  /** The query-string switch that turns it on without changing this file. */
+  queryParam: 'builder',
+  /** The build plot in grid cells. The bottom `groundRows` rows are the foundation (not buildable). */
+  cols: 24,
+  rows: 12,
+  groundRows: 1,
+  /** One cell is this many steps wide when Snap is off. A free brick sits on this finer grid. */
+  freeSteps: 8,
+  /** Saved bases each player keeps for each side. */
+  slots: 3,
+  /** Most player names whose saved bases we keep. */
+  maxPlayers: 50,
+  /** Most bricks in one base, so a saved base stays small. */
+  maxPieces: 60,
+  /** Steps Undo can go back. */
+  undoDepth: 50,
+  /** Your own shapes: the drawing pad is this many squares on a side. */
+  shapePad: 4,
+  /** Most squares in one shape of your own. */
+  maxShapeCells: 8,
+  /** Most shapes of your own a player keeps for each side. */
+  maxShapes: 6,
+  /** Hit points for each square of a shape of your own (the shape has squares times this). */
+  hpPerCell: 8,
+  /** How far (in cells) Turn looks for a free spot when a turned brick would overlap. */
+  turnSearchRadius: 3,
+  /** Scrap to unlock a locked piece, by piece id. */
+  pieceScrap: {
+    arch: 6,
+    gate: 10,
+    flag: 4,
+    laserBase: 8,
+    hangarDoor: 10,
+    powerCore: 6,
+  } as Readonly<Record<string, number>>,
+  /** Brick strength in hit points, kept in the save for the battle task. */
+  hp: { light: 10, small: 20, medium: 35, large: 50 },
+  /** Weapon spots: round pads on the base where a weapon can be mounted. */
+  spots: {
+    count: 4,
+    /** Pad radius in free steps (a pad is about one and a quarter cells wide). */
+    padSteps: 5,
+    /** The lowest a pad may sit, in cells from the top, so the mode switch never covers one. */
+    topRows: 2,
+    /** With no bricks, pads sit in a row on the foundation across these columns. */
+    rowFromCol: 6,
+    rowToCol: 18,
+    /** The smallest pad tap area on screen, in pixels (AGENTS.md: 56px targets). */
+    tapPx: 56,
+  },
+  /** Weapons that can be mounted on a spot. `scrap` null means owned from the start. */
+  spotWeapons: [
+    { id: 'cannon', team: 'PAST', name: 'Cannon', scrap: null, role: 'direct', damage: 20, hp: 30 },
+    { id: 'catapult', team: 'PAST', name: 'Catapult', scrap: null, role: 'lob', damage: 25, hp: 25 },
+    { id: 'archerPost', team: 'PAST', name: 'Archer post', scrap: null, role: 'volley', damage: 10, hp: 20 },
+    { id: 'ballista', team: 'PAST', name: 'Ballista', scrap: 35, role: 'direct', damage: 35, hp: 30 },
+    { id: 'laser', team: 'FUTURE', name: 'Laser', scrap: null, role: 'direct', damage: 20, hp: 30 },
+    { id: 'missilePod', team: 'FUTURE', name: 'Missile pod', scrap: null, role: 'lob', damage: 25, hp: 25 },
+    { id: 'turret', team: 'FUTURE', name: 'Turret', scrap: null, role: 'volley', damage: 10, hp: 20 },
+    { id: 'shieldGen', team: 'FUTURE', name: 'Shield generator', scrap: 35, role: 'guard', damage: 0, hp: 40 },
+  ],
+} as const;
+
+// ---------- Built bases in battle ----------
+/**
+ * The bricks and weapon spots a player built take part in the match (owner decision, 2026-10-20:
+ * "the bricks take hits", weapons on spots are real firing positions, a hit brick falls away, a
+ * weapon falls with its brick). Nobody is hurt: bricks puff and tumble. Off until the scene draws
+ * it. Read only as the default of `MatchOptions.baseInBattle`; tests pass the option. It only
+ * works together with `CHARACTER_HEALTH` (the win is still "all fighters out").
+ */
+export const BASE_IN_BATTLE = {
+  enabled: false,
+  /** Battlefield pixels per build step. The plot is 192 by 88 steps, so 384 by 176 px. */
+  scale: 2,
+  /** Where the plot's outer edge sits, in world px from its own side of the screen. */
+  margin: 40,
+  /** The plot's bottom edge (the top of the foundation) is the ground line. */
+  plotBottomY: TERRAIN.groundY,
+  /** A weapon's hit box, centered on its pad, in world px (the pad is 2 x 5 steps wide). */
+  mountBox: { w: 20, h: 20 },
+  /** Mounted weapons fire with this range scale (squad upgrades do not change them). */
+  mountSpeedScale: 1,
+  /**
+   * Damage to a brick or weapon (in brick hit points, see BASE_BUILDER.hp) from a shell that
+   * reaches it. A near miss chips 0. A Power Shot multiplies by BONUS.damageMultiplier (rounded).
+   * A fighter's shot does `fighterShot` times its damageScale. A mounted weapon does its catalog
+   * `damage` times its role's multiplier (`lob` is the splash weapon: it hits the hardest).
+   */
+  brickDamage: {
+    fighterShot: 20,
+    roleMultiplier: { direct: 1, lob: 1.5, volley: 1, guard: 0 },
+  },
+  /** How a shot is aimed from a mount, by role. Angles are degrees (0 flat, 90 up). */
+  aimByRole: {
+    direct: { minAngleDeg: 0, maxAngleDeg: 45 },
+    lob: { minAngleDeg: 45, maxAngleDeg: 90 },
+    volley: { minAngleDeg: 0, maxAngleDeg: 90 },
+    guard: { minAngleDeg: 0, maxAngleDeg: 90 },
+  },
+  /** A volley: this many small shells fanned this far apart (degrees), each with the weapon's damage. */
+  volley: { shots: 3, spreadDeg: 4, maxFighterHealth: 1 },
+  /** A shield generator blocks the first hit per enemy turn that lands this close to its pad (px). */
+  guardRadius: 90,
+  /** Fighters with these roles shoot over walls like a lob (they fly above them). */
+  flierRoles: ['balloon', 'helicopter'] as readonly string[],
+  /** The Computer player picks a mounted weapon this often when it has one that can fire. */
+  botMountChance: 0.5,
+} as const;

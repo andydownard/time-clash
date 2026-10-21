@@ -1,6 +1,8 @@
 // Builds the services every scene shares. Browser pieces are injected so tests can fake them.
 import { createAudioManager } from '../audio/audioManager';
+import { createClipPlayer } from '../audio/clipPlayer';
 import type { AudioEnv } from '../audio/types';
+import { practiceEnabled } from '../game/practice';
 import { createStorage, loadSettings, saveAudioSettings } from '../storage/storage';
 import type { TypedStorage } from '../storage/types';
 import type { QuestionBank } from '../questions/types';
@@ -26,8 +28,10 @@ type AudioWindow = Partial<
 const isAutomated = (win: AudioWindow): boolean => win.navigator?.webdriver === true;
 
 /** Nothing here makes sound. The AudioManager only calls these after the first tap. */
-export function createBrowserAudioEnv(win: AudioWindow): AudioEnv {
+export function createBrowserAudioEnv(win: AudioWindow, voice = false): AudioEnv {
   return {
+    // Spoken clips come from the app server (same origin) only in a build made with VITE_VOICE=on.
+    clips: createClipPlayer(voice),
     createAudioContext: () => {
       const Ctor = win.AudioContext ?? win.webkitAudioContext;
       if (!Ctor) return null;
@@ -60,6 +64,10 @@ export type ServiceOptions = {
   entropy?: () => number;
   seeds?: SeedSource;
   faults?: LoadFaults;
+  /** The page address query (`?computer=1` shows the Computer player choice). */
+  search?: string;
+  /** Ask the app server for spoken clips. Default: the build flag VITE_VOICE=on. */
+  voice?: boolean;
 };
 
 const defaultLoadBank = async (): Promise<QuestionBank> => (await import('../questions/bank')).BANK;
@@ -82,7 +90,7 @@ export function createServices(opts: ServiceOptions): {
   const storage = opts.storage ?? createStorage();
   const settings = loadSettings(storage);
   const audio = createAudioManager(
-    createBrowserAudioEnv(opts.win),
+    createBrowserAudioEnv(opts.win, opts.voice ?? import.meta.env.VITE_VOICE === 'on'),
     { muted: settings.muted, volume: settings.volume, musicOn: settings.musicOn },
     (state) => saveAudioSettings(storage, state),
   );
@@ -107,6 +115,7 @@ export function createServices(opts: ServiceOptions): {
       return realLoad();
     },
     newSeed: () => seeds.next(),
+    computerPlayer: practiceEnabled(opts.search ?? ''),
   };
   return { services, seeds, faults };
 }

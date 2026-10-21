@@ -556,5 +556,472 @@
     "answer": "My aunt visited Texas in July.",
     "hint": "Names of places and months need capitals.",
     "tags": ["capitals"]
+  },
+  {
+    "id": "reading-7-0041",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "Which statement best expresses the theme of the story?",
+    "choices": [
+      "Improvement comes from learning from mistakes and trying again.",
+      "Natural talent is the only thing that matters.",
+      "Coaches always know the right answer.",
+      "Hay bales make the best landing spots."
+    ],
+    "answer": "Improvement comes from learning from mistakes and trying again.",
+    "hint": "Think about what Zoe did after each fall.",
+    "tags": ["mainidea", "theme"],
+    "passage": "Zoe had wanted to win the Hoverboard Cup since she was six. Now she was twelve, and she still tumbled off at the second turn of the practice course. She landed in the hay bales for the fortieth time that week. \"Maybe I am not a natural,\" she muttered. Coach Ruiz grinned. \"Natural talent is just a head start. The champions I have trained all fell more than you have. They simply got up more times than they fell.\" Zoe noticed she always leaned back at the turn. She leaned forward instead, and the board glided through. \"That,\" said Coach Ruiz, \"is what we call progress.\" Zoe did not win the Cup that year, but she finished the course upright, with hay only in her hair."
+  },
+  {
+    "id": "reading-7-0042",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "What can the reader infer about Coach Ruiz?",
+    "choices": [
+      "He is bored with coaching.",
+      "He is patient and wants Zoe to learn rather than quit.",
+      "He is angry that Zoe keeps falling.",
+      "He plans to replace Zoe on the team."
+    ],
+    "answer": "He is patient and wants Zoe to learn rather than quit.",
+    "hint": "Look at how the coach talks to Zoe.",
+    "tags": ["mainidea", "inference"],
+    "passage": "Zoe had wanted to win the Hoverboard Cup since she was six. Now she was twelve, and she still tumbled off at the second turn of the practice course. She landed in the hay bales for the fortieth time that week. \"Maybe I am not a natural,\" she muttered. Coach Ruiz grinned. \"Natural talent is just a head start. The champions I have trained all fell more than you have. They simply got up more times than they fell.\" Zoe noticed she always leaned back at the turn. She leaned forward instead, and the board glided through. \"That,\" said Coach Ruiz, \"is what we call progress.\" Zoe did not win the Cup that year, but she finished the course upright, with hay only in her hair."
+  },
+  {
+    "id": "reading-7-0043",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "In the story, the phrase \"just a head start\" suggests that talent",
+    "choices": [
+      "is never useful",
+      "is gained by practice only",
+      "helps at the beginning but does not guarantee success",
+      "matters more than effort"
+    ],
+    "answer": "helps at the beginning but does not guarantee success",
+    "hint": "A head start helps at the beginning of a race, but a race is not over yet.",
+    "tags": ["mainidea", "figurative-language"],
+    "passage": "Zoe had wanted to win the Hoverboard Cup since she was six. Now she was twelve, and she still tumbled off at the second turn of the practice course. She landed in the hay bales for the fortieth time that week. \"Maybe I am not a natural,\" she muttered. Coach Ruiz grinned. \"Natural talent is just a head start. The champions I have trained all fell more than you have. They simply got up more times than they fell.\" Zoe noticed she always leaned back at the turn. She leaned forward instead, and the board glided through. \"That,\" said Coach Ruiz, \"is what we call progress.\" Zoe did not win the Cup that year, but she finished the course upright, with hay only in her hair."
+  },
+  {
+    "id": "reading-7-0044",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "The tone of the ending is best described as",
+    "choices": [
+      "bitter and gloomy",
+      "angry and rushed",
+      "formal and distant",
+      "warm and lightly humorous"
+    ],
+    "answer": "warm and lightly humorous",
+    "hint": "Zoe ends with hay in her hair and a smile.",
+    "tags": ["mainidea", "tone"],
+    "passage": "Zoe had wanted to win the Hoverboard Cup since she was six. Now she was twelve, and she still tumbled off at the second turn of the practice course. She landed in the hay bales for the fortieth time that week. \"Maybe I am not a natural,\" she muttered. Coach Ruiz grinned. \"Natural talent is just a head start. The champions I have trained all fell more than you have. They simply got up more times than they fell.\" Zoe noticed she always leaned back at the turn. She leaned forward instead, and the board glided through. \"That,\" said Coach Ruiz, \"is what we call progress.\" Zoe did not win the Cup that year, but she finished the course upright, with hay only in her hair."
+  },
+  {
+    "id": "reading-7-0045",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "What is the main purpose of this article?",
+    "choices": [
+      "to inform readers about the octopus's intelligence and body",
+      "to persuade readers to keep octopuses as pets",
+      "to tell a story about an aquarium",
+      "to compare octopuses to fish"
+    ],
+    "answer": "to inform readers about the octopus's intelligence and body",
+    "hint": "Does the article tell a story or share facts?",
+    "tags": ["mainidea", "author-s-purpose"],
+    "passage": "Octopuses are very smart. This soft-bodied animal has no bones, yet it solves puzzles that would stump many pets. In laboratories, octopuses have unscrewed jar lids to reach a snack inside. Caretakers at aquariums report that some octopuses can recognize individual people. An octopus has three hearts. It can squeeze through any opening larger than its beak, the only hard part of its body, which makes it a talented escape artist. Special skin cells let it change color in less than a second, so it can look like a rock or a patch of sand. Scientists study octopuses closely to learn how they think."
+  },
+  {
+    "id": "reading-7-0046",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "Which detail best supports the claim that octopuses are intelligent?",
+    "choices": [
+      "They have three hearts.",
+      "They have unscrewed jar lids to get a snack.",
+      "They have no bones.",
+      "They can look like a patch of sand."
+    ],
+    "answer": "They have unscrewed jar lids to get a snack.",
+    "hint": "Look for something that takes thinking.",
+    "tags": ["mainidea", "claim-and-evidence"],
+    "passage": "Octopuses are very smart. This soft-bodied animal has no bones, yet it solves puzzles that would stump many pets. In laboratories, octopuses have unscrewed jar lids to reach a snack inside. Caretakers at aquariums report that some octopuses can recognize individual people. An octopus has three hearts. It can squeeze through any opening larger than its beak, the only hard part of its body, which makes it a talented escape artist. Special skin cells let it change color in less than a second, so it can look like a rock or a patch of sand. Scientists study octopuses closely to learn how they think."
+  },
+  {
+    "id": "reading-7-0047",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "Why can an octopus squeeze through small openings?",
+    "choices": [
+      "It has no hearts to get stuck.",
+      "It can change color quickly.",
+      "Its only hard part is its beak.",
+      "Its three hearts make it thin."
+    ],
+    "answer": "Its only hard part is its beak.",
+    "hint": "Read about the one hard part of its body.",
+    "tags": ["mainidea", "inference"],
+    "passage": "Octopuses are very smart. This soft-bodied animal has no bones, yet it solves puzzles that would stump many pets. In laboratories, octopuses have unscrewed jar lids to reach a snack inside. Caretakers at aquariums report that some octopuses can recognize individual people. An octopus has three hearts. It can squeeze through any opening larger than its beak, the only hard part of its body, which makes it a talented escape artist. Special skin cells let it change color in less than a second, so it can look like a rock or a patch of sand. Scientists study octopuses closely to learn how they think."
+  },
+  {
+    "id": "reading-7-0048",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "In the passage, the phrase \"talented escape artist\" is used to show that the octopus",
+    "choices": [
+      "performs shows for audiences",
+      "enjoys being captured",
+      "paints pictures with ink",
+      "is very good at getting out of tight places"
+    ],
+    "answer": "is very good at getting out of tight places",
+    "hint": "An escape artist is good at getting out of places.",
+    "tags": ["mainidea", "figurative-language"],
+    "passage": "Octopuses are very smart. This soft-bodied animal has no bones, yet it solves puzzles that would stump many pets. In laboratories, octopuses have unscrewed jar lids to reach a snack inside. Caretakers at aquariums report that some octopuses can recognize individual people. An octopus has three hearts. It can squeeze through any opening larger than its beak, the only hard part of its body, which makes it a talented escape artist. Special skin cells let it change color in less than a second, so it can look like a rock or a patch of sand. Scientists study octopuses closely to learn how they think."
+  },
+  {
+    "id": "reading-7-0049",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "In the passage, the word \"closely\" most nearly means",
+    "choices": ["with careful attention", "from far away", "in a short time", "without equipment"],
+    "answer": "with careful attention",
+    "hint": "Scientists study them with care.",
+    "tags": ["mainidea", "vocabulary-in-context"],
+    "passage": "Octopuses are very smart. This soft-bodied animal has no bones, yet it solves puzzles that would stump many pets. In laboratories, octopuses have unscrewed jar lids to reach a snack inside. Caretakers at aquariums report that some octopuses can recognize individual people. An octopus has three hearts. It can squeeze through any opening larger than its beak, the only hard part of its body, which makes it a talented escape artist. Special skin cells let it change color in less than a second, so it can look like a rock or a patch of sand. Scientists study octopuses closely to learn how they think."
+  },
+  {
+    "id": "reading-7-0050",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "What is the tone of this letter?",
+    "choices": [
+      "furious and threatening",
+      "politely humorous",
+      "sad and hopeless",
+      "cold and businesslike"
+    ],
+    "answer": "politely humorous",
+    "hint": "The writer jokes about a dragon, but he stays polite.",
+    "tags": ["mainidea", "tone"],
+    "passage": "To Mr. Cinderbreath, Dragon and Landlord of Rocky Hollow Cave Apartments: I hope this letter finds you well and not on fire. I am writing about Apartment B, which I love dearly, except for a few small issues. First, the heat. My ceiling is now your floor, and last Tuesday my breakfast was already toasted. Second, the snoring. Last week a pebble shaken loose by your rumbles landed in my soup. Third, the rent has gone up from ten gold coins to twelve. If you could snore more softly, I will pay the extra two coins. With the greatest respect and a slight singe, Sir Gallant of Apartment B"
+  },
+  {
+    "id": "reading-7-0051",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "What is the writer's purpose in this letter?",
+    "choices": [
+      "to announce he is moving out",
+      "to thank the landlord for the heat",
+      "to ask the landlord to fix problems and keep the rent fair",
+      "to describe a dragon's life"
+    ],
+    "answer": "to ask the landlord to fix problems and keep the rent fair",
+    "hint": "Look at what he lists as problems and what he offers.",
+    "tags": ["mainidea", "author-s-purpose"],
+    "passage": "To Mr. Cinderbreath, Dragon and Landlord of Rocky Hollow Cave Apartments: I hope this letter finds you well and not on fire. I am writing about Apartment B, which I love dearly, except for a few small issues. First, the heat. My ceiling is now your floor, and last Tuesday my breakfast was already toasted. Second, the snoring. Last week a pebble shaken loose by your rumbles landed in my soup. Third, the rent has gone up from ten gold coins to twelve. If you could snore more softly, I will pay the extra two coins. With the greatest respect and a slight singe, Sir Gallant of Apartment B"
+  },
+  {
+    "id": "reading-7-0052",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "Why was Sir Gallant's breakfast toasted?",
+    "choices": [
+      "He cooked it too long himself.",
+      "The dragon cooked it on purpose.",
+      "The snoring created heat.",
+      "His ceiling is the dragon's floor, so heat rises from above."
+    ],
+    "answer": "His ceiling is the dragon's floor, so heat rises from above.",
+    "hint": "Where does warm air go?",
+    "tags": ["mainidea", "inference"],
+    "passage": "To Mr. Cinderbreath, Dragon and Landlord of Rocky Hollow Cave Apartments: I hope this letter finds you well and not on fire. I am writing about Apartment B, which I love dearly, except for a few small issues. First, the heat. My ceiling is now your floor, and last Tuesday my breakfast was already toasted. Second, the snoring. Last week a pebble shaken loose by your rumbles landed in my soup. Third, the rent has gone up from ten gold coins to twelve. If you could snore more softly, I will pay the extra two coins. With the greatest respect and a slight singe, Sir Gallant of Apartment B"
+  },
+  {
+    "id": "reading-7-0053",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "The phrase \"with a slight singe\" at the end of the letter is funny because",
+    "choices": [
+      "it hints that he is a bit burned by the dragon's heat",
+      "it means he is leaving soon",
+      "it describes his fancy clothing",
+      "it explains how to cook porridge"
+    ],
+    "answer": "it hints that he is a bit burned by the dragon's heat",
+    "hint": "The word singe means a tiny bit burned.",
+    "tags": ["mainidea", "tone-and-humor"],
+    "passage": "To Mr. Cinderbreath, Dragon and Landlord of Rocky Hollow Cave Apartments: I hope this letter finds you well and not on fire. I am writing about Apartment B, which I love dearly, except for a few small issues. First, the heat. My ceiling is now your floor, and last Tuesday my breakfast was already toasted. Second, the snoring. Last week a pebble shaken loose by your rumbles landed in my soup. Third, the rent has gone up from ten gold coins to twelve. If you could snore more softly, I will pay the extra two coins. With the greatest respect and a slight singe, Sir Gallant of Apartment B"
+  },
+  {
+    "id": "reading-7-0054",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "Which theme is best supported by the story?",
+    "choices": [
+      "Neighbors should avoid each other.",
+      "Patient effort today can bring rewards in the future.",
+      "Plum trees grow quickly.",
+      "Fruit tastes best in winter."
+    ],
+    "answer": "Patient effort today can bring rewards in the future.",
+    "hint": "Think about how long Leo had to wait, and what he got.",
+    "tags": ["mainidea", "theme"],
+    "passage": "Leo's neighbor, Mrs. Alvarez, handed him a shovel on the first warm Saturday of spring. \"We are going to plant a plum tree.\" Leo looked at the thin stick. \"That does not look like a tree.\" \"Not yet,\" she said. \"Plum trees take about four years to give fruit. You must water them, protect them from the wind, and wait.\" Leo groaned, but he dug the hole. Mrs. Alvarez tied a yellow ribbon to a stake beside it, so no one would trip over the young tree. All summer he watered it, and in fall and winter he checked the stake after every storm. Years later, Leo spotted a purple plum on a branch. \"Worth the wait?\" she asked. Leo took a bite. \"Ask me again tomorrow, when I pick the rest.\""
+  },
+  {
+    "id": "reading-7-0055",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "Why did Mrs. Alvarez tie a yellow ribbon to the stake?",
+    "choices": [
+      "to decorate it for a party",
+      "to show how tall it had grown",
+      "so people would notice the young tree and not trip over it",
+      "to keep birds away"
+    ],
+    "answer": "so people would notice the young tree and not trip over it",
+    "hint": "Read why the ribbon is bright yellow.",
+    "tags": ["mainidea", "inference"],
+    "passage": "Leo's neighbor, Mrs. Alvarez, handed him a shovel on the first warm Saturday of spring. \"We are going to plant a plum tree.\" Leo looked at the thin stick. \"That does not look like a tree.\" \"Not yet,\" she said. \"Plum trees take about four years to give fruit. You must water them, protect them from the wind, and wait.\" Leo groaned, but he dug the hole. Mrs. Alvarez tied a yellow ribbon to a stake beside it, so no one would trip over the young tree. All summer he watered it, and in fall and winter he checked the stake after every storm. Years later, Leo spotted a purple plum on a branch. \"Worth the wait?\" she asked. Leo took a bite. \"Ask me again tomorrow, when I pick the rest.\""
+  },
+  {
+    "id": "reading-7-0056",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "What does Leo's reaction to hearing \"four years\" show?",
+    "choices": [
+      "He is afraid of Mrs. Alvarez.",
+      "He has already grown plums before.",
+      "He wants to dig a bigger hole.",
+      "He thinks the wait feels very long."
+    ],
+    "answer": "He thinks the wait feels very long.",
+    "hint": "Leo groaned when he heard it.",
+    "tags": ["mainidea", "character-feelings"],
+    "passage": "Leo's neighbor, Mrs. Alvarez, handed him a shovel on the first warm Saturday of spring. \"We are going to plant a plum tree.\" Leo looked at the thin stick. \"That does not look like a tree.\" \"Not yet,\" she said. \"Plum trees take about four years to give fruit. You must water them, protect them from the wind, and wait.\" Leo groaned, but he dug the hole. Mrs. Alvarez tied a yellow ribbon to a stake beside it, so no one would trip over the young tree. All summer he watered it, and in fall and winter he checked the stake after every storm. Years later, Leo spotted a purple plum on a branch. \"Worth the wait?\" she asked. Leo took a bite. \"Ask me again tomorrow, when I pick the rest.\""
+  },
+  {
+    "id": "reading-7-0057",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "What does the passage of the seasons (summer, fall, winter) mainly show?",
+    "choices": [
+      "Leo kept caring for the tree over a long time.",
+      "The tree grew faster than expected.",
+      "Leo forgot about the tree.",
+      "Mrs. Alvarez moved away."
+    ],
+    "answer": "Leo kept caring for the tree over a long time.",
+    "hint": "Count how many seasons Leo kept helping.",
+    "tags": ["mainidea", "structure"],
+    "passage": "Leo's neighbor, Mrs. Alvarez, handed him a shovel on the first warm Saturday of spring. \"We are going to plant a plum tree.\" Leo looked at the thin stick. \"That does not look like a tree.\" \"Not yet,\" she said. \"Plum trees take about four years to give fruit. You must water them, protect them from the wind, and wait.\" Leo groaned, but he dug the hole. Mrs. Alvarez tied a yellow ribbon to a stake beside it, so no one would trip over the young tree. All summer he watered it, and in fall and winter he checked the stake after every storm. Years later, Leo spotted a purple plum on a branch. \"Worth the wait?\" she asked. Leo took a bite. \"Ask me again tomorrow, when I pick the rest.\""
+  },
+  {
+    "id": "reading-7-0058",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "In the story, the word \"protect\" most nearly means",
+    "choices": ["leave alone", "keep safe", "chop down", "pick up"],
+    "answer": "keep safe",
+    "hint": "Leo watered the tree and checked its stake after storms.",
+    "tags": ["mainidea", "vocabulary-in-context"],
+    "passage": "Leo's neighbor, Mrs. Alvarez, handed him a shovel on the first warm Saturday of spring. \"We are going to plant a plum tree.\" Leo looked at the thin stick. \"That does not look like a tree.\" \"Not yet,\" she said. \"Plum trees take about four years to give fruit. You must water them, protect them from the wind, and wait.\" Leo groaned, but he dug the hole. Mrs. Alvarez tied a yellow ribbon to a stake beside it, so no one would trip over the young tree. All summer he watered it, and in fall and winter he checked the stake after every storm. Years later, Leo spotted a purple plum on a branch. \"Worth the wait?\" she asked. Leo took a bite. \"Ask me again tomorrow, when I pick the rest.\""
+  },
+  {
+    "id": "reading-7-0059",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "What is the author's central claim?",
+    "choices": [
+      "Black roofs are against the law.",
+      "Bees and butterflies prefer cities.",
+      "Cities should encourage more rooftop gardens.",
+      "Air conditioning should be banned."
+    ],
+    "answer": "Cities should encourage more rooftop gardens.",
+    "hint": "The central claim is what the author wants cities to do.",
+    "tags": ["mainidea", "claim-and-evidence"],
+    "passage": "Look at the top of some city buildings, and you may spot grass, flowers, and even vegetables. These rooftop gardens, or green roofs, are becoming more common, and cities should encourage more of them. First, green roofs keep buildings cooler. A black roof can heat up like a frying pan, but plants and soil soak up the heat instead. One study found that buildings with green roofs needed less air conditioning. Second, a green roof acts like a sponge in heavy rain. Some people worry that a green roof costs too much. It can cost more at first. However, it also lasts longer than an ordinary roof because the plants protect it from sun and weather."
+  },
+  {
+    "id": "reading-7-0060",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "Which evidence supports the claim that green roofs save money?",
+    "choices": [
+      "Birds visit rooftop gardens.",
+      "Green roofs hold water like a sponge.",
+      "Some roofs grow vegetables.",
+      "Buildings with green roofs needed less air conditioning."
+    ],
+    "answer": "Buildings with green roofs needed less air conditioning.",
+    "hint": "Evidence about money talks about bills or costs.",
+    "tags": ["mainidea", "claim-and-evidence"],
+    "passage": "Look at the top of some city buildings, and you may spot grass, flowers, and even vegetables. These rooftop gardens, or green roofs, are becoming more common, and cities should encourage more of them. First, green roofs keep buildings cooler. A black roof can heat up like a frying pan, but plants and soil soak up the heat instead. One study found that buildings with green roofs needed less air conditioning. Second, a green roof acts like a sponge in heavy rain. Some people worry that a green roof costs too much. It can cost more at first. However, it also lasts longer than an ordinary roof because the plants protect it from sun and weather."
+  },
+  {
+    "id": "reading-7-0061",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "How does the author respond to the worry about cost?",
+    "choices": [
+      "by admitting the higher starting cost and then noting green roofs last longer",
+      "by saying the cost does not matter",
+      "by ignoring the worry",
+      "by saying plants are free"
+    ],
+    "answer": "by admitting the higher starting cost and then noting green roofs last longer",
+    "hint": "Read the last four sentences.",
+    "tags": ["mainidea", "counterargument"],
+    "passage": "Look at the top of some city buildings, and you may spot grass, flowers, and even vegetables. These rooftop gardens, or green roofs, are becoming more common, and cities should encourage more of them. First, green roofs keep buildings cooler. A black roof can heat up like a frying pan, but plants and soil soak up the heat instead. One study found that buildings with green roofs needed less air conditioning. Second, a green roof acts like a sponge in heavy rain. Some people worry that a green roof costs too much. It can cost more at first. However, it also lasts longer than an ordinary roof because the plants protect it from sun and weather."
+  },
+  {
+    "id": "reading-7-0062",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "In the passage, the phrase \"soak up\" most nearly means",
+    "choices": ["throw away", "take in", "paint over", "freeze"],
+    "answer": "take in",
+    "hint": "Plants and soil do this to heat.",
+    "tags": ["mainidea", "vocabulary-in-context"],
+    "passage": "Look at the top of some city buildings, and you may spot grass, flowers, and even vegetables. These rooftop gardens, or green roofs, are becoming more common, and cities should encourage more of them. First, green roofs keep buildings cooler. A black roof can heat up like a frying pan, but plants and soil soak up the heat instead. One study found that buildings with green roofs needed less air conditioning. Second, a green roof acts like a sponge in heavy rain. Some people worry that a green roof costs too much. It can cost more at first. However, it also lasts longer than an ordinary roof because the plants protect it from sun and weather."
+  },
+  {
+    "id": "reading-7-0063",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "vocab",
+    "prompt": "Read the sentence: \"To bolster the squire's courage, the knights gave a loud cheer.\" What does \"bolster\" mean?",
+    "choices": ["weaken", "hide", "strengthen", "measure"],
+    "answer": "strengthen",
+    "hint": "The knights cheered to help the squire feel braver.",
+    "tags": ["vocab", "vocabulary"]
+  },
+  {
+    "id": "reading-7-0064",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "vocab",
+    "prompt": "Read the sentence: \"The robot was meticulous, checking every screw twice.\" What does \"meticulous\" mean?",
+    "choices": [
+      "fast and sloppy",
+      "easily frightened",
+      "loud and cheerful",
+      "very careful about details"
+    ],
+    "answer": "very careful about details",
+    "hint": "The robot checked every screw twice, so it paid attention to little things.",
+    "tags": ["vocab", "vocabulary"]
+  },
+  {
+    "id": "reading-7-0065",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "vocab",
+    "prompt": "Read the sentence: \"Gold coins were scarce in the village, so everyone shared.\" What does \"scarce\" mean?",
+    "choices": ["hard to find", "shiny", "heavy", "everywhere"],
+    "answer": "hard to find",
+    "hint": "Everyone shared, so there must not have been much.",
+    "tags": ["vocab", "vocabulary"]
+  },
+  {
+    "id": "reading-7-0066",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "grammar",
+    "prompt": "\"The library was a quiet ocean of stories.\" What kind of figurative language is this?",
+    "choices": ["a simile", "a metaphor", "a fact", "an alliteration"],
+    "answer": "a metaphor",
+    "hint": "The library is not like an ocean. It is an ocean. No word like or as is used.",
+    "tags": ["grammar", "figurative-language"]
+  },
+  {
+    "id": "reading-7-0067",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "grammar",
+    "prompt": "A friend tells you, \"Don't spill the beans about the surprise party.\" What does the idiom mean?",
+    "choices": [
+      "Do not drop the food.",
+      "Do not cook dinner.",
+      "Do not reveal the secret.",
+      "Do not invite anyone."
+    ],
+    "answer": "Do not reveal the secret.",
+    "hint": "This phrase is not about food at all.",
+    "tags": ["grammar", "figurative-language"]
+  },
+  {
+    "id": "reading-7-0068",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "grammar",
+    "prompt": "\"The old drawbridge groaned as it lowered.\" This sentence is an example of",
+    "choices": ["simile", "understatement", "a run-on sentence", "personification"],
+    "answer": "personification",
+    "hint": "Can a bridge really groan? Think about who usually does that.",
+    "tags": ["grammar", "figurative-language"]
+  },
+  {
+    "id": "reading-7-0069",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "grammar",
+    "prompt": "Which sentence uses the possessive correctly?",
+    "choices": [
+      "The knights' horses were all named Biscuit.",
+      "The knight's horses were all named Biscuit.",
+      "The knights horse's were all named Biscuit.",
+      "The knights horses' were all named Biscuit."
+    ],
+    "answer": "The knights' horses were all named Biscuit.",
+    "hint": "The apostrophe goes after the s when more than one knight owns the horses.",
+    "tags": ["grammar", "grammar"]
+  },
+  {
+    "id": "reading-7-0070",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "grammar",
+    "prompt": "Which sentence has correct subject-verb agreement?",
+    "choices": [
+      "The hoverboards in the garage is brand new.",
+      "The hoverboards in the garage are brand new.",
+      "The hoverboards in the garage was brand new.",
+      "The hoverboards in the garage be brand new."
+    ],
+    "answer": "The hoverboards in the garage are brand new.",
+    "hint": "The subject is hoverboards. Is that one thing or many?",
+    "tags": ["grammar", "grammar"]
   }
 ]

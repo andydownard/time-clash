@@ -1,4 +1,4 @@
-// Upgrade Base: spend Scrap on stronger walls, more health, a force field, missiles or a repair
+// Build Base (the old shop, shown while the base builder is off): spend Scrap on stronger walls, more health, a force field, missiles or a repair
 // squad. Each choice has three levels. Scrap is the only currency. Every change is saved at once
 // through `save`, and a tap that cannot work says why in words and changes nothing.
 import { TEAM_NAMES, UPGRADE_COPY, upgradeEffect } from '../data/copy';

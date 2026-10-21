@@ -38,7 +38,7 @@ export const FORGE_COPY = {
   atTop: 'This weapon is at the top level.',
 } as const;
 
-// ---------- Upgrade Base ----------
+// ---------- Build Base (the old shop screen, shown when the base builder is off) ----------
 /** What an upgrade does, in words a child can read. `n` is the total at the level shown. */
 export const upgradeEffect = (effect: UpgradeEffect, n: number): string => {
   switch (effect) {
@@ -58,7 +58,7 @@ export const upgradeEffect = (effect: UpgradeEffect, n: number): string => {
 };
 
 export const UPGRADE_COPY = {
-  title: 'Upgrade Base',
+  title: 'Build Base',
   back: 'Back',
   scrap: 'Scrap',
   pickTeam: 'Choose a team',
@@ -79,7 +79,7 @@ export const CAMP = {
   logoTime: 'Time',
   logoClash: 'Clash',
   forge: 'Forge Weapon',
-  upgrade: 'Upgrade Base',
+  upgrade: 'Build Base',
   /** The big button. It starts the match. */
   start: GAME_TAGLINE,
   /** A small way back to Setup, to change names, grades and subjects. */
@@ -127,6 +127,13 @@ export const BUTTONS = {
 export const PAUSE = {
   leaveTitle: 'Leave this game?',
   leaveBody: 'Your match will end. You can start a new one at the Camp.',
+} as const;
+
+// ---------- Turn your iPad ----------
+export const TURN_SCREEN = {
+  title: 'Turn your iPad sideways',
+  body: 'Time Clash plays best on its side. Turn your iPad and your game waits for you.',
+  picture: 'A tablet turning on its side.',
 } as const;
 
 // ---------- Tap to Start ----------
@@ -200,7 +207,7 @@ export const HUD = {
   scrap: 'Scrap',
   shotsLeft: 'Shots left',
   reloadPip: 'Reload',
-  keyboardHint: 'Arrow keys aim. Space fires. Press a fighter\'s letter or number to pick it.',
+  keyboardHint: "Arrow keys aim. Space fires. Press a fighter's letter or number to pick it.",
   pickOne: 'Pick one',
   unitLabel: (name: string, id: string): string => `${name} ${id}`,
   /** The gold star pip and screen-reader text while the Power Shot is up. */
@@ -328,6 +335,40 @@ export const TUMBLE_LINES = [
   'I am a pancake. A proud pancake!',
 ] as const;
 
+/** Extra lines only Team Past says when they wipe out. Silly, kind, and nobody is hurt. */
+export const TUMBLE_LINES_PAST = [
+  'I meant to do that!',
+  'Ouch! My dignity!',
+  'The floor started it.',
+  'Five more minutes, Mom.',
+  'My armor is too shiny. Oops.',
+  "I'm just resting my eyes.",
+  'That was my good helmet!',
+  'Whoa. The sky is sideways.',
+  'Tell my horse I was brave.',
+] as const;
+
+/** Extra lines only Team Future says when they wipe out. */
+export const TUMBLE_LINES_FUTURE = [
+  'Oops. My legs went offline.',
+  'My hoverboard would never!',
+  'Rebooting... please wait.',
+  'I was just checking the floor.',
+  'Beep boop. Ouch boop.',
+  'Plan B was also falling.',
+  'Somebody update my legs.',
+  'I landed exactly as planned.',
+  'Does this count as a nap?',
+] as const;
+
+/**
+ * The lines one team can say: the shared lines, then that team's own. The match picks an index
+ * from this list with a seeded shuffle bag (TUMBLE_LINE_COUNT is its length for both teams).
+ */
+export function tumblePool(team: Team): readonly string[] {
+  return [...TUMBLE_LINES, ...(team === 'PAST' ? TUMBLE_LINES_PAST : TUMBLE_LINES_FUTURE)];
+}
+
 // ---------- Victory ----------
 export const VICTORY = {
   heading: (name: string): string => `${name} wins!`,
@@ -383,4 +424,82 @@ export const UI_EXTRA = {
   stepsLabel: 'Steps',
   loadingLabel: 'Loading',
   playerCard: (team: Team): string => `${TEAM_NAMES[team]} player`,
+} as const;
+
+// ---------- Base builder ----------
+export const BUILDER_COPY = {
+  /** The screen is called Build Base for both sides. */
+  title: { PAST: 'Build Base', FUTURE: 'Build Base' } as Record<Team, string>,
+  /** The one Camp button per side that opens the builder. */
+  campButton: { PAST: 'Build Base', FUTURE: 'Build Base' } as Record<Team, string>,
+  /** A tap on a locked piece or weapon when the purse is short. */
+  needMore: (n: number): string => `Not enough Scrap yet. You need ${n} more.`,
+  campThumb: (team: Team, name: string): string => `${name}'s ${TEAM_HOMES[team]}`,
+  back: 'Back',
+  scrap: 'Scrap',
+  slots: 'Saved bases',
+  slot: (n: number): string => `Base ${n}`,
+  slotEmpty: (n: number): string => `Base ${n}, empty. Start a new base`,
+  slotFull: (n: number, bricks: number): string => `Base ${n}, ${bricks} bricks`,
+  tools: 'Tools',
+  tray: 'Bricks',
+  plot: 'Build plot',
+  hint: 'Drag a brick. Tap Turn to spin it.',
+  hintPicked: (name: string): string => `${name} is ready. Tap the plot to put it down.`,
+  keys: 'Keys: Enter picks a brick. Arrows move it. R turns it. Enter puts it down. Delete takes it off. Control Z undoes.',
+  turn: 'Turn',
+  undo: 'Undo',
+  clear: 'Clear',
+  snapOn: 'Snap ON',
+  snapOff: 'Snap OFF',
+  snapLabel: (on: boolean): string => `Snap to grid is ${on ? 'on' : 'off'}. Tap to switch.`,
+  done: 'Done',
+  clearAsk: 'Take every brick off this base?',
+  clearYes: 'Yes, clear it',
+  clearNo: 'Keep it',
+  placed: (name: string): string => `${name} placed.`,
+  moved: (name: string): string => `${name} moved.`,
+  turned: (name: string): string => `${name} turned.`,
+  removed: (name: string): string => `${name} taken off.`,
+  cleared: 'The plot is clear. Undo brings it back.',
+  undone: 'Undone.',
+  nothingToUndo: 'Nothing to undo.',
+  pickFirst: 'Tap a brick first, then tap Turn.',
+  noRoom: 'No room there. Try another spot.',
+  full: 'This base is full of bricks.',
+  cancelled: 'Put back. Nothing changed.',
+  selected: (name: string): string => `${name} chosen. Tap Turn to spin it.`,
+  pieceLabel: (name: string, x: number, y: number): string =>
+    `${name}, column ${x + 1}, row ${y + 1}. Enter to choose, Delete to take off.`,
+  lockedLabel: (name: string, n: number): string => `${name}, locked. ${n} Scrap to unlock.`,
+  unlockCost: (n: number): string => `${n} Scrap`,
+  unlocked: (name: string): string => `You unlocked ${name}!`,
+  ghostAt: (name: string, x: number, y: number): string =>
+    `${name} at column ${x + 1}, row ${y + 1}. Enter puts it down.`,
+  // Weapon spots
+  mode: 'Mode',
+  modeBuild: 'Build',
+  modeWeapons: 'Weapons',
+  modeBuildLabel: 'Build mode, bricks',
+  modeWeaponsLabel: 'Weapons mode, pick weapon spots',
+  spotsChip: (used: number, total: number): string => `Spots ${used} of ${total} used`,
+  spotHint: 'Tap a spot. Pick a weapon for it.',
+  spotKeys:
+    'Weapon keys: Tab or arrows go to a spot. Enter chooses it. Then arrows pick a weapon and Enter puts it on. Delete clears the spot. Escape closes the list.',
+  spotTitle: (n: number): string => `Spot ${n}: pick a weapon`,
+  spotPanel: (n: number): string => `Pick a weapon for spot ${n}`,
+  onThisSpot: 'On this spot',
+  clearSpot: 'Clear spot',
+  clearSpotLabel: (n: number): string => `Clear spot ${n}`,
+  spotLabel: (weapon: string | null, n: number, selected: boolean): string =>
+    `Spot ${n}, ${weapon ? weapon.toLowerCase() : 'empty'}${selected ? ', selected' : ''}`,
+  weaponLabel: (name: string, onSpot: boolean): string =>
+    onSpot ? `${name}, on this spot` : name,
+  weaponLockedLabel: (name: string, n: number): string => `${name}, locked. Costs ${n} Scrap.`,
+  weaponPlaced: (name: string, n: number): string => `${name} is on spot ${n}.`,
+  weaponCleared: (n: number): string => `Spot ${n} is empty now.`,
+  spotAlreadyEmpty: (n: number): string => `Spot ${n} is already empty.`,
+  spotChosen: (n: number): string => `Spot ${n} chosen. Pick a weapon for it.`,
+  weaponUnlocked: (name: string, n: number): string =>
+    `You unlocked ${name}! Tap it to put it on spot ${n}.`,
 } as const;

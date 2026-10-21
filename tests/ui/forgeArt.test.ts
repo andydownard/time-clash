@@ -83,4 +83,24 @@ describe('Forge art', () => {
     classes.delete('');
     for (const c of classes) expect(ui, c).toContain(`.${c}`);
   });
+
+  it('Past: a bowyer strokes a draw knife along a clamped bow stave, with chips and a barrel', () => {
+    const past = scenes[0]![1];
+    expect(past.querySelector('.tc-forge-knife')).not.toBeNull();
+    expect(past.querySelectorAll('.tc-forge-chip').length).toBeGreaterThanOrEqual(3);
+    for (const part of ['near', 'far'])
+      expect(past.querySelector(`.tc-forge-${part}-upper`)).not.toBeNull();
+    expect(past.querySelector('.tc-forge-hammer')).toBeNull();
+    expect(source).toContain('bow stave');
+    expect(source).toContain('clamp');
+    expect(source).toContain('barrel of finished arrows');
+  });
+
+  it('Future: thumbs press buttons that glow, and a cable (not radio waves) joins the controller to the robot', () => {
+    const future = scenes[1]![1];
+    expect(future.querySelector('.tc-forge-thumb')).not.toBeNull();
+    expect(future.querySelectorAll('.tc-forge-lit').length).toBeGreaterThanOrEqual(2);
+    expect(future.querySelector('.tc-forge-sig')).toBeNull();
+    expect(future.querySelector('.tc-forge-pulse')?.getAttribute('stroke')).toBe('#4fd8ff');
+  });
 });

@@ -1,0 +1,322 @@
+[
+  {
+    "screen": "01-tap-to-start",
+    "viewport": "1133x744",
+    "smallTargets": [],
+    "smallText": [],
+    "sidewaysScroll": 0,
+    "verticalScroll": 0,
+    "offscreen": [],
+    "canvas": {
+      "x": 48,
+      "y": 0,
+      "w": 1035,
+      "h": 744
+    },
+    "canvasPx": null
+  },
+  {
+    "screen": "02-intro-card-1",
+    "viewport": "1133x744",
+    "smallTargets": [],
+    "smallText": [],
+    "sidewaysScroll": 0,
+    "verticalScroll": 0,
+    "offscreen": [],
+    "canvas": {
+      "x": 48,
+      "y": 0,
+      "w": 1035,
+      "h": 744
+    },
+    "canvasPx": null
+  },
+  {
+    "screen": "03-intro-card-2",
+    "viewport": "1133x744",
+    "smallTargets": [],
+    "smallText": [],
+    "sidewaysScroll": 0,
+    "verticalScroll": 0,
+    "offscreen": [],
+    "canvas": {
+      "x": 48,
+      "y": 0,
+      "w": 1035,
+      "h": 744
+    },
+    "canvasPx": null
+  },
+  {
+    "screen": "04-intro-card-4",
+    "viewport": "1133x744",
+    "smallTargets": [],
+    "smallText": [],
+    "sidewaysScroll": 0,
+    "verticalScroll": 0,
+    "offscreen": [],
+    "canvas": {
+      "x": 48,
+      "y": 0,
+      "w": 1035,
+      "h": 744
+    },
+    "canvasPx": null
+  },
+  {
+    "screen": "05-loading-failed",
+    "viewport": "1133x744",
+    "smallTargets": [],
+    "smallText": [],
+    "sidewaysScroll": 0,
+    "verticalScroll": 0,
+    "offscreen": [],
+    "canvas": {
+      "x": 48,
+      "y": 0,
+      "w": 1035,
+      "h": 744
+    },
+    "canvasPx": null
+  },
+  {
+    "screen": "06-setup-empty",
+    "viewport": "1133x744",
+    "smallTargets": [],
+    "smallText": [],
+    "sidewaysScroll": 0,
+    "verticalScroll": 0,
+    "offscreen": [],
+    "canvas": {
+      "x": 48,
+      "y": 0,
+      "w": 1035,
+      "h": 744
+    },
+    "canvasPx": null
+  },
+  {
+    "screen": "07-settings",
+    "viewport": "1133x744",
+    "smallTargets": [],
+    "smallText": [],
+    "sidewaysScroll": 0,
+    "verticalScroll": 0,
+    "offscreen": [],
+    "canvas": {
+      "x": 48,
+      "y": 0,
+      "w": 1035,
+      "h": 744
+    },
+    "canvasPx": null
+  },
+  {
+    "screen": "08-how-to-play-reopened",
+    "viewport": "1133x744",
+    "smallTargets": [],
+    "smallText": [],
+    "sidewaysScroll": 0,
+    "verticalScroll": 0,
+    "offscreen": [],
+    "canvas": {
+      "x": 48,
+      "y": 0,
+      "w": 1035,
+      "h": 744
+    },
+    "canvasPx": null
+  },
+  {
+    "screen": "09-camp",
+    "viewport": "1133x744",
+    "smallTargets": [],
+    "smallText": [],
+    "sidewaysScroll": 0,
+    "verticalScroll": 0,
+    "offscreen": [],
+    "canvas": {
+      "x": 48,
+      "y": 0,
+      "w": 1035,
+      "h": 744
+    },
+    "canvasPx": null
+  },
+  {
+    "screen": "10-forge",
+    "viewport": "1133x744",
+    "smallTargets": [],
+    "smallText": [],
+    "sidewaysScroll": 0,
+    "verticalScroll": 0,
+    "offscreen": [],
+    "canvas": {
+      "x": 48,
+      "y": 0,
+      "w": 1035,
+      "h": 744
+    },
+    "canvasPx": null
+  },
+  {
+    "screen": "11-upgrade-base",
+    "viewport": "1133x744",
+    "smallTargets": [],
+    "smallText": [],
+    "sidewaysScroll": 0,
+    "verticalScroll": 0,
+    "offscreen": [],
+    "canvas": {
+      "x": 48,
+      "y": 0,
+      "w": 1035,
+      "h": 744
+    },
+    "canvasPx": null
+  },
+  {
+    "screen": "12-pass-screen",
+    "viewport": "1133x744",
+    "smallTargets": [],
+    "smallText": [],
+    "sidewaysScroll": 0,
+    "verticalScroll": 0,
+    "offscreen": [],
+    "canvas": {
+      "x": 48,
+      "y": 0,
+      "w": 1035,
+      "h": 744
+    },
+    "canvasPx": 20.217391304347824
+  },
+  {
+    "screen": "13-battle-start",
+    "viewport": "1133x744",
+    "smallTargets": [],
+    "smallText": [],
+    "sidewaysScroll": 0,
+    "verticalScroll": 0,
+    "offscreen": [],
+    "canvas": {
+      "x": 48,
+      "y": 0,
+      "w": 1035,
+      "h": 744
+    },
+    "canvasPx": 20.217391304347824
+  },
+  {
+    "screen": "14-pause",
+    "viewport": "1133x744",
+    "smallTargets": [],
+    "smallText": [],
+    "sidewaysScroll": 0,
+    "verticalScroll": 0,
+    "offscreen": [],
+    "canvas": {
+      "x": 48,
+      "y": 0,
+      "w": 1035,
+      "h": 744
+    },
+    "canvasPx": null
+  },
+  {
+    "screen": "15-leave-dialog",
+    "viewport": "1133x744",
+    "smallTargets": [],
+    "smallText": [],
+    "sidewaysScroll": 0,
+    "verticalScroll": 0,
+    "offscreen": [],
+    "canvas": {
+      "x": 48,
+      "y": 0,
+      "w": 1035,
+      "h": 744
+    },
+    "canvasPx": null
+  },
+  {
+    "screen": "16-battle-mid-shot",
+    "viewport": "1133x744",
+    "smallTargets": [],
+    "smallText": [],
+    "sidewaysScroll": 0,
+    "verticalScroll": 0,
+    "offscreen": [],
+    "canvas": {
+      "x": 48,
+      "y": 0,
+      "w": 1035,
+      "h": 744
+    },
+    "canvasPx": 20.217391304347824
+  },
+  {
+    "screen": "17-reload-question",
+    "viewport": "1133x744",
+    "smallTargets": [],
+    "smallText": [],
+    "sidewaysScroll": 0,
+    "verticalScroll": 0,
+    "offscreen": [],
+    "canvas": {
+      "x": 48,
+      "y": 0,
+      "w": 1035,
+      "h": 744
+    },
+    "canvasPx": 20.217391304347824
+  },
+  {
+    "screen": "18-reload-feedback",
+    "viewport": "1133x744",
+    "smallTargets": [],
+    "smallText": [],
+    "sidewaysScroll": 0,
+    "verticalScroll": 0,
+    "offscreen": [],
+    "canvas": {
+      "x": 48,
+      "y": 0,
+      "w": 1035,
+      "h": 744
+    },
+    "canvasPx": 20.217391304347824
+  },
+  {
+    "screen": "19-pass-screen-turn-2",
+    "viewport": "1133x744",
+    "smallTargets": [],
+    "smallText": [],
+    "sidewaysScroll": 0,
+    "verticalScroll": 0,
+    "offscreen": [],
+    "canvas": {
+      "x": 48,
+      "y": 0,
+      "w": 1035,
+      "h": 744
+    },
+    "canvasPx": 20.217391304347824
+  },
+  {
+    "screen": "20-victory",
+    "viewport": "1133x744",
+    "smallTargets": [],
+    "smallText": [],
+    "sidewaysScroll": 0,
+    "verticalScroll": 0,
+    "offscreen": [],
+    "canvas": {
+      "x": 48,
+      "y": 0,
+      "w": 1035,
+      "h": 744
+    },
+    "canvasPx": null
+  }
+]

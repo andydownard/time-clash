@@ -1,9 +1,11 @@
 // Awkward Tumble: pure timeline data and pose sampling. The view only turns a pose into shapes.
 // Steps in order: fold, windmill arms, pancake, spring up, look left, look right.
 import { TIMING } from '../../game/config';
-import type { BlastOutcome, Team } from '../../game/types';
-import { TUMBLE_LINES } from '../../data/copy';
-import { BOUNCE_HEIGHT, DIZZY, FALL_DX, FALL_HEIGHT, FALL_MS } from './visual';
+import type { BlastOutcome, Team, Vec2 } from '../../game/types';
+import { tumblePool } from '../../data/copy';
+import { HIT_FX } from '../../game/config';
+import { createRng } from '../../game/rng';
+import { BOUNCE_HEIGHT, FALL_DX, FALL_HEIGHT, FALL_MS } from './visual';
 
 export const TUMBLE_STEPS = [
   'fold',
@@ -50,8 +52,11 @@ export type TumblePose = {
   /** Pixels off the ground. */
   lift: number;
   lookDir: -1 | 0 | 1;
+  /** Extra size on top of the squash. Missing means 1. */
+  scale?: number;
 };
 
+const HEAD_HEIGHT = 80;
 const FOLD_SQUASH = 0.55;
 const PANCAKE_SQUASH = 0.12;
 const FOLD_TILT = -15;
@@ -114,17 +119,18 @@ export function tumblingTeam(outcome: BlastOutcome): Team | null {
 /** The speech bubble line the seeded rng picked, or null. */
 export function bubbleText(outcome: BlastOutcome): string | null {
   if (!outcome.tumble || outcome.bubbleIndex === null) return null;
-  return TUMBLE_LINES[outcome.bubbleIndex] ?? null;
+  return tumblePool(outcome.target)[outcome.bubbleIndex] ?? null;
 }
 
 // ---------- Fall, topple and vanish ----------
 // The setup: the fighter teeters on the spot, arms flailing, looking both ways ("uh oh").
-// Then it flies off its feet, lands with a squash, and bounces once (the payoff: a flat plank
-// bounce, or a spin on its feet). Then it lies down, or wobbles and falls over. Dizzy stars
-// circle its head. Nobody is hurt. It vanishes in a puff and comes back on the next turn.
+// Then it flies off its feet, lands with a squash and bounces once (the payoff: a flat plank
+// bounce for a face-plant, a roll for a flop), then a little hop, and it lies there dizzy.
+// Nobody is hurt. It vanishes in a puff and comes back on the next turn.
 // All of these are pure: same time in, same frame out.
 
-export type FallVariant = 'face' | 'feet';
+/** 'face' is a face-plant (forward). 'flop' is a backward flop. */
+export type FallVariant = 'face' | 'flop';
 export const FALL_PHASES = ['teeter', 'fly', 'land', 'bounce', 'wobble', 'topple'] as const;
 export type FallPhase = (typeof FALL_PHASES)[number];
 
@@ -142,6 +148,8 @@ export type FallFrame = {
   squashY: number;
   armSwingDeg: number;
   lookDir: -1 | 0 | 1;
+  /** 1 is normal size. A fighter grows while it flies so the fall can be seen. */
+  scale: number;
 };
 
 /** Where each phase ends, as a share of the total. */
@@ -160,10 +168,15 @@ const TEETER_TILT = 14;
 const easeInOut = (u: number): number => (u < 0.5 ? 2 * u * u : 1 - 2 * (1 - u) * (1 - u));
 const clamp01 = (u: number): number => Math.min(1, Math.max(0, u));
 
-/** Alternates by tumble count, so a family sees both kinds. Seeded by the count, not by a clock. */
-export function fallVariant(count: number): FallVariant {
-  return Math.abs(Math.trunc(count)) % 2 === 0 ? 'face' : 'feet';
+/** Picks the fall style from the match seed and how many falls came before. No clock, no Math.random. */
+export function fallVariantFor(seed: number, count: number): FallVariant {
+  const a = Number.isFinite(seed) ? seed >>> 0 : 0;
+  const b = Number.isFinite(count) ? Math.trunc(count) >>> 0 : 0;
+  return createRng((a ^ Math.imul(b + 1, 0x9e3779b1)) >>> 0).next() < 0.5 ? 'face' : 'flop';
 }
+
+/** The tilt of a fighter lying down: forward is clockwise (+), a backward flop is the other way. */
+const lyingDeg = (variant: FallVariant): number => (variant === 'flop' ? -LYING_DEG : LYING_DEG);
 
 export function fallFrame(
   timeMs: number,
@@ -176,16 +189,17 @@ export function fallFrame(
   const phase: FallPhase = FALL_PHASES.find((p) => f < FALL_ENDS[p]) ?? 'topple';
   const i = FALL_PHASES.indexOf(phase);
   const u = within(i === 0 ? 0 : FALL_ENDS[FALL_PHASES[i - 1]!], FALL_ENDS[phase]);
-  const flip = variant === 'feet' ? 360 : 360 + LYING_DEG;
+  const lying = lyingDeg(variant);
+  const flip = Math.sign(lying) * 360 + lying;
   let dx = FALL_DX;
   let lift = 0;
-  let rotationDeg = variant === 'feet' ? 0 : LYING_DEG;
+  let rotationDeg = lying;
   let squashY = 1;
   let armSwingDeg = 0;
   let lookDir: -1 | 0 | 1 = 0;
   switch (phase) {
     case 'teeter':
-      // On tiptoe, rocking harder each time, arms going round. Looks one way, then the other.
+      // On tiptoe, rocking back and forth, arms going round. Looks one way, then the other.
       dx = 0;
       rotationDeg = -TEETER_TILT * Math.sin(Math.PI * 3 * u) * Math.sin(Math.PI * u);
       squashY = 1 + 0.08 * Math.sin(Math.PI * u);
@@ -202,18 +216,17 @@ export function fallFrame(
       squashY = 1 - LAND_SQUASH * Math.sin(Math.PI * u);
       break;
     case 'bounce':
-      // Boing: up and back down. Flat on its face it bounces like a plank. On its feet it spins.
+      // Boing: up and back down. A face-plant bounces flat like a plank. A flop rolls over once.
       lift = BOUNCE_HEIGHT * Math.sin(Math.PI * u);
       squashY = 1 + 0.1 * Math.sin(Math.PI * u);
-      if (variant === 'feet') rotationDeg = (360 * easeInOut(u)) % 360;
+      if (variant === 'flop') rotationDeg = lying - 360 * easeInOut(u);
       break;
     case 'wobble':
-      // On its feet it sways. Lying down it looks around, dizzy.
-      if (variant === 'feet') rotationDeg = 10 * Math.sin(Math.PI * 3 * u) * (1 - u);
+      // A little bounce off the ground, then it lies there looking around, dizzy.
+      lift = HIT_FX.landBounce * Math.sin(Math.PI * u);
       lookDir = u < 0.5 ? -1 : 1;
       break;
     case 'topple':
-      if (variant === 'feet') rotationDeg = LYING_DEG * u * u;
       break;
   }
   return {
@@ -226,7 +239,56 @@ export function fallFrame(
     squashY,
     armSwingDeg,
     lookDir,
+    scale:
+      phase === 'teeter'
+        ? 1
+        : phase === 'fly'
+          ? lerp(1, HIT_FX.fallScale, easeOut(u))
+          : HIT_FX.fallScale,
   };
+}
+
+/** Standing back up: from lying where it fell to upright at its post, with a small hop. u runs 0..1. */
+export function standUpFrame(u: number, variant: FallVariant): FallFrame {
+  const x = clamp01(Number.isFinite(u) ? u : 0);
+  const e = easeInOut(x);
+  return {
+    phase: 'topple',
+    progress: x,
+    dx: FALL_DX * (1 - e),
+    lift: HIT_FX.standUpHop * Math.sin(Math.PI * x),
+    rotationDeg: lyingDeg(variant) * (1 - e),
+    squashX: 1,
+    squashY: 1,
+    armSwingDeg: 0,
+    lookDir: 0,
+    scale: lerp(HIT_FX.fallScale, 1, e),
+  };
+}
+
+export type StarOffset = {
+  dx: number;
+  dy: number;
+  /** In front of the head (drawn on top). */ front: boolean;
+};
+
+/** Where the little stars are, around a point over the fallen head. They circle on a flat oval. */
+export function starOffsets(timeMs: number): StarOffset[] {
+  const t = Number.isFinite(timeMs) ? timeMs : 0;
+  const out: StarOffset[] = [];
+  for (let i = 0; i < HIT_FX.starCount; i++) {
+    const a = 2 * Math.PI * (i / HIT_FX.starCount) + (2 * Math.PI * t) / HIT_FX.starPeriodMs;
+    const dx = Math.cos(a) * HIT_FX.starRadiusPx;
+    const dy = Math.sin(a) * HIT_FX.starRadiusPx * HIT_FX.starSquash;
+    out.push({ dx, dy, front: dy >= 0 });
+  }
+  return out;
+}
+
+/** The top of a fighter's head after a tilt (clockwise degrees about the feet). */
+export function headPosition(feetX: number, feetY: number, angleDeg: number): Vec2 {
+  const rad = (angleDeg * Math.PI) / 180;
+  return { x: feetX + Math.sin(rad) * HEAD_HEIGHT, y: feetY - Math.cos(rad) * HEAD_HEIGHT };
 }
 
 /** The same frame as a TumblePose, so the character sprite can draw it. */
@@ -248,6 +310,7 @@ export function fallPose(frame: FallFrame): TumblePose {
     armSwingDeg: frame.armSwingDeg,
     lift: frame.lift,
     lookDir: frame.lookDir,
+    scale: frame.scale,
   };
 }
 
@@ -266,25 +329,4 @@ export function vanishFrame(u: number): VanishFrame {
     puffScale: 0.5 + 1.9 * easeOut(x),
     puffAlpha: x < 0.2 ? 0.9 * (x / 0.2) : 0.9 * (1 - (x - 0.2) / 0.8),
   };
-}
-
-export type DizzyStar = {
-  /** Offset from the top of the head, in px. dy is always above the head. */
-  dx: number;
-  dy: number;
-  alpha: number;
-};
-
-/** Three stars circle the head after the bounce. u runs 0..1 over DIZZY.ms. */
-export function dizzyStarsFrame(u: number): DizzyStar[] {
-  const x = clamp01(Number.isFinite(u) ? u : 0);
-  const alpha = x < 0.15 ? x / 0.15 : x > 0.75 ? Math.max(0, (1 - x) / 0.25) : 1;
-  return [0, 1, 2].map((k) => {
-    const a = 2 * Math.PI * (DIZZY.spins * x + k / 3);
-    return {
-      dx: DIZZY.orbitX * Math.cos(a),
-      dy: -DIZZY.rise + DIZZY.orbitY * Math.sin(a),
-      alpha,
-    };
-  });
 }

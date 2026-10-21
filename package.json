@@ -5,17 +5,19 @@
   "type": "module",
   "description": "Time Clash: a free, kid-friendly artillery game that teaches math and reading.",
   "engines": {
-    "node": ">=22.12.0"
+    "node": ">=22.13.0"
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit && vite build && tsc -p tsconfig.server.json",
+    "start": "node dist-server/app-server/server.js",
     "preview": "vite preview",
     "test": "vitest run",
     "lint": "eslint .",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit",
     "e2e": "playwright test",
+    "smoke:server": "tsx scripts/smoke-app-server.ts",
     "check:questions": "tsx scripts/check-questions.ts",
     "check:dist": "tsx scripts/check-dist.ts",
     "blind:export": "tsx scripts/blind-export.ts",

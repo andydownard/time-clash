@@ -1,11 +1,12 @@
 // Pure layout math for the Battle scene. No Phaser, so it is unit tested.
-import { AIM, BASES, DAMAGE, TIMING, TURN, WIND } from '../../game/config';
-import type { AimInput, BattleLayout, Team, Vec2 } from '../../game/types';
+import { AIM, BASES, DAMAGE, HIT_FX, TIMING, TURN, WIND } from '../../game/config';
+import type { BattleLayout, Team, Vec2 } from '../../game/types';
 import {
   BUBBLE_MAX_WORLD_W,
   BUBBLE_RISE,
   CHARACTER_OFFSET,
   DIAL,
+  FALL_DX,
   TAIL_TARGET_RISE,
   WIND_ARROW_MAX,
 } from './visual';
@@ -18,40 +19,49 @@ export function aimVector(angleDeg: number, facing: 1 | -1): Vec2 {
   return { x: Math.cos(angleDeg * RAD) * facing, y: -Math.sin(angleDeg * RAD) };
 }
 
-/** Where the draggable handle sits for an aim. Farther out means more power. */
-export function dialHandle(origin: Vec2, angleDeg: number, power: number, facing: 1 | -1): Vec2 {
-  const p = clamp(power, AIM.powerMin, AIM.powerMax);
-  const span = AIM.powerMax - AIM.powerMin;
-  const r = DIAL.minRadius + ((DIAL.maxRadius - DIAL.minRadius) * (p - AIM.powerMin)) / span;
+/** The tip of the short guide line, and where the draggable handle sits. */
+export function guideTip(origin: Vec2, angleDeg: number, facing: 1 | -1): Vec2 {
   const v = aimVector(angleDeg, facing);
-  return { x: origin.x + v.x * r, y: origin.y + v.y * r };
+  return { x: origin.x + v.x * DIAL.guideLength, y: origin.y + v.y * DIAL.guideLength };
 }
 
 /**
- * The aim for a pointer position. Inverse of dialHandle for whole numbers.
- * A pointer on the launcher keeps the current angle. Bad numbers keep the current aim.
+ * Start and end of the small arc, in radians, for Phaser's clockwise arc.
+ * It runs from flat (0 degrees) up to the aim.
  */
-export function aimFromDrag(
+export function angleArc(angleDeg: number, facing: 1 | -1): { start: number; end: number } {
+  const a = angleDeg * RAD;
+  return facing === 1 ? { start: -a, end: 0 } : { start: Math.PI, end: Math.PI + a };
+}
+
+/** Where the small angle number sits: just past the tip, pushed out away from the launcher. */
+export function angleLabelSpot(
+  origin: Vec2,
+  angleDeg: number,
+  facing: 1 | -1,
+): { x: number; y: number; anchorX: 0 | 1 } {
+  const tip = guideTip(origin, angleDeg, facing);
+  return {
+    x: tip.x + facing * DIAL.labelGap,
+    y: tip.y,
+    anchorX: facing === 1 ? 0 : 1,
+  };
+}
+
+/**
+ * The angle for a pointer position, whole degrees, kept in range. Power is not set by dragging.
+ * A pointer on the muzzle or a bad number keeps the current angle.
+ */
+export function angleFromDrag(
   origin: Vec2,
   pointer: Vec2,
   facing: 1 | -1,
-  current: AimInput,
-): AimInput {
+  currentDeg: number,
+): number {
   const dx = (pointer.x - origin.x) * facing;
   const dy = origin.y - pointer.y;
-  if (!Number.isFinite(dx) || !Number.isFinite(dy)) return { ...current };
-  const dist = Math.hypot(dx, dy);
-  const span = AIM.powerMax - AIM.powerMin;
-  const power = clamp(
-    Math.round(AIM.powerMin + ((dist - DIAL.minRadius) / (DIAL.maxRadius - DIAL.minRadius)) * span),
-    AIM.powerMin,
-    AIM.powerMax,
-  );
-  const angleDeg =
-    dist < 1e-9
-      ? current.angleDeg
-      : clamp(Math.round(Math.atan2(dy, dx) / RAD), AIM.angleMinDeg, AIM.angleMaxDeg);
-  return { angleDeg: angleDeg + 0, power: power + 0 };
+  if (!Number.isFinite(dx) || !Number.isFinite(dy) || Math.hypot(dx, dy) < 1e-9) return currentDeg;
+  return clamp(Math.round(Math.atan2(dy, dx) / RAD), AIM.angleMinDeg, AIM.angleMaxDeg) + 0;
 }
 
 /** Direction and drawn length of the wind arrow. */
@@ -88,8 +98,13 @@ export function characterSpot(team: Team, layout: BattleLayout): Vec2 {
 }
 
 /** The point the speech bubble tail aims at: just above the speaker's head. */
-export function bubbleTailTarget(team: Team, layout: BattleLayout): Vec2 {
+export function bubbleTailTarget(team: Team, layout: BattleLayout, fallen = false): Vec2 {
   const spot = characterSpot(team, layout);
+  if (fallen) {
+    // A fallen fighter lies FALL_DX out toward the field, so the tail aims at the stars above it.
+    const dir = team === 'PAST' ? 1 : -1;
+    return { x: spot.x + dir * FALL_DX, y: spot.y - HIT_FX.fallenTailRise };
+  }
   return { x: spot.x, y: spot.y - TAIL_TARGET_RISE };
 }
 

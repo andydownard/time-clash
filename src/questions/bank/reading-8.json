@@ -541,5 +541,467 @@
     "answer": "fair",
     "hint": "Not taking sides is a clue.",
     "tags": ["vocab-in-context", "context-clues"]
+  },
+  {
+    "id": "reading-8-0041",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "mainidea",
+    "prompt": "What is the best statement of the story's theme?",
+    "choices": [
+      "A trait you feel embarrassed about can turn out to be a strength.",
+      "Robots are always dangerous to castles.",
+      "Squires should never wear loud armor.",
+      "Parties are more fun than feasts."
+    ],
+    "answer": "A trait you feel embarrassed about can turn out to be a strength.",
+    "hint": "Think about how Pip felt at first, and how he felt at the end.",
+    "tags": ["mainidea", "theme"],
+    "passage": "Pip had polished his armor all night, but every step went squeak, squeak, squeak. The other squires snickered. \"I'll never be a real knight,\" he muttered. Just then a silver robot rolled over the hill. \"GREETINGS, SOFT HUMANS,\" it boomed. \"I HAVE COME TO BORROW YOUR CASTLE FOR A PARTY.\" The knights gasped, but the party hats on the robot's head looked rather friendly. \"We need someone to lead it to the feast hall,\" said Sir Garrick. Pip shuffled forward, squeaking. The robot's head swiveled. \"FASCINATING NOISE. IT IS LIKE MY OWN GEARS. I WILL FOLLOW IT.\" Pip led the robot to the feast, and the other squires stopped laughing. He wore the squeaks proudly, like a medal."
+  },
+  {
+    "id": "reading-8-0042",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "mainidea",
+    "prompt": "Why did the knights probably not attack the robot?",
+    "choices": [
+      "They were too tired to fight.",
+      "The party hats made it look friendly.",
+      "Pip had already tricked it.",
+      "They did not own any swords."
+    ],
+    "answer": "The party hats made it look friendly.",
+    "hint": "Look at what the robot wore on its head.",
+    "tags": ["mainidea", "inference"],
+    "passage": "Pip had polished his armor all night, but every step went squeak, squeak, squeak. The other squires snickered. \"I'll never be a real knight,\" he muttered. Just then a silver robot rolled over the hill. \"GREETINGS, SOFT HUMANS,\" it boomed. \"I HAVE COME TO BORROW YOUR CASTLE FOR A PARTY.\" The knights gasped, but the party hats on the robot's head looked rather friendly. \"We need someone to lead it to the feast hall,\" said Sir Garrick. Pip shuffled forward, squeaking. The robot's head swiveled. \"FASCINATING NOISE. IT IS LIKE MY OWN GEARS. I WILL FOLLOW IT.\" Pip led the robot to the feast, and the other squires stopped laughing. He wore the squeaks proudly, like a medal."
+  },
+  {
+    "id": "reading-8-0043",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "mainidea",
+    "prompt": "In the story, the word \"snickered\" most nearly means",
+    "choices": [
+      "shouted in fear",
+      "sang a happy song",
+      "laughed quietly in a mocking way",
+      "whispered a secret"
+    ],
+    "answer": "laughed quietly in a mocking way",
+    "hint": "The squires were laughing at Pip.",
+    "tags": ["mainidea", "vocabulary-in-context"],
+    "passage": "Pip had polished his armor all night, but every step went squeak, squeak, squeak. The other squires snickered. \"I'll never be a real knight,\" he muttered. Just then a silver robot rolled over the hill. \"GREETINGS, SOFT HUMANS,\" it boomed. \"I HAVE COME TO BORROW YOUR CASTLE FOR A PARTY.\" The knights gasped, but the party hats on the robot's head looked rather friendly. \"We need someone to lead it to the feast hall,\" said Sir Garrick. Pip shuffled forward, squeaking. The robot's head swiveled. \"FASCINATING NOISE. IT IS LIKE MY OWN GEARS. I WILL FOLLOW IT.\" Pip led the robot to the feast, and the other squires stopped laughing. He wore the squeaks proudly, like a medal."
+  },
+  {
+    "id": "reading-8-0044",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "mainidea",
+    "prompt": "The tone of the story is best described as",
+    "choices": [
+      "bitter and angry",
+      "serious and gloomy",
+      "cold and formal",
+      "lighthearted and humorous"
+    ],
+    "answer": "lighthearted and humorous",
+    "hint": "Squeaky armor and a robot at a party are funny.",
+    "tags": ["mainidea", "tone"],
+    "passage": "Pip had polished his armor all night, but every step went squeak, squeak, squeak. The other squires snickered. \"I'll never be a real knight,\" he muttered. Just then a silver robot rolled over the hill. \"GREETINGS, SOFT HUMANS,\" it boomed. \"I HAVE COME TO BORROW YOUR CASTLE FOR A PARTY.\" The knights gasped, but the party hats on the robot's head looked rather friendly. \"We need someone to lead it to the feast hall,\" said Sir Garrick. Pip shuffled forward, squeaking. The robot's head swiveled. \"FASCINATING NOISE. IT IS LIKE MY OWN GEARS. I WILL FOLLOW IT.\" Pip led the robot to the feast, and the other squires stopped laughing. He wore the squeaks proudly, like a medal."
+  },
+  {
+    "id": "reading-8-0045",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of the passage?",
+    "choices": [
+      "Castle dwellers used several practical methods to stay warm.",
+      "Glass windows were common in every castle.",
+      "Fireplaces were dangerous and rarely used.",
+      "Stone walls made castles easy to heat."
+    ],
+    "answer": "Castle dwellers used several practical methods to stay warm.",
+    "hint": "Look at what all the tricks have in common.",
+    "tags": ["mainidea", "main-idea"],
+    "passage": "Medieval castles look grand in pictures, but living in one was chilly. Thick stone walls trapped the cold, so builders learned a few clever tricks. First, they kept windows small, because narrow openings let in less wind. Glass was costly, so only the wealthiest lords could afford it. Second, people hung thick tapestries on the walls. Like a wool blanket on a bed, a tapestry created a layer of insulation between the cold stone and the room. Third, the great hall held an enormous fireplace, the main source of heat. Today, visitors marvel at the towers, but the humble tapestry and the crackling hearth kept residents cozy through the long winter."
+  },
+  {
+    "id": "reading-8-0046",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "mainidea",
+    "prompt": "Why does the author compare a tapestry to a wool blanket?",
+    "choices": [
+      "To prove tapestries were made of wool",
+      "To show that it adds a layer of insulation",
+      "To explain that tapestries were cheap",
+      "To suggest that people slept under them"
+    ],
+    "answer": "To show that it adds a layer of insulation",
+    "hint": "Think about what a blanket does for a bed.",
+    "tags": ["mainidea", "author-s-craft"],
+    "passage": "Medieval castles look grand in pictures, but living in one was chilly. Thick stone walls trapped the cold, so builders learned a few clever tricks. First, they kept windows small, because narrow openings let in less wind. Glass was costly, so only the wealthiest lords could afford it. Second, people hung thick tapestries on the walls. Like a wool blanket on a bed, a tapestry created a layer of insulation between the cold stone and the room. Third, the great hall held an enormous fireplace, the main source of heat. Today, visitors marvel at the towers, but the humble tapestry and the crackling hearth kept residents cozy through the long winter."
+  },
+  {
+    "id": "reading-8-0047",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "mainidea",
+    "prompt": "The word \"humble\" in the last paragraph most nearly means",
+    "choices": ["very expensive", "dangerous", "simple and ordinary", "brightly colored"],
+    "answer": "simple and ordinary",
+    "hint": "It is paired with the crackling hearth, which is plain.",
+    "tags": ["mainidea", "vocabulary-in-context"],
+    "passage": "Medieval castles look grand in pictures, but living in one was chilly. Thick stone walls trapped the cold, so builders learned a few clever tricks. First, they kept windows small, because narrow openings let in less wind. Glass was costly, so only the wealthiest lords could afford it. Second, people hung thick tapestries on the walls. Like a wool blanket on a bed, a tapestry created a layer of insulation between the cold stone and the room. Third, the great hall held an enormous fireplace, the main source of heat. Today, visitors marvel at the towers, but the humble tapestry and the crackling hearth kept residents cozy through the long winter."
+  },
+  {
+    "id": "reading-8-0048",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "mainidea",
+    "prompt": "Which detail best supports the idea that glass was a luxury?",
+    "choices": [
+      "The great hall had an enormous fireplace.",
+      "Tapestries hung on the walls.",
+      "Narrow windows let in less wind.",
+      "Only the wealthiest lords could afford it."
+    ],
+    "answer": "Only the wealthiest lords could afford it.",
+    "hint": "Look for a detail about who could afford glass.",
+    "tags": ["mainidea", "supporting-details"],
+    "passage": "Medieval castles look grand in pictures, but living in one was chilly. Thick stone walls trapped the cold, so builders learned a few clever tricks. First, they kept windows small, because narrow openings let in less wind. Glass was costly, so only the wealthiest lords could afford it. Second, people hung thick tapestries on the walls. Like a wool blanket on a bed, a tapestry created a layer of insulation between the cold stone and the room. Third, the great hall held an enormous fireplace, the main source of heat. Today, visitors marvel at the towers, but the humble tapestry and the crackling hearth kept residents cozy through the long winter."
+  },
+  {
+    "id": "reading-8-0049",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "mainidea",
+    "prompt": "What is the author's main claim?",
+    "choices": [
+      "The school should create a marked hoverboard lane.",
+      "Hoverboards should be banned.",
+      "Lockers need to be repaired.",
+      "Hallways should be wider."
+    ],
+    "answer": "The school should create a marked hoverboard lane.",
+    "hint": "Look at the first sentence.",
+    "tags": ["mainidea", "evaluating-an-argument"],
+    "passage": "Our school's main hallway is a traffic jam every morning, and it is time for a solution: a marked hoverboard lane along the left wall. Over two hundred students already glide to class. Some say a lane costs too much. In fact, the project needs only a roll of bright tape and a few signs, and the student council has offered to do the painting for free. A lane would also make the hallway safer. When Oakdale Middle tried a similar plan, collisions dropped by more than half. Walkers would know exactly where riders will be. The hallway belongs to everyone. Please, principal, say yes to the lane."
+  },
+  {
+    "id": "reading-8-0050",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "mainidea",
+    "prompt": "Which piece of evidence is the strongest support for the claim that a lane improves safety?",
+    "choices": [
+      "The student council will paint it for free.",
+      "Collisions dropped by more than half at Oakdale Middle.",
+      "The hallway is a traffic jam every morning.",
+      "Over two hundred students already ride."
+    ],
+    "answer": "Collisions dropped by more than half at Oakdale Middle.",
+    "hint": "Strong evidence uses real numbers from a real event.",
+    "tags": ["mainidea", "evaluating-an-argument"],
+    "passage": "Our school's main hallway is a traffic jam every morning, and it is time for a solution: a marked hoverboard lane along the left wall. Over two hundred students already glide to class. Some say a lane costs too much. In fact, the project needs only a roll of bright tape and a few signs, and the student council has offered to do the painting for free. A lane would also make the hallway safer. When Oakdale Middle tried a similar plan, collisions dropped by more than half. Walkers would know exactly where riders will be. The hallway belongs to everyone. Please, principal, say yes to the lane."
+  },
+  {
+    "id": "reading-8-0051",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "mainidea",
+    "prompt": "How does the author respond to the claim that a lane costs too much?",
+    "choices": [
+      "By admitting the cost is high but worth it",
+      "By ignoring the claim completely",
+      "By noting it needs only tape and signs, and volunteers will paint",
+      "By suggesting students pay a fee"
+    ],
+    "answer": "By noting it needs only tape and signs, and volunteers will paint",
+    "hint": "Find the sentence that begins with the words In fact.",
+    "tags": ["mainidea", "counterargument"],
+    "passage": "Our school's main hallway is a traffic jam every morning, and it is time for a solution: a marked hoverboard lane along the left wall. Over two hundred students already glide to class. Some say a lane costs too much. In fact, the project needs only a roll of bright tape and a few signs, and the student council has offered to do the painting for free. A lane would also make the hallway safer. When Oakdale Middle tried a similar plan, collisions dropped by more than half. Walkers would know exactly where riders will be. The hallway belongs to everyone. Please, principal, say yes to the lane."
+  },
+  {
+    "id": "reading-8-0052",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "mainidea",
+    "prompt": "The author's main purpose is to",
+    "choices": [
+      "entertain readers with a funny story",
+      "explain how hoverboards work",
+      "describe the history of the school",
+      "persuade the principal to approve the lane"
+    ],
+    "answer": "persuade the principal to approve the lane",
+    "hint": "The last sentence asks the principal for something.",
+    "tags": ["mainidea", "author-s-purpose"],
+    "passage": "Our school's main hallway is a traffic jam every morning, and it is time for a solution: a marked hoverboard lane along the left wall. Over two hundred students already glide to class. Some say a lane costs too much. In fact, the project needs only a roll of bright tape and a few signs, and the student council has offered to do the painting for free. A lane would also make the hallway safer. When Oakdale Middle tried a similar plan, collisions dropped by more than half. Walkers would know exactly where riders will be. The hallway belongs to everyone. Please, principal, say yes to the lane."
+  },
+  {
+    "id": "reading-8-0053",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "mainidea",
+    "prompt": "Why did the first batch of Bolt's baking end up a mess?",
+    "choices": [
+      "He forgot that flour puffs into the air when dropped.",
+      "He measured the flour badly.",
+      "He forgot to turn on the oven.",
+      "He ran out of sugar."
+    ],
+    "answer": "He forgot that flour puffs into the air when dropped.",
+    "hint": "Read what Bolt forgot.",
+    "tags": ["mainidea", "cause-and-effect"],
+    "passage": "Bolt the robot had read four hundred cookbooks, so he was certain he could bake the perfect cookie. His first try made the kitchen look like a snowstorm. Bolt's measuring was flawless, but he had forgotten that flour puffs into the air when dropped from a great height. His second batch came out as flat and hard as roof tiles. \"My calculations were perfect,\" he said. Mrs. Alvarez, the baker next door, chuckled. \"Calculations are only half the recipe, dear. You have to taste the dough, and you have to be patient.\" On the third try, Bolt tasted the dough and added a pinch more sugar just because it felt right. When the cookies came out golden and soft, a tiny light on his chin blinked pink."
+  },
+  {
+    "id": "reading-8-0054",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "mainidea",
+    "prompt": "What does Mrs. Alvarez mean by \"Calculations are only half the recipe\"?",
+    "choices": [
+      "Bolt should stop using math.",
+      "Good baking also needs tasting and patience.",
+      "Recipes are always wrong.",
+      "Only humans can bake cookies."
+    ],
+    "answer": "Good baking also needs tasting and patience.",
+    "hint": "Mrs. Alvarez says you have to taste the dough and be patient.",
+    "tags": ["mainidea", "inference"],
+    "passage": "Bolt the robot had read four hundred cookbooks, so he was certain he could bake the perfect cookie. His first try made the kitchen look like a snowstorm. Bolt's measuring was flawless, but he had forgotten that flour puffs into the air when dropped from a great height. His second batch came out as flat and hard as roof tiles. \"My calculations were perfect,\" he said. Mrs. Alvarez, the baker next door, chuckled. \"Calculations are only half the recipe, dear. You have to taste the dough, and you have to be patient.\" On the third try, Bolt tasted the dough and added a pinch more sugar just because it felt right. When the cookies came out golden and soft, a tiny light on his chin blinked pink."
+  },
+  {
+    "id": "reading-8-0055",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "mainidea",
+    "prompt": "The phrase \"as flat and hard as roof tiles\" is an example of",
+    "choices": ["a metaphor", "personification", "a simile", "hyperbole"],
+    "answer": "a simile",
+    "hint": "The comparison uses the word as.",
+    "tags": ["mainidea", "figurative-language"],
+    "passage": "Bolt the robot had read four hundred cookbooks, so he was certain he could bake the perfect cookie. His first try made the kitchen look like a snowstorm. Bolt's measuring was flawless, but he had forgotten that flour puffs into the air when dropped from a great height. His second batch came out as flat and hard as roof tiles. \"My calculations were perfect,\" he said. Mrs. Alvarez, the baker next door, chuckled. \"Calculations are only half the recipe, dear. You have to taste the dough, and you have to be patient.\" On the third try, Bolt tasted the dough and added a pinch more sugar just because it felt right. When the cookies came out golden and soft, a tiny light on his chin blinked pink."
+  },
+  {
+    "id": "reading-8-0056",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "mainidea",
+    "prompt": "What does Bolt's pink blinking light at the end most likely show?",
+    "choices": [
+      "He is running out of power.",
+      "He is confused by the recipe.",
+      "He is angry at Mrs. Alvarez.",
+      "He feels proud and happy."
+    ],
+    "answer": "He feels proud and happy.",
+    "hint": "He did something he had never done before.",
+    "tags": ["mainidea", "inference"],
+    "passage": "Bolt the robot had read four hundred cookbooks, so he was certain he could bake the perfect cookie. His first try made the kitchen look like a snowstorm. Bolt's measuring was flawless, but he had forgotten that flour puffs into the air when dropped from a great height. His second batch came out as flat and hard as roof tiles. \"My calculations were perfect,\" he said. Mrs. Alvarez, the baker next door, chuckled. \"Calculations are only half the recipe, dear. You have to taste the dough, and you have to be patient.\" On the third try, Bolt tasted the dough and added a pinch more sugar just because it felt right. When the cookies came out golden and soft, a tiny light on his chin blinked pink."
+  },
+  {
+    "id": "reading-8-0057",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "mainidea",
+    "prompt": "Which word best describes how Bolt changes over the story?",
+    "choices": [
+      "He becomes more willing to trust his senses and learn from mistakes.",
+      "He becomes lazier.",
+      "He becomes afraid of ovens.",
+      "He decides to stop cooking."
+    ],
+    "answer": "He becomes more willing to trust his senses and learn from mistakes.",
+    "hint": "He added sugar just because it felt right.",
+    "tags": ["mainidea", "character-development"],
+    "passage": "Bolt the robot had read four hundred cookbooks, so he was certain he could bake the perfect cookie. His first try made the kitchen look like a snowstorm. Bolt's measuring was flawless, but he had forgotten that flour puffs into the air when dropped from a great height. His second batch came out as flat and hard as roof tiles. \"My calculations were perfect,\" he said. Mrs. Alvarez, the baker next door, chuckled. \"Calculations are only half the recipe, dear. You have to taste the dough, and you have to be patient.\" On the third try, Bolt tasted the dough and added a pinch more sugar just because it felt right. When the cookies came out golden and soft, a tiny light on his chin blinked pink."
+  },
+  {
+    "id": "reading-8-0058",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "mainidea",
+    "prompt": "What is the author's main purpose in this passage?",
+    "choices": [
+      "To convince readers to quit city jobs",
+      "To inform readers about the benefits and challenges of green roofs",
+      "To tell a story about a gardener",
+      "To prove air conditioning is useless"
+    ],
+    "answer": "To inform readers about the benefits and challenges of green roofs",
+    "hint": "The passage shares good points and a hard point.",
+    "tags": ["mainidea", "author-s-purpose"],
+    "passage": "In crowded cities, open land is scarce. Yet some builders have found an unexpected place to grow plants: the roof. Rooftop gardens, or green roofs, are spreading across the world. One benefit is temperature. Plants absorb sunlight and release water vapor, which cools the building, so less energy is spent on air conditioning. Green roofs also help with heavy rain. A rooftop garden soaks up much of the water and releases it slowly. Bees, butterflies, and birds find food there, too. Of course, green roofs are not simple. The building must be strong enough to hold wet soil. Still, many cities offer rewards to owners who build them, because the gains for everyone are hard to ignore."
+  },
+  {
+    "id": "reading-8-0059",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "mainidea",
+    "prompt": "According to the passage, how do green roofs help during heavy rain?",
+    "choices": [
+      "They block all rain from reaching the building.",
+      "They turn the water into steam.",
+      "They soak up water and release it slowly.",
+      "They make the rain fall faster."
+    ],
+    "answer": "They soak up water and release it slowly.",
+    "hint": "Read the sentence about a rooftop garden and water.",
+    "tags": ["mainidea", "details"],
+    "passage": "In crowded cities, open land is scarce. Yet some builders have found an unexpected place to grow plants: the roof. Rooftop gardens, or green roofs, are spreading across the world. One benefit is temperature. Plants absorb sunlight and release water vapor, which cools the building, so less energy is spent on air conditioning. Green roofs also help with heavy rain. A rooftop garden soaks up much of the water and releases it slowly. Bees, butterflies, and birds find food there, too. Of course, green roofs are not simple. The building must be strong enough to hold wet soil. Still, many cities offer rewards to owners who build them, because the gains for everyone are hard to ignore."
+  },
+  {
+    "id": "reading-8-0060",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "mainidea",
+    "prompt": "In the passage, the word \"scarce\" most nearly means",
+    "choices": ["very noisy", "extremely clean", "easy to see", "hard to find"],
+    "answer": "hard to find",
+    "hint": "The sentence says open land is hard to come by.",
+    "tags": ["mainidea", "vocabulary-in-context"],
+    "passage": "In crowded cities, open land is scarce. Yet some builders have found an unexpected place to grow plants: the roof. Rooftop gardens, or green roofs, are spreading across the world. One benefit is temperature. Plants absorb sunlight and release water vapor, which cools the building, so less energy is spent on air conditioning. Green roofs also help with heavy rain. A rooftop garden soaks up much of the water and releases it slowly. Bees, butterflies, and birds find food there, too. Of course, green roofs are not simple. The building must be strong enough to hold wet soil. Still, many cities offer rewards to owners who build them, because the gains for everyone are hard to ignore."
+  },
+  {
+    "id": "reading-8-0061",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "mainidea",
+    "prompt": "Which sentence shows the author is being fair by mentioning a downside?",
+    "choices": [
+      "Of course, green roofs are not simple.",
+      "Rooftop gardens are spreading across the world.",
+      "A single rooftop meadow can become an important stopover.",
+      "Plants absorb sunlight and release water vapor."
+    ],
+    "answer": "Of course, green roofs are not simple.",
+    "hint": "Look for a sentence that is not all good news.",
+    "tags": ["mainidea", "evaluating-an-argument"],
+    "passage": "In crowded cities, open land is scarce. Yet some builders have found an unexpected place to grow plants: the roof. Rooftop gardens, or green roofs, are spreading across the world. One benefit is temperature. Plants absorb sunlight and release water vapor, which cools the building, so less energy is spent on air conditioning. Green roofs also help with heavy rain. A rooftop garden soaks up much of the water and releases it slowly. Bees, butterflies, and birds find food there, too. Of course, green roofs are not simple. The building must be strong enough to hold wet soil. Still, many cities offer rewards to owners who build them, because the gains for everyone are hard to ignore."
+  },
+  {
+    "id": "reading-8-0062",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "mainidea",
+    "prompt": "Why do many cities reward owners of green roofs?",
+    "choices": [
+      "Green roofs are cheap to build.",
+      "The benefits help everyone, not only the owner.",
+      "Roofs are the only place left to grow plants.",
+      "Owners ask for the reward."
+    ],
+    "answer": "The benefits help everyone, not only the owner.",
+    "hint": "Read the last sentence about the gains.",
+    "tags": ["mainidea", "inference"],
+    "passage": "In crowded cities, open land is scarce. Yet some builders have found an unexpected place to grow plants: the roof. Rooftop gardens, or green roofs, are spreading across the world. One benefit is temperature. Plants absorb sunlight and release water vapor, which cools the building, so less energy is spent on air conditioning. Green roofs also help with heavy rain. A rooftop garden soaks up much of the water and releases it slowly. Bees, butterflies, and birds find food there, too. Of course, green roofs are not simple. The building must be strong enough to hold wet soil. Still, many cities offer rewards to owners who build them, because the gains for everyone are hard to ignore."
+  },
+  {
+    "id": "reading-8-0063",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "vocab",
+    "prompt": "Which word is closest in meaning to \"meticulous\"?",
+    "choices": [
+      "loud and cheerful",
+      "slow and sleepy",
+      "careful about every small detail",
+      "angry and hasty"
+    ],
+    "answer": "careful about every small detail",
+    "hint": "Think of someone who checks every little thing.",
+    "tags": ["vocab", "vocabulary"]
+  },
+  {
+    "id": "reading-8-0064",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "vocab",
+    "prompt": "The knight was reluctant to climb on the hoverboard. Reluctant means",
+    "choices": ["eager", "skilled", "tired", "unwilling"],
+    "answer": "unwilling",
+    "hint": "The knight did not want to climb on.",
+    "tags": ["vocab", "vocabulary"]
+  },
+  {
+    "id": "reading-8-0065",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "vocab",
+    "prompt": "Which word is closest in meaning to \"benevolent\"?",
+    "choices": ["kind and generous", "clumsy", "greedy", "ancient"],
+    "answer": "kind and generous",
+    "hint": "The word begins with bene, which means good.",
+    "tags": ["vocab", "vocabulary"]
+  },
+  {
+    "id": "reading-8-0066",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "grammar",
+    "prompt": "\"The robot's laugh was a rusty gate swinging in the wind.\" This sentence uses",
+    "choices": ["a simile", "a metaphor", "hyperbole", "alliteration"],
+    "answer": "a metaphor",
+    "hint": "The laugh is called a gate directly, with no like or as.",
+    "tags": ["grammar", "figurative-language"]
+  },
+  {
+    "id": "reading-8-0067",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "grammar",
+    "prompt": "\"The castle door groaned as it opened.\" This is an example of",
+    "choices": ["simile", "a pun", "personification", "a fact"],
+    "answer": "personification",
+    "hint": "Doors cannot groan like people. Who usually groans?",
+    "tags": ["grammar", "figurative-language"]
+  },
+  {
+    "id": "reading-8-0068",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "grammar",
+    "prompt": "\"I have told you a million times to charge your hoverboard.\" This is an example of",
+    "choices": ["understatement", "metaphor", "irony", "hyperbole"],
+    "answer": "hyperbole",
+    "hint": "Has anyone really said it a million times?",
+    "tags": ["grammar", "figurative-language"]
+  },
+  {
+    "id": "reading-8-0069",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "grammar",
+    "prompt": "Which sentence is correct?",
+    "choices": [
+      "Neither the knight nor the robots were ready for the party.",
+      "Neither the knight nor the robots was ready for the party.",
+      "Neither the knight nor the robots is ready for the party.",
+      "Neither the knight nor the robots be ready for the party."
+    ],
+    "answer": "Neither the knight nor the robots were ready for the party.",
+    "hint": "The verb agrees with the closest subject, which is robots.",
+    "tags": ["grammar", "subject-verb-agreement"]
+  },
+  {
+    "id": "reading-8-0070",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "grammar",
+    "prompt": "Which sentence uses a semicolon correctly?",
+    "choices": [
+      "The drawbridge; was stuck we took the tunnel instead.",
+      "The drawbridge was stuck; we took the tunnel instead.",
+      "The drawbridge was stuck we; took the tunnel instead.",
+      "The drawbridge was; stuck we took the tunnel instead."
+    ],
+    "answer": "The drawbridge was stuck; we took the tunnel instead.",
+    "hint": "A semicolon joins two complete sentences.",
+    "tags": ["grammar", "punctuation"]
   }
 ]

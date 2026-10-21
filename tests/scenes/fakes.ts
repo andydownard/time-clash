@@ -9,6 +9,7 @@ import type {
   TeamStats,
 } from '../../src/game/types';
 import { DEFAULT_SETTINGS, PHASE1_LAYOUT } from '../../src/game/config';
+import { freshUnitHp } from '../../src/game/damage';
 import type { QuestionBank } from '../../src/questions/types';
 import type { AppServices } from '../../src/scenes/registry';
 import { setup } from '../ui/helpers';
@@ -41,6 +42,10 @@ export function fakeController(
     turn: { phase: 'RELOAD', team: 'PAST', turnNumber: 3, shotsFired: 2, bonus: false },
     wind: 0,
     baseHp: { PAST: 50, FUTURE: 0 },
+    characterHealth: false,
+    unitHp: freshUnitHp(),
+    maxUnitHp: 3,
+    aliveCount: { PAST: 5, FUTURE: 5 },
     maxBaseHp: { PAST: 100, FUTURE: 100 },
     scrap: { PAST: 3, FUTURE: 1 },
     aim: { PAST: { angleDeg: 45, power: 60 }, FUTURE: { angleDeg: 45, power: 60 } },

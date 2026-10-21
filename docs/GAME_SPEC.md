@@ -160,3 +160,101 @@ Screen 3: Battle Screen & Turn Transition
 ⚬ Environment: Left side shows an ornate medieval castle; right side shows a futuristic Austin cyber-base tucked under a glowing solar skyway.
 ⚬ Active Indicator: Prominent comic banner at top center reading: "PLAYER 1: ALEX — YOUR TURN! (SHOT 1 OF 2)" with glowing directional arrows.
 ⚬ Slapstick Moment: A character who was just knocked over lies hilariously flat on their stomach with arms spread out, a cartoon speech bubble above them saying: "Just checking the lawn for four-leaf clovers!"
+## Practice opponent
+
+A rules-based opponent so one child can play alone, and later fill a seat when no second player is there. Pure logic in `src/game/bot.ts` (and `botPlay.ts` for simulated matches, `practice.ts` for turn ownership and pacing). Off by default: `PRACTICE_BOT.enabled = false` in `src/game/config.ts`. `?computer=1` on the address shows the choice for testing before the panel review. With it off the game is exactly as before.
+
+Rules:
+- It sees only what a child can see: the bases, wind, health and its own fighter. It never sees the other player's reload question.
+- `chooseShot(state, side, level, rng)` returns an angle, a power and a fighter. The aim is always clamped, whole numbers, and legal. It never skips a shot.
+- It finds a good aim on a copy of the physics, then adds a human-sized error. The error spread (degrees and power points) and how much wind it reads are set per level.
+- `answerReload(question, level, rng)` answers only its own question. The chance of a right answer falls with the question's grade (never below a blind guess among four). It also returns a think time in ms (1.8 s to 14 s), longer for older grades and reading questions, so the screen can pace it.
+- Randomness is seeded. Same seed, same game.
+- The screen must say "Computer player" (never "bot", "AI" or "assistant") and show it all the time. One storage key, `timeclash.practice`, remembers Play with and the level.
+- What a child sees: Setup has a "Play with" choice with two big buttons, "Another player" and "Computer player". Computer player adds "How hard?" (Easy, Medium, Hard; Medium to start) on the Computer player's card, which has a friendly robot face (Team Future) or helmet (Team Past). The child is Team Past and types one name and picks one grade and subject. The Computer player copies that grade and subject for its own reload question. The last choice is remembered on the device.
+- On the computer's turn there is no pass screen. The child keeps the screen. A note says "Computer player is aiming" while the dial and power meter move by themselves for about 1.2 to 2 seconds (shorter on Hard), then it fires. The turn strip says "Computer player's turn", and its Fire, sliders and keys are locked. With reduced motion the dial jumps and the note still shows for a moment.
+- The Computer player's reload shows "Computer player is thinking" for up to 2.5 seconds. The child never sees its question, choices or answer. A wrong answer still reloads (Gate 2). All thinking in one computer turn, including the reload and a Power Shot aim, is under 8 seconds. The child's own reload questions, history and level nudges are unchanged.
+- With one child alone, the pass-the-mouse cover is not shown at all (nobody to hide the board from). Two players still get it.
+- The rules have no turn cap. Matches end because shots hit. A test plays 1,000 seeded matches and all end with a winner.
+
+Levels (tunables in `PRACTICE_BOT.levels`):
+
+| Level | Angle error | Power error | Wind read | Right answers (grade 0) |
+|---|---|---|---|---|
+| easy | 7.5 deg | 12 pts | 30% | 65% |
+| medium | 5 deg | 9 pts | 60% | 80% |
+| hard | 2 deg | 4 pts | 90% | 92% |
+
+Simulation (`npx tsx scripts/simulate-bot.ts 2000`: 2,000 seeded matches per pairing, sides and first turn alternate). The "decent human" is a scripted player (4.5 deg, 9 pts, reads 50% of wind, 75% right).
+
+| Level | Bot wins vs decent human | Target |
+|---|---|---|
+| easy | 31.8% (human wins 68.2%) | human wins 65 to 75% |
+| medium | 49.6% | 45 to 55% |
+| hard | 62.8% | 60 to 65% |
+
+Bot against bot (row wins): easy 30.9% vs medium, 20.6% vs hard; medium 67.5% vs easy, 37.0% vs hard; hard 79.3% vs easy, 63.1% vs medium. Matches last about 3 to 4 turns each.
+
+## Character health (rules built, flag off)
+
+Owner decision (2026-10-20): "Every character has three health. It REPLACES base health." The rules are pure, in `src/game/damage.ts` and `src/game/match.ts`, with numbers in `CHARACTER_HEALTH` in `src/game/config.ts`. The flag is `CHARACTER_HEALTH.enabled = false`. It stays off until the Battle scene and the HUD draw health pips and play the awkward fall. With it off the game is exactly as before. A match reads it as the default of `MatchOptions.characterHealth`; tests pass the option and never change the constant.
+
+What changes with the flag on:
+- All ten fighters (five per team: balloon, archer, cannon, catapult, spear; tank, helicopter, bunkers, saber robot, laser robot) start with `hp: 3`. The snapshot holds `unitHp` by fighter id.
+- Each fighter has a hit box (`unitBox` in `units.ts`, `CHARACTER_HEALTH.box`, centered on its firing spot). A shell flies along its path and bursts on the first standing enemy fighter whose box it touches (with 24 px of slack, `classifyBlast` with `directScale`). That is one direct hit. Air fighters can be hit in flight. If the shell touches none, it bursts where it lands. Any other standing enemy within 90 px of the burst (`nearScale`) has a near miss.
+- Base health is not used. A shot at the base does nothing to the base. `baseHp` stays in the snapshot at full, only for saves and old tests.
+
+| Event | Health lost | What the fighter does |
+|---|---|---|
+| Direct hit | 1 (`directHit`) | Flashes. Keeps playing. |
+| Power Shot direct hit | 2 (`powerHit`) | Same. |
+| Near miss | 0 (`nearHit`) | Tumbles (the existing wipeout fall and line). |
+| Reaches 0 | n/a | `knockedOut`: the awkward fall and a funny line. Nobody is hurt. |
+
+The Power Shot is "1.5 times as hard". Health is whole numbers, so 1 x 1.5 rounds up to 2. A test pins `powerHit` to `round(directHit x 1.5)`. Weapon upgrades, walls and force fields do not change fighter damage in this mode.
+
+A fighter at 0 is knocked out. It takes no more hits or tumbles, it cannot be picked (`selectUnit` throws), and it cannot fire. If the team's pick is knocked out, the pick moves to a standing fighter (the default if it stands). The `knockedOut` list on the shot result names each fighter once, on the shot that took it to 0, so the scene plays the fall one time.
+
+Win: a team loses when ALL its fighters are knocked out. The last fighter standing keeps the turn shape: 2 shots, then reload, and a right answer earns one Power Shot. `winnerOfMatch` gives the winner in both modes (fighters when the flag is on, base health when off). Matches always end: a test plays 200 seeded Computer player matches with the flag on and each one ends with a winner under the turn cap. The Computer player (`chooseShot`) only picks standing fighters and aims at a standing enemy fighter.
+
+What stays the same: 2 shots then reload, the Power Shot, wind, scrap, the reload question, the tumble lines, seeded randomness.
+
+## Built bases in battle (rules built, flag off)
+
+Owner decision (2026-10-20): "the bricks take hits", the weapons on the four spots are real firing positions, a brick that is hit enough falls away, and a weapon sits on its brick so it falls when the brick falls. Nobody is hurt: bricks puff and tumble, and a fighter behind a falling wall is never damaged by it. The rules are pure, in `src/game/builtBase.ts` and `src/game/match.ts`, with numbers in `BASE_IN_BATTLE` in `src/game/config.ts`. The flag is `BASE_IN_BATTLE.enabled = false`. A match reads it as the default of `MatchOptions.baseInBattle`; tests pass the option and never change the constant. It only works together with `CHARACTER_HEALTH` (`characterHealth`): without it the option is ignored. With it off the game is exactly as before.
+
+**Choosing the bases.** `MatchOptions.bases` is `{ PAST?: ChosenBase, FUTURE?: ChosenBase }`, where `ChosenBase = { pieces, spots }` is `chosenBase` plus `chosenSpots` from the base builder (`chosenBaseFor(bases, name, team)` makes one). A missing base is the default fixed base, as today. A team that brings a base (bricks or weapons) no longer has the default base box stopping shells: its bricks are its base.
+
+**Layout.** The build plot (24 by 12 cells, 192 by 88 steps) maps to the battlefield at `BASE_IN_BATTLE.scale` (2 px per step, so 384 by 176 px). Team Past builds from the left (`margin` 40 px from the edge). Team Future is mirrored and sits on the right, so both face each other. The plot's bottom edge is the ground line. The snapshot holds each brick's box (`bricks`) and the four spots (`spots`), all in battlefield px. Custom-shape pieces do not exist in the base builder yet, so every brick is one rectangle.
+
+**Brick hit points.** Each brick starts with the `hp` saved in the base. A shell that reaches a brick box bursts there (a direct hit) and does damage in brick hit points. A near miss (a shell that lands next to a wall) does 0. One hit per shell.
+
+| Shot | Damage to a brick or weapon |
+|---|---|
+| Fighter shot | 20 times the fighter's `damageScale` (`brickDamage.fighterShot`) |
+| Mounted `direct` weapon | its catalog `damage` times 1 |
+| Mounted `lob` weapon (splash) | its catalog `damage` times 1.5 |
+| Mounted `volley` weapon | its catalog `damage` times 1, for each small shell |
+| `guard` | does not fire |
+| Power Shot | the damage above times 1.5, rounded (`BONUS.damageMultiplier`) |
+
+A brick at 0 hit points falls away: the shot result lists it in `built.brickFell`. Nobody is hurt, the scene puffs it.
+
+**Support rule.** A brick is held up if it rests on the foundation (its bottom is the bottom of the plot) or on a standing brick directly under it (that brick's top touches its bottom and they overlap sideways). When a brick falls, every brick that is no longer held up falls too, in a fixed order: lowest bottom edge first, then leftmost, then by index. One pass is enough, because what holds a brick up is always lower. All of them are listed, in that order, in `built.bricksFell` (the brick the shell took out comes first). A brick that was already floating when the match began (nothing under it) is anchored and never falls by support. A fallen brick never comes back and never blocks a shell again.
+
+**Shells and walls.** A shell stops at the first standing enemy brick or mounted weapon its path touches, and bursts there. The result's `path` and `landing` end at the contact point and `stoppedBy` names the brick or weapon (`hit` then means the original flight and should be ignored). A fighter the shell touches first is hit first and the wall is not. Two kinds of shell arc over walls: a `lob` weapon, and any shot from a flier (balloon, helicopter; `flierRoles`). They pass over walls on the way up and across, and only meet one coming down. A team's own bricks never stop its own shells. Fighter hits, near misses and the Power Shot work exactly as in Character health.
+
+**Mounted weapons.** With the flag on, a weapon on spot `i` is a shooter with its own id, `mount:i` (`mount:0` to `mount:3`). The selector id space is `ShooterId = UnitId | MountId`. `selectUnit('mount:2')` picks it; the fighter pick stays as it was (`snapshot().selected`) and `selectedMount[team]` names the weapon (`null` for a fighter). A shot from a mount starts at its pad and `lastShot.mount` records it. The weapon sits on the highest brick under its pad (or on the foundation, which never falls): `MountView.brick`. If that brick falls, the weapon falls too and is out (`built.mountDown`, reason `brickFell`). A weapon also has the `hp` from the catalog, takes hits like a brick, and is out at 0 (reason `hit`). A weapon that is down cannot be picked.
+
+| Role | How it fires |
+|---|---|
+| `direct` | Flat: the angle is held between 0 and 45 degrees. |
+| `lob` | Arc: the angle is held between 45 and 90 degrees. Arcs over walls. |
+| `volley` | A burst of 3 small shells, fanned 4 degrees apart, each with the weapon's small damage. A fighter loses at most 1 health to one volley (2 for a Power Shot). |
+| `guard` (Shield generator) | No shot. It blocks the first hit per enemy turn that lands within 90 px of its pad: nothing is damaged and `built.guardBlocked` names it. It is ready again after the turn passes. |
+
+**Win.** Unchanged: a team loses when all its FIGHTERS are out (Character health). Bricks and weapons do not count. A team whose fighters all stand behind a pile of rubble is still alive. A team with no weapons and no bricks still has its fighters as before. Matches always end: a seeded test plays 240 Computer player matches with all three flags on and random built bases, and each ends with a winner under the turn cap.
+
+**Computer player.** `chooseShot` may pick a mounted weapon that can fire (`mount` on the result; half the time when it has one) and uses the same aim search from the weapon's pad, held to the role's angle limits. It has no wall logic in v1: it aims by the plain physics at a standing fighter and ignores bricks, so a shell that meets a wall simply hits the wall. It always chooses a legal shot.
+
+**What the snapshot and the shot result add** (all optional, only with `baseInBattle`): `Match.baseInBattle`, `selectedMount`, `bricks` (by `BrickId`, such as `"FUTURE:3"`), `mounts`, `spots`, `builtBase`; `ShotResult.stoppedBy` and `volley`; `BlastOutcome.built` with `brickHits`, `brickFell`, `bricksFell`, `mountHits`, `mountDown`, `guardBlocked`. See docs/CONTRACTS.md.
