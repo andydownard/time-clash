@@ -2,7 +2,7 @@
 
 Raw ideas land here. Triage promotes them to BACKLOG.md. Items expire after 30 days.
 
-- (2026-10-15) Follow-ups from the review fixes. (1) The pass screen could speak its line after the first tap. (2) GitHub Pages ignores `public/_headers`, so deploy on Cloudflare Pages to get the security headers. (3) Andy to sign off: if the question card breaks, the turn still reloads with no scrap and Chrono says so (`flow.ts reload()`).
+- (2026-10-15) Follow-ups from the review fixes. (1) GitHub Pages ignores `public/_headers`, so deploy on Cloudflare Pages to get the security headers. (2) Andy to sign off: if the question card breaks, the turn still reloads with no scrap and Chrono says so (`flow.ts reload()`).
 - (2026-10-17) Two-iPad play, kid accounts, matching and a labeled bot: proposal in `docs/plans/2026-10-17-two-player-ipad-plan.md`. Needs Andy on the audio license note and the Override UI change.
 - (2026-10-19) Owner design comments from the canvas (https://claude.ai/artifact/KVA45RChVvDHQsJezUur1v), not yet in the game. Triage into BACKLOG.md and docs/GAME_SPEC.md:
   - Every character has 3 health. At 0 they fall down awkwardly and say something funny (the hit effects and funny falls are in; the 3-health rule is not).

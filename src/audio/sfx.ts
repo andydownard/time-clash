@@ -196,6 +196,22 @@ export function playSynth(ctx: Ctx, name: SfxName, level: number): void {
         t,
       );
       break;
+    case 'bonus': // two bright coin pings
+      [1319, 1760].forEach((f, i) => {
+        voice(
+          ctx,
+          master,
+          'triangle',
+          [
+            [f, 0],
+            [f * 1.02, 0.1],
+          ],
+          0.14,
+          0.5,
+          t + i * 0.09,
+        );
+      });
+      break;
     case 'cheer': // happy rising notes
       [523, 659, 784, 1047].forEach((f, i) => {
         voice(
