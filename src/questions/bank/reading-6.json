@@ -526,5 +526,472 @@
     "answer": "sang",
     "hint": "A verb tells what someone does.",
     "tags": ["grammar", "parts-of-speech"]
+  },
+  {
+    "id": "reading-6-0041",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "What is the best theme of this story?",
+    "choices": [
+      "Something that seems like a flaw can turn out to be useful.",
+      "Knights should always wear marshmallows.",
+      "Raccoons are smarter than kings.",
+      "You should never guard cheese."
+    ],
+    "answer": "Something that seems like a flaw can turn out to be useful.",
+    "hint": "Think about what the boot's problem turned into.",
+    "tags": ["mainidea", "theme"],
+    "passage": "Sir Bartleby had the finest armor in the kingdom of Dunmuffin, but his left boot squeaked. Squeak, squeak, squeak went every step. He tried oil, and he tried butter, but nothing worked. One night the king asked him to guard the royal pantry. A gang of raccoons crept in, but they heard the squeaking and whispered, \"That must be the dungeon monster!\" They scrambled out the window and left the cheese behind. The king laughed. \"Your boot is the best guard we have!\" From then on, Bartleby wore his squeaky boot proudly."
+  },
+  {
+    "id": "reading-6-0042",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "Why did the raccoons run away?",
+    "choices": [
+      "They were afraid of the ducks.",
+      "They believed the squeaking was a dungeon monster.",
+      "The king chased them with a crown.",
+      "They had already finished the cheese."
+    ],
+    "answer": "They believed the squeaking was a dungeon monster.",
+    "hint": "Look at what the biggest raccoon whispered.",
+    "tags": ["mainidea", "inference"],
+    "passage": "Sir Bartleby had the finest armor in the kingdom of Dunmuffin, but his left boot squeaked. Squeak, squeak, squeak went every step. He tried oil, and he tried butter, but nothing worked. One night the king asked him to guard the royal pantry. A gang of raccoons crept in, but they heard the squeaking and whispered, \"That must be the dungeon monster!\" They scrambled out the window and left the cheese behind. The king laughed. \"Your boot is the best guard we have!\" From then on, Bartleby wore his squeaky boot proudly."
+  },
+  {
+    "id": "reading-6-0043",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "In the story, the word \"scrambled\" most nearly means",
+    "choices": [
+      "cooked in a pan",
+      "slowly walked",
+      "hurried away in a messy rush",
+      "carefully hid"
+    ],
+    "answer": "hurried away in a messy rush",
+    "hint": "They wanted to get away fast.",
+    "tags": ["mainidea", "vocabulary-in-context"],
+    "passage": "Sir Bartleby had the finest armor in the kingdom of Dunmuffin, but his left boot squeaked. Squeak, squeak, squeak went every step. He tried oil, and he tried butter, but nothing worked. One night the king asked him to guard the royal pantry. A gang of raccoons crept in, but they heard the squeaking and whispered, \"That must be the dungeon monster!\" They scrambled out the window and left the cheese behind. The king laughed. \"Your boot is the best guard we have!\" From then on, Bartleby wore his squeaky boot proudly."
+  },
+  {
+    "id": "reading-6-0044",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "What is the author's main purpose in writing this story?",
+    "choices": [
+      "to teach how to shine armor",
+      "to explain how raccoons steal",
+      "to persuade people to guard pantries",
+      "to entertain readers with a funny tale"
+    ],
+    "answer": "to entertain readers with a funny tale",
+    "hint": "Ask yourself if the story is silly or serious.",
+    "tags": ["mainidea", "author-s-purpose"],
+    "passage": "Sir Bartleby had the finest armor in the kingdom of Dunmuffin, but his left boot squeaked. Squeak, squeak, squeak went every step. He tried oil, and he tried butter, but nothing worked. One night the king asked him to guard the royal pantry. A gang of raccoons crept in, but they heard the squeaking and whispered, \"That must be the dungeon monster!\" They scrambled out the window and left the cheese behind. The king laughed. \"Your boot is the best guard we have!\" From then on, Bartleby wore his squeaky boot proudly."
+  },
+  {
+    "id": "reading-6-0045",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this article?",
+    "choices": [
+      "Honeybees work together to keep their hive at a safe temperature.",
+      "Honeybees prefer puddles to ponds.",
+      "Hives are always too cold for baby bees.",
+      "Scientists like to count bees."
+    ],
+    "answer": "Honeybees work together to keep their hive at a safe temperature.",
+    "hint": "Think about what all the bees do together.",
+    "tags": ["mainidea", "main-idea"],
+    "passage": "On a hot day, a honeybee hive can feel like a crowded bus with no air conditioning. Baby bees need a steady temperature of about ninety-five degrees, so the bees get to work. Some stand at the entrance and beat their wings to push fresh air through the hive. Other bees fly to a puddle, sip water, and carry it home. They spread it across the honeycomb, and as it dries it cools the air. Cooling the hive is a team effort, and each bee has a job."
+  },
+  {
+    "id": "reading-6-0046",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "Which detail best supports the claim that cooling the hive is a team effort?",
+    "choices": [
+      "Baby bees need ninety-five degrees.",
+      "Some bees fan their wings while others carry water.",
+      "A hive feels like a crowded bus.",
+      "Bees can be found near puddles."
+    ],
+    "answer": "Some bees fan their wings while others carry water.",
+    "hint": "Look for a detail where bees do different jobs.",
+    "tags": ["mainidea", "claim-and-evidence"],
+    "passage": "On a hot day, a honeybee hive can feel like a crowded bus with no air conditioning. Baby bees need a steady temperature of about ninety-five degrees, so the bees get to work. Some stand at the entrance and beat their wings to push fresh air through the hive. Other bees fly to a puddle, sip water, and carry it home. They spread it across the honeycomb, and as it dries it cools the air. Cooling the hive is a team effort, and each bee has a job."
+  },
+  {
+    "id": "reading-6-0047",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "In the passage, the word \"steady\" most nearly means",
+    "choices": ["very fast", "slightly wet", "not changing", "hard to find"],
+    "answer": "not changing",
+    "hint": "Baby bees need a temperature that stays the same.",
+    "tags": ["mainidea", "vocabulary-in-context"],
+    "passage": "On a hot day, a honeybee hive can feel like a crowded bus with no air conditioning. Baby bees need a steady temperature of about ninety-five degrees, so the bees get to work. Some stand at the entrance and beat their wings to push fresh air through the hive. Other bees fly to a puddle, sip water, and carry it home. They spread it across the honeycomb, and as it dries it cools the air. Cooling the hive is a team effort, and each bee has a job."
+  },
+  {
+    "id": "reading-6-0048",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "The author wrote this article mainly to",
+    "choices": [
+      "convince readers to build hives",
+      "tell a funny story about one bee",
+      "describe a trip to a pond",
+      "inform readers about how bees solve a problem"
+    ],
+    "answer": "inform readers about how bees solve a problem",
+    "hint": "Does the article tell a joke or give facts?",
+    "tags": ["mainidea", "author-s-purpose"],
+    "passage": "On a hot day, a honeybee hive can feel like a crowded bus with no air conditioning. Baby bees need a steady temperature of about ninety-five degrees, so the bees get to work. Some stand at the entrance and beat their wings to push fresh air through the hive. Other bees fly to a puddle, sip water, and carry it home. They spread it across the honeycomb, and as it dries it cools the air. Cooling the hive is a team effort, and each bee has a job."
+  },
+  {
+    "id": "reading-6-0049",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "Why might a bee be sipping water at a puddle?",
+    "choices": [
+      "She plans to carry it back to help cool the hive.",
+      "She is lost and very thirsty.",
+      "She is making honey from it.",
+      "She is teaching baby bees to swim."
+    ],
+    "answer": "She plans to carry it back to help cool the hive.",
+    "hint": "Read what bees do with the water they carry home.",
+    "tags": ["mainidea", "inference"],
+    "passage": "On a hot day, a honeybee hive can feel like a crowded bus with no air conditioning. Baby bees need a steady temperature of about ninety-five degrees, so the bees get to work. Some stand at the entrance and beat their wings to push fresh air through the hive. Other bees fly to a puddle, sip water, and carry it home. They spread it across the honeycomb, and as it dries it cools the air. Cooling the hive is a team effort, and each bee has a job."
+  },
+  {
+    "id": "reading-6-0050",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "Which word best describes the tone of this letter?",
+    "choices": [
+      "angry and bitter",
+      "humorous and exaggerated",
+      "serious and formal",
+      "sad and worried"
+    ],
+    "answer": "humorous and exaggerated",
+    "hint": "Dana asks for a moat and a duck. Is she being serious?",
+    "tags": ["mainidea", "tone"],
+    "passage": "Dear Principal Pickles, I am writing to request a moat around the playground. Right now our dodgeball field is open to anyone, including Gary from Room Twelve, who throws like a catapult with a grudge. I am confident that if every student brings one bucket of water a day, we will finish by the time my grandchildren are in fourth grade. I also suggest a drawbridge that could be raised during math tests. I did not think this part through. If a moat is too much, I would settle for one friendly duck. Sincerely, Dana, Room Fourteen"
+  },
+  {
+    "id": "reading-6-0051",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "What is Dana's main purpose in writing this letter?",
+    "choices": [
+      "to apologize to Gary",
+      "to explain how moats are built",
+      "to ask the principal for something",
+      "to report a math test score"
+    ],
+    "answer": "to ask the principal for something",
+    "hint": "Look at what Dana keeps requesting.",
+    "tags": ["mainidea", "author-s-purpose"],
+    "passage": "Dear Principal Pickles, I am writing to request a moat around the playground. Right now our dodgeball field is open to anyone, including Gary from Room Twelve, who throws like a catapult with a grudge. I am confident that if every student brings one bucket of water a day, we will finish by the time my grandchildren are in fourth grade. I also suggest a drawbridge that could be raised during math tests. I did not think this part through. If a moat is too much, I would settle for one friendly duck. Sincerely, Dana, Room Fourteen"
+  },
+  {
+    "id": "reading-6-0052",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "Why does Dana suggest the drawbridge be raised during math tests?",
+    "choices": [
+      "The playground needs more protection.",
+      "The principal asked for her ideas.",
+      "Math class is held in a castle.",
+      "It is a joke about avoiding the tests."
+    ],
+    "answer": "It is a joke about avoiding the tests.",
+    "hint": "Think about how Dana feels about math tests, and whether she is joking.",
+    "tags": ["mainidea", "inference"],
+    "passage": "Dear Principal Pickles, I am writing to request a moat around the playground. Right now our dodgeball field is open to anyone, including Gary from Room Twelve, who throws like a catapult with a grudge. I am confident that if every student brings one bucket of water a day, we will finish by the time my grandchildren are in fourth grade. I also suggest a drawbridge that could be raised during math tests. I did not think this part through. If a moat is too much, I would settle for one friendly duck. Sincerely, Dana, Room Fourteen"
+  },
+  {
+    "id": "reading-6-0053",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "In the letter, the word \"confident\" most nearly means",
+    "choices": ["sure", "nervous", "puzzled", "tired"],
+    "answer": "sure",
+    "hint": "She says this before she gives her plan.",
+    "tags": ["mainidea", "vocabulary-in-context"],
+    "passage": "Dear Principal Pickles, I am writing to request a moat around the playground. Right now our dodgeball field is open to anyone, including Gary from Room Twelve, who throws like a catapult with a grudge. I am confident that if every student brings one bucket of water a day, we will finish by the time my grandchildren are in fourth grade. I also suggest a drawbridge that could be raised during math tests. I did not think this part through. If a moat is too much, I would settle for one friendly duck. Sincerely, Dana, Room Fourteen"
+  },
+  {
+    "id": "reading-6-0054",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "What lesson can the reader learn from this story?",
+    "choices": [
+      "Robots cannot be trusted to do chores.",
+      "Clear directions and patience lead to better results than rushing.",
+      "Fish should be fed every day.",
+      "It is best to hide messes under the bed."
+    ],
+    "answer": "Clear directions and patience lead to better results than rushing.",
+    "hint": "Think about what changed once Maya explained each step.",
+    "tags": ["mainidea", "theme"],
+    "passage": "Maya built a robot named Dusty so she would never do chores again. She said, \"Dusty, clean my room.\" Soon the floor was clear, because Dusty had shoved every sock and book under the bed. \"That is not clean!\" said Maya. \"You said nothing about under the bed,\" said Dusty. On Tuesday, Maya said, \"Feed the fish,\" and Dusty poured in the whole container of food. Maya sat down beside the robot and explained each step slowly. When they finished, her room sparkled. \"Next time,\" she said, \"we will do the long explaining first.\""
+  },
+  {
+    "id": "reading-6-0055",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "Why did Dusty push everything under the bed?",
+    "choices": [
+      "It wanted to play a trick on Maya.",
+      "It was too broken to follow directions.",
+      "It followed the words literally and cleared only the floor.",
+      "Maya told it to hide the mess."
+    ],
+    "answer": "It followed the words literally and cleared only the floor.",
+    "hint": "Dusty did exactly what the words said, and no more.",
+    "tags": ["mainidea", "inference"],
+    "passage": "Maya built a robot named Dusty so she would never do chores again. She said, \"Dusty, clean my room.\" Soon the floor was clear, because Dusty had shoved every sock and book under the bed. \"That is not clean!\" said Maya. \"You said nothing about under the bed,\" said Dusty. On Tuesday, Maya said, \"Feed the fish,\" and Dusty poured in the whole container of food. Maya sat down beside the robot and explained each step slowly. When they finished, her room sparkled. \"Next time,\" she said, \"we will do the long explaining first.\""
+  },
+  {
+    "id": "reading-6-0056",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "What problem does Maya face on Tuesday?",
+    "choices": [
+      "Dusty forgets to feed the fish.",
+      "The fish escape from the tank.",
+      "Maya forgets Dusty's name.",
+      "Dusty gives the fish far too much food."
+    ],
+    "answer": "Dusty gives the fish far too much food.",
+    "hint": "Read what Dusty did when Maya said, \"Feed the fish.\"",
+    "tags": ["mainidea", "plot-and-conflict"],
+    "passage": "Maya built a robot named Dusty so she would never do chores again. She said, \"Dusty, clean my room.\" Soon the floor was clear, because Dusty had shoved every sock and book under the bed. \"That is not clean!\" said Maya. \"You said nothing about under the bed,\" said Dusty. On Tuesday, Maya said, \"Feed the fish,\" and Dusty poured in the whole container of food. Maya sat down beside the robot and explained each step slowly. When they finished, her room sparkled. \"Next time,\" she said, \"we will do the long explaining first.\""
+  },
+  {
+    "id": "reading-6-0057",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "The word \"sparkled\" in the story suggests that the room was",
+    "choices": [
+      "very clean and bright",
+      "full of glitter",
+      "empty of furniture",
+      "too bright to enter"
+    ],
+    "answer": "very clean and bright",
+    "hint": "Think about how a clean room looks after it is cleaned well.",
+    "tags": ["mainidea", "vocabulary-in-context"],
+    "passage": "Maya built a robot named Dusty so she would never do chores again. She said, \"Dusty, clean my room.\" Soon the floor was clear, because Dusty had shoved every sock and book under the bed. \"That is not clean!\" said Maya. \"You said nothing about under the bed,\" said Dusty. On Tuesday, Maya said, \"Feed the fish,\" and Dusty poured in the whole container of food. Maya sat down beside the robot and explained each step slowly. When they finished, her room sparkled. \"Next time,\" she said, \"we will do the long explaining first.\""
+  },
+  {
+    "id": "reading-6-0058",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "How did Maya's attitude change during the story?",
+    "choices": [
+      "She went from teaching to giving up.",
+      "She went from expecting an easy fix to taking time to teach.",
+      "She went from laughing to being scared.",
+      "She went from tidy to messy."
+    ],
+    "answer": "She went from expecting an easy fix to taking time to teach.",
+    "hint": "At first Maya wanted a quick fix. What did she do at the end?",
+    "tags": ["mainidea", "character-change"],
+    "passage": "Maya built a robot named Dusty so she would never do chores again. She said, \"Dusty, clean my room.\" Soon the floor was clear, because Dusty had shoved every sock and book under the bed. \"That is not clean!\" said Maya. \"You said nothing about under the bed,\" said Dusty. On Tuesday, Maya said, \"Feed the fish,\" and Dusty poured in the whole container of food. Maya sat down beside the robot and explained each step slowly. When they finished, her room sparkled. \"Next time,\" she said, \"we will do the long explaining first.\""
+  },
+  {
+    "id": "reading-6-0059",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "Which sentence from the article states the author's claim?",
+    "choices": [
+      "There are no cards, no fees, and no due dates.",
+      "Most boxes are built and stocked by volunteers.",
+      "Many people believe they make neighborhoods friendlier.",
+      "Some have a small notebook inside."
+    ],
+    "answer": "Many people believe they make neighborhoods friendlier.",
+    "hint": "A claim is what the author believes.",
+    "tags": ["mainidea", "claim-and-evidence"],
+    "passage": "Have you ever seen a small wooden box on a post, with a glass door and a roof like a tiny house? It might be a Little Free Library. The idea is simple: take a book, leave a book. There are no cards, no fees, and no due dates. Many people believe these tiny libraries make neighborhoods friendlier. A person who drops off a mystery novel may meet someone who is searching for one. A child can grab a new story on the walk to school. Most boxes are built and stocked by volunteers. Some have a small notebook inside. Then fill the shelves, hang a sign, and watch the stories travel."
+  },
+  {
+    "id": "reading-6-0060",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "Which detail is evidence that the libraries help neighbors connect?",
+    "choices": [
+      "The boxes have a glass door.",
+      "Volunteers decorate them with paint.",
+      "A child can grab a book on the way to school.",
+      "A person dropping off a book may meet someone searching for one."
+    ],
+    "answer": "A person dropping off a book may meet someone searching for one.",
+    "hint": "Look for a detail about neighbors meeting each other.",
+    "tags": ["mainidea", "claim-and-evidence"],
+    "passage": "Have you ever seen a small wooden box on a post, with a glass door and a roof like a tiny house? It might be a Little Free Library. The idea is simple: take a book, leave a book. There are no cards, no fees, and no due dates. Many people believe these tiny libraries make neighborhoods friendlier. A person who drops off a mystery novel may meet someone who is searching for one. A child can grab a new story on the walk to school. Most boxes are built and stocked by volunteers. Some have a small notebook inside. Then fill the shelves, hang a sign, and watch the stories travel."
+  },
+  {
+    "id": "reading-6-0061",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "In the passage, the word \"stocked\" most nearly means",
+    "choices": ["filled with supplies", "locked shut", "painted brightly", "taken away"],
+    "answer": "filled with supplies",
+    "hint": "Volunteers do this to the boxes after they build them.",
+    "tags": ["mainidea", "vocabulary-in-context"],
+    "passage": "Have you ever seen a small wooden box on a post, with a glass door and a roof like a tiny house? It might be a Little Free Library. The idea is simple: take a book, leave a book. There are no cards, no fees, and no due dates. Many people believe these tiny libraries make neighborhoods friendlier. A person who drops off a mystery novel may meet someone who is searching for one. A child can grab a new story on the walk to school. Most boxes are built and stocked by volunteers. Some have a small notebook inside. Then fill the shelves, hang a sign, and watch the stories travel."
+  },
+  {
+    "id": "reading-6-0062",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "The last paragraph shows that the author's purpose is partly to",
+    "choices": [
+      "warn readers about a danger",
+      "encourage readers to take action",
+      "compare two libraries",
+      "tell a story about a volunteer"
+    ],
+    "answer": "encourage readers to take action",
+    "hint": "Read the last two sentences and see what the author asks you to do.",
+    "tags": ["mainidea", "author-s-purpose"],
+    "passage": "Have you ever seen a small wooden box on a post, with a glass door and a roof like a tiny house? It might be a Little Free Library. The idea is simple: take a book, leave a book. There are no cards, no fees, and no due dates. Many people believe these tiny libraries make neighborhoods friendlier. A person who drops off a mystery novel may meet someone who is searching for one. A child can grab a new story on the walk to school. Most boxes are built and stocked by volunteers. Some have a small notebook inside. Then fill the shelves, hang a sign, and watch the stories travel."
+  },
+  {
+    "id": "reading-6-0063",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "vocab",
+    "prompt": "Read the sentence: \"The knight gave a reluctant nod, as if he did not want to go.\" What does \"reluctant\" mean?",
+    "choices": ["eager", "sleepy", "unwilling", "proud"],
+    "answer": "unwilling",
+    "hint": "Look at the clue: he did not want to go.",
+    "tags": ["vocab", "vocabulary"]
+  },
+  {
+    "id": "reading-6-0064",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "vocab",
+    "prompt": "Read the sentence: \"The garden was abundant with tomatoes, so we shared them with the whole street.\" What does \"abundant\" mean?",
+    "choices": ["empty", "tiny", "bitter", "plentiful"],
+    "answer": "plentiful",
+    "hint": "They shared the tomatoes, so there must have been lots.",
+    "tags": ["vocab", "vocabulary"]
+  },
+  {
+    "id": "reading-6-0065",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "vocab",
+    "prompt": "The prefix \"mis-\" means \"wrongly.\" What does \"misread\" mean?",
+    "choices": ["read wrongly", "read twice", "read slowly", "read quickly"],
+    "answer": "read wrongly",
+    "hint": "Put the meaning of the prefix in front of the word read.",
+    "tags": ["vocab", "word-parts"]
+  },
+  {
+    "id": "reading-6-0066",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "grammar",
+    "prompt": "\"The robot was as slow as a snail in syrup.\" What type of figurative language is this, and what does it show?",
+    "choices": [
+      "a metaphor showing the robot was sticky",
+      "a simile showing the robot was very slow",
+      "a simile showing the robot was tiny",
+      "a hyperbole showing the robot was fast"
+    ],
+    "answer": "a simile showing the robot was very slow",
+    "hint": "Look for the word as. It compares two things.",
+    "tags": ["grammar", "figurative-language"]
+  },
+  {
+    "id": "reading-6-0067",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "grammar",
+    "prompt": "\"My backpack weighs a ton!\" What does this exaggeration tell you?",
+    "choices": [
+      "The backpack really weighs two thousand pounds.",
+      "The backpack is empty.",
+      "The backpack is very heavy.",
+      "The speaker is a scale."
+    ],
+    "answer": "The backpack is very heavy.",
+    "hint": "Is the speaker telling the exact weight, or making a point?",
+    "tags": ["grammar", "figurative-language"]
+  },
+  {
+    "id": "reading-6-0068",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "grammar",
+    "prompt": "\"The wind whispered through the castle halls.\" This is an example of",
+    "choices": ["a simile", "a fact", "a metaphor", "personification"],
+    "answer": "personification",
+    "hint": "Can wind really whisper? Think about who is doing the action.",
+    "tags": ["grammar", "figurative-language"]
+  },
+  {
+    "id": "reading-6-0069",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "grammar",
+    "prompt": "Which sentence uses the correct pronoun?",
+    "choices": [
+      "Maya and I rode our hoverboards to the castle.",
+      "Maya and me rode our hoverboards to the castle.",
+      "Me and Maya rode our hoverboards to the castle.",
+      "Maya and myself rode our hoverboards to the castle."
+    ],
+    "answer": "Maya and I rode our hoverboards to the castle.",
+    "hint": "Take the other person out. Would you say I rode or me rode?",
+    "tags": ["grammar", "grammar"]
+  },
+  {
+    "id": "reading-6-0070",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "grammar",
+    "prompt": "Which sentence is punctuated correctly?",
+    "choices": [
+      "We packed shields swords and snacks for the trip.",
+      "We packed shields, swords, and snacks for the trip.",
+      "We packed, shields, swords and snacks, for the trip.",
+      "We packed shields, swords, and snacks, for the trip."
+    ],
+    "answer": "We packed shields, swords, and snacks for the trip.",
+    "hint": "Items in a list are separated by commas.",
+    "tags": ["grammar", "punctuation"]
   }
 ]

@@ -11,7 +11,9 @@ import {
   type TeamLoadout,
   type Wallet,
 } from '../game/loadout';
+import { DEFAULT_PRACTICE, isBotLevel, type PracticeChoice } from '../game/practice';
 import type { Grade, Player, Players, Subject, Team } from '../game/types';
+import { freshBases, parseBases, pieceById, spotWeaponById, type BasesState } from '../game/baseBuilder';
 import { FORGE, WEAPONS, type WeaponId } from '../game/weapons';
 import { UPGRADES, UPGRADE_MAX_LEVEL, type UpgradeId } from '../game/upgrades';
 import { CALIBRATION, type CalibrationState, type Levels } from '../questions/calibration';
@@ -131,7 +133,30 @@ function parseLoadout(v: unknown, team: Team): TeamLoadout {
   const ammo = (['confetti', 'plasma', 'bowling'] as AmmoId[]).filter(
     (id) => isSpecialAmmo(id) && ammoList.includes(id),
   );
-  return { weapon, owned, upgrades, ...(ammo.length > 0 ? { ammo } : {}) };
+  const pieces: string[] = [];
+  if (Array.isArray(v.pieces)) {
+    for (const id of v.pieces) {
+      const def = pieceById(id);
+      if (def && def.team === team && !def.free && !pieces.includes(def.id)) pieces.push(def.id);
+    }
+  }
+  const mounts: string[] = [];
+  if (Array.isArray(v.mounts)) {
+    for (const id of v.mounts) {
+      const def = spotWeaponById(id);
+      if (def && def.team === team && def.scrap !== null && !mounts.includes(def.id)) {
+        mounts.push(def.id);
+      }
+    }
+  }
+  return {
+    weapon,
+    owned,
+    upgrades,
+    ...(pieces.length > 0 ? { pieces } : {}),
+    ...(mounts.length > 0 ? { mounts } : {}),
+    ...(ammo.length > 0 ? { ammo } : {}),
+  };
 }
 
 /** One wallet, cleaned. Bad numbers become 0 and the starter weapons are always owned. */
@@ -248,6 +273,11 @@ function parseLevels(v: unknown): Levels | null {
   return out;
 }
 
+/** Saved bases for every player, or an empty state. Never throws. */
+export function loadBases(storage: TypedStorage): BasesState {
+  return storage.get('timeclash.bases') ?? freshBases();
+}
+
 /** Saved level nudges, or an empty record. Never throws. */
 export function loadLevels(storage: TypedStorage): Levels {
   return storage.get('timeclash.levels') ?? {};
@@ -256,6 +286,17 @@ export function loadLevels(storage: TypedStorage): Levels {
 /** The Battle Plan picked last time (biome and base spot), or the default plan. Never throws. */
 export function loadPlan(storage: TypedStorage): BattlePlan {
   return normalizePlan(storage.get('timeclash.plan'));
+}
+
+function parsePractice(v: unknown): PracticeChoice | null {
+  if (!isObject(v)) return null;
+  if (v.opponent !== 'person' && v.opponent !== 'computer') return null;
+  return { opponent: v.opponent, level: isBotLevel(v.level) ? v.level : DEFAULT_PRACTICE.level };
+}
+
+/** The saved Play with choice, or null when nothing (or junk) is saved. Never throws. */
+export function loadPractice(storage: TypedStorage): PracticeChoice | null {
+  return storage.get('timeclash.practice');
 }
 
 /** Each key has a shape guard. It returns the clean value, or null if the shape is wrong. */
@@ -267,6 +308,8 @@ const GUARDS: { [K in StorageKey]: (v: unknown) => StorageSchema[K] | null } = {
   'timeclash.camp': parseCamp,
   'timeclash.levels': parseLevels,
   'timeclash.plan': (v) => (typeof v === 'object' && v !== null ? normalizePlan(v) : null),
+  'timeclash.practice': parsePractice,
+  'timeclash.bases': parseBases,
 };
 
 function defaultBacking(): BackingStore | null {

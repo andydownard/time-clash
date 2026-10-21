@@ -24,7 +24,7 @@ import type {
   ViewStatus,
 } from '../../../src/scenes/battle/types';
 import type { UnitId } from '../../../src/game/units';
-import type { SfxName } from '../../../src/audio/types';
+import type { SfxName, VoiceLine } from '../../../src/audio/types';
 import type { HudHandlers, HudState, ReloadAnswer } from '../../../src/ui/types';
 
 export const PLAYERS: Players = [
@@ -44,6 +44,8 @@ export function makeWorld(
     matchOptions?: Partial<MatchOptions>;
     levels?: Levels;
     players?: Players;
+    /** The voice service is set up, so funny lines are spoken. */
+    clips?: boolean;
   } = {},
 ) {
   const log: Log = [];
@@ -59,7 +61,8 @@ export function makeWorld(
   const hudStates: HudState[] = [];
   const statuses: ViewStatus[] = [];
   const selections: Array<{ team: Team; id: UnitId }> = [];
-  const shots: Array<{ team: Team; kind: string | undefined; start: { x: number; y: number } }> = [];
+  const shots: Array<{ team: Team; kind: string | undefined; start: { x: number; y: number } }> =
+    [];
   const previews: Array<{ team: Team; dots: readonly PreviewDot[] | null }> = [];
   const histories: PickHistory[] = [];
   const levelsSaved: Levels[] = [];
@@ -169,7 +172,16 @@ export function makeWorld(
     setCaption: (t: string | null) => void captions.push(t),
   };
 
-  const audio = { playSfx: (n: SfxName) => void sfx.push(n) };
+  const spoken: VoiceLine[] = [];
+  const audio = {
+    playSfx: (n: SfxName) => void sfx.push(n),
+    clipsEnabled: opts.clips ?? false,
+    speak: (line: VoiceLine) => {
+      spoken.push(line);
+      log.push('speak');
+      return { done: Promise.resolve('ended'), source: 'silent', stop: () => {} };
+    },
+  };
 
   const deps: FlowDeps = {
     match,
@@ -198,6 +210,7 @@ export function makeWorld(
     impacts,
     tumbles,
     bubbles,
+    spoken,
     scrapPopups,
     modalQuestions,
     modalOptions,

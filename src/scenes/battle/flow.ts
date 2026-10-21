@@ -4,11 +4,21 @@
 //   pass screen -> ready() -> banner -> setAim/fire() -> animate path -> shotLanded()
 //   -> (tumble, bubble) -> ... -> pickQuestion -> showReloadModal -> reloadDone() -> pass()
 import type { AudioManager } from '../../audio/types';
-import { DEFAULT_UNIT, unitById, unitsOf, type UnitId } from '../../game/units';
+import { firingOrigin, unitById, unitsOf, type UnitId } from '../../game/units';
+import { answerReload, chooseShot } from '../../game/bot';
+import { COMPUTER } from '../../data/computerCopy';
+import {
+  aimDurationMs,
+  aimSteps,
+  isComputerTurn,
+  needsPassScreen,
+  reloadWaitMs,
+  type PracticeRun,
+} from '../../game/practice';
+import type { MatchEffects } from '../../game/loadout';
 import { kindForRole } from './projectileKinds';
-import { EVASION, RNG_SALT, TEAM_FACING, TURN } from '../../game/config';
+import { EVASION, PRACTICE_BOT, RNG_SALT, TEAM_FACING, TURN } from '../../game/config';
 import type { AmmoId } from '../../game/ammo';
-import { unitOrigin } from '../../game/battlefield';
 import { simulateShot } from '../../game/ballistics';
 import { createShuffleBag } from '../../game/bag';
 import { createRng } from '../../game/rng';
@@ -45,10 +55,15 @@ export type FlowDeps = {
     | 'showReloadModal'
     | 'showSpeechBubble'
     | 'setCaption'
-  >;
+  > &
+    Partial<Pick<Overlay, 'showThinking'>>;
   view: BattleView;
+  /** One child alone against the Computer player. Absent means two people (today's game). */
+  practice?: PracticeRun & { effects?: MatchEffects };
+  /** True when big motion should become jumps. Only the computer's dial uses it. */
+  reducedMotion?: () => boolean;
   audio?: Pick<AudioManager, 'playSfx' | 'speak'> &
-    Partial<Pick<AudioManager, 'setMusicTeam' | 'stopMusic'>>;
+    Partial<Pick<AudioManager, 'setMusicTeam' | 'stopMusic' | 'clipsEnabled'>>;
   bank: QuestionBank;
   history: PickHistory;
   onHistory?: (history: PickHistory) => void;
@@ -76,11 +91,15 @@ export class BattleFlow {
   private readonly hitBags: Record<'direct' | 'near' | 'miss', { next(): number }>;
   private readonly quipBags: Record<'fast' | 'slow' | 'wrong', { next(): number }>;
   private awaitingFire: (() => void) | null = null;
+  /** The Computer player's own random stream and the time it has spent thinking this turn. */
+  private readonly botRng: Rng;
+  private thinkingSpentMs = 0;
 
   constructor(private readonly deps: FlowDeps) {
     this.history = deps.history;
     this.levels = deps.levels ?? {};
     this.questionRng = createRng(deps.match.snapshot().seed ^ RNG_SALT.questions);
+    this.botRng = createRng((deps.match.snapshot().seed ^ RNG_SALT.computer) >>> 0);
     // Jokes come from seeded shuffle bags, so a match repeats and no line shows twice in a row.
     const lineRng = createRng((deps.match.snapshot().seed ^ RNG_SALT.lines) >>> 0);
     this.hitBags = {
@@ -132,8 +151,12 @@ export class BattleFlow {
     this.pushStatus(false);
     view.setActiveTeam(null);
     await this.gate();
-    await overlay.showPassScreen({ nextName: names[team], nextTeam: team });
-    this.live();
+    // One child alone has nobody to hide the screen from, so there is no cover in this mode.
+    if (needsPassScreen(this.deps.practice ?? null)) {
+      await overlay.showPassScreen({ nextName: names[team], nextTeam: team });
+      this.live();
+    }
+    this.thinkingSpentMs = 0;
     match.ready();
     view.setActiveTeam(team);
     this.deps.audio?.setMusicTeam?.(team);
@@ -167,16 +190,70 @@ export class BattleFlow {
 
   /** Wait for the player to aim and fire, then fly the shot and apply it. */
   private async aimAndFire(team: Team): Promise<void> {
-    const { match, view, audio } = this.deps;
-    const fired = new Promise<void>((resolve) => {
-      this.awaitingFire = resolve;
-    });
-    view.setAimDragHandler((aim) => this.setAim(aim));
-    this.pushStatus(true);
-    this.drawPreview(team);
-    await fired;
-    this.live();
+    const { view } = this.deps;
+    if (this.isComputer(team)) {
+      await this.computerAims(team);
+    } else {
+      const fired = new Promise<void>((resolve) => {
+        this.awaitingFire = resolve;
+      });
+      view.setAimDragHandler((aim) => this.setAim(aim));
+      this.pushStatus(true);
+      this.drawPreview(team);
+      await fired;
+      this.live();
+    }
+    await this.launch(team);
+  }
 
+  private isComputer(team: Team): boolean {
+    return isComputerTurn(this.deps.practice ?? null, team);
+  }
+
+  /**
+   * The Computer player picks a fighter and an aim, then the dial and power meter move there by
+   * themselves while a short "thinking" note shows. The picture of the shot (the dotted preview)
+   * stays off, and the keyboard and sliders stay locked because Fire is never turned on.
+   */
+  private async computerAims(team: Team): Promise<void> {
+    const { match, view, overlay, practice } = this.deps;
+    if (!practice) return;
+    const snap = match.snapshot();
+    const shot = chooseShot(snap, team, practice.level, this.botRng, {
+      layout: match.layout,
+      ...(practice.effects ? { effects: practice.effects } : {}),
+    });
+    try {
+      match.selectUnit(shot.unit);
+      view.setSelectedUnit(team, shot.unit);
+    } catch {
+      // The default fighter stays up. The aim below is still legal.
+    }
+    view.showPreview(team, null);
+    this.pushStatus(false);
+    overlay.showThinking?.({ text: COMPUTER.aiming, team });
+    const total = aimDurationMs(practice.level);
+    const reduced = this.deps.reducedMotion?.() === true;
+    const steps = reduced
+      ? [{ angleDeg: shot.angleDeg, power: shot.power }]
+      : aimSteps(match.snapshot().aim[team], shot, PRACTICE_BOT.pace.aimSteps);
+    const beat = reduced ? PRACTICE_BOT.pace.reducedBeatMs : Math.floor(total / steps.length);
+    try {
+      for (const step of steps) {
+        await this.deps.wait(beat);
+        await this.gate();
+        match.setAim(step);
+        this.pushStatus(false);
+      }
+      this.thinkingSpentMs += beat * steps.length;
+    } finally {
+      overlay.showThinking?.(null);
+    }
+  }
+
+  /** Fire the shot already aimed in the rules layer, fly it, and apply it. */
+  private async launch(team: Team): Promise<void> {
+    const { match, view, audio } = this.deps;
     view.setAimDragHandler(null);
     view.showPreview(team, null);
     this.pushStatus(false);
@@ -211,11 +288,17 @@ export class BattleFlow {
       this.live();
       const text = bubbleText(outcome);
       if (text) {
+        // The funny line is also spoken when the voice service is set up. The bubble is its
+        // caption. A new fall stops the old line (one voice at a time). Muted stays silent.
+        if (audio?.clipsEnabled) {
+          const durationMs = Math.max(1500, text.split(/\s+/).length * 450);
+          audio.speak({ id: 'tumble-line', text, captions: [{ text, startMs: 0 }], durationMs });
+        }
         this.deps.overlay.showSpeechBubble({
           text,
           team: tumbler,
           anchor: bubbleAnchor(tumbler, match.layout),
-          tailTarget: bubbleTailTarget(tumbler, match.layout),
+          tailTarget: bubbleTailTarget(tumbler, match.layout, true),
         });
       }
     }
@@ -241,6 +324,7 @@ export class BattleFlow {
   /** The learning moment. A wrong answer still reloads (Gate 2). */
   /** Returns true when a right answer earned the Power Shot. */
   private async reload(team: Team): Promise<boolean> {
+    if (this.isComputer(team)) return this.computerReload(team);
     const { match, overlay, view, audio, bank } = this.deps;
     const player = match.snapshot().players[team === 'PAST' ? 0 : 1];
     let answer: { correct: boolean; elapsedMs: number } = { correct: false, elapsedMs: Infinity };
@@ -311,6 +395,69 @@ export class BattleFlow {
       ...(asked ?? {}),
     });
     if (!answer.correct) audio?.playSfx('clunk');
+    this.pushStatus(false);
+    if (score.scrap > 0) {
+      view.showScrapPopup(team, score.scrap);
+      await this.deps.wait(SCRAP_POPUP_MS);
+      this.live();
+    }
+    return score.bonus;
+  }
+
+  /**
+   * The Computer player answers its own question. The child sees only a "thinking" note: no
+   * question, no choices, no answer. A wrong answer still reloads (Gate 2). It leaves the
+   * child's question history and level nudges alone.
+   */
+  private async computerReload(team: Team): Promise<boolean> {
+    const { match, overlay, view, audio, bank, practice } = this.deps;
+    if (!practice) return false;
+    const player = match.snapshot().players[team === 'PAST' ? 0 : 1];
+    let outcome: { correct: boolean; elapsedMs: number } = { correct: false, elapsedMs: Infinity };
+    let asked: { kind: string; grade: number } | null = null;
+    try {
+      const subject = pickSubject(
+        bank,
+        { subject: player.subject, grade: player.grade, who: team },
+        this.history,
+      );
+      const pick = pickQuestion(
+        bank,
+        { subject, grade: player.grade, who: team },
+        this.history,
+        this.botRng,
+      );
+      const q = pick.question;
+      asked = { kind: q.kind, grade: q.grade };
+      const reply = answerReload(
+        { grade: q.grade, kind: q.kind, choices: q.choices, answer: q.answer },
+        practice.level,
+        this.botRng,
+      );
+      const wait = reloadWaitMs(reply.delayMs, this.thinkingSpentMs, aimDurationMs(practice.level));
+      overlay.showThinking?.({ text: COMPUTER.thinking, team });
+      try {
+        await this.deps.wait(
+          this.deps.reducedMotion?.() === true
+            ? Math.min(wait, PRACTICE_BOT.pace.reducedBeatMs)
+            : wait,
+        );
+        await this.gate();
+      } finally {
+        overlay.showThinking?.(null);
+      }
+      this.thinkingSpentMs += wait;
+      outcome = { correct: reply.correct, elapsedMs: reply.delayMs };
+    } catch (e) {
+      if (e instanceof Stopped) throw e;
+      // No question must never stop play: reload with no scrap.
+    }
+    const score = match.reloadDone({
+      correct: outcome.correct,
+      elapsedMs: outcome.elapsedMs,
+      ...(asked ?? {}),
+    });
+    if (!outcome.correct) audio?.playSfx('clunk');
     this.pushStatus(false);
     if (score.scrap > 0) {
       view.showScrapPopup(team, score.scrap);
@@ -435,6 +582,7 @@ export class BattleFlow {
       canFire,
       selected: s.selected[team],
       units: unitsOf(team).map((u) => ({ id: u.id, name: u.name })),
+      ...(this.deps.practice ? { computerTeam: this.deps.practice.team } : {}),
       gear: { ammo: s.ammo[team], ammoLeft: s.ammoLeft[team], evasion: s.evasion[team] },
     };
     overlay.updateHud(hud);
@@ -453,6 +601,7 @@ export class BattleFlow {
       wind: s.wind,
       shotsLeft,
       aim,
+      firingOrigin: this.originFor(team),
     };
     view.syncStatus(status);
   }
@@ -473,13 +622,10 @@ export class BattleFlow {
     view.showPreview(team, previewDots(sim.path));
   }
 
-  /** Same rule as match.fire(): the default fighter keeps the layout launcher. */
+  /** Same function match.fire() uses, so the preview and the guide start at the real muzzle. */
   private originFor(team: Team) {
     const { match } = this.deps;
-    const unit = unitById(match.snapshot().selected[team]);
-    return !unit || unit.id === DEFAULT_UNIT[team]
-      ? match.layout.launchOrigins[team]
-      : unitOrigin(match.layout, unit);
+    return firingOrigin(team, match.snapshot().selected[team], match.layout);
   }
 
   // ---------- helpers ----------

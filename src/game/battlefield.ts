@@ -1,9 +1,9 @@
 // The battlefield for one match (Phase 2): the biome's middle obstacle plus Team Future's base spot.
 // Pure, no Phaser. Unknown ids fall back to the defaults, so nothing here ever throws.
-import { BASES, BIOME_IDS, BIOMES, DEFAULT_PLAN, PHASE1_LAYOUT, SPOTS } from './config';
+import { BIOME_IDS, BIOMES, DEFAULT_PLAN, PHASE1_LAYOUT, SPOTS } from './config';
 import { isSpotId, layoutForSpot } from './spots';
 import type { BattleLayout, BiomeId, Polygon, Rect, SpotIdValue, Vec2 } from './types';
-import { DEFAULT_UNIT, type UnitDef } from './units';
+import { firingOrigin, ridesBase, type UnitDef } from './units';
 
 /** What the family picks on the Battle Plan screen. */
 export type BattlePlan = { biome: BiomeId; spot: SpotIdValue };
@@ -51,21 +51,11 @@ export function buildLayout(plan: {
   };
 }
 
-/** True for a fighter that stands on its own base (so it moves when the base moves). */
-export const ridesBase = (unit: UnitDef): boolean => {
-  const base = BASES[unit.team];
-  return unit.origin.x >= base.x && unit.origin.x <= base.x + base.w && unit.origin.y <= base.y;
-};
+export { ridesBase };
 
-/**
- * Where this fighter's shot starts on this field. The default fighter uses the layout's own
- * launcher. A fighter on the base moves with it. Everyone else keeps their place.
- */
-export function unitOrigin(layout: BattleLayout, unit: UnitDef): Vec2 {
-  if (unit.id === DEFAULT_UNIT[unit.team]) return layout.launchOrigins[unit.team];
-  const shift = ridesBase(unit) ? layout.baseShift?.[unit.team] : undefined;
-  return shift ? { x: unit.origin.x + shift.x, y: unit.origin.y + shift.y } : unit.origin;
-}
+/** Where this fighter's shot starts on this field. Same rule as `firingOrigin` in units.ts. */
+export const unitOrigin = (layout: BattleLayout, unit: UnitDef): Vec2 =>
+  firingOrigin(unit.team, unit.id, layout);
 
 /** The layout with these walls added as solid shapes. No walls gives the same object back. */
 export function withWalls(layout: BattleLayout, walls: readonly Rect[]): BattleLayout {

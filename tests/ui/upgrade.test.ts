@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
-// Upgrade Base: spend Scrap on three levels of each upgrade. Every tap that cannot work says why in
+// Build Base (old shop): spend Scrap on three levels of each upgrade. Every tap that cannot work says why in
 // words and changes nothing. Every change is saved at once.
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { UPGRADE_COPY, upgradeEffect } from '../../src/data/copy';
 import { walletOf, type CampState } from '../../src/game/loadout';
 import type { Team } from '../../src/game/types';
@@ -9,6 +9,9 @@ import { NAMES, campWith } from '../helpers/camp';
 import { UPGRADE_MAX_LEVEL, upgradeById } from '../../src/game/upgrades';
 import { TEST_IDS } from '../../src/ui/types';
 import { click, q, qa, setup } from './helpers';
+
+// Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
+vi.setConfig({ testTimeout: 120_000 });
 
 let s: ReturnType<typeof setup>;
 beforeEach(() => {
@@ -31,10 +34,10 @@ const badge = (id: string) => row(id).querySelector('.tc-forge-badge')!.textCont
 const stats = (id: string) => row(id).querySelector('.tc-forge-stats')!.textContent;
 
 describe('Upgrade screen', () => {
-  it('is named Upgrade Base, never Build, shows the Scrap, and starts on Team Past', () => {
+  it('is named Build Base, never Upgrade, shows the Scrap, and starts on Team Past', () => {
     open(withScrap(7));
     const screen = document.querySelector('[data-screen="upgrade"]')!;
-    expect(screen.querySelector('h1')!.textContent).toBe('Upgrade Base');
+    expect(screen.querySelector('h1')!.textContent).toBe('Build Base');
     expect(document.body.textContent).not.toMatch(/\bbuild\b/i);
     expect(q(TEST_IDS.upgradeScrap)!.textContent).toContain('7');
     expect(screen.getAttribute('data-team')).toBe('PAST');

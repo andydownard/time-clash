@@ -1,3 +1,5 @@
+# Security headers for every response. The app server (app-server/) reads this file at start-up and
+# sends exactly these headers, so this is the one source of truth. Cloudflare Pages reads it too.
 /*
   Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' data: blob:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'
   X-Content-Type-Options: nosniff

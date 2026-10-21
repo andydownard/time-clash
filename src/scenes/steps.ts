@@ -1,11 +1,12 @@
 // One async step per screen. Each shows its DOM screen, waits for a tap, saves what needs
 // saving, and returns where to go next. Phaser scenes just run a step and follow the route.
 import { LOADING } from '../data/copy';
+import { baseBuilderOn, chosenBase, type Placed } from '../game/baseBuilder';
 import { creditMatch } from '../game/economy';
 import { TEAMS, type Players, type Team } from '../game/types';
 import { buildLayout } from '../game/battlefield';
 import { matchAmmoFor, matchEffectsFor, type CampState } from '../game/loadout';
-import { loadCamp, loadPlan } from '../storage/storage';
+import { loadBases, loadCamp, loadPlan } from '../storage/storage';
 import type { QuestionBank } from '../questions/types';
 import { loadingMinFor, runLoading } from '../ui/loadingLogic';
 import { buildBattleData } from './battleData';
@@ -74,12 +75,25 @@ const namesOf = (players: Players): Record<Team, string> => ({
 export async function runSetupStep(s: AppServices): Promise<SceneRoute> {
   const saved = s.storage.get('timeclash.players');
   // A family that has played before can go Back to the Camp. A new family has nowhere to go back to.
+  // The Computer player choice only exists when the flag is on. Off is exactly today's Setup.
+  const computer = s.computerPlayer === true;
   const players = saved
-    ? await s.overlay.showSetup(saved, { back: true })
-    : await s.overlay.showSetup(null);
+    ? await s.overlay.showSetup(saved, computer ? { back: true, computer } : { back: true })
+    : computer
+      ? await s.overlay.showSetup(null, { computer })
+      : await s.overlay.showSetup(null);
   if (players === null) return { key: SCENE_KEYS.camp };
   s.storage.set('timeclash.players', players);
   return routeAfterSetup();
+}
+
+/** The chosen base of each side, cleaned, for the small pictures on the Camp. */
+function chosenBases(s: AppServices, names: Record<Team, string>): Record<Team, Placed[]> {
+  const bases = loadBases(s.storage);
+  return {
+    PAST: chosenBase(bases, names.PAST, 'PAST'),
+    FUTURE: chosenBase(bases, names.FUTURE, 'FUTURE'),
+  };
 }
 
 /** Camp: the big button starts a fresh match for the players Setup saved. */
@@ -88,7 +102,21 @@ export async function runCampStep(s: AppServices): Promise<SceneRoute> {
   // No saved players (it should not happen) goes back to Setup, never a dead end.
   if (!players) return { key: SCENE_KEYS.setup };
   const names = namesOf(players);
-  const choice = await s.overlay.showCamp();
+  const builder = baseBuilderOn(globalThis.location?.search ?? '');
+  const choice = await s.overlay.showCamp(
+    builder ? { builder, names, bases: chosenBases(s, names) } : undefined,
+  );
+  if (choice === 'buildPast' || choice === 'buildFuture') {
+    await s.overlay.showBaseBuilder({
+      team: choice === 'buildPast' ? 'PAST' : 'FUTURE',
+      camp: loadCamp(s.storage),
+      names,
+      bases: loadBases(s.storage),
+      saveCamp: (next: CampState) => void s.storage.set('timeclash.camp', next),
+      saveBases: (next) => void s.storage.set('timeclash.bases', next),
+    });
+    return { key: SCENE_KEYS.camp };
+  }
   if (choice === 'players') return { key: SCENE_KEYS.setup };
   if (choice === 'forge' || choice === 'upgrade') {
     const options = {
@@ -98,7 +126,7 @@ export async function runCampStep(s: AppServices): Promise<SceneRoute> {
     };
     if (choice === 'forge') await s.overlay.showForge(options);
     else await s.overlay.showUpgrade(options);
-    // Back from the Forge or Upgrade Base: the Camp again, which shows what the family now has.
+    // Back from the Forge or Build Base: the Camp again, which shows what the family now has.
     return { key: SCENE_KEYS.camp };
   }
   // The Battle Plan: where to fight, where Team Future hides its base, and special ammo.

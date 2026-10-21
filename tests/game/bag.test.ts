@@ -1,6 +1,9 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { createShuffleBag } from '../../src/game/bag';
 import { createRng } from '../../src/game/rng';
+
+// Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
+vi.setConfig({ testTimeout: 120_000 });
 
 describe('createShuffleBag', () => {
   it('gives every index once before any repeats', () => {

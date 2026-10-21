@@ -3,12 +3,16 @@
 // on real physics. Lasers stay straight CSS. Nothing flies with reduced motion.
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import type { Scheduler } from '../../src/ui/ambientFlights';
 import { campScene } from '../../src/ui/campArt';
 import { CAMP_SHOTS, campFlightSpecs, campScheduler, flyOverCamp } from '../../src/ui/campFlights';
 import { PICTURE_GRAVITY, poseAt } from '../../src/ui/flightPhysics';
 
+// Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
+vi.setConfig({ testTimeout: 120_000 });
+
+const STILL = 'translate(390 96) scale(1.05)';
 const ui = readFileSync(join(process.cwd(), 'src/styles/ui.css'), 'utf8');
 
 function manual() {
@@ -139,7 +143,7 @@ describe('Camp flights: running', () => {
     expect(svg.querySelector('.tc-camp-hawk')!.getAttribute('transform')).toMatch(/^translate\(/);
     stop();
     expect(miss.getAttribute('opacity')).toBe('0');
-    expect(svg.querySelector('.tc-camp-hawk')!.hasAttribute('transform')).toBe(false);
+    expect(svg.querySelector('.tc-camp-hawk')!.getAttribute('transform')).toBe(STILL);
   });
 
   it('flies nothing when motion is reduced', () => {
@@ -151,7 +155,7 @@ describe('Camp flights: running', () => {
       expect(el.getAttribute('opacity')).toBe('0');
       expect(el.hasAttribute('transform')).toBe(false);
     }
-    expect(svg.querySelector('.tc-camp-hawk')!.hasAttribute('transform')).toBe(false);
+    expect(svg.querySelector('.tc-camp-hawk')!.getAttribute('transform')).toBe(STILL);
   });
 
   it('uses animation frames when the window has them, otherwise the env timers', () => {

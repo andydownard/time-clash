@@ -464,5 +464,426 @@
     "answer": "large",
     "hint": "Think of a huge elephant.",
     "tags": ["word-skill"]
+  },
+  {
+    "id": "reading-3-0041",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "mainidea",
+    "prompt": "What caused Fred's toothache?",
+    "choices": [
+      "He ate too many marshmallow-covered rocks",
+      "He fell off a hoverboard",
+      "He forgot to visit Priya",
+      "He ate carrots"
+    ],
+    "answer": "He ate too many marshmallow-covered rocks",
+    "hint": "Look at what Fred ate before the toothache.",
+    "tags": ["cause-and-effect"],
+    "passage": "Fred the dragon had a terrible toothache. He had eaten too many marshmallow-covered rocks. Brave Priya zoomed over on her hoverboard with a very long toothbrush. Fred was nervous, but he opened wide, and after a good scrub his tooth felt fine. From then on, Fred ate carrots instead of rocks."
+  },
+  {
+    "id": "reading-3-0042",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "mainidea",
+    "prompt": "What does the word terrible mean as used in the story?",
+    "choices": ["Very funny", "Very bad", "Very small", "Very quiet"],
+    "answer": "Very bad",
+    "hint": "Fred moaned a lot. Is that good or bad?",
+    "tags": ["word-in-context"],
+    "passage": "Fred the dragon had a terrible toothache. He had eaten too many marshmallow-covered rocks. Brave Priya zoomed over on her hoverboard with a very long toothbrush. Fred was nervous, but he opened wide, and after a good scrub his tooth felt fine. From then on, Fred ate carrots instead of rocks."
+  },
+  {
+    "id": "reading-3-0043",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "mainidea",
+    "prompt": "How did Fred probably feel before the scrub?",
+    "choices": ["Bored", "Proud", "Nervous", "Sleepy"],
+    "answer": "Nervous",
+    "hint": "Fred tried it anyway. How do you feel before something new?",
+    "tags": ["inference"],
+    "passage": "Fred the dragon had a terrible toothache. He had eaten too many marshmallow-covered rocks. Brave Priya zoomed over on her hoverboard with a very long toothbrush. Fred was nervous, but he opened wide, and after a good scrub his tooth felt fine. From then on, Fred ate carrots instead of rocks."
+  },
+  {
+    "id": "reading-3-0044",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "mainidea",
+    "prompt": "What did Fred change after the visit?",
+    "choices": [
+      "He moved to a new village",
+      "He stopped talking",
+      "He got a hoverboard",
+      "He ate carrots instead of rocks"
+    ],
+    "answer": "He ate carrots instead of rocks",
+    "hint": "Read the last sentence.",
+    "tags": ["detail"],
+    "passage": "Fred the dragon had a terrible toothache. He had eaten too many marshmallow-covered rocks. Brave Priya zoomed over on her hoverboard with a very long toothbrush. Fred was nervous, but he opened wide, and after a good scrub his tooth felt fine. From then on, Fred ate carrots instead of rocks."
+  },
+  {
+    "id": "reading-3-0045",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "mainidea",
+    "prompt": "What lesson does the story teach?",
+    "choices": [
+      "Taste your food before you serve it",
+      "Never cook soup",
+      "Salt is always good",
+      "Robots cannot cook"
+    ],
+    "answer": "Taste your food before you serve it",
+    "hint": "Think about the chef's last words.",
+    "tags": ["theme"],
+    "passage": "Chef Unit Seven was famous for soup. One day it dumped twelve spoons of salt into the pot by mistake and did not taste the soup before serving it. The first robot took one sip and spun in circles. Then Chef Unit Seven tasted the soup, and its lights blinked red. \"A good chef always tastes first,\" it said."
+  },
+  {
+    "id": "reading-3-0046",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "mainidea",
+    "prompt": "What happened right after Chef Unit Seven served the soup?",
+    "choices": [
+      "The chef tasted it",
+      "The first robot took a sip and spun in circles",
+      "The chef added more salt",
+      "The second robot cooked a new pot"
+    ],
+    "answer": "The first robot took a sip and spun in circles",
+    "hint": "Read the part right after the soup was served.",
+    "tags": ["sequence"],
+    "passage": "Chef Unit Seven was famous for soup. One day it dumped twelve spoons of salt into the pot by mistake and did not taste the soup before serving it. The first robot took one sip and spun in circles. Then Chef Unit Seven tasted the soup, and its lights blinked red. \"A good chef always tastes first,\" it said."
+  },
+  {
+    "id": "reading-3-0047",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "mainidea",
+    "prompt": "Why did the chef's lights blink red?",
+    "choices": [
+      "The kitchen was too cold",
+      "The pot was empty",
+      "The soup was far too salty",
+      "The robots were hungry"
+    ],
+    "answer": "The soup was far too salty",
+    "hint": "Think about what twelve spoons of salt does to soup.",
+    "tags": ["inference"],
+    "passage": "Chef Unit Seven was famous for soup. One day it dumped twelve spoons of salt into the pot by mistake and did not taste the soup before serving it. The first robot took one sip and spun in circles. Then Chef Unit Seven tasted the soup, and its lights blinked red. \"A good chef always tastes first,\" it said."
+  },
+  {
+    "id": "reading-3-0048",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "mainidea",
+    "prompt": "Why did Sir Lena use a hoverboard?",
+    "choices": [
+      "She was afraid of horses",
+      "The rule book required it",
+      "Her horse ran away",
+      "She did not have a horse"
+    ],
+    "answer": "She did not have a horse",
+    "hint": "Read the sentence about the horse.",
+    "tags": ["cause-and-effect"],
+    "passage": "Every year the knights held a jousting tournament. Sir Lena did not own a horse, so she borrowed a hoverboard. The other knights snickered. The rule book said knights must ride \"something fast,\" and it did not say the ride needed hooves! Sir Lena glided past every rival. She did not win the jousting, but she took home the prize for Most Creative Knight."
+  },
+  {
+    "id": "reading-3-0049",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "mainidea",
+    "prompt": "What does the word snickered mean?",
+    "choices": ["Laughed quietly", "Cheered loudly", "Ran away", "Fell asleep"],
+    "answer": "Laughed quietly",
+    "hint": "Think about what the other knights did when they saw the hoverboard.",
+    "tags": ["word-in-context"],
+    "passage": "Every year the knights held a jousting tournament. Sir Lena did not own a horse, so she borrowed a hoverboard. The other knights snickered. The rule book said knights must ride \"something fast,\" and it did not say the ride needed hooves! Sir Lena glided past every rival. She did not win the jousting, but she took home the prize for Most Creative Knight."
+  },
+  {
+    "id": "reading-3-0050",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "mainidea",
+    "prompt": "Which prize did Sir Lena win?",
+    "choices": ["Best Jouster", "Most Creative Knight", "Fastest Rider", "Strongest Knight"],
+    "answer": "Most Creative Knight",
+    "hint": "Look for the prize at the end.",
+    "tags": ["detail"],
+    "passage": "Every year the knights held a jousting tournament. Sir Lena did not own a horse, so she borrowed a hoverboard. The other knights snickered. The rule book said knights must ride \"something fast,\" and it did not say the ride needed hooves! Sir Lena glided past every rival. She did not win the jousting, but she took home the prize for Most Creative Knight."
+  },
+  {
+    "id": "reading-3-0051",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "mainidea",
+    "prompt": "Why were the judges unsure about her hoverboard?",
+    "choices": [
+      "It was too slow",
+      "It was too loud",
+      "The rule book only said to ride something fast",
+      "It was too old"
+    ],
+    "answer": "The rule book only said to ride something fast",
+    "hint": "Check what the rule book said.",
+    "tags": ["inference"],
+    "passage": "Every year the knights held a jousting tournament. Sir Lena did not own a horse, so she borrowed a hoverboard. The other knights snickered. The rule book said knights must ride \"something fast,\" and it did not say the ride needed hooves! Sir Lena glided past every rival. She did not win the jousting, but she took home the prize for Most Creative Knight."
+  },
+  {
+    "id": "reading-3-0052",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "mainidea",
+    "prompt": "What does the envelope say to do?",
+    "choices": [
+      "Open it at the museum",
+      "Give it to a teacher",
+      "Never open it",
+      "Open it on a rainy Tuesday"
+    ],
+    "answer": "Open it on a rainy Tuesday",
+    "hint": "Read the words on the envelope.",
+    "tags": ["detail"],
+    "passage": "Omar found a dusty envelope in the museum attic. It said, \"Open on a rainy Tuesday.\" Today was a rainy Tuesday! Inside was a note: \"Dear Omar, do not worry about the spelling test. You will do great. Love, Future You.\" Omar felt calm at school, and his test came back with a big A."
+  },
+  {
+    "id": "reading-3-0053",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "mainidea",
+    "prompt": "How did the note help Omar?",
+    "choices": [
+      "It helped him feel calm about his test",
+      "It gave him the test answers",
+      "It made him late",
+      "It scared him"
+    ],
+    "answer": "It helped him feel calm about his test",
+    "hint": "Think about how Omar felt at school.",
+    "tags": ["cause-and-effect"],
+    "passage": "Omar found a dusty envelope in the museum attic. It said, \"Open on a rainy Tuesday.\" Today was a rainy Tuesday! Inside was a note: \"Dear Omar, do not worry about the spelling test. You will do great. Love, Future You.\" Omar felt calm at school, and his test came back with a big A."
+  },
+  {
+    "id": "reading-3-0054",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "mainidea",
+    "prompt": "Who most likely wrote the note?",
+    "choices": ["His teacher", "Omar, from the future", "The museum guard", "A robot"],
+    "answer": "Omar, from the future",
+    "hint": "The note ends with Love, Future You.",
+    "tags": ["inference"],
+    "passage": "Omar found a dusty envelope in the museum attic. It said, \"Open on a rainy Tuesday.\" Today was a rainy Tuesday! Inside was a note: \"Dear Omar, do not worry about the spelling test. You will do great. Love, Future You.\" Omar felt calm at school, and his test came back with a big A."
+  },
+  {
+    "id": "reading-3-0055",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "choices": [
+      "Castles were made of wood",
+      "Moats were full of fish",
+      "Castles had several parts that kept people safe",
+      "Guards liked towers"
+    ],
+    "answer": "Castles had several parts that kept people safe",
+    "hint": "Ask what all the sentences are mostly about.",
+    "tags": ["main-idea"],
+    "passage": "Long ago, builders made castles hard to enter. First, they dug a deep ditch called a moat and filled it with water. Next, they raised a drawbridge that could be pulled up to block the gate. Tall towers let guards spot visitors from far away. Together, these parts kept the people inside safe."
+  },
+  {
+    "id": "reading-3-0056",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "mainidea",
+    "prompt": "What is a drawbridge used for?",
+    "choices": [
+      "To catch fish",
+      "To dig a moat",
+      "To store food",
+      "To block the gate when pulled up"
+    ],
+    "answer": "To block the gate when pulled up",
+    "hint": "Read the sentence about the drawbridge.",
+    "tags": ["detail"],
+    "passage": "Long ago, builders made castles hard to enter. First, they dug a deep ditch called a moat and filled it with water. Next, they raised a drawbridge that could be pulled up to block the gate. Tall towers let guards spot visitors from far away. Together, these parts kept the people inside safe."
+  },
+  {
+    "id": "reading-3-0057",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "mainidea",
+    "prompt": "What does the word spot mean in the passage?",
+    "choices": ["See", "Clean", "Stain", "Paint"],
+    "answer": "See",
+    "hint": "Guards in towers do this to visitors far away.",
+    "tags": ["word-in-context"],
+    "passage": "Long ago, builders made castles hard to enter. First, they dug a deep ditch called a moat and filled it with water. Next, they raised a drawbridge that could be pulled up to block the gate. Tall towers let guards spot visitors from far away. Together, these parts kept the people inside safe."
+  },
+  {
+    "id": "reading-3-0058",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "mainidea",
+    "prompt": "What did builders do first to protect a castle?",
+    "choices": ["Built the towers", "Dug a moat", "Raised the drawbridge", "Hired guards"],
+    "answer": "Dug a moat",
+    "hint": "Look for the word First.",
+    "tags": ["sequence"],
+    "passage": "Long ago, builders made castles hard to enter. First, they dug a deep ditch called a moat and filled it with water. Next, they raised a drawbridge that could be pulled up to block the gate. Tall towers let guards spot visitors from far away. Together, these parts kept the people inside safe."
+  },
+  {
+    "id": "reading-3-0059",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "mainidea",
+    "prompt": "Why was the tomato plant drooping?",
+    "choices": ["It had too little sun", "It was too tall", "It had too much water", "It had bugs"],
+    "answer": "It had too much water",
+    "hint": "Look at the soil.",
+    "tags": ["cause-and-effect"],
+    "passage": "Pip the robot watered the garden every morning. One day Pip noticed a tomato plant drooping. It checked the soil, which was soggy. \"Too much water,\" Pip beeped. The next morning, Pip skipped that plant and watered the beans instead. By the end of the week, the tomato stood straight again."
+  },
+  {
+    "id": "reading-3-0060",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "mainidea",
+    "prompt": "What does drooping mean?",
+    "choices": ["Growing fast", "Turning blue", "Standing straight", "Hanging down"],
+    "answer": "Hanging down",
+    "hint": "Think about how the tomato plant looked before it stood straight again.",
+    "tags": ["word-in-context"],
+    "passage": "Pip the robot watered the garden every morning. One day Pip noticed a tomato plant drooping. It checked the soil, which was soggy. \"Too much water,\" Pip beeped. The next morning, Pip skipped that plant and watered the beans instead. By the end of the week, the tomato stood straight again."
+  },
+  {
+    "id": "reading-3-0061",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "mainidea",
+    "prompt": "What did Pip do after noticing the soggy soil?",
+    "choices": [
+      "Skipped that plant and watered the beans",
+      "Watered it twice as much",
+      "Dug it up",
+      "Went to sleep"
+    ],
+    "answer": "Skipped that plant and watered the beans",
+    "hint": "Read what happened the next morning.",
+    "tags": ["sequence"],
+    "passage": "Pip the robot watered the garden every morning. One day Pip noticed a tomato plant drooping. It checked the soil, which was soggy. \"Too much water,\" Pip beeped. The next morning, Pip skipped that plant and watered the beans instead. By the end of the week, the tomato stood straight again."
+  },
+  {
+    "id": "reading-3-0062",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "vocab",
+    "prompt": "Which word means the same as enormous?",
+    "choices": ["tiny", "huge", "quiet", "sticky"],
+    "answer": "huge",
+    "hint": "Enormous means very, very big.",
+    "tags": ["synonyms"]
+  },
+  {
+    "id": "reading-3-0063",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "vocab",
+    "prompt": "Which word means the opposite of ancient?",
+    "choices": ["old", "broken", "modern", "heavy"],
+    "answer": "modern",
+    "hint": "Ancient means very old. Look for the other end.",
+    "tags": ["antonyms"]
+  },
+  {
+    "id": "reading-3-0064",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "vocab",
+    "prompt": "A fragile vase can be ___.",
+    "choices": ["thrown far", "very tall", "painted blue", "easily broken"],
+    "answer": "easily broken",
+    "hint": "Fragile things need to be handled with care.",
+    "tags": ["vocabulary"]
+  },
+  {
+    "id": "reading-3-0065",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "grammar",
+    "prompt": "Which sentence uses their correctly?",
+    "choices": [
+      "The knights packed their swords.",
+      "Their going to the castle.",
+      "The knights are over their.",
+      "Their is a dragon outside."
+    ],
+    "answer": "The knights packed their swords.",
+    "hint": "Their shows that something belongs to them.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-3-0066",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "grammar",
+    "prompt": "Yesterday Sir Lena ___ to the castle on her hoverboard.",
+    "choices": ["go", "went", "goes", "going"],
+    "answer": "went",
+    "hint": "Yesterday means it already happened.",
+    "tags": ["past-tense-verbs"]
+  },
+  {
+    "id": "reading-3-0067",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "vocab",
+    "prompt": "The prefix un- means not. What does unhappy mean?",
+    "choices": ["Very happy", "Happy again", "Not happy", "Always happy"],
+    "answer": "Not happy",
+    "hint": "Un- flips the meaning.",
+    "tags": ["prefixes"]
+  },
+  {
+    "id": "reading-3-0068",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "grammar",
+    "prompt": "What is the plural of knife?",
+    "choices": ["knifes", "knifs", "knife's", "knives"],
+    "answer": "knives",
+    "hint": "Many words ending in fe change to ves.",
+    "tags": ["plural-nouns"]
+  },
+  {
+    "id": "reading-3-0069",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "grammar",
+    "prompt": "Which sentence shows that the tail belongs to the dragon?",
+    "choices": [
+      "The dragon's tail was green.",
+      "The dragons tail was green.",
+      "The dragons' tail's was green.",
+      "The dragon tail's was green."
+    ],
+    "answer": "The dragon's tail was green.",
+    "hint": "An apostrophe and an s show who owns something.",
+    "tags": ["possessives"]
+  },
+  {
+    "id": "reading-3-0070",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "vocab",
+    "prompt": "The word hoverboard is made of two smaller words. Which two?",
+    "choices": ["ho and verboard", "hover and board", "hove and rboard", "over and board"],
+    "answer": "hover and board",
+    "hint": "Look at where one word ends and the other begins.",
+    "tags": ["compound-words"]
   }
 ]

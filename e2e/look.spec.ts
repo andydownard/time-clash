@@ -142,7 +142,7 @@ test('every screen keeps the floors, and the screenshots are retaken', async ({
     await shot('forge-future');
     await tid(page, 'forge-back').click();
     await expect(tid(page, 'camp-start')).toBeVisible();
-    // Upgrade Base, for both teams, then back to the Camp.
+    // Build Base (builder off, the old shop), for both teams, then back to the Camp.
     await tid(page, 'camp-upgrade').click();
     await expect(tid(page, 'upgrade-back')).toBeVisible();
     await floors(page, 'Upgrade Past');

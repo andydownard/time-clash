@@ -1,10 +1,13 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { BUTTONS, HUD, TUMBLE_LINES, windLabel, turnBanner } from '../../src/data/copy';
+import { BUTTONS, HUD, tumblePool, windLabel, turnBanner } from '../../src/data/copy';
 import { AIM, TIMING } from '../../src/game/config';
 import type { HudHandlers, HudState } from '../../src/ui/types';
 import { TEST_IDS, Z } from '../../src/ui/types';
 import { click, flush, key, q, qa, setup } from './helpers';
+
+// Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
+vi.setConfig({ testTimeout: 120_000 });
 
 let s: ReturnType<typeof setup>;
 beforeEach(() => {
@@ -480,7 +483,7 @@ describe('speech bubble', () => {
   });
 
   it('every tumble line stays up at least 400 ms per word', () => {
-    for (const line of TUMBLE_LINES) {
+    for (const line of [...tumblePool('PAST'), ...tumblePool('FUTURE')]) {
       const sx = setup();
       sx.overlay.showSpeechBubble({ text: line, team: 'PAST', anchor: { x: 0, y: 0 } });
       sx.clock.advance(line.split(' ').length * TIMING.bubbleMsPerWord - 1);

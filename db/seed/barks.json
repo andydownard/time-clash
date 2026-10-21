@@ -1,0 +1,33 @@
+{
+ "note": "Lines a character says when knocked down. Funny, never mean, nobody is hurt. Max 6 words per line for the youngest readers; the long form is for grade 3+.",
+ "past": [
+  "I meant to do that!",
+  "Ouch! My dignity!",
+  "The floor started it.",
+  "Five more minutes, Mom.",
+  "My armor is too shiny. Oops.",
+  "Did anyone see that? Nobody?",
+  "I'm just resting my eyes.",
+  "That was my good helmet!",
+  "Whoa. The sky is sideways.",
+  "Tell my horse I was brave."
+ ],
+ "future": [
+  "Error 404: balance not found.",
+  "My hoverboard would never!",
+  "Rebooting... please wait.",
+  "I was calibrating the floor.",
+  "Beep boop. Ouch boop.",
+  "Battery at 3 percent. Dramatic!",
+  "Plan B was also falling.",
+  "Somebody update my legs.",
+  "I landed exactly as planned.",
+  "Does this count as a nap?"
+ ],
+ "bot_helper": [
+  "Is this normal?",
+  "Completely.",
+  "Beep. That looked like it hurt.",
+  "I'll get the glue."
+ ]
+}

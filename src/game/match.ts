@@ -1,16 +1,6 @@
 import { isSpecialAmmo, radiusScale, resolveAmmo, type AmmoId } from './ammo';
 import { clampAim, simulateShot } from './ballistics';
-import { unitOrigin, withWalls } from './battlefield';
-import {
-  AIM,
-  BONUS,
-  PHASE1_LAYOUT,
-  RNG_SALT,
-  SCRAP,
-  TEAM_FACING,
-  TUMBLE_LINE_COUNT,
-} from './config';
-import { classifyBlast, winnerOf } from './damage';
+import { withWalls } from './battlefield';
 import {
   arm,
   disarm,
@@ -23,12 +13,51 @@ import {
   wallsFor,
   type EvasionState,
 } from './evasion';
+import {
+  AIM,
+  BASE_IN_BATTLE,
+  BONUS,
+  CHARACTER_HEALTH,
+  PHASE1_LAYOUT,
+  RNG_SALT,
+  SCRAP,
+  TEAM_FACING,
+  TUMBLE_LINE_COUNT,
+} from './config';
+import {
+  aliveUnitIds,
+  classifyBlast,
+  freshUnitHp,
+  resolveUnitBlast,
+  unitDamage,
+  winnerOf,
+  winnerOfUnits,
+} from './damage';
+import {
+  createBuilt,
+  cutAtWalls,
+  flightLayout,
+  freshEvents,
+  guardFor,
+  hasBuilt,
+  hitWall,
+  isMountId,
+  mountAim,
+  mountOf,
+  viewBricks,
+  viewMounts,
+  viewSpots,
+  volleyAngles,
+  wallDamage,
+  wallsOf,
+} from './builtBase';
 import { DEFAULT_EFFECTS } from './loadout';
 import { scoreReload } from './reload';
 import { createShuffleBag } from './bag';
 import { createRng } from './rng';
 import { createTurn, transition } from './turn';
-import { DEFAULT_UNIT, unitById, type UnitDef, type UnitId } from './units';
+import type { SpotRole } from './baseBuilder';
+import { DEFAULT_UNIT, firingOrigin, unitById, type UnitDef, type UnitId } from './units';
 import { IllegalTransitionError, MatchOverError, otherTeam } from './types';
 import type {
   AimInput,
@@ -37,6 +66,8 @@ import type {
   CreateMatch,
   Match,
   MatchController,
+  MountId,
+  ShooterId,
   MatchOptions,
   ReloadInput,
   ReloadResult,
@@ -44,6 +75,7 @@ import type {
   Team,
   TeamStats,
   TurnEvent,
+  UnitOutcome,
 } from './types';
 import { windForTurn } from './wind';
 
@@ -57,6 +89,10 @@ const freshStats = (): TeamStats => ({
   scrapEarned: 0,
 });
 
+type ShellSource =
+  | { kind: 'fighter'; damageScale: number; volley: false }
+  | { kind: 'mount'; damage: number; role: SpotRole; volley: boolean };
+
 const perTeam = <T>(make: () => T): Record<Team, T> => ({ PAST: make(), FUTURE: make() });
 
 /** The special kinds a team owns, once each, in a fixed order. Junk and Standard are dropped. */
@@ -69,6 +105,20 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
   const { players, seed } = options;
   const layout = options.layout ?? PHASE1_LAYOUT;
   const firstTeam = options.firstTeam ?? 'PAST';
+  const characterHealth = options.characterHealth ?? CHARACTER_HEALTH.enabled;
+  // Built bases only count with character health: the win is still "all fighters out".
+  const baseInBattle = (options.baseInBattle ?? BASE_IN_BATTLE.enabled) && characterHealth;
+  const built = baseInBattle ? createBuilt(options.bases) : null;
+  const builtTeams: Record<Team, boolean> = {
+    PAST: built ? hasBuilt(built.PAST) : false,
+    FUTURE: built ? hasBuilt(built.FUTURE) : false,
+  };
+  const flightLay = built ? flightLayout(layout, builtTeams) : layout;
+  const selectedMount: Record<Team, MountId | null> = { PAST: null, FUTURE: null };
+  /** Shield generators that already blocked a hit this turn. */
+  const guardUsed = new Set<string>();
+  /** What the shell in the air was fired by, for its damage to bricks. */
+  let source: ShellSource | null = null;
 
   let turn = createTurn(firstTeam, 0);
   let wind = windForTurn(seed, 0);
@@ -91,6 +141,8 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
     power: AIM.defaultPower,
   }));
   const selected: Record<Team, UnitId> = { ...DEFAULT_UNIT };
+  const stats: Record<Team, TeamStats> = perTeam(freshStats);
+  // Phase 2: special ammo and evasion.
   const owned: Record<Team, AmmoId[]> = {
     PAST: ownedAmmo(options.ammo?.PAST),
     FUTURE: ownedAmmo(options.ammo?.FUTURE),
@@ -106,9 +158,19 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
     PAST: freshEvasion('PAST'),
     FUTURE: freshEvasion('FUTURE'),
   };
-  /** The field right now: the layout plus a wall that is standing. */
+  /** The field right now: the layout plus a stone wall that is standing. */
   const currentLayout = () => withWalls(layout, wallsFor(evasion));
-  const stats: Record<Team, TeamStats> = perTeam(freshStats);
+  const unitHp = freshUnitHp();
+  /** Keeps a team's pick on a fighter that is still standing. */
+  const keepSelectionStanding = (team: Team): void => {
+    const picked = selectedMount[team];
+    if (built && picked && !mountOf(built[team], picked)?.alive) selectedMount[team] = null;
+    const standing = aliveUnitIds(unitHp, team);
+    if (standing.length === 0 || standing.includes(selected[team])) return;
+    selected[team] = standing.includes(DEFAULT_UNIT[team])
+      ? DEFAULT_UNIT[team]
+      : (standing[0] as UnitId);
+  };
   /** The fighter for a team. Always valid: selectUnit checks ids. */
   const unitOf = (team: Team): UnitDef => unitById(selected[team]) as UnitDef;
   let lastShot: Match['lastShot'] = null;
@@ -124,10 +186,126 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
   const step = (event: TurnEvent): void => {
     turn = transition(turn, event);
   };
-  /** Free actions (pick a fighter, load ammo, arm an ability) only work while aiming. */
+  /** Free actions (load ammo, arm an ability) only work while aiming. */
   const aimingOnly = (event: string): void => {
     if (turn.phase !== 'AIMING' && turn.phase !== 'BONUS_AIMING')
       throw new IllegalTransitionError(turn.phase, event);
+  };
+
+  /** Character health: score a landed shot against the target's standing fighters. */
+  const landOnFighters = (
+    team: Team,
+    target: Team,
+    flight: ShotResult,
+    isBonus: boolean,
+  ): BlastOutcome => {
+    const blast = resolveUnitBlast(flight.path, flight.landing, target, unitHp, layout);
+    const units: UnitOutcome[] = blast.hits.map((h) => {
+      const damage = unitDamage(h.result, isBonus);
+      unitHp[h.unit] = Math.max(0, unitHp[h.unit] - damage);
+      const knockedOut = unitHp[h.unit] === 0;
+      const tumble = h.result === 'near' || knockedOut;
+      return {
+        unit: h.unit,
+        result: h.result,
+        damage,
+        hp: unitHp[h.unit],
+        tumble,
+        knockedOut,
+        bubbleIndex: tumble ? nextBubble() : null,
+      };
+    });
+    const direct = units.some((u) => u.result === 'direct');
+    const result: BlastResult = direct ? 'direct' : units.length > 0 ? 'near' : 'miss';
+    if (direct) stats[team].directHits += 1;
+    else if (result === 'near') stats[team].nearHits += 1;
+    keepSelectionStanding(target);
+    const won = winnerOfUnits(unitHp);
+    if (won) {
+      status = 'OVER';
+      winner = won;
+    }
+    const firstTumble = units.find((u) => u.tumble);
+    return {
+      result,
+      target,
+      damage: units.reduce((sum, u) => sum + u.damage, 0),
+      tumble: firstTumble !== undefined,
+      bubbleIndex: firstTumble ? firstTumble.bubbleIndex : null,
+      units,
+      knockedOut: units.filter((u) => u.knockedOut).map((u) => u.unit),
+    };
+  };
+
+  /** Built bases: score a landed shot (or a volley) against fighters, bricks, weapons and guards. */
+  const landBuilt = (
+    team: Team,
+    target: Team,
+    flight: ShotResult,
+    isBonus: boolean,
+  ): BlastOutcome => {
+    const bt = (built as NonNullable<typeof built>)[target];
+    const src = source as ShellSource;
+    const ev = freshEvents();
+    const merged = new Map<UnitId, UnitOutcome>();
+    const taken = new Map<UnitId, number>();
+    const cap = isBonus ? CHARACTER_HEALTH.powerHit : BASE_IN_BATTLE.volley.maxFighterHealth;
+    for (const shell of flight.volley ?? [flight]) {
+      const blast = resolveUnitBlast(shell.path, shell.landing, target, unitHp, layout);
+      const guard = guardFor(bt, blast.impact, guardUsed);
+      if (guard) {
+        guardUsed.add(guard.mount);
+        ev.guardBlocked.push(guard);
+        continue;
+      }
+      for (const h of blast.hits) {
+        let damage = unitDamage(h.result, isBonus);
+        if (src.volley) damage = Math.min(damage, cap - (taken.get(h.unit) ?? 0));
+        taken.set(h.unit, (taken.get(h.unit) ?? 0) + damage);
+        unitHp[h.unit] = Math.max(0, unitHp[h.unit] - damage);
+        const knockedOut = unitHp[h.unit] === 0;
+        const tumble = h.result === 'near' || knockedOut;
+        const prior = merged.get(h.unit);
+        merged.set(h.unit, {
+          unit: h.unit,
+          result: prior?.result === 'direct' || h.result === 'direct' ? 'direct' : 'near',
+          damage: (prior?.damage ?? 0) + damage,
+          hp: unitHp[h.unit],
+          tumble: (prior?.tumble ?? false) || tumble,
+          knockedOut: (prior?.knockedOut ?? false) || knockedOut,
+          bubbleIndex: prior?.bubbleIndex ?? (tumble ? nextBubble() : null),
+        });
+      }
+      // The shell burst on a wall unless a fighter was in its way first.
+      const fighterFirst =
+        blast.hits.some((h) => h.result === 'direct') &&
+        (blast.impact.x !== shell.landing.x || blast.impact.y !== shell.landing.y);
+      if (shell.stoppedBy && !fighterFirst) {
+        hitWall(bt, shell.stoppedBy, wallDamage(src, isBonus), ev);
+      }
+    }
+    const units = [...merged.values()];
+    const direct = units.some((u) => u.result === 'direct');
+    const result: BlastResult = direct ? 'direct' : units.length > 0 ? 'near' : 'miss';
+    if (direct) stats[team].directHits += 1;
+    else if (result === 'near') stats[team].nearHits += 1;
+    keepSelectionStanding(target);
+    const won = winnerOfUnits(unitHp);
+    if (won) {
+      status = 'OVER';
+      winner = won;
+    }
+    const firstTumble = units.find((u) => u.tumble);
+    return {
+      result,
+      target,
+      damage: units.reduce((sum, u) => sum + u.damage, 0),
+      tumble: firstTumble !== undefined,
+      bubbleIndex: firstTumble ? firstTumble.bubbleIndex : null,
+      units,
+      knockedOut: units.filter((u) => u.knockedOut).map((u) => u.unit),
+      built: ev,
+    };
   };
 
   return {
@@ -141,6 +319,13 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       turn: { ...turn },
       wind,
       baseHp: { ...baseHp },
+      characterHealth,
+      unitHp: { ...unitHp },
+      maxUnitHp: CHARACTER_HEALTH.hp,
+      aliveCount: {
+        PAST: aliveUnitIds(unitHp, 'PAST').length,
+        FUTURE: aliveUnitIds(unitHp, 'FUTURE').length,
+      },
       maxBaseHp: { ...maxHp },
       scrap: { ...scrap },
       aim: { PAST: { ...aim.PAST }, FUTURE: { ...aim.FUTURE } },
@@ -150,6 +335,16 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       ammo: { ...loaded },
       ammoLeft: { PAST: { ...ammoLeft.PAST }, FUTURE: { ...ammoLeft.FUTURE } },
       evasion: { PAST: evasionView(evasion.PAST), FUTURE: evasionView(evasion.FUTURE) },
+      ...(built
+        ? {
+            baseInBattle: true,
+            selectedMount: { ...selectedMount },
+            bricks: viewBricks(built),
+            mounts: viewMounts(built),
+            spots: viewSpots(built),
+            builtBase: { ...builtTeams },
+          }
+        : {}),
     }),
 
     currentLayout,
@@ -164,18 +359,36 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       if (turn.phase !== 'AIMING' && turn.phase !== 'BONUS_AIMING')
         throw new IllegalTransitionError(turn.phase, 'SET_AIM');
       aim[turn.team] = clampAim(input);
+      const mount = built && selectedMount[turn.team];
+      if (built && mount) {
+        const m = mountOf(built[turn.team], mount);
+        if (m) aim[turn.team] = mountAim(m.role, aim[turn.team]);
+      }
       return { ...aim[turn.team] };
     },
 
-    selectUnit(id: UnitId): void {
+    selectUnit(id: ShooterId): void {
       guard('pick a fighter');
-      aimingOnly('SELECT_UNIT');
+      if (turn.phase !== 'AIMING' && turn.phase !== 'BONUS_AIMING')
+        throw new IllegalTransitionError(turn.phase, 'SELECT_UNIT');
+      if (isMountId(id)) {
+        const m = built ? mountOf(built[turn.team], id) : undefined;
+        if (!m) throw new RangeError(`Unknown weapon: ${id}`);
+        if (!m.alive) throw new RangeError(`Weapon ${id} is down`);
+        if (!m.canFire) throw new RangeError(`Weapon ${id} does not fire`);
+        selectedMount[turn.team] = id;
+        return;
+      }
       const unit = unitById(id);
       if (!unit) throw new RangeError(`Unknown fighter: ${String(id)}`);
       if (unit.team !== turn.team) {
         throw new RangeError(`Fighter ${id} is not on ${turn.team}`);
       }
+      if (characterHealth && unitHp[unit.id] <= 0) {
+        throw new RangeError(`Fighter ${id} is knocked out`);
+      }
       selected[turn.team] = unit.id;
+      selectedMount[turn.team] = null;
     },
 
     selectAmmo(id: AmmoId): void {
@@ -202,23 +415,55 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
 
     fire(): ShotResult {
       guard('fire');
+      const mountId = built ? selectedMount[turn.team] : null;
+      const mount = built && mountId ? mountOf(built[turn.team], mountId) : undefined;
+      if (mountId && (!mount || !mount.alive || !mount.canFire)) {
+        throw new RangeError(`Weapon ${mountId} cannot fire`);
+      }
+      if (!mount && characterHealth && unitHp[selected[turn.team]] <= 0) {
+        throw new RangeError(`Fighter ${selected[turn.team]} is knocked out and cannot fire`);
+      }
       step({ type: 'FIRE' });
       const team = turn.team;
-      const { angleDeg, power } = aim[team];
       const unit = unitOf(team);
-      // The default fighter shoots from the layout's own launcher, so a fresh game is unchanged.
-      const origin = unitOrigin(layout, unit);
-      const ammo = loaded[team];
-      const result = simulateShot({
-        angleDeg,
-        power,
-        origin,
-        facing: TEAM_FACING[team],
-        wind,
-        layout: currentLayout(),
-        speedScale: effects[team].speedScale * unit.speedScale,
-        ...(ammo === 'standard' ? {} : { ammo }),
-      });
+      const shotAim = mount ? mountAim(mount.role, aim[team]) : aim[team];
+      const { angleDeg, power } = shotAim;
+      const origin = mount ? mount.origin : firingOrigin(team, unit.id, layout);
+      // A mounted weapon fires its own shells. Fighters fire the loaded ammo.
+      const ammo: AmmoId = mount ? 'standard' : loaded[team];
+      const walls = wallsFor(evasion);
+      const speedScale = mount
+        ? BASE_IN_BATTLE.mountSpeedScale
+        : effects[team].speedScale * unit.speedScale;
+      const fly = (angle: number): ShotResult =>
+        simulateShot({
+          angleDeg: angle,
+          power,
+          origin,
+          facing: TEAM_FACING[team],
+          wind,
+          layout: walls.length > 0 ? withWalls(flightLay, walls) : flightLay,
+          speedScale,
+          ...(ammo === 'standard' ? {} : { ammo }),
+        });
+      let result: ShotResult;
+      if (built) {
+        const walls = wallsOf(built[otherTeam(team)]);
+        // A lob, and a shot from a flier, arc over walls and only meet one coming down.
+        const arcs = mount ? mount.role === 'lob' : BASE_IN_BATTLE.flierRoles.includes(unit.role);
+        const volley = mount?.role === 'volley';
+        const shells = (volley ? volleyAngles(angleDeg) : [angleDeg]).map((a) =>
+          cutAtWalls(fly(a), walls, arcs),
+        );
+        result = volley
+          ? { ...(shells[0] as ShotResult), volley: shells }
+          : (shells[0] as ShotResult);
+        source = mount
+          ? { kind: 'mount', damage: mount.damage, role: mount.role, volley }
+          : { kind: 'fighter', damageScale: unit.damageScale, volley: false };
+      } else {
+        result = fly(angleDeg);
+      }
       inFlight = result;
       inFlightAmmo = ammo;
       if (ammo !== 'standard') {
@@ -233,6 +478,7 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
         wind,
         turnNumber: turn.turnNumber,
         unit: unit.id,
+        ...(mount ? { mount: mount.id } : {}),
         ...(ammo === 'standard' ? {} : { ammo }),
       };
       stats[team].shotsFired += 1;
@@ -247,6 +493,8 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       const target = otherTeam(team);
       const flight = inFlight as ShotResult;
       inFlight = null;
+      if (built) return landBuilt(team, target, flight, isBonus);
+      if (characterHealth) return landOnFighters(team, target, flight, isBonus);
       const flewAway = flight.hit.kind === 'out_of_bounds' || flight.hit.kind === 'timeout';
       const result: BlastResult = flewAway
         ? 'miss'
@@ -326,6 +574,7 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       guard('pass');
       const ending = turn.team;
       step({ type: 'PASS' });
+      guardUsed.clear();
       // The squad patches up the base of the team whose turn just ended.
       const repair = effects[ending].repair;
       if (repair > 0) {
@@ -333,10 +582,7 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       }
       wind = windForTurn(seed, turn.turnNumber);
       // An ability armed this turn starts guarding. The new team's guard from last time ends.
-      evasion = {
-        ...evasion,
-        [ending]: endOwnTurn(evasion[ending]),
-      };
+      evasion = { ...evasion, [ending]: endOwnTurn(evasion[ending]) };
       evasion = { ...evasion, [turn.team]: startOwnTurn(evasion[turn.team]) };
     },
 
@@ -347,6 +593,9 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       layout,
       effects,
       ammo: { PAST: [...owned.PAST], FUTURE: [...owned.FUTURE] },
+      characterHealth,
+      ...(options.baseInBattle === undefined ? {} : { baseInBattle: options.baseInBattle }),
+      ...(options.bases ? { bases: options.bases } : {}),
     }),
   };
 };

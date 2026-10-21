@@ -15,6 +15,10 @@ export type TeamLoadout = {
   upgrades: Partial<Record<UpgradeId, number>>;
   /** Special ammo kinds unlocked for this side. Missing means none. Uses reset every match. */
   ammo?: AmmoId[];
+  /** Base-builder pieces unlocked with Scrap. The free pieces are never listed. */
+  pieces?: string[];
+  /** Weapons for base spots unlocked with Scrap. The free ones are never listed. */
+  mounts?: string[];
 };
 
 /**

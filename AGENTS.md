@@ -17,10 +17,10 @@ The game is **free**. No ads. No accounts. No purchases. No tracking. The player
 Owner: Andy Downard. Built for and with his family. Stack choices favor simple, free, and fast to change.
 
 ## Stack
-TypeScript · Vite · Phaser 3 (game canvas) · plain DOM and CSS for menus and modals · Vitest (unit) · Playwright (browser). Static site with no server through Phase 3. Phase 4 adds one small Node WebSocket relay (`ws`). Host on Cloudflare Pages or GitHub Pages (free). Scope key: none (no accounts). Phase 4 uses `room_code`.
+TypeScript · Vite · Phaser 3 (game canvas) · plain DOM and CSS for menus and modals · Vitest (unit) · Playwright (browser). Served by one small Node app server (`app-server/`, `node:http` only) that serves the built site and the spoken clips (`/v1/clips/:id`) on the same origin, on Railway. Phase 4 adds a WebSocket relay (`ws`) to that same process. Scope key: none (no accounts). Phase 4 uses `room_code`.
 
 ## Commands
-test: `npm test` · lint: `npm run lint` · typecheck: `npm run typecheck` · build: `npm run build` · run: `npm run dev` · browser tests: `npm run e2e` · question check: `npm run check:questions` · bundle check: `npm run check:dist`
+test: `npm test` · lint: `npm run lint` · typecheck: `npm run typecheck` · build: `npm run build` · run: `npm run dev` · browser tests: `npm run e2e` · question check: `npm run check:questions` · bundle check: `npm run check:dist` · start the built site: `npm start` · server smoke test: `npm run smoke:server`
 
 ## Vocabulary
 | User sees | Code uses | NEVER say in UI |
@@ -32,9 +32,11 @@ test: `npm test` · lint: `npm run lint` · typecheck: `npm run typecheck` · bu
 | Reload | `reload` | quiz, test, exam |
 | Camp | `camp` | lobby, menu |
 | Wipeout | `tumble` | death, kill, die, dead, defeat |
-| Base health | `baseHp` | lives |
+| Health (per character, 3 each) | `unitHp` | lives |
+| Base health (replaced by per-character health when `CHARACTER_HEALTH` is on) | `baseHp` | lives |
 | Rematch | `rematch` | retry, play again |
 | How to Play | `intro` | tutorial |
+| Build Base | `builder` / `upgrade` (code names kept) | Upgrade Base (retired), Build Castle, buy, shop |
 
 ## Top damage risks
 1. **Anything gory, scary, or mean.** Wipeouts are silly and nobody is hurt. Copy lint blocks banned words (`kill`, `die`, `dead`, `blood`, `gore`, `defeat`, `buy`, `price`).
@@ -56,9 +58,9 @@ test: `npm test` · lint: `npm run lint` · typecheck: `npm run typecheck` · bu
 - Override MONEY: not applicable. The game is free. Never add ads, payments, or paywalls.
 - Override PII: do not log names. Phase 4 relay logs hold room code and event type only. No IPs kept.
 - Override AI: no model calls at runtime. Any future AI feature needs Andy's approval and a panel review first.
-- Override GIT: one deploy branch. PR into `main` with green CI, then the static host deploys `main`. No staging hop. Confirm the deployed build shows its SHA on `/version.txt` after every deploy (`VERIFY`).
+- Override GIT: one deploy branch. PR into `main` with green CI, then Railway builds `main` and runs `npm start` (the app server, health check `/health`). No staging hop. Confirm the deployed build shows its SHA on `/version.txt` after every deploy (`VERIFY`).
 - Override CI cost: a pull request runs the full browser matrix (Chromium and WebKit at three sizes, WebKit in two shards each). After the merge, `main` runs one Chromium job plus the unit, lint and build checks. New pushes cancel older pull request runs. Put more into each pull request: every PR costs one full matrix.
-- Override UI: smallest supported screens are iPad portrait (768x1024) and iPad landscape (1024x768), plus laptop. Phone is not supported through Phase 3. Screenshot at 1280x800 and 1024x768 before calling any visual change done.
+- Override UI: the supported screens are iPad landscape (1024x768 and up, including iPad mini 1133x744 and iPad Pro 13in 1376x1032) plus laptop. iPad portrait is not played: a touch tablet held upright (short side 600px or more, `pointer: coarse`) shows a full-screen "Turn your iPad sideways" screen (`src/ui/turnScreen.ts`) and pauses a running battle. Laptops and tall desktop windows with a mouse are unaffected. Phone is not supported through Phase 3. Screenshot at 1280x800 and 1024x768 before calling any visual change done. The latest iPad audit is [docs/IPAD_AUDIT.md](./docs/IPAD_AUDIT.md).
 - Override TRACKING: use `INBOX.md` and `BACKLOG.md`. Never create new tracking files.
 - Feedback FAB: not used. This is a kids' game with no accounts.
 - **Panel review for user-facing changes.** Panel: a 6-year-old, a 12-year-old, a parent, a teacher, and a slapstick comedy writer. Moderated by a staff game designer. Micro (typo) = auto-GO. Small = 2 min. Medium = 10 min. Large = 30 min. A BLOCK from the parent or teacher on safety, privacy, or learning can only be overridden by Andy.
@@ -125,7 +127,7 @@ Check this list before coding. If your change touches a listed area, read the ex
 ## Current state (2026-10-15)
 Phase 1 is built: Tap to Play, How to Play (5 cards, captions, Skip, Replay, Mute), Loading, Setup, Battle (2 shots, then reload, then a Power Shot after a right answer), Victory and Rematch. Sound is made in code with WebAudio: cannon boom for Team Past, laser pew for Team Future, and one original music loop in two flavors. Test runs are silent (`tests/setup/silent.ts` and `e2e/support/silent.ts` fail a test that starts real sound). Question bank has 40 questions per grade per subject (1,040 total, checked by `npm run check:questions`). Intro voice audio files are not recorded yet, so the browser's speech voice is used.
 
-The look and feel phase is built from the Claude Design handoff. Tokens are in `src/styles/tokens.css`, and the rules are in [docs/DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md). MedievalSharp and Orbitron are self-hosted in `public/fonts/`. Grade chips are 56px or more. Contrast meets 4.5:1 for body text and 3:1 for large text. The labels are Team Past and Team Future, and the Wipeout screen replaces the mock's destroyed-base screen. Open polish and content items are in `BACKLOG.md`. The Camp Hub is built from the Main board: the Camp is the home screen (a returning family lands there with no Tap to Play screen, and a new family after Setup, with a small Change players button back to Setup), and "Time to Clash!" starts the match (Forge Weapon and Upgrade Base open their own screens). The name is Time Clash. "Time to Clash!" is only the slogan. The Battle HUD follows the Battle board: one bar at the bottom (turn name, shot pips, Angle, Power, Fire!) and a coach line ("Slide Angle and Power. Then press Fire!") that shows until the first shot. Forge Weapon and Upgrade Base are built (Scrap only; the label is "Upgrade Base", never "Build"). Setup, the Forge and Upgrade Base have Back, and Pause has Leave game. Scrap and purchases are kept by player name on the device (lifetime Scrap too), and each player's Scrap shows in the battle HUD. Signed-in players and a SQLite database are planned, not built. The rest of Phase 2 (base placement, biomes, evasion) follows `docs/BUILD.md`. Battle now has five fighters per side with a "Pick one" selector in the bottom band (only one acts at a time), a Power Shot after a right reload answer (one extra shot at 1.5x damage, size still Andy's call), fighters drawn from the Battle board, explosions, base damage marks, and funny falls that end in a puff. The Loading screen and Camp follow the latest boards, with arrows, the ball and the missile flying on real physics. Ammo, evasion, biomes and base spots exist as rules only and are not wired in yet. Question-level calibration is wired into the reload.
+The look and feel phase is built from the Claude Design handoff. Tokens are in `src/styles/tokens.css`, and the rules are in [docs/DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md). MedievalSharp and Orbitron are self-hosted in `public/fonts/`. Grade chips are 56px or more. Contrast meets 4.5:1 for body text and 3:1 for large text. The labels are Team Past and Team Future, and the Wipeout screen replaces the mock's destroyed-base screen. Open polish and content items are in `BACKLOG.md`. The Camp Hub is built from the Main board: the Camp is the home screen (a returning family lands there with no Tap to Play screen, and a new family after Setup, with a small Change players button back to Setup), and "Time to Clash!" starts the match (Forge Weapon and Build Base open their own screens). The name is Time Clash. "Time to Clash!" is only the slogan. The Battle HUD follows the Battle board: one bar at the bottom (turn name, shot pips, Angle, Power, Fire!) and a coach line ("Slide Angle and Power. Then press Fire!") that shows until the first shot. Forge Weapon and Build Base are built (Scrap only; the label is "Build Base", and "Upgrade Base" is retired). With the base builder on, Build Base opens the builder (one button per side; spend Scrap on locked pieces and weapons, use what you own, keep three saved bases). With it off, Build Base opens the old shop screen. Setup, the Forge and Build Base have Back, and Pause has Leave game. Scrap and purchases are kept by player name on the device (lifetime Scrap too), and each player's Scrap shows in the battle HUD. Signed-in players and a SQLite database are planned, not built. The rest of Phase 2 (base placement, biomes, evasion) follows `docs/BUILD.md`. Battle now has five fighters per side with a "Pick one" selector in the bottom band (only one acts at a time), a Power Shot after a right reload answer (one extra shot at 1.5x damage, size still Andy's call), fighters drawn from the Battle board, explosions, base damage marks, and funny falls that end in a puff. The Loading screen and Camp follow the latest boards, with arrows, the ball and the missile flying on real physics. Ammo, evasion, biomes and base spots exist as rules only and are not wired in yet. Question-level calibration is wired into the reload.
 
 ## Pre-merge checklist
 1. `npm test`, `npm run lint`, `npm run typecheck`, `npm run build` pass with zero failures.
@@ -150,6 +152,8 @@ New ideas go in [INBOX.md](./INBOX.md) (raw, 30-day expiry). Triage moves them t
 | Get running in 10 minutes | [QUICKSTART.md](./QUICKSTART.md) |
 | Architecture and data shapes | [ARCHITECTURE.md](./ARCHITECTURE.md) |
 | Privacy and child safety | [SECURITY.md](./SECURITY.md) |
+| App server: site + spoken clips, headers, Railway cutover and rollback | [docs/APP_SERVER.md](./docs/APP_SERVER.md) |
+| iPad layout audit (all sizes, both orientations) | [docs/IPAD_AUDIT.md](./docs/IPAD_AUDIT.md) |
 | Original game spec | [docs/GAME_SPEC.md](./docs/GAME_SPEC.md) |
 | Design guidance from the canvas comments | [docs/DESIGN_GUIDANCE.md](./docs/DESIGN_GUIDANCE.md) |
 | Plan for signed-in players and a database | [docs/ACCOUNTS_PLAN.md](./docs/ACCOUNTS_PLAN.md) |

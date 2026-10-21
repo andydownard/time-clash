@@ -4,7 +4,7 @@
 // dot against a ring), so nothing depends on color alone.
 import Phaser from 'phaser';
 import { HUD, windWord } from '../../data/copy';
-import { DAMAGE } from '../../game/config';
+import { DAMAGE, HIT_FX } from '../../game/config';
 import type { BattleLayout, Team } from '../../game/types';
 import { hpFraction, shotIcons, windArrow } from './geometry';
 import { textStyle } from './textStyle';
@@ -17,6 +17,8 @@ const WIND_POS = { x: 640, y: 168 } as const;
 
 export type StatusArt = {
   sync(status: ViewStatus): void;
+  /** The health number pops bigger for a moment, so a drop is easy to see. */
+  popHp(team: Team): void;
   /** Lay the panels out again with the last status. Call after the label sizes change. */
   relayout(): void;
   /** Objects for one team, so the scene can dim the waiting side as one group. */
@@ -177,6 +179,19 @@ export function createStatusArt(
   const art: StatusArt = {
     relayout() {
       if (last) art.sync(last);
+    },
+    popHp(team) {
+      const hp = panels[team].hp;
+      scene.tweens.killTweensOf(hp);
+      hp.setScale(1);
+      scene.tweens.add({
+        targets: hp,
+        scale: HIT_FX.hpPopScale,
+        duration: HIT_FX.hpPopMs / 2,
+        yoyo: true,
+        ease: 'Quad.easeOut',
+        onComplete: () => hp.setScale(1),
+      });
     },
     sync(status) {
       last = status;

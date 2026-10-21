@@ -1,8 +1,8 @@
 // The fighters: five per side. Only one acts at a time. Pure, no Phaser.
 // Mirror pairs (A~2, B~5, C~1, D~3, E~4) share speedScale and damageScale, so neither side is favored.
 // The default fighters (C and 1) are today's launchers, so a fresh game plays exactly as before.
-import { LAUNCH_ORIGINS } from './config';
-import type { Team, Vec2 } from './types';
+import { BASES, CHARACTER_HEALTH, LAUNCH_ORIGINS } from './config';
+import type { BattleLayout, Rect, Team, Vec2 } from './types';
 
 export type UnitId = 'A' | 'B' | 'C' | 'D' | 'E' | '1' | '2' | '3' | '4' | '5';
 
@@ -131,3 +131,45 @@ export const unitsOf = (team: Team): UnitDef[] => UNITS.filter((u) => u.team ===
 
 /** The fighter with this id, or null for an unknown id. */
 export const unitById = (id: string): UnitDef | null => UNITS.find((u) => u.id === id) ?? null;
+
+/** True for a fighter that stands on its own base (so it moves when the base moves, Phase 2). */
+export const ridesBase = (unit: UnitDef): boolean => {
+  const base = BASES[unit.team];
+  return unit.origin.x >= base.x && unit.origin.x <= base.x + base.w && unit.origin.y <= base.y;
+};
+
+/**
+ * Where this fighter's shot really starts. The default fighter shoots from the layout's own
+ * launcher (so a fresh game is unchanged). Every other fighter shoots from its own spot. A fighter
+ * standing on its base moves with the base when Team Future picks a spot (`layout.baseShift`).
+ * The shot, the bot and the angle guide on the board all read this one function.
+ */
+export function firingOrigin(
+  team: Team,
+  unitId: string,
+  layout: Pick<BattleLayout, 'launchOrigins' | 'baseShift'>,
+): Vec2 {
+  const unit = unitById(unitId);
+  if (!unit || unit.team !== team || unit.id === DEFAULT_UNIT[team]) {
+    return layout.launchOrigins[team];
+  }
+  const shift = ridesBase(unit) ? layout.baseShift?.[team] : undefined;
+  return shift ? { x: unit.origin.x + shift.x, y: unit.origin.y + shift.y } : unit.origin;
+}
+
+/** Every fighter id, both teams, in roster order. */
+export const UNIT_IDS: readonly UnitId[] = UNITS.map((u) => u.id);
+
+/**
+ * A fighter's hit box: CHARACTER_HEALTH.box, centered on where its shot starts.
+ * The same spot the shot, the bot and the angle guide use (`firingOrigin`).
+ */
+export function unitBox(
+  team: Team,
+  unitId: string,
+  layout: Pick<BattleLayout, 'launchOrigins'>,
+): Rect {
+  const { w, h } = CHARACTER_HEALTH.box;
+  const o = firingOrigin(team, unitId, layout);
+  return { x: o.x - w / 2, y: o.y - h / 2, w, h };
+}

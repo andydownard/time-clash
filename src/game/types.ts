@@ -5,6 +5,7 @@
 import type { AmmoId } from './ammo';
 import type { BIOME_IDS, SPOT_IDS } from './config';
 import type { EvasionId, EvasionPhase } from './evasion';
+import type { Placed, ResolvedSpot, SpotRole } from './baseBuilder';
 import type { MatchEffects } from './loadout';
 import type { UnitId } from './units';
 
@@ -98,6 +99,8 @@ export type Shot = AimInput & {
   unit: UnitId;
   /** What the shot was made of. Missing means Standard. */
   ammo?: AmmoId;
+  /** Only when a mounted weapon fired (BASE_IN_BATTLE on). Then `unit` is the fighter that stayed picked. */
+  mount?: MountId;
 };
 
 export type ShotInput = AimInput & {
@@ -128,6 +131,13 @@ export type ShotResult = {
   hit: CollisionHit;
   /** Number of simulated steps. path.length === steps + 1. */
   steps: number;
+  /**
+   * Only when BASE_IN_BATTLE is on: the brick or mounted weapon the shell burst on. The path and
+   * `landing` stop at its box. `hit` is then the original flight's and should be ignored.
+   */
+  stoppedBy?: { kind: 'brick' | 'mount'; id: string };
+  /** Only for a volley: every small shell (the first is also this result). */
+  volley?: ShotResult[];
 };
 
 /** Pure and deterministic. Same input, same output, bit for bit. */
@@ -214,6 +224,96 @@ export type BlastOutcome = {
   tumble: boolean;
   /** Index into copy TUMBLE_LINES when tumble is true, else null. Chosen by a seeded shuffle bag. */
   bubbleIndex: number | null;
+  /**
+   * Only when CHARACTER_HEALTH is on: what happened to each fighter the blast touched.
+   * Then `result` is the best of them, `damage` is the total health lost, `tumble` is true when
+   * any fighter tumbled, and `bubbleIndex` is the first tumble line. Base health is untouched.
+   */
+  units?: UnitOutcome[];
+  /** Only when CHARACTER_HEALTH is on: fighters that reached 0 on THIS shot. Each appears once, ever. */
+  knockedOut?: UnitId[];
+  /** Only when BASE_IN_BATTLE is on. See BuiltEvents. */
+  built?: BuiltEvents;
+};
+
+/** A team's base as saved: `chosenBase` and `chosenSpots` from baseBuilder.ts. */
+export type ChosenBase = {
+  pieces: readonly Placed[];
+  spots: readonly ResolvedSpot[];
+};
+
+// ---------- Built bases in battle (builtBase.ts, flag BASE_IN_BATTLE) ----------
+
+/** `"PAST:3"`: the team and the brick's index in its saved base. Stable for the whole match. */
+export type BrickId = `${Team}:${number}`;
+/** A mounted weapon, by its weapon spot (0 to 3) on the picking team. Same id space as UnitId in the selector. */
+export type MountId = 'mount:0' | 'mount:1' | 'mount:2' | 'mount:3';
+/** Anything a team can pick to shoot with. */
+export type ShooterId = UnitId | MountId;
+
+export type BrickView = {
+  team: Team;
+  /** Piece id from the base builder (stone, tower, panel ...). */
+  piece: string;
+  hp: number;
+  maxHp: number;
+  /** In battlefield world px. */
+  box: Rect;
+  alive: boolean;
+};
+
+export type MountView = {
+  id: MountId;
+  team: Team;
+  /** The numbered weapon spot, 0 to 3. */
+  spot: number;
+  weapon: string;
+  role: SpotRole;
+  hp: number;
+  maxHp: number;
+  /** Center of the pad: where its shot starts. */
+  origin: Vec2;
+  box: Rect;
+  alive: boolean;
+  /** The brick it sits on, or null when it sits on the foundation (it never falls with a brick). */
+  brick: BrickId | null;
+  /** True for every role except `guard`. */
+  canFire: boolean;
+};
+
+export type SpotView = { index: number; x: number; y: number; weapon: string | null };
+
+export type BrickHit = { id: BrickId; damage: number; hp: number; fell: boolean };
+export type MountHit = { team: Team; mount: MountId; damage: number; hp: number };
+export type MountDown = { team: Team; mount: MountId; reason: 'hit' | 'brickFell' };
+export type GuardBlock = { team: Team; mount: MountId };
+
+/** What happened to the built base on one shot (all lists are empty arrays when nothing happened). */
+export type BuiltEvents = {
+  brickHits: BrickHit[];
+  /** Bricks that ran out of hit points on THIS shot, each once, ever. The scene puffs these. */
+  brickFell: BrickId[];
+  /** Every brick that fell on this shot: the ones above, then unsupported bricks, bottom to top. */
+  bricksFell: BrickId[];
+  mountHits: MountHit[];
+  mountDown: MountDown[];
+  guardBlocked: GuardBlock[];
+};
+
+/** One fighter's result from one blast (CHARACTER_HEALTH on). */
+export type UnitOutcome = {
+  unit: UnitId;
+  result: 'direct' | 'near';
+  /** Health lost: 1 for a direct hit, 2 for a Power Shot, 0 for a near miss. */
+  damage: number;
+  /** Health left after the blast. */
+  hp: number;
+  /** True when the fighter tumbles: a near miss, or the hit that took it to 0. */
+  tumble: boolean;
+  /** True on the one shot that took the fighter to 0. The scene plays the awkward fall. */
+  knockedOut: boolean;
+  /** Index into copy TUMBLE_LINES when tumble is true, else null. */
+  bubbleIndex: number | null;
 };
 
 /**
@@ -283,7 +383,16 @@ export type Match = {
   readonly turn: TurnState;
   /** Wind for the current turn, from windForTurn(seed, turn.turnNumber). */
   readonly wind: number;
+  /** Base health. Unused for the win when `characterHealth` is on (it stays at full). */
   readonly baseHp: Record<Team, number>;
+  /** True when each fighter has its own health and the win is "all fighters out" (CHARACTER_HEALTH). */
+  readonly characterHealth: boolean;
+  /** Health of every fighter by id. Starts at `maxUnitHp`; changes only when `characterHealth` is on. */
+  readonly unitHp: Record<UnitId, number>;
+  /** A fighter's full health (CHARACTER_HEALTH.hp). */
+  readonly maxUnitHp: number;
+  /** Fighters still standing per team (health above 0). The HUD health pips read this. */
+  readonly aliveCount: Record<Team, number>;
   /** Each base's full health. 100 unless an upgrade raised it. */
   readonly maxBaseHp: Record<Team, number>;
   readonly scrap: Record<Team, number>;
@@ -293,6 +402,18 @@ export type Match = {
   readonly selected: Record<Team, UnitId>;
   readonly stats: Record<Team, TeamStats>;
   readonly lastShot: Shot | null;
+  /** True when built bases take part (BASE_IN_BATTLE and characterHealth). Absent in old fakes. */
+  readonly baseInBattle?: boolean;
+  /** The mounted weapon each team has picked, or null for a fighter. Only with `baseInBattle`. */
+  readonly selectedMount?: Record<Team, MountId | null>;
+  /** Every built brick by id, both teams. Only with `baseInBattle`. */
+  readonly bricks?: Record<BrickId, BrickView>;
+  /** Each team's mounted weapons (weapons on spots). Only with `baseInBattle`. */
+  readonly mounts?: Record<Team, MountView[]>;
+  /** Each team's four weapon spots in battlefield px (empty pads have `weapon: null`). */
+  readonly spots?: Record<Team, SpotView[]>;
+  /** True for a team that brought a built base. Its default base box no longer stops shells. */
+  readonly builtBase?: Record<Team, boolean>;
   /** The ammo each team will fire next. Standard unless the player picked a special kind. */
   readonly ammo: Record<Team, AmmoId>;
   /** Shots left this match of each special ammo a team owns. Standard is never listed. */
@@ -322,6 +443,12 @@ export type MatchOptions = {
   effects?: MatchEffects;
   /** Special ammo each team has unlocked at the Camp. Default: none (Standard only). */
   ammo?: Partial<Record<Team, readonly AmmoId[]>>;
+  /** Character health on or off. Default CHARACTER_HEALTH.enabled (off). Tests pass it here. */
+  characterHealth?: boolean;
+  /** Built bases in battle on or off. Default BASE_IN_BATTLE.enabled (off). Needs characterHealth. */
+  baseInBattle?: boolean;
+  /** Each team's chosen base (from `chosenBaseFor`). A missing one is the default fixed base. */
+  bases?: Partial<Record<Team, ChosenBase>>;
 };
 
 export class MatchOverError extends Error {
@@ -348,8 +475,10 @@ export interface MatchController {
   /**
    * Only in AIMING or BONUS_AIMING. Picks which of the active team's fighters takes the next shot. Free (not a shot).
    * Another team's fighter or an unknown id throws RangeError.
+   * With built bases in battle, a mount id (`mount:2`) picks that mounted weapon instead. A
+   * weapon that is down, empty, or a shield generator throws RangeError.
    */
-  selectUnit(id: UnitId): void;
+  selectUnit(id: ShooterId): void;
   /**
    * Only in AIMING or BONUS_AIMING. Loads the ammo for the next shot. Free (not a shot).
    * Standard always works. A special kind the team does not own, or has no shots of, throws RangeError.

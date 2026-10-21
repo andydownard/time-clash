@@ -1,10 +1,13 @@
 // @vitest-environment jsdom
 // The Camp hub: one big button that starts the match, two closed buttons that say so, and rules
 // that must hold on every look (real buttons, a name for assistive tech, no color-only meaning).
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { CAMP, GAME_TAGLINE, GAME_TITLE } from '../../src/data/copy';
 import { TEST_IDS } from '../../src/ui/types';
 import { click, q, qa, setup } from './helpers';
+
+// Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
+vi.setConfig({ testTimeout: 120_000 });
 
 let s: ReturnType<typeof setup>;
 beforeEach(() => {
@@ -101,9 +104,27 @@ describe('Camp side buttons', () => {
     expect(document.querySelector('.tc-camp-soon')).toBeNull();
   });
 
-  it('puts Forge Weapon on the Past side and Upgrade Base on the Future side', () => {
+  it('puts Forge Weapon on the Past side and Build Base on the Future side', () => {
     void s.overlay.showCamp();
     expect(q(TEST_IDS.campForge)!.parentElement!.getAttribute('data-kind')).toBe('past');
     expect(q(TEST_IDS.campUpgrade)!.parentElement!.getAttribute('data-kind')).toBe('future');
+  });
+
+  it('with the builder off, the old shop button says Build Base and never Upgrade', () => {
+    void s.overlay.showCamp({ builder: false });
+    expect(q(TEST_IDS.campUpgrade)!.textContent).toBe('Build Base');
+    expect(document.body.textContent).not.toMatch(/upgrade/i);
+    expect(q(TEST_IDS.campBuild('PAST'))).toBeNull();
+    expect(q(TEST_IDS.campBuild('FUTURE'))).toBeNull();
+  });
+
+  it('with the builder on, each side has one Build Base button and the old shop button is gone', () => {
+    void s.overlay.showCamp({ builder: true });
+    expect(q(TEST_IDS.campUpgrade)).toBeNull();
+    for (const team of ['PAST', 'FUTURE'] as const) {
+      expect(q(TEST_IDS.campBuild(team))!.textContent).toBe('Build Base');
+    }
+    expect(document.body.textContent).not.toMatch(/upgrade|build castle/i);
+    expect(document.querySelectorAll('.tc-camp-build')).toHaveLength(2);
   });
 });
