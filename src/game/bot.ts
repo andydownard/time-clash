@@ -2,6 +2,7 @@
 // It sees only what a child could see: bases, health, wind, and its own question.
 import { simulateShot, clampAim } from './ballistics';
 import {
+  BASE_IN_BATTLE,
   BOT_LEVELS,
   PRACTICE_BOT,
   TEAM_FACING,
@@ -11,11 +12,13 @@ import {
 } from './config';
 import { DEFAULT_EFFECTS, type MatchEffects } from './loadout';
 import { otherTeam } from './types';
-import type { AimInput, BattleLayout, Match, Rect, Rng, Team, Vec2 } from './types';
+import type { AimInput, BattleLayout, Match, MountId, Rect, Rng, Team, Vec2 } from './types';
+import { flightLayout, mountAim, roleAngles } from './builtBase';
 import { aliveUnitIds, pathGap } from './damage';
 import { DEFAULT_UNIT, firingOrigin, unitBox, unitById, type UnitId } from './units';
 
-export type BotShot = AimInput & { unit: UnitId };
+/** `mount` is set when the bot picked a mounted weapon (BASE_IN_BATTLE on); `unit` is then the fighter that stays picked. */
+export type BotShot = AimInput & { unit: UnitId; mount?: MountId };
 
 export type BotContext = { layout?: BattleLayout; effects?: MatchEffects };
 
@@ -67,10 +70,12 @@ const solve = (
   rng: Rng,
   /** A fighter to aim at (character health on). Default: the other team's base. */
   mark?: { id: UnitId; box: Rect },
+  /** Angles this shooter may use (a mounted weapon). Default: 15 to 85. */
+  range?: { min: number; max: number },
 ): AimInput => {
   const perLayout = solutions.get(layout) ?? new Map<string, Solution>();
   solutions.set(layout, perLayout);
-  const key = `${team}|${origin.x}|${origin.y}|${wind}|${speedScale}|${mark?.id ?? 'base'}`;
+  const key = `${team}|${origin.x}|${origin.y}|${wind}|${speedScale}|${mark?.id ?? 'base'}|${range ? `${range.min}-${range.max}` : 'any'}`;
   const cached = perLayout.get(key);
   if (cached) return pickAim(cached, rng);
   const target = mark ? mark.box : layout.bases[otherTeam(team)];
@@ -92,7 +97,11 @@ const solve = (
     return { angleDeg, power, score };
   };
   let best: Candidate = { angleDeg: 45, power: 60, score: Number.POSITIVE_INFINITY };
-  for (let a = 15; a <= 85; a += angleStepDeg)
+  for (
+    let a = Math.max(15, range?.min ?? 0);
+    a <= Math.min(85, range?.max ?? 90);
+    a += angleStepDeg
+  )
     for (let p = 20; p <= 100; p += powerStep) {
       const c = tryAim(a, p);
       if (c.score < best.score) best = c;
@@ -123,7 +132,11 @@ export const chooseShotWith = (
   rng: Rng,
   ctx: BotContext = {},
 ): BotShot => {
-  const layout = ctx.layout ?? PHASE1_LAYOUT;
+  // A team that brought a built base has no fixed base box. The bot still aims by the plain
+  // physics and ignores the bricks (no wall logic in v1): a shell that meets a wall just hits it.
+  const layout = state.builtBase
+    ? flightLayout(ctx.layout ?? PHASE1_LAYOUT, state.builtBase)
+    : (ctx.layout ?? PHASE1_LAYOUT);
   const effects = ctx.effects ?? DEFAULT_EFFECTS;
   // With character health on, only a fighter still standing may shoot.
   const standing = state.characterHealth ? aliveUnitIds(state.unitHp, side) : null;
@@ -136,8 +149,14 @@ export const chooseShotWith = (
       : picked;
   const unit =
     unitById(unitId) ?? (unitById(DEFAULT_UNIT[side]) as NonNullable<ReturnType<typeof unitById>>);
-  const origin = firingOrigin(side, unit.id, layout);
-  const speedScale = effects[side].speedScale * unit.speedScale;
+  // With built bases on, a mounted weapon that can fire is another shooter the bot may pick.
+  const firing = (state.mounts?.[side] ?? []).filter((m) => m.alive && m.canFire);
+  const mount =
+    firing.length > 0 && rng.next() < BASE_IN_BATTLE.botMountChance ? rng.pick(firing) : null;
+  const origin = mount ? mount.origin : firingOrigin(side, unit.id, layout);
+  const speedScale = mount
+    ? BASE_IN_BATTLE.mountSpeedScale
+    : effects[side].speedScale * unit.speedScale;
   // The bot reads only a share of the wind, like a child who half-notices the arrows.
   const seenWind = state.wind * profile.windSkill;
   // With character health on, aim at one of the other team's fighters still standing.
@@ -154,12 +173,14 @@ export const chooseShotWith = (
     speedScale,
     rng,
     mark,
+    mount ? roleAngles(mount.role) : undefined,
   );
-  const aim = clampAim({
+  const noisy = clampAim({
     angleDeg: Math.round(ideal.angleDeg + normal(rng) * profile.angleSpreadDeg),
     power: Math.round(ideal.power + normal(rng) * profile.powerSpreadPct),
   });
-  return { ...aim, unit: unit.id };
+  const aim = mount ? mountAim(mount.role, noisy) : noisy;
+  return { ...aim, unit: unit.id, ...(mount ? { mount: mount.id } : {}) };
 };
 
 /** The shot for `side` this turn at the given level. Always legal (clamped). */

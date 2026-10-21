@@ -59,6 +59,8 @@ Each team has five fighters in `src/game/units.ts` (`UNITS`, `unitsOf`, `unitByI
 
 Character health (flag `CHARACTER_HEALTH.enabled`, off): every fighter has 3 health in `Match.unitHp`, a team loses when all its fighters are knocked out, and base health is unused for the win. See `docs/GAME_SPEC.md` "Character health".
 
+Built bases in battle (flag `BASE_IN_BATTLE.enabled`, off, needs character health): a team's built bricks and weapon spots take hits, fall, and fire in the match (`src/game/builtBase.ts`). See `docs/GAME_SPEC.md` "Built bases in battle".
+
 ## Ammo (rules built, not yet wired into the match)
 `src/game/ammo.ts` holds four kinds: standard, confetti explosives, bouncy plasma spheres and heavy iron bowling balls. Standard is free, unlimited and changes nothing (`tests/game/ammo.test.ts` pins that). The other three cost Scrap to unlock (10, 14, 18) and have 3, 3 and 2 uses per match. `simulateShot({ ..., ammo })` applies speed and wind scales and the plasma bounce (once, off the ground only; the result adds `bounced`). `classifyBlast(impact, base, radiusScale)` widens the blast for confetti. `scaleDamage(base, ammo)` scales and rounds damage. An unknown id counts as standard.
 

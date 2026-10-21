@@ -3,7 +3,7 @@ import { answerReloadWith, chooseShotWith, type BotQuestion } from './bot';
 import { PRACTICE_BOT, type BotProfile } from './config';
 import { createMatch } from './match';
 import { createRng } from './rng';
-import type { Grade, Players, Team } from './types';
+import type { Grade, MatchOptions, Players, Team } from './types';
 import { TEAMS } from './types';
 
 export type SimResult = { winner: Team | null; turns: number; ended: boolean };
@@ -32,6 +32,10 @@ export type SimOptions = {
   maxTurns?: number;
   /** Character health on or off. Default: the game's own setting. */
   characterHealth?: boolean;
+  /** Built bases in battle on or off. Default: the game's own setting. */
+  baseInBattle?: boolean;
+  /** Each team's built base (with `baseInBattle`). */
+  bases?: MatchOptions['bases'];
 };
 
 /** Plays one match to the end (or to the safety cap). */
@@ -42,12 +46,14 @@ export const playBotMatch = (opts: SimOptions): SimResult => {
     seed: opts.seed,
     firstTeam: opts.firstTeam ?? 'PAST',
     ...(opts.characterHealth === undefined ? {} : { characterHealth: opts.characterHealth }),
+    ...(opts.baseInBattle === undefined ? {} : { baseInBattle: opts.baseInBattle }),
+    ...(opts.bases ? { bases: opts.bases } : {}),
   });
   const rng = createRng((opts.seed ^ 0x626f74) >>> 0);
   const shoot = (team: Team): boolean => {
     const state = match.snapshot();
     const shot = chooseShotWith(state, team, opts.profiles[team], rng);
-    match.selectUnit(shot.unit);
+    match.selectUnit(shot.mount ?? shot.unit);
     match.setAim(shot);
     match.fire();
     match.shotLanded();
