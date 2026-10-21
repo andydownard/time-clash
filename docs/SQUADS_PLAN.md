@@ -8,6 +8,22 @@ Status: plan only. Nothing here is built. Items marked **Andy's call** need his 
 
 Read with: [AGENTS.md](../AGENTS.md), [GAME_SPEC.md](./GAME_SPEC.md), [BUILD.md](./BUILD.md), [CONTRACTS.md](./CONTRACTS.md).
 
+## S1 as built (flag off)
+
+S1 is in the code behind `SQUADS.enabled` (off). Rules: `src/game/crew.ts`, wired into `src/game/match.ts`. Screen: `src/ui/squadBar.ts` and one hook each in `src/ui/hudView.ts` and `src/scenes/battle/flow.ts`. Tests: `tests/game/crew.test.ts`, `tests/game/crewMatch.test.ts`, `tests/ui/squadBar.test.ts`.
+
+Choices made where this plan was unclear (the simplest option each time). Andy can overrule any of them.
+1. **Launcher is today's shot.** The launcher helper is the existing fighter and aim. Past calls it Cannon Crew, Future calls it Rocket Button, for now only as a name. The five-fighter selector is unchanged.
+2. **A dash is one call.** `dash(spot)` does the work of `fire()` and `shotLanded()`, so the turn machine and its tests do not change.
+3. **Five ground spots g0 to g4.** g0 is Team Past's doorstep and g4 is Team Future's. Dashers start on g1 (Past) and g3 (Future) and may roll up to 2 spots to a free spot. A side may not stand on its own doorstep.
+4. **Bonk rules.** Landing on the enemy doorstep takes 12 base health (`dashBonkDamage`), and a Hoverboard Dodge or force field can stop it like a shot. Otherwise an enemy dasher on a next-door spot tumbles (seeded bubble line) and walks home. It stays put if its home spot is taken.
+5. **No Power Shot dash.** The Power Shot is the launcher's. A right answer resets the pick to the launcher.
+6. **The dasher is shown as buttons, not canvas art.** The helper bar has the GO banner, two dots, two helper buttons and the spot buttons (56px, 20px text). There is no dasher sprite or spot marker on the battlefield yet. That art waits for the S1 art pass.
+7. **Stats and awards.** A dash adds nothing to `shotsFired`, `directHits` or `nearHits`.
+8. **Keyboard.** Tab to a helper or spot, Enter or Space to press it. Space does not fire while the dasher is picked. No letter keys, since A to E already pick fighters.
+9. **Doc wording.** AGENTS.md, GAME_SPEC.md and NARRATION.md still say "shots", because the flag is off and players still see shots. The "2 goes" rewrite lands when the flag turns on. The copy lint banned-list additions (missile, soldier, army, troops, war, shoot, weapon) also wait for that, since the old fighter names use some of them.
+10. **Not built:** Back and Hear it corner buttons, the first-go finger hint, doorstep no-stalemate walk test (the launcher can always reach the base, so there is always a damaging go), and the e2e (the flag has no switch in the shipped page).
+
 ## 1. Goal and the "super simple" rules
 
 Each side gets a small, fixed crew of silly helpers instead of one cannon. The castle has a chariot full of archers and an old-time hot air balloon. The future base has a rocket button, a laser zapper, a tank button, and a flying space plane. A six-year-old should understand it from one look at the screen.

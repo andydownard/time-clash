@@ -124,6 +124,27 @@ export const TURN = {
   firstTeam: 'PAST' as Team,
 } as const;
 
+/**
+ * Squads, milestone S1 (docs/SQUADS_PLAN.md). Off by default, so a shipped build plays exactly
+ * as before. A match takes `MatchOptions.squads`, which falls back to `enabled`. Tests pass the
+ * option and never change this constant.
+ */
+export const SQUADS = {
+  enabled: false,
+  /** A turn is this many goes, then the reload question. Same number as TURN.shotsPerTurn. */
+  goesPerTurn: 2,
+  /** Ground spots g0 to g4, left to right. g0 is Team Past's doorstep and the last one is Team Future's. */
+  groundSpots: 5,
+  /** How many spots a dasher may roll in one go. */
+  dashRange: 2,
+  /** Base health a dash bonk takes off an enemy base (plan section 6). One aimed direct hit stays bigger. */
+  dashBonkDamage: 12,
+  /** Where each side's dasher stands at the start, and where it walks home to after a bonk. */
+  dasherHome: { PAST: 1, FUTURE: 3 } as Record<Team, number>,
+  /** Rendered tap size at 768 px wide. The hard floor is 56. */
+  minTapPx: 64,
+} as const;
+
 // ---------- Setup ----------
 export const GRADE = { min: 0, max: 12 } as const;
 export const NAME = { minLength: 1, maxLength: 12 } as const;
