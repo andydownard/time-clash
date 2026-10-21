@@ -2272,37 +2272,26 @@ button.tc-forge-row[aria-disabled='true'],
    is 2.4 s (src/ui/forgePose.ts holds the numbers; tests/ui/forgePose.test.ts keeps this in step).
    The chips fade up and out about two times a second, so nothing flashes. With reduced motion the
    pictures keep the poses in their attributes: knife resting on the stave, no chips. */
-.tc-forge-knife,
-.tc-forge-near-upper,
-.tc-forge-near-bone,
-.tc-forge-near-reach,
-.tc-forge-far-upper,
-.tc-forge-far-bone,
-.tc-forge-far-reach {
-  animation-duration: 2.4s;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-}
 .tc-forge-knife {
-  animation-name: tc-forge-knife;
+  animation: tc-forge-knife 2.4s linear infinite;
 }
 .tc-forge-near-upper {
-  animation-name: tc-forge-near-upper;
+  animation: tc-forge-near-upper 2.4s linear infinite;
 }
 .tc-forge-near-bone {
-  animation-name: tc-forge-near-bone;
+  animation: tc-forge-near-bone 2.4s linear infinite;
 }
 .tc-forge-near-reach {
-  animation-name: tc-forge-near-reach;
+  animation: tc-forge-near-reach 2.4s linear infinite;
 }
 .tc-forge-far-upper {
-  animation-name: tc-forge-far-upper;
+  animation: tc-forge-far-upper 2.4s linear infinite;
 }
 .tc-forge-far-bone {
-  animation-name: tc-forge-far-bone;
+  animation: tc-forge-far-bone 2.4s linear infinite;
 }
 .tc-forge-far-reach {
-  animation-name: tc-forge-far-reach;
+  animation: tc-forge-far-reach 2.4s linear infinite;
 }
 @keyframes tc-forge-near-upper {
   0% {
