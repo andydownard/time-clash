@@ -36,6 +36,13 @@ export async function fillTeam(page: Page, team: Team, side: Side): Promise<void
 export const PAST_SIDE: Side = { name: 'Alex', grade: 2, subject: 'math' };
 export const FUTURE_SIDE: Side = { name: 'Sam', grade: 3, subject: 'math' };
 
+/** Taps "Time to Clash!" at the Camp, then "Lock it in!" on the Battle Plan with what is picked. */
+export async function clashFromCamp(page: Page): Promise<void> {
+  await tid(page, 'camp-start').click();
+  await expect(tid(page, 'plan-go')).toBeVisible({ timeout: 10_000 });
+  await tid(page, 'plan-go').click();
+}
+
 /**
  * Fills Setup, pins the seed, taps "Let's clash!", then taps "Time to Clash!" at the Camp and
  * waits for the first pass screen. `atCamp` runs while the Camp is up (for checks and shots).
@@ -53,7 +60,7 @@ export async function startMatch(
   await tid(page, 'setup-next').click();
   await expect(tid(page, 'camp-start')).toBeVisible({ timeout: 10_000 });
   await atCamp?.();
-  await tid(page, 'camp-start').click();
+  await clashFromCamp(page);
   await expect(tid(page, 'pass-screen')).toBeVisible({ timeout: 10_000 });
 }
 
@@ -111,7 +118,9 @@ export { pressesFor };
 export async function takeShot(page: Page, wanted: BlastResult): Promise<AimInput> {
   const s = await snap(page);
   const team = s.turn.team;
-  const aim = findAim(team, s.wind, s.aim[team], wanted);
+  // The field as it stands now: the Battle Plan's biome and base spot, and any wall.
+  const layout = await page.evaluate(() => window.__timeclash!.layout());
+  const aim = findAim(team, s.wind, s.aim[team], wanted, layout ?? undefined);
   await enterAim(page, team, aim);
   const before = s.stats[team].shotsFired;
   await page.keyboard.press('Space');

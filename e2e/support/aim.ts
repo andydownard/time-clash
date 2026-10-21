@@ -3,7 +3,13 @@
 import { simulateShot } from '../../src/game/ballistics';
 import { AIM, PHASE1_LAYOUT, TEAM_FACING } from '../../src/game/config';
 import { classifyBlast } from '../../src/game/damage';
-import { otherTeam, type AimInput, type BlastResult, type Team } from '../../src/game/types';
+import {
+  otherTeam,
+  type AimInput,
+  type BattleLayout,
+  type BlastResult,
+  type Team,
+} from '../../src/game/types';
 
 export type Wanted = BlastResult;
 
@@ -14,18 +20,19 @@ export function scoreAim(
   team: Team,
   wind: number,
   aim: AimInput,
+  layout: BattleLayout = PHASE1_LAYOUT,
 ): { result: BlastResult; steps: number } {
   const flight = simulateShot({
     ...aim,
-    origin: PHASE1_LAYOUT.launchOrigins[team],
+    origin: layout.launchOrigins[team],
     facing: TEAM_FACING[team],
     wind,
-    layout: PHASE1_LAYOUT,
+    layout,
   });
   const flewAway = flight.hit.kind === 'out_of_bounds' || flight.hit.kind === 'timeout';
   const result: BlastResult = flewAway
     ? 'miss'
-    : classifyBlast(flight.landing, PHASE1_LAYOUT.bases[otherTeam(team)]);
+    : classifyBlast(flight.landing, layout.bases[otherTeam(team)]);
   return { result, steps: flight.steps };
 }
 
@@ -39,12 +46,18 @@ export function pressesFor(from: number, to: number): number {
  * The cheapest aim that scores `wanted`. Cost is key presses, plus a small cost for long
  * flights so a wanted 'miss' is also a short one.
  */
-export function findAim(team: Team, wind: number, from: AimInput, wanted: Wanted): AimInput {
+export function findAim(
+  team: Team,
+  wind: number,
+  from: AimInput,
+  wanted: Wanted,
+  layout: BattleLayout = PHASE1_LAYOUT,
+): AimInput {
   let best: (Found & { cost: number }) | null = null;
   for (let angleDeg = AIM.angleMinDeg; angleDeg <= AIM.angleMaxDeg; angleDeg++) {
     for (let power = AIM.powerMin; power <= AIM.powerMax; power++) {
       const aim = { angleDeg, power };
-      const s = scoreAim(team, wind, aim);
+      const s = scoreAim(team, wind, aim, layout);
       if (s.result !== wanted) continue;
       const cost =
         pressesFor(from.angleDeg, angleDeg) + pressesFor(from.power, power) + s.steps / 30;

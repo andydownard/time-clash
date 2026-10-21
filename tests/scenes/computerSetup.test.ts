@@ -45,6 +45,8 @@ describe("flag off: Setup is exactly today's Setup", () => {
     const p2 = runCampStep(t.services);
     await flush();
     click(q(TEST_IDS.campStart));
+    await flush();
+    click(q(TEST_IDS.planGo)); // Battle Plan: Lock it in!
     const route = await p2;
     expect((route.data as BattleSceneData).practice).toBeUndefined();
   });
@@ -136,6 +138,8 @@ describe('flag on', () => {
     const camp = runCampStep(t.services);
     await flush();
     click(q(TEST_IDS.campStart));
+    await flush();
+    click(q(TEST_IDS.planGo)); // Battle Plan: Lock it in!
     const route = await camp;
     expect(route.key).toBe(SCENE_KEYS.battle);
     expect((route.data as BattleSceneData).practice).toMatchObject({
@@ -152,6 +156,8 @@ describe('flag on', () => {
     const camp = runCampStep(t.services);
     await flush();
     click(q(TEST_IDS.campStart));
+    await flush();
+    click(q(TEST_IDS.planGo)); // Battle Plan: Lock it in!
     const route = await camp;
     expect((route.data as BattleSceneData).practice).toBeUndefined();
   });

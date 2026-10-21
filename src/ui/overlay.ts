@@ -16,6 +16,7 @@ import { showCamp } from './campScreen';
 import { showBaseBuilder } from './baseBuilderScreen';
 import { showForge } from './forgeScreen';
 import { showUpgrade } from './upgradeScreen';
+import { showPlan } from './planScreen';
 import { showPassScreen } from './passScreen';
 import { showReloadModal } from './reloadModal';
 import { showSetup } from './setupScreen';
@@ -222,6 +223,7 @@ export const createOverlay: CreateOverlayWithDeps = (
     showCamp: (options) => showCamp(ctx, options),
     showForge: (options) => showForge(ctx, options),
     showUpgrade: (options) => showUpgrade(ctx, options),
+    showPlan: (options) => showPlan(ctx, options),
     showBaseBuilder: (options) => showBaseBuilder(ctx, options),
     showVictory: (options) => showVictory(ctx, options),
     showHud: (handlers) => hud.show(handlers),

@@ -1,6 +1,9 @@
 // Shared contract for the DOM layer that sits on top of the Phaser canvas.
 // All buttons, text inputs, modals, banners, and captions are plain DOM.
 // Phaser draws only the world (backdrop, bases, shots, tumbles).
+import type { AmmoId } from '../game/ammo';
+import type { BattlePlan } from '../game/battlefield';
+import type { EvasionView } from '../game/types';
 import type { BasesState, Placed } from '../game/baseBuilder';
 import type { CampState } from '../game/loadout';
 import type { Grade, Players, Team, TeamStats, Vec2 } from '../game/types';
@@ -66,6 +69,15 @@ export const TEST_IDS = {
   forgeTeam: (team: Team) => `forge-team-${team}`,
   forgeWeapon: (id: string) => `forge-weapon-${id}`,
   campPlayers: 'camp-players',
+  planBack: 'plan-back',
+  planGo: 'plan-go',
+  planStatus: 'plan-status',
+  planBiome: (id: string) => `plan-biome-${id}`,
+  planSpot: (id: string) => `plan-spot-${id}`,
+  planScrap: (team: Team) => `plan-scrap-${team}`,
+  planAmmo: (team: Team, id: string) => `plan-ammo-${team}-${id}`,
+  gearAmmo: 'gear-ammo',
+  gearEvasion: 'gear-evasion',
   campBuild: (team: Team) => `camp-build-${team}`,
   campBase: (team: Team) => `camp-base-${team}`,
   turnBanner: 'turn-banner',
@@ -150,6 +162,17 @@ export type HudState = {
   units: ReadonlyArray<{ id: UnitId; name: string }>;
   /** The side the Computer player plays, when one child plays alone. */
   computerTeam?: Team;
+  /** Phase 2 gear for the active team: ammo and the evasion ability. Missing hides the gear. */
+  gear?: HudGear;
+};
+
+/** The active team's ammo and evasion ability, for the two gear buttons. */
+export type HudGear = {
+  /** The kind loaded now. */
+  ammo: AmmoId;
+  /** Shots left of each special kind the team owns (Standard is never listed). */
+  ammoLeft: Partial<Record<AmmoId, number>>;
+  evasion: EvasionView;
 };
 
 export type HudHandlers = {
@@ -157,6 +180,10 @@ export type HudHandlers = {
   onFire: () => void;
   onSelect: (id: UnitId) => void;
   onMuteToggle: () => void;
+  /** Load this ammo next (Phase 2). */
+  onAmmo?: (id: AmmoId) => void;
+  /** Arm or take back the evasion ability (Phase 2). */
+  onEvasion?: () => void;
 };
 
 export type VictoryOptions = {
@@ -198,6 +225,9 @@ export type ForgeOptions = {
   /** Called with the new camp after every change, so it is saved at once. */
   save: (camp: CampState) => void;
 };
+
+/** The Battle Plan screen: the last plan, and the Camp for unlocking special ammo. */
+export type PlanOptions = ForgeOptions & { plan: BattlePlan };
 
 export type VictoryChoice = 'rematch' | 'back-to-camp';
 
@@ -247,6 +277,8 @@ export interface Overlay {
   showForge(options: ForgeOptions): Promise<void>;
   /** Build Base (old shop). Same options as the Forge. Resolves when Back is tapped. */
   showUpgrade(options: ForgeOptions): Promise<void>;
+  /** Battle Plan: place, base spot and ammo. Resolves with the plan, or null on Back. */
+  showPlan(options: PlanOptions): Promise<BattlePlan | null>;
   /** The base builder. Changes go through `saveBases` and `saveCamp`. Resolves on Done or Back. */
   showBaseBuilder(options: BuilderOptions): Promise<void>;
   showVictory(options: VictoryOptions): Promise<VictoryChoice>;

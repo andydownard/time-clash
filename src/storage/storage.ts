@@ -1,4 +1,6 @@
 // Typed, never-throwing wrapper around localStorage. Nothing here leaves the device.
+import { isSpecialAmmo, type AmmoId } from '../game/ammo';
+import { normalizePlan, type BattlePlan } from '../game/battlefield';
 import { DEFAULT_SETTINGS, GRADE } from '../game/config';
 import {
   freshCamp,
@@ -126,6 +128,11 @@ function parseLoadout(v: unknown, team: Team): TeamLoadout {
       if (level !== null) upgrades[u.id] = level;
     }
   }
+  // Special ammo kinds, once each, in a fixed order. Standard and junk are dropped.
+  const ammoList = Array.isArray(v.ammo) ? v.ammo : [];
+  const ammo = (['confetti', 'plasma', 'bowling'] as AmmoId[]).filter(
+    (id) => isSpecialAmmo(id) && ammoList.includes(id),
+  );
   const pieces: string[] = [];
   if (Array.isArray(v.pieces)) {
     for (const id of v.pieces) {
@@ -148,6 +155,7 @@ function parseLoadout(v: unknown, team: Team): TeamLoadout {
     upgrades,
     ...(pieces.length > 0 ? { pieces } : {}),
     ...(mounts.length > 0 ? { mounts } : {}),
+    ...(ammo.length > 0 ? { ammo } : {}),
   };
 }
 
@@ -275,6 +283,11 @@ export function loadLevels(storage: TypedStorage): Levels {
   return storage.get('timeclash.levels') ?? {};
 }
 
+/** The Battle Plan picked last time (biome and base spot), or the default plan. Never throws. */
+export function loadPlan(storage: TypedStorage): BattlePlan {
+  return normalizePlan(storage.get('timeclash.plan'));
+}
+
 function parsePractice(v: unknown): PracticeChoice | null {
   if (!isObject(v)) return null;
   if (v.opponent !== 'person' && v.opponent !== 'computer') return null;
@@ -294,6 +307,7 @@ const GUARDS: { [K in StorageKey]: (v: unknown) => StorageSchema[K] | null } = {
   'timeclash.history': parseHistory,
   'timeclash.camp': parseCamp,
   'timeclash.levels': parseLevels,
+  'timeclash.plan': (v) => (typeof v === 'object' && v !== null ? normalizePlan(v) : null),
   'timeclash.practice': parsePractice,
   'timeclash.bases': parseBases,
 };

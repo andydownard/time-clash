@@ -1,7 +1,15 @@
 // The Camp hub sits between Setup and Battle. One big button starts the match. The other two
 // are not open yet, so they say so and change nothing.
 import { expect, test } from './fixtures';
-import { PAST_SIDE, FUTURE_SIDE, fillTeam, snap, tid, toSetup } from './support/game';
+import {
+  PAST_SIDE,
+  FUTURE_SIDE,
+  fillTeam,
+  snap,
+  tid,
+  toSetup,
+  clashFromCamp,
+} from './support/game';
 
 async function toCamp(page: Parameters<typeof tid>[0]): Promise<void> {
   await toSetup(page);
@@ -16,7 +24,7 @@ test('Setup leads to the Camp, and Time to Clash! starts the match', async ({ pa
   await expect(page.locator('[data-screen="camp"] h1')).toHaveText('Time Clash Camp');
   await expect(tid(page, 'camp-start')).toHaveText('Time to Clash!');
   await expect(tid(page, 'camp-start')).toBeFocused();
-  await tid(page, 'camp-start').click();
+  await clashFromCamp(page);
   await expect(tid(page, 'pass-screen')).toBeVisible({ timeout: 10_000 });
   const m = await snap(page);
   expect(m.players.map((p) => [p.team, p.name])).toEqual([
@@ -60,13 +68,16 @@ test('Change players opens Setup with the saved players, then returns to the Cam
   await tid(page, 'setup-name-PAST').fill('Mia');
   await tid(page, 'setup-next').click();
   await expect(tid(page, 'camp-start')).toBeVisible();
-  await tid(page, 'camp-start').click();
+  await clashFromCamp(page);
   await expect(tid(page, 'pass-screen')).toBeVisible({ timeout: 10_000 });
   expect((await snap(page)).players[0].name).toBe('Mia');
 });
 
 test('the keyboard starts the match from the Camp', async ({ page }) => {
   await toCamp(page);
+  await page.keyboard.press('Enter');
+  // The Battle Plan opens with Lock it in! focused, so a second Enter starts the match.
+  await expect(tid(page, 'plan-go')).toBeFocused();
   await page.keyboard.press('Enter');
   await expect(tid(page, 'pass-screen')).toBeVisible({ timeout: 10_000 });
 });

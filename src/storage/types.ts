@@ -1,4 +1,5 @@
 // Shared contract for the localStorage wrapper. Nothing here ever leaves the device.
+import type { BattlePlan } from '../game/battlefield';
 import type { BasesState } from '../game/baseBuilder';
 import type { CampState } from '../game/loadout';
 import type { PracticeChoice } from '../game/practice';
@@ -27,6 +28,8 @@ export type StorageSchema = {
   'timeclash.camp': CampState;
   /** Quiet level nudges per player name and subject. Never shown to a child. */
   'timeclash.levels': Levels;
+  /** The last Battle Plan: where to fight and where Team Future hid its base. */
+  'timeclash.plan': BattlePlan;
   /** Play with another player or the Computer player, and how hard. Only used while the choice is on. */
   'timeclash.practice': PracticeChoice;
   /** Up to three saved bases per player name and side. Saved on this device only. */
@@ -42,6 +45,7 @@ export const STORAGE_KEYS: readonly StorageKey[] = [
   'timeclash.history',
   'timeclash.camp',
   'timeclash.levels',
+  'timeclash.plan',
   'timeclash.practice',
   'timeclash.bases',
 ];

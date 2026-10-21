@@ -1,5 +1,6 @@
 // What a team owns and has equipped, and the numbers a match uses because of it. Pure, no Phaser.
 // The default loadout (starter weapon, no upgrades) gives exactly the Phase 1 numbers.
+import type { AmmoId } from './ammo';
 import { DAMAGE, SCRAP } from './config';
 import type { Team } from './types';
 import { upgradeValue, UPGRADES, type UpgradeId } from './upgrades';
@@ -12,6 +13,8 @@ export type TeamLoadout = {
   owned: Partial<Record<WeaponId, number>>;
   /** Upgrade levels (1 to 3). Missing means level 0. */
   upgrades: Partial<Record<UpgradeId, number>>;
+  /** Special ammo kinds unlocked for this side. Missing means none. Uses reset every match. */
+  ammo?: AmmoId[];
   /** Base-builder pieces unlocked with Scrap. The free pieces are never listed. */
   pieces?: string[];
   /** Weapons for base spots unlocked with Scrap. The free ones are never listed. */
@@ -124,4 +127,13 @@ export const matchEffectsFor = (camp: CampState, names: Record<Team, string>): M
 export const DEFAULT_EFFECTS: MatchEffects = matchEffectsFor(freshCamp(), {
   PAST: '',
   FUTURE: '',
+});
+
+/** The special ammo each of the two players has unlocked for the side they play. */
+export const matchAmmoFor = (
+  camp: CampState,
+  names: Record<Team, string>,
+): Record<Team, AmmoId[]> => ({
+  PAST: [...(walletOf(camp, names.PAST).loadout.PAST.ammo ?? [])],
+  FUTURE: [...(walletOf(camp, names.FUTURE).loadout.FUTURE.ammo ?? [])],
 });

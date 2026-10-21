@@ -52,8 +52,16 @@ export function buildMatchSetup(
   players: Players,
   seed: number,
   effects?: MatchEffects,
+  extra: Pick<MatchOptions, 'layout' | 'ammo'> = {},
 ): MatchSetup {
-  return { players, seed, firstTeam: TURN.firstTeam, ...(effects ? { effects } : {}) };
+  return {
+    players,
+    seed,
+    firstTeam: TURN.firstTeam,
+    ...(effects ? { effects } : {}),
+    ...(extra.layout ? { layout: extra.layout } : {}),
+    ...(extra.ammo ? { ammo: extra.ammo } : {}),
+  };
 }
 
 const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null;

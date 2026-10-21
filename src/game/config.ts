@@ -235,6 +235,63 @@ export const SPOTS: Record<(typeof SPOT_IDS)[number], SpotConfig> = {
   },
 };
 
+// ---------- Biomes (Phase 2) ----------
+/** Where the battle happens. Each place has its own middle obstacle and its own backdrop. */
+export const BIOME_IDS = ['aspen', 'cherry', 'temple'] as const;
+
+export type BiomeConfig = {
+  /** The solid shape in the middle of the field. Aspen keeps the Phase 1 hill. */
+  obstacle: Polygon;
+};
+
+export const BIOMES: Record<(typeof BIOME_IDS)[number], BiomeConfig> = {
+  /** The Phase 1 hill, unchanged. */
+  aspen: { obstacle: HILL },
+  /** A low, wide mound. Flatter shots get through more often. */
+  cherry: {
+    obstacle: [
+      { x: 500, y: GROUND_Y },
+      { x: 580, y: 560 },
+      { x: 700, y: 550 },
+      { x: 780, y: GROUND_Y },
+    ],
+  },
+  /** A tall broken pillar. Players must lob over it. */
+  temple: {
+    obstacle: [
+      { x: 610, y: GROUND_Y },
+      { x: 610, y: 470 },
+      { x: 640, y: 455 },
+      { x: 670, y: 480 },
+      { x: 670, y: GROUND_Y },
+    ],
+  },
+};
+
+/** What a new family's first Battle Plan shows picked. Food Trucks keeps the Phase 1 base spot. */
+export const DEFAULT_PLAN = { biome: 'aspen', spot: 'foodTruck' } as const;
+
+// ---------- Evasion (Phase 2) ----------
+/**
+ * One ability per team. A player arms it on their own turn (free, not a shot). It guards their
+ * base during the other team's next turn.
+ */
+export const EVASION = {
+  /** Team Future. The base zips aside, so the first hit that would do damage misses. */
+  dodge: {
+    team: 'FUTURE' as Team,
+    /** Ready again this many of your own turns after you arm it. */
+    rechargeTurns: 2,
+  },
+  /** Team Past. A stone wall stands in front of the castle for the other team's whole turn. */
+  barricade: {
+    team: 'PAST' as Team,
+    usesPerMatch: 1,
+    /** Clear of the castle, its fighters and the middle obstacle. Lobs still get over it. */
+    wall: { x: 460, y: 400, w: 40, h: GROUND_Y - 400 } as Rect,
+  },
+} as const;
+
 // ---------- Timing (ms) ----------
 export const TIMING = {
   /** Loading screen waits at least this long so jokes can be read. */

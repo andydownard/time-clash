@@ -52,6 +52,12 @@ export function fakeController(
     selected: { PAST: 'C', FUTURE: '1' },
     stats: { PAST: stats(), FUTURE: stats({ directHits: 0, fastestAnswerMs: null }) },
     lastShot: null,
+    ammo: { PAST: 'standard', FUTURE: 'standard' },
+    ammoLeft: { PAST: {}, FUTURE: {} },
+    evasion: {
+      PAST: { id: 'barricade', phase: 'ready', turnsLeft: 0, usesLeft: 1 },
+      FUTURE: { id: 'dodge', phase: 'ready', turnsLeft: 0, usesLeft: Infinity },
+    },
     ...patch,
   };
   const unused = (): never => {
@@ -63,6 +69,10 @@ export function fakeController(
     ready: unused,
     setAim: unused,
     selectUnit: unused,
+    selectAmmo: unused,
+    armEvasion: unused,
+    disarmEvasion: unused,
+    currentLayout: () => PHASE1_LAYOUT,
     fire: unused,
     shotLanded: unused,
     reloadDone: unused,

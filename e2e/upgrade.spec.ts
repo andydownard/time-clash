@@ -1,7 +1,15 @@
 // Build Base (old shop, builder off): opens from the Camp, spends Scrap, and the upgrade shows up in the next match.
 import { expect, test } from './fixtures';
 import { giveScrap } from './support/camp';
-import { FUTURE_SIDE, PAST_SIDE, fillTeam, snap, tid, toSetup } from './support/game';
+import {
+  FUTURE_SIDE,
+  PAST_SIDE,
+  fillTeam,
+  snap,
+  tid,
+  toSetup,
+  clashFromCamp,
+} from './support/game';
 
 async function toCamp(page: Parameters<typeof tid>[0]): Promise<void> {
   await toSetup(page);
@@ -60,7 +68,7 @@ test('Upgrade the Tower gives more base health in the next match, shown in the H
   await tid(page, 'camp-upgrade').click();
   await tid(page, 'upgrade-row-tower').click();
   await tid(page, 'upgrade-back').click();
-  await tid(page, 'camp-start').click();
+  await clashFromCamp(page);
   await expect(tid(page, 'pass-screen')).toBeVisible({ timeout: 10_000 });
   const m = await snap(page);
   expect(m.maxBaseHp).toEqual({ PAST: 112, FUTURE: 100 });
