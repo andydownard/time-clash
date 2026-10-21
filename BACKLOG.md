@@ -13,8 +13,6 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 - The tumble is a small bubble beside an idle sprite, with no setup or payoff.
 - The shot has no build-up, and Fire! is a plain red box.
 - Caption times are estimated from sentence length and will drift once the recordings exist.
-- Base health, Shots left, Wind, Scrap, and award names are text a pre-reader cannot use.
-- Miss, near-miss, and wrong-answer lines are plain. Chrono has no label or quip on the reload card. "My dignity needs a rematch" shows even when it does not fit.
 
 ## P2
 - Tumble bubble: a squash, spin or block-bounce animation for the speaker (the tail now points at them).
@@ -22,6 +20,7 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 - Victory awards: the winner can still hold five awards. Consider a cap if it stings.
 - Portrait Setup: the Both chip wraps to its own row at 768 wide.
 - Chrome host (? and gear) has no data-motion attribute. Add it if animation is ever added there.
+- Scrap counts and the brain stats line on Victory are still numbers in words. A pre-reader may want dots or stars to count.
 - The pass screen needs a picture for pre-readers, beyond the team icon in the medium item.
 - The win moment has no celebration.
 - The reward for a fast answer is easy to miss.

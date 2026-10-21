@@ -64,6 +64,10 @@ All interactive parts are at least 56px tall and wide (`--tc-tap`).
 
 **Speech bubble.** MedievalSharp `--tc-fs-lead`. Background `--tc-bubble-bg`, text `--tc-bubble-text`, border `--tc-bubble-border`, radius `--tc-r-bubble`, tail 22px tall below the bubble. Chrono speaks here. Every spoken line also shows as a caption.
 
+**Pre-reader pictures.** Every readout a child must use has a picture beside its words, so a pre-reader can play. Base health has a heart beside the meter, Shots left has a flying ball before the pips, and Scrap has a gear (in the HUD, the Forge and Upgrade Base). The shapes live in `src/ui/hudIcons.ts` (class `tc-hud-icon`, 26px or more). The wind sign on the canvas trails two gust streaks behind its arrow (`windGusts` in `src/scenes/battle/geometry.ts`). Each award on Victory has its own picture (`src/ui/awardIcons.ts`). Pictures are decorative (`aria-hidden`) and use palette colors only. The shape carries the meaning, and the words stay.
+
+**Chrono's lines.** On the reload card, Chrono's quip shows his face and "Chrono:" before the line. On Victory, Chrono's line fits the match: close, one side landed nothing, or a plain good match (`src/ui/victoryMood.ts`, `VICTORY_CHRONO`). "My dignity needs a rematch" belongs to the losing fighter's bubble on the canvas, never to Chrono.
+
 **Progress bar.** Track `--tc-bar-track`, 3px edge in `--tc-bar-edge`, fill `--tc-bar-fill`, height `--tc-bar-h` (26px). The label above it shows the percent as a number ("64%"), so the fill is never the only signal. Label text is `--tc-on-future` at `--tc-fs-lead`.
 
 **Chips (grade picker, K to 12).** Orbitron 800, `--tc-fs-label`. Unselected: `--tc-chip-bg`, `--tc-chip-text`, `--tc-chip-border`. Selected: `--tc-chip-on-bg`, `--tc-chip-on-text`, `--tc-chip-on-border`, plus a check mark so selection is not color-only. Size at least `--tc-chip-min` (56px) square. The mock used 52px, which is too small.

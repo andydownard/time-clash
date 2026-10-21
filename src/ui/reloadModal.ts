@@ -4,6 +4,7 @@ import { PASS_SCREEN, RELOAD as COPY, TEAM_NAMES, UI_EXTRA } from '../data/copy'
 import { RELOAD, UI } from '../game/config';
 import { fastWindowMs } from '../game/reload';
 import { spokenSentences, spokenText } from '../questions/spoken';
+import { chronoFace } from './art';
 import type { UiCtx } from './ctx';
 import { h, renderMath, toMathSymbols } from './dom';
 import { LOCAL_IDS } from './constants';
@@ -257,9 +258,25 @@ export function showReloadModal(ctx: UiCtx, options: ReloadModalOptions): Promis
       if (Number.isInteger(n) && n >= 1 && n <= choiceButtons.length) choose(n - 1);
     };
 
+    // Chrono's quick joke, with his face and name, so a child knows who is talking.
     function addQuip(outcome: 'fast' | 'slow' | 'wrong'): void {
       const line = options.quip?.(outcome);
-      if (line) feedback.append(h(doc, 'p', { class: 'tc-quip', text: line }));
+      if (!line) return;
+      feedback.append(
+        h(
+          doc,
+          'div',
+          { class: 'tc-chrono-quip', 'data-role': 'chrono-quip' },
+          chronoFace(doc),
+          h(
+            doc,
+            'p',
+            { class: 'tc-quip' },
+            h(doc, 'strong', { text: `${UI_EXTRA.chronoName}: ` }),
+            h(doc, 'span', { text: line }),
+          ),
+        ),
+      );
     }
 
     function choose(index: number): void {
