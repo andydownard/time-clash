@@ -10,14 +10,11 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 ## P1
 - Intro voiceover audio files and captions (recordings replace speech synthesis)
 - The intro runs about 60 seconds. Card 4 (Reload) has 7 captions over 15 seconds and only one joke.
-- The tumble is a small bubble beside an idle sprite, with no setup or payoff.
-- The shot has no build-up, and Fire! is a plain red box.
 - Caption times are estimated from sentence length and will drift once the recordings exist.
 - Base health, Shots left, Wind, Scrap, and award names are text a pre-reader cannot use.
 - Miss, near-miss, and wrong-answer lines are plain. Chrono has no label or quip on the reload card. "My dignity needs a rematch" shows even when it does not fit.
 
 ## P2
-- Tumble bubble: a squash, spin or block-bounce animation for the speaker (the tail now points at them).
 - Reload card: an optional "hide the bonus ring" setting for slow readers.
 - Victory awards: the winner can still hold five awards. Consider a cap if it stings.
 - Portrait Setup: the Both chip wraps to its own row at 768 wide.

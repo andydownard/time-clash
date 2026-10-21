@@ -131,10 +131,19 @@ export const IMPACT_BEAT_MS = 700;
 /** Shorter fade used when motion is reduced (ms). */
 export const REDUCED_FADE_MS = 250;
 
-/** Awkward tumble: fly away, land, wobble or lie, then topple. All in ms and px. */
-export const FALL_MS = 1500;
+/**
+ * Awkward tumble: teeter (the setup), fly away, land, bounce (the payoff), wobble or lie, then
+ * topple. All in ms and px.
+ */
+export const FALL_MS = 2100;
 export const FALL_DX = 110;
 export const FALL_HEIGHT = 120;
+/** How high the fighter bounces after the first landing. */
+export const BOUNCE_HEIGHT = 36;
+/** Dizzy stars circle just above the fallen fighter after the bounce, then fade. */
+export const DIZZY = { orbitX: 22, orbitY: 6, rise: 30, spins: 2, ms: 1100 } as const;
+/** The wind-up glow at the launcher before a shot. Matches --tc-fire-charge in tokens.css. */
+export const CHARGE_MS = 380;
 /** The vanish puff after the tumble. */
 export const VANISH_MS = 700;
 /** Base blast timing. */

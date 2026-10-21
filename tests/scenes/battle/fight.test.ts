@@ -1,13 +1,16 @@
 import { describe, expect, it } from 'vitest';
 import { baseBlastPlan, explosionPlan } from '../../../src/scenes/battle/impact';
 import {
+  dizzyStarsFrame,
   fallFrame,
   fallPose,
   fallVariant,
+  FALL_PHASES,
   LYING_DEG,
   vanishFrame,
+  type FallFrame,
 } from '../../../src/scenes/battle/tumble';
-import { FALL_DX, FALL_MS } from '../../../src/scenes/battle/visual';
+import { BOUNCE_HEIGHT, FALL_DX, FALL_HEIGHT, FALL_MS } from '../../../src/scenes/battle/visual';
 
 describe('explosionPlan', () => {
   it('is deterministic', () => {
@@ -83,19 +86,59 @@ describe('fallFrame', () => {
         expect(last.rotationDeg).toBeCloseTo(LYING_DEG);
         expect(last.squashY).toBe(1);
       });
-      it('goes through fly, land, wobble, topple in order', () => {
-        const order = ['fly', 'land', 'wobble', 'topple'];
-        const seen = frames.map((f) => order.indexOf(f.phase));
+      it('goes through teeter, fly, land, bounce, wobble, topple in order', () => {
+        expect(FALL_PHASES).toEqual(['teeter', 'fly', 'land', 'bounce', 'wobble', 'topple']);
+        const seen = frames.map((f) => FALL_PHASES.indexOf(f.phase));
         expect([...seen].sort((a, b) => a - b)).toEqual(seen);
-        expect(new Set(seen).size).toBe(4);
+        expect(new Set(seen).size).toBe(FALL_PHASES.length);
+      });
+      it('sets up with a teeter: it stays put, rocks, flails, looks both ways, ends upright', () => {
+        const teeter = frames.filter((f) => f.phase === 'teeter');
+        expect(teeter.length).toBeGreaterThan(5);
+        for (const f of teeter) {
+          expect(f.dx).toBe(0);
+          expect(f.lift).toBe(0);
+        }
+        expect(Math.max(...teeter.map((f) => Math.abs(f.rotationDeg)))).toBeGreaterThan(5);
+        expect(new Set(teeter.map((f) => Math.round(f.armSwingDeg))).size).toBeGreaterThan(3);
+        const looks = new Set(teeter.map((f) => f.lookDir));
+        expect(looks.has(-1) && looks.has(1)).toBe(true);
+        expect(fallFrame(0, variant).rotationDeg).toBeCloseTo(0);
+        const lastTeeter = teeter[teeter.length - 1]!;
+        expect(Math.abs(lastTeeter.rotationDeg)).toBeLessThan(3);
+      });
+      it('pays off with a bounce: up off the ground after landing, and back down', () => {
+        const bounce = frames.filter((f) => f.phase === 'bounce');
+        expect(bounce.length).toBeGreaterThan(5);
+        const peak = Math.max(...bounce.map((f) => f.lift));
+        expect(peak).toBeGreaterThan(BOUNCE_HEIGHT * 0.8);
+        expect(peak).toBeLessThan(FALL_HEIGHT);
+        for (const f of bounce) expect(f.dx).toBe(FALL_DX);
+        expect(bounce[0]!.lift).toBeLessThan(peak / 2);
+        expect(bounce[bounce.length - 1]!.lift).toBeLessThan(peak / 2);
+        const land = frames.filter((f) => f.phase === 'land');
+        expect(Math.min(...land.map((f) => f.squashY))).toBeLessThan(0.7);
       });
       it('is deterministic', () => {
         expect(fallFrame(500, variant)).toEqual(fallFrame(500, variant));
       });
     });
   }
+  const sample = (variant: 'face' | 'feet'): FallFrame[] =>
+    Array.from({ length: 301 }, (_, i) => fallFrame((i * FALL_MS) / 300, variant));
+  it('on its feet it spins a full turn in the bounce; flat on its face it bounces like a plank', () => {
+    const spin = sample('feet').filter((f) => f.phase === 'bounce');
+    expect(Math.max(...spin.map((f) => f.rotationDeg))).toBeGreaterThan(150);
+    const end = spin[spin.length - 1]!.rotationDeg % 360;
+    expect(Math.min(end, 360 - end)).toBeLessThan(20);
+    const plank = sample('face').filter((f) => f.phase === 'bounce');
+    for (const f of plank) expect(f.rotationDeg).toBeCloseTo(LYING_DEG);
+  });
+  it('keeps the whole tumble short so play keeps moving', () => {
+    expect(FALL_MS).toBeLessThanOrEqual(2500);
+  });
   it('on its feet it stands after landing, then falls over', () => {
-    const wobble = fallFrame(FALL_MS * 0.58, 'feet');
+    const wobble = sample('feet').find((f) => f.phase === 'wobble')!;
     expect(Math.abs(wobble.rotationDeg)).toBeLessThan(15);
     const late = fallFrame(FALL_MS * 0.95, 'feet');
     expect(late.rotationDeg).toBeGreaterThan(40);
@@ -113,6 +156,28 @@ describe('fallFrame', () => {
     const pose = fallPose(fallFrame(300, 'face'));
     expect(pose.lift).toBeGreaterThanOrEqual(0);
     expect(pose.squashX).toBeGreaterThan(0);
+  });
+});
+
+describe('dizzyStarsFrame', () => {
+  it('circles three stars above the head', () => {
+    const f = dizzyStarsFrame(0.5);
+    expect(f).toHaveLength(3);
+    for (const s of f) expect(s.dy).toBeLessThan(0);
+  });
+  it('moves the stars around over time', () => {
+    expect(dizzyStarsFrame(0.3)[0]!.dx).not.toBeCloseTo(dizzyStarsFrame(0.5)[0]!.dx);
+  });
+  it('fades in, holds, and fades out', () => {
+    expect(dizzyStarsFrame(0)[0]!.alpha).toBe(0);
+    expect(dizzyStarsFrame(1)[0]!.alpha).toBeCloseTo(0);
+    expect(dizzyStarsFrame(0.5)[0]!.alpha).toBeGreaterThan(0.8);
+  });
+  it('is deterministic and survives bad input', () => {
+    expect(dizzyStarsFrame(0.4)).toEqual(dizzyStarsFrame(0.4));
+    expect(dizzyStarsFrame(NaN)).toEqual(dizzyStarsFrame(0));
+    expect(dizzyStarsFrame(-3)).toEqual(dizzyStarsFrame(0));
+    expect(dizzyStarsFrame(7)).toEqual(dizzyStarsFrame(1));
   });
 });
 

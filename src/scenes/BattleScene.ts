@@ -9,7 +9,14 @@ import { drawBackdrop, type Backdrop } from './battle/backdrop';
 import { createAimArt, type AimArt } from './battle/aimArt';
 import { effectColor, floatLabel, playFade } from './battle/effects';
 import { createDamageArt, damageStage, type DamageArt } from './battle/damageArt';
-import { playBaseBlast, playBlastFade, playExplosion, playVanish } from './battle/fightEffects';
+import {
+  playBaseBlast,
+  playBlastFade,
+  playCharge,
+  playDizzyStars,
+  playExplosion,
+  playVanish,
+} from './battle/fightEffects';
 import { BattleFlow } from './battle/flow';
 import { characterSpot, sideAlpha } from './battle/geometry';
 import { CHRONO_SCALE } from './battle/unitSpots';
@@ -240,6 +247,10 @@ export class BattleScene extends Phaser.Scene implements BattleView {
     }
   }
 
+  playCharge(team: Team, from: Vec2): Promise<void> {
+    return playCharge(this, from, TEAM_COLOR[team], this.reduced());
+  }
+
   animateShot(
     shooter: Team,
     result: ShotResult,
@@ -347,6 +358,7 @@ export class BattleScene extends Phaser.Scene implements BattleView {
     const variant = fallVariant(this.tumbleCount++);
     const homeX = characterSpot(team, this.layout).x;
     const dir = team === 'PAST' ? 1 : -1;
+    let starsShown = false;
     return new Promise<void>((resolve) => {
       this.tweens.addCounter({
         from: 0,
@@ -356,6 +368,12 @@ export class BattleScene extends Phaser.Scene implements BattleView {
           const frame = fallFrame(tween.getValue() ?? 0, variant);
           character.setPose(fallPose(frame));
           character.container.setX(homeX + frame.dx * dir);
+          // The payoff: once the bounce is over, stars circle the dizzy fighter's head.
+          if (!starsShown && (frame.phase === 'wobble' || frame.phase === 'topple')) {
+            starsShown = true;
+            const c = character.container;
+            void playDizzyStars(this, { x: c.x, y: c.y }, false);
+          }
         },
         onComplete: () => {
           // It stays lying down until the speech bubble has shown and the turn passes.

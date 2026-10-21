@@ -5,8 +5,9 @@ import Phaser from 'phaser';
 import type { Rect, Vec2 } from '../../game/types';
 import { baseBlastPlan, explosionPlan, type Debris } from './impact';
 import type { EffectKind } from './types';
-import { vanishFrame } from './tumble';
-import { PALETTE, VANISH_MS } from './visual';
+import { chargeFrame, chargeMs } from './charge';
+import { dizzyStarsFrame, vanishFrame } from './tumble';
+import { DIZZY, PALETTE, VANISH_MS } from './visual';
 
 const DEPTH = 40;
 
@@ -175,4 +176,57 @@ export function playVanish(
       puff.setScale(f.puffScale).setAlpha(f.puffAlpha);
     },
   }).then(() => puff.destroy());
+}
+
+/**
+ * The wind-up before a shot: a team-colored ring pulls in to the launcher and a bright core grows.
+ * Reduced motion: nothing to draw, the shot goes at once.
+ */
+export function playCharge(
+  scene: Phaser.Scene,
+  at: Vec2,
+  color: number,
+  reduced: boolean,
+): Promise<void> {
+  const ms = chargeMs(reduced);
+  if (ms <= 0) return Promise.resolve();
+  const ring = scene.add.circle(at.x, at.y, 1, color, 0).setDepth(DEPTH);
+  const core = scene.add.circle(at.x, at.y, 1, PALETTE.shared.white, 0).setDepth(DEPTH + 1);
+  const paint = (u: number): void => {
+    const f = chargeFrame(u);
+    ring.setRadius(f.ringRadius).setStrokeStyle(5, color, f.ringAlpha);
+    core.setRadius(f.coreRadius).setFillStyle(color, f.coreAlpha);
+  };
+  paint(0);
+  return tweenDone(scene, {
+    targets: { u: 0 },
+    u: 1,
+    duration: ms,
+    onUpdate: (_t, target: { u: number }) => paint(target.u),
+  }).then(() => {
+    ring.destroy();
+    core.destroy();
+  });
+}
+
+/** Three Ember stars circle the head after the bounce, then fade. Skipped when motion is reduced. */
+export function playDizzyStars(scene: Phaser.Scene, head: Vec2, reduced: boolean): Promise<void> {
+  if (reduced) return Promise.resolve();
+  const stars = [0, 1, 2].map(() =>
+    scene.add
+      .star(head.x, head.y, 5, 4, 9, PALETTE.shared.ember, 1)
+      .setStrokeStyle(2, PALETTE.shared.ink, 1)
+      .setAlpha(0)
+      .setDepth(DEPTH),
+  );
+  return tweenDone(scene, {
+    targets: { u: 0 },
+    u: 1,
+    duration: DIZZY.ms,
+    onUpdate: (_t, target: { u: number }) => {
+      dizzyStarsFrame(target.u).forEach((f, i) =>
+        stars[i]!.setPosition(head.x + f.dx, head.y + f.dy).setAlpha(f.alpha),
+      );
+    },
+  }).then(() => stars.forEach((st) => st.destroy()));
 }
