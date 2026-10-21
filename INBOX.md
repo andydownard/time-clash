@@ -14,3 +14,4 @@ Raw ideas land here. Triage promotes them to BACKLOG.md. Items expire after 30 d
   - Castle and bunkers explode, then are rebuilt, then explode again (a battle idle loop on the design canvas; the real game ends a match on base health).
   - Open questions for the owner: Future unit names for the Forge unlocks; Camp button wording (the vocabulary table says "Upgrade Base", never "Build"); lasers on the Past side or Future only.
 
+- (2026-10-21) Flaky unit tests under load: `vitest.config.ts` now sets a 30 s test and hook limit, because a full run beside builds and other agents stretched ~40 ms tests past 5 s (different tests each run, in `tests/ui` and `tests/game`). `tests/ui/baseBuilder.test.ts` still carries its own 120 s `vi.setConfig`; drop it if it never trips. Check whether any test truly needs more than 30 s.
