@@ -12,6 +12,7 @@ import {
   type Placed,
   type ResolvedSpot,
 } from '../game/baseBuilder';
+import { parseCustomId, type Cell } from '../game/customShapes';
 import type { Team } from '../game/types';
 import { svgFromString } from './svg';
 
@@ -27,8 +28,23 @@ const O = `stroke="${INK}" stroke-width="4"`;
 const SHINE = (w: number): string =>
   `<path d="M6,10 H${Math.max(10, Math.min(w - 10, 30))}" stroke="#fff" stroke-opacity=".45" stroke-width="3" stroke-linecap="round" fill="none"/>`;
 
+/** The squares of a shape of your own, drawn upright. Stone for Team Past, a panel for Future. */
+function ownArt(team: Team, cells: readonly Cell[]): string {
+  return cells
+    .map(([c, r]) => {
+      const x = c * CELL;
+      const y = r * CELL;
+      return team === 'PAST'
+        ? `<rect x="${x}" y="${y}" width="${CELL}" height="${CELL}" rx="4" fill="#9aa8bd" ${O}/><path d="M${x + 6},${y + 10} H${x + 24}" stroke="#fff" stroke-opacity=".45" stroke-width="3" stroke-linecap="round" fill="none"/>`
+        : `<rect x="${x}" y="${y}" width="${CELL}" height="${CELL}" rx="6" fill="#2a3a66" ${O}/><rect x="${x + 6}" y="${y + 6}" width="${CELL - 12}" height="${CELL - 12}" rx="3" fill="#1d2744" stroke="#2ee6ff" stroke-width="2"/>`;
+    })
+    .join('');
+}
+
 /** The picture of one brick, drawn upright in a W by H box (cells times CELL). */
 function art(id: string, W: number, H: number): string {
+  const own = parseCustomId(id);
+  if (own) return ownArt(own.team, own.cells);
   switch (id) {
     case 'stone':
       return `<rect width="${W}" height="${H}" rx="4" fill="#9aa8bd" ${O}/>${SHINE(W)}<path d="M${W - 30},${H - 5} l6,-8 l-3,-6" stroke="${INK}" stroke-opacity=".5" stroke-width="2" fill="none"/>`;
@@ -267,4 +283,32 @@ export function spotsMarkup(
       return `<g class="tc-bb-spot" data-spot="${sp.index}" data-weapon="${sp.weapon ?? ''}"${on ? ' data-selected="true"' : ''} data-live="${interactive}" ${attrs}>${hit}${ring}${body}${badge}</g>`;
     })
     .join('');
+}
+
+// ---------- Your own shapes ----------
+
+/** A small picture of a shape fitted into a `box` by `box` square (the pad preview, a saved shape). */
+export function shapeIcon(
+  doc: Document,
+  team: Team,
+  cells: readonly Cell[],
+  box: number,
+  cls = 'tc-bb-shape-icon',
+): SVGElement {
+  let w = 1;
+  let h = 1;
+  for (const [c, r] of cells) {
+    w = Math.max(w, c + 1);
+    h = Math.max(h, r + 1);
+  }
+  const W = w * CELL;
+  const H = h * CELL;
+  // Leave room for the outline, which is drawn on the edge of each square.
+  const scale = Math.min((box - 4) / W, (box - 4) / H);
+  const x = (box - W * scale) / 2;
+  const y = (box - H * scale) / 2;
+  return svgFromString(
+    doc,
+    `<svg viewBox="0 0 ${box} ${box}" width="${box}" height="${box}" class="${cls}" aria-hidden="true"><g transform="translate(${x} ${y}) scale(${scale})">${ownArt(team, cells)}</g></svg>`,
+  );
 }
