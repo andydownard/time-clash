@@ -149,7 +149,7 @@ test('touch: tap Weapons, tap spot 2, tap a weapon, reload, and it is still ther
   await expect(spotPad(page, 2)).toHaveAttribute('aria-label', 'Spot 2, archer post, selected');
   // A locked weapon needs Scrap: 10 is not enough for the Ballista (35).
   await tid(page, 'bb-weapon-ballista').tap();
-  await expect(tid(page, 'bb-status')).toHaveText('Not yet. You need 25 more Scrap.');
+  await expect(tid(page, 'bb-status')).toHaveText('Not enough Scrap yet. You need 25 more.');
   await expect(spotPad(page, 2)).toHaveAttribute('aria-label', 'Spot 2, archer post, selected');
   await tid(page, 'bb-done').tap();
   await page.reload();

@@ -51,6 +51,33 @@ export const DAMAGE = {
   near: 10,
 } as const;
 
+// ---------- Character health ----------
+/**
+ * Every fighter has its own health. It REPLACES base health for the win (owner decision,
+ * 2026-10-20). Off until the scene and HUD land. The flag is read only as the default of
+ * `MatchOptions.characterHealth`; tests pass the option and never change this constant.
+ */
+export const CHARACTER_HEALTH = {
+  enabled: false,
+  /** Health each fighter starts with. */
+  hp: 3,
+  /** Health lost to a direct hit. */
+  directHit: 1,
+  /**
+   * Health lost to a Power Shot direct hit. The Power Shot is 1.5 times as hard
+   * (BONUS.damageMultiplier). Health is whole numbers, so 1 x 1.5 rounds up to 2.
+   */
+  powerHit: 2,
+  /** A near miss does no damage. The fighter tumbles. */
+  nearHit: 0,
+  /** A fighter's hit box, centered on its firing spot, in world px. */
+  box: { w: 64, h: 64 },
+  /** Scales DAMAGE.directRadius around a fighter box. 0.5 means 24 px of slack. */
+  directScale: 0.5,
+  /** Scales DAMAGE.nearRadius around a fighter box. 0.75 means 90 px. */
+  nearScale: 0.75,
+} as const;
+
 // ---------- Reload and scrap ----------
 export const RELOAD = {
   /** Answers strictly under this many ms are "fast". */

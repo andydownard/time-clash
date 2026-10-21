@@ -2,7 +2,7 @@
 // battle. Drag a brick from the tray onto the plot, turn it, move it, drag it back to remove it.
 // Every change is saved at once through `saveBases`. The rules live in src/game/baseBuilder.ts.
 import '../styles/baseBuilder.css';
-import { BUILDER_COPY, FORGE_COPY } from '../data/copy';
+import { BUILDER_COPY } from '../data/copy';
 import { SHAPE_COPY } from '../data/shapeCopy';
 import {
   assignWeapon,
@@ -802,7 +802,7 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<vo
           options.saveCamp(camp);
           say(BUILDER_COPY.weaponUnlocked(def.name, n));
         } else if (outcome.reason === 'not_enough_scrap') {
-          say(FORGE_COPY.needMore(Math.max(1, (def.scrap ?? 0) - walletOf(camp, name).scrap)));
+          say(BUILDER_COPY.needMore(Math.max(1, (def.scrap ?? 0) - walletOf(camp, name).scrap)));
         }
         renderTray();
         renderPanel();
@@ -962,7 +962,7 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<vo
         options.saveCamp(camp);
         say(BUILDER_COPY.unlocked(def.name));
       } else if (outcome.reason === 'not_enough_scrap') {
-        say(FORGE_COPY.needMore(Math.max(1, cost - walletOf(camp, name).scrap)));
+        say(BUILDER_COPY.needMore(Math.max(1, cost - walletOf(camp, name).scrap)));
       }
       renderTray();
       renderSlots();
