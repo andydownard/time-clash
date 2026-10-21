@@ -63,6 +63,7 @@ export function showPassScreen(ctx: UiCtx, options: PassScreenOptions): Promise<
  * Chrono reads the cover's own words aloud, with a caption. The AudioManager keeps it silent
  * before the first tap, while muted, and in a browser driven by a test tool. The caption shows
  * either way. The line is fixed text: no name (names never leave the device) and no question.
+ * It never asks the voice service for a clip: only a tap on "Hear it" may make that request.
  * Returns a function that stops the line and clears the caption ("I'm ready!" is the Skip).
  */
 function sayPassLine(ctx: UiCtx): () => void {
@@ -74,7 +75,8 @@ function sayPassLine(ctx: UiCtx): () => void {
   ctx.setCaption(text);
   try {
     ctx.audio?.speak(
-      { id: 'pass-line', text, captions: [{ text, startMs: 0 }], durationMs },
+      // noClip: the cover opens on its own, so it never makes a network request.
+      { id: 'pass-line', text, captions: [{ text, startMs: 0 }], durationMs, noClip: true },
       { onCaption: (t) => ctx.setCaption(t) },
     );
   } catch {

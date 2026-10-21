@@ -143,6 +143,19 @@ describe('pass cover voice line', () => {
     expect(bar.textContent).toBe(LINE);
   });
 
+  it('never asks the voice service for a clip (no network request without a tap on it)', () => {
+    const lines: Array<{ noClip?: boolean }> = [];
+    const real = s.audio.speak.bind(s.audio);
+    s.audio.speak = (line, o) => {
+      lines.push(line);
+      return real(line, o);
+    };
+    void s.audio.unlock();
+    void s.overlay.showPassScreen({ nextName: 'Sam', nextTeam: 'FUTURE' });
+    expect(lines).toHaveLength(1);
+    expect(lines[0]!.noClip).toBe(true);
+  });
+
   it('puts the caption above the pass cover so it can be read', () => {
     void s.overlay.showPassScreen({ nextName: 'Sam', nextTeam: 'FUTURE' });
     expect(captionLayerZ()).toBeGreaterThan(Z.cover);
