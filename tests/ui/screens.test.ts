@@ -9,6 +9,7 @@ import {
   TEAM_NAMES,
   UI_EXTRA,
   VICTORY,
+  VICTORY_CHRONO,
   gradeChipLabel,
 } from '../../src/data/copy';
 import { INTRO_SCRIPT } from '../../src/data/introScript';
@@ -520,11 +521,13 @@ describe('victory screen', () => {
     stats: { PAST: stats(8, 2500), FUTURE: stats(7, null) },
   };
 
-  it('names the winner and gives the loser a good-sport line', () => {
+  it('names the winner and gives Chrono a line that fits the match', () => {
     void s.overlay.showVictory(opts);
     const v = q(TEST_IDS.victory)!;
     expect(v.textContent).toContain(VICTORY.heading('Alex'));
-    expect(v.textContent).toContain(VICTORY.goodSport);
+    // Both sides landed 3 hits: a close match. The dignity line is the losing fighter's, on the canvas.
+    expect(v.textContent).toContain(VICTORY_CHRONO.close);
+    expect(v.textContent).not.toContain(VICTORY.goodSport);
     expect(v.textContent).toContain(VICTORY.wipeout);
   });
 
@@ -545,11 +548,11 @@ describe('victory screen', () => {
     expect(v.textContent).not.toContain('Fastest answer');
   });
 
-  it('puts the dignity line in a Chrono speech bubble', () => {
+  it("puts Chrono's line in a Chrono speech bubble", () => {
     void s.overlay.showVictory(opts);
     const bubble = q(TEST_IDS.victory)!.querySelector('[data-role="chrono-says"]')!;
     expect(bubble.textContent).toContain(UI_EXTRA.chronoName);
-    expect(bubble.textContent).toContain(VICTORY.goodSport);
+    expect(bubble.textContent).toContain(VICTORY_CHRONO.close);
     expect(bubble.getAttribute('role')).toBe('status');
   });
 

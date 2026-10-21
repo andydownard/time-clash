@@ -270,7 +270,7 @@ export const RELOAD = {
   reloaded: 'RELOADED!',
   fastBonus: '+2 scrap! Super fast!',
   slowCorrect: '+1 scrap! Nice work!',
-  wrong: (answer: string): string => `Nice try! The answer is ${answer}.`,
+  wrong: (answer: string): string => `Good try! The answer is ${answer}.`,
   lostQuestion: 'Oops! Chrono lost the question. Free reload!',
   wrongReloaded: 'Reloaded anyway. You always get to reload!',
 } as const;
@@ -288,15 +288,19 @@ export const HIT_LINES = {
   direct: ['Direct hit!', 'Bullseye! Boom!', 'Right on target!', 'Whack! Great shot!'],
   near: [
     'So close!',
-    'Almost! Did you feel that breeze?',
-    'Whoa, that was near!',
+    'Almost! The wall felt that breeze.',
+    'Whoa! That one tickled the wall.',
     'Just a hair away!',
+    'Eek! The wall is sweating now.',
+    'One tiny nudge more. Then boom!',
   ],
   miss: [
     'Whoosh! Missed.',
-    'Splat! Right in the dirt.',
-    'Nothing but sky!',
-    'Oops! The wind took it.',
+    'Splat! A worm says hi.',
+    'Nothing but sky! The birds say thanks.',
+    'Oops! The wind took it for a ride.',
+    'Plop! The grass got a surprise.',
+    'Bonk! That rock did not see it coming.',
   ],
 } as const;
 
@@ -313,9 +317,10 @@ export const RELOAD_QUIPS = {
     'Careful brain wins the day!',
   ],
   wrong: [
-    'My pointer is wiggly too. Try the next one!',
-    'Oops! Even Chrono does that. Onward!',
-    'No worries! The clue will stick now.',
+    'I mix up my tick and tock too!',
+    'Good try! Now that clue is yours.',
+    'Brains grow from tries like that. Onward!',
+    'My gears slip too. Next one!',
   ],
 } as const;
 
@@ -373,6 +378,10 @@ export function tumblePool(team: Team): readonly string[] {
 export const VICTORY = {
   heading: (name: string): string => `${name} wins!`,
   teamWins: (team: Team): string => `${TEAM_NAMES[team]} wins!`,
+  /**
+   * Said by the losing side's fighter in the canvas speech bubble, never by Chrono. Chrono did not
+   * fall over, so the line only fits in the mouth of the side that took the wipeout.
+   */
   goodSport: 'Rematch? My dignity needs a rematch!',
   wipeout: 'Wipeout!',
   /** A silly line about the walls, never about a person. */
@@ -401,6 +410,20 @@ export const VICTORY = {
   rematch: 'Rematch',
   backToCamp: 'Back to Camp',
 } as const;
+
+/**
+ * Chrono's line on the Victory screen, picked by how the match went (src/ui/victoryMood.ts).
+ * It cheers both sides and never names a loser.
+ */
+export const VICTORY_CHRONO = {
+  /** Both sides landed hits, and the score was tight. */
+  close: 'What a close clash! My gears are still spinning.',
+  /** One side landed nothing. Gentle, and the wind takes the blame. */
+  shutout: 'Tough one! The wind was extra sneaky. Rematch?',
+  /** Anything else. */
+  solid: 'Great clash, both teams! Who wants a rematch?',
+} as const;
+export type VictoryMood = keyof typeof VICTORY_CHRONO;
 
 // ---------- Errors ----------
 export const ERRORS = {

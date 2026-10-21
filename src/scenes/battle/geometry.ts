@@ -117,3 +117,20 @@ export function bubbleAnchor(team: Team, layout: BattleLayout): Vec2 {
     team === 'PAST' ? base.x + base.w + BUBBLE_MAX_WORLD_W / 2 : base.x - BUBBLE_MAX_WORLD_W / 2;
   return { x, y: spot.y - BUBBLE_RISE };
 }
+
+/** Gust streaks: two short lines behind the wind arrow's tail, for pre-readers. Calm has none. */
+const GUST = { len: 16, gap: 4, rise: 9 } as const;
+export function windGusts(
+  wind: number,
+  cx: number,
+  cy: number,
+): Array<{ x1: number; x2: number; y: number }> {
+  const a = windArrow(wind);
+  if (a.dir === 0) return [];
+  const near = cx - (a.dir * a.length) / 2 - a.dir * GUST.gap;
+  const far = near - a.dir * GUST.len;
+  return [
+    { x1: far, x2: near, y: cy - GUST.rise },
+    { x1: far, x2: near, y: cy + GUST.rise },
+  ];
+}
