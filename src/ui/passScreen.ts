@@ -4,6 +4,7 @@ import { TIMING } from '../game/config';
 import type { UiCtx } from './ctx';
 import { h } from './dom';
 import { createCoverMute } from './muteButton';
+import { passArt } from './passArt';
 import { TEST_IDS, type PassScreenOptions } from './types';
 
 export function showPassScreen(ctx: UiCtx, options: PassScreenOptions): Promise<void> {
@@ -38,6 +39,7 @@ export function showPassScreen(ctx: UiCtx, options: PassScreenOptions): Promise<
           'aria-hidden': 'true',
           text: PASS_SCREEN.icon[options.nextTeam],
         }),
+        passArt(doc),
         h(doc, 'p', { class: 'tc-team-tag', text: TEAM_NAMES[options.nextTeam] }),
         h(doc, 'h2', { id: 'tc-pass-heading', text: PASS_SCREEN.heading }),
         h(doc, 'p', { class: 'tc-big', text: PASS_SCREEN.upNext(options.nextName) }),

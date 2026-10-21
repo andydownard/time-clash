@@ -272,9 +272,11 @@ body {
   letter-spacing: var(--tc-ls-caps);
 }
 .tc-chip-wide {
-  flex: 1 1 auto;
-  min-width: 96px;
+  flex: 1 1 0;
+  min-width: 0;
+  padding-inline: var(--tc-s-2);
   letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 .tc-chip[aria-checked='true'] {
   background: var(--tc-chip-on-bg);
@@ -473,6 +475,11 @@ body {
   box-shadow:
     0 0 0 6px var(--tc-blue-500),
     var(--tc-glow-neon);
+}
+.tc-pass-art {
+  width: 240px;
+  height: 90px;
+  color: var(--tc-parchment-warm);
 }
 .tc-team-tag {
   font-family: var(--tc-font-voice-new);
@@ -4232,6 +4239,15 @@ button.tc-forge-row[aria-disabled='true'],
     grid-template-areas: 'past future';
     padding: var(--tc-chrome-row) 12px 12px;
   }
+  /* Portrait: the picture drops a little so the top cards never cover a fighter, even on the
+     Skyscraper (Team Future's fighters stand highest there). */
+  :root {
+    --tc-battle-drop: 40px;
+  }
+  body:has(.tc-hud-bottom) #game canvas {
+    /* Phaser writes an inline margin-top, so this needs !important. */
+    margin-top: var(--tc-battle-drop) !important;
+  }
   .tc-hud-top > [data-team='PAST'] {
     grid-area: past;
   }
@@ -4254,8 +4270,9 @@ button.tc-forge-row[aria-disabled='true'],
   /* Portrait: the band is taller, so the controls wrap to two rows. The aim panel and Fire
      share the second row. */
   .tc-hud-bottom {
-    /* Starts right under the picture (width x 920/1280 tall: battlefield plus band). */
-    top: calc(100vw * 920 / 1280);
+    /* Starts right under the picture (width x 920/1280 tall: battlefield plus band), which sits
+       below the team cards' gap. */
+    top: calc(100vw * 920 / 1280 + var(--tc-battle-drop));
     bottom: auto;
     align-items: stretch;
     padding-top: var(--tc-s-2);

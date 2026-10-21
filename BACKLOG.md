@@ -14,14 +14,11 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 ## P2
 - Reload card: an optional "hide the bonus ring" setting for slow readers.
 - Victory awards: the winner can still hold five awards. Consider a cap if it stings.
-- Portrait Setup: the Both chip wraps to its own row at 768 wide. Moot: iPad portrait now shows the Turn your iPad screen (docs/IPAD_AUDIT.md).
 - iPad landscape fixes from docs/IPAD_AUDIT.md: Clear my data is cut off on Setup at 1133x744, the Leave dialog body text is 16px, and the bottom controls have no safe-area margin.
 - Chrome host (? and gear) has no data-motion attribute. Add it if animation is ever added there.
 - Scrap counts and the brain stats line on Victory are still numbers in words. A pre-reader may want dots or stars to count.
-- The pass screen needs a picture for pre-readers, beyond the team icon in the medium item.
 - Wood plank and neon pod card skins, bigger castle and rocket pictures on Setup cards, brighter Tap to Play silhouettes with a visual gag, and bouncing victory blocks are new art (Victory confetti and the fast-answer scrap burst are built; the blocks stay hidden under 820px tall).
 - Phase 2 Battle Plan, biomes, base spots, ammo and evasion are wired in. Open calls for Andy: one ability per team (Past wall, Future dodge) or both for each side; wall size and once per match versus dodge every 3rd turn (balance); Food Trucks as the default spot (it adds a low wall that Phase 1 did not have); ammo unlock lives on the Battle Plan, not the Forge.
-- P2: Portrait (768x1024) with the Skyscraper spot: the Team Future card covers the tank and laser robot on top of the tower. Move the top cards or lower the tower in portrait.
 - P2: Biome art is simple: cherry trees recolor the aspens and the temple uses plain columns. The spot shapes (tower, bridge deck, food truck wall) are plain steel blocks. Real art from a design board would help.
 - P3: The aim preview ignores the weapon and fighter range scale (it did before Phase 2 too). It does use the ammo and any standing wall.
 - P3: Ammo and the dodge only change damage in the base-health game. With character health (flag off) ammo still changes the flight, but not damage.

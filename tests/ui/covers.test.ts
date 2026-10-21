@@ -746,6 +746,23 @@ describe('reload modal', () => {
   });
 });
 
+describe('pass-the-mouse cover picture', () => {
+  it('shows a picture of passing the mouse, hidden from screen readers, with the words kept', () => {
+    void s.overlay.showPassScreen({ nextName: 'Sam', nextTeam: 'FUTURE' });
+    const art = q(TEST_IDS.passScreen)!.querySelector('svg.tc-pass-art');
+    expect(art).not.toBeNull();
+    expect(art!.getAttribute('aria-hidden')).toBe('true');
+    expect(art!.hasAttribute('hidden')).toBe(false);
+    expect(art!.querySelector('text')).toBeNull();
+    expect(q(TEST_IDS.passScreen)!.textContent).toContain(PASS_SCREEN.upNext('Sam'));
+  });
+
+  it('draws one picture for the other team too', () => {
+    void s.overlay.showPassScreen({ nextName: 'Alex', nextTeam: 'PAST' });
+    expect(q(TEST_IDS.passScreen)!.querySelectorAll('svg.tc-pass-art')).toHaveLength(1);
+  });
+});
+
 describe('cover stack', () => {
   it('a second cover on top reports itself, and the first returns when it closes', async () => {
     void s.overlay.showPassScreen({ nextName: 'Sam', nextTeam: 'FUTURE' });
