@@ -38,7 +38,7 @@ Voice dictation made some comments noisy, so a few asks are guesses. Claude Desi
 | 4 Setup | Built from the earlier board. |
 | 5 Math, 6 Reading | Built from earlier boards. |
 | 7 and 7b Forge | Built (Scrap only). |
-| 8 and 8b Upgrade | Built (Scrap only, "Upgrade Base"). |
+| 8 and 8b Upgrade | Built (Scrap only, "Build Base"). |
 | 9 Base Destroyed | Built as the Wipeout screen. |
 
 ## Gap check (2026-10-16)

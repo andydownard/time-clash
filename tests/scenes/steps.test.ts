@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { LOADING } from '../../src/data/copy';
 import { SCENE_KEYS } from '../../src/scenes/registry';
 import {
@@ -248,7 +248,7 @@ describe('camp step', () => {
     expect(route).toEqual({ key: SCENE_KEYS.setup });
     expect(t.services.session.match).toBeNull();
   });
-  it('opens Upgrade Base, saves what the family does there, and returns to the Camp', async () => {
+  it('with the builder off, opens the old Build Base shop, saves what the family does there, and returns to the Camp', async () => {
     t.storage.set('timeclash.players', players);
     t.storage.set('timeclash.camp', campWith(30, 0));
     const p = runCampStep(t.services);
@@ -276,6 +276,35 @@ describe('camp step', () => {
     const data = (await match).data as BattleSceneData;
     expect(data.match.snapshot().maxBaseHp.PAST).toBe(112);
     expect(data.match.snapshot().baseHp.PAST).toBe(112);
+  });
+});
+
+describe('camp step: Build Base and the builder flag', () => {
+  afterEach(() => window.history.replaceState(null, '', '/'));
+  it('flag off: no builder button, and Build Base opens the old shop screen', async () => {
+    t.storage.set('timeclash.players', players);
+    t.storage.set('timeclash.camp', campWith(30, 0));
+    const p = runCampStep(t.services);
+    expect(q(TEST_IDS.campBuild('PAST'))).toBeNull();
+    expect(q(TEST_IDS.campUpgrade)!.textContent).toBe('Build Base');
+    click(q(TEST_IDS.campUpgrade));
+    await flush();
+    expect(document.querySelector('[data-screen="upgrade"] h1')!.textContent).toBe('Build Base');
+    expect(document.querySelector('[data-screen="builder"]')).toBeNull();
+    click(q(TEST_IDS.upgradeBack));
+    await p;
+  });
+  it('flag on: Build Base opens the builder, not the old shop', async () => {
+    window.history.replaceState(null, '', '/?builder=1');
+    t.storage.set('timeclash.players', players);
+    const p = runCampStep(t.services);
+    expect(q(TEST_IDS.campUpgrade)).toBeNull();
+    click(q(TEST_IDS.campBuild('FUTURE')));
+    await flush();
+    expect(document.querySelector('[data-screen="builder"]')).not.toBeNull();
+    expect(document.querySelector('[data-screen="upgrade"]')).toBeNull();
+    click(q('bb-back'));
+    expect(await p).toEqual({ key: SCENE_KEYS.camp });
   });
 });
 

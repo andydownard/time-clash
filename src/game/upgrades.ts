@@ -1,4 +1,4 @@
-// The Upgrade Base choices. Pure data and arithmetic, no Phaser. Each team has three, and each
+// The Build Base (old shop) choices. Pure data and arithmetic, no Phaser. Each team has three, and each
 // goes from level 1 to 3. The effects are small on purpose: one purchase never wins the game.
 import type { Team } from './types';
 

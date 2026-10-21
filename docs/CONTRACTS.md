@@ -19,9 +19,10 @@ The shared shapes three agents build against. Types live in `src/**/types.ts`, n
 | `game/wind.ts` | `windForTurn` | `WindForTurn` | Integer in -80..80 from `createRng(seed ^ RNG_SALT.wind ^ turn)`-style mixing. |
 | `game/turn.ts` | `createTurn`, `transition` | `CreateTurn`, `Transition` | Throws `IllegalTransitionError` (in `game/types.ts`). |
 | `game/damage.ts` | `classifyBlast`, `blastDamage`, `applyBlast`, `isWipeout`, `winnerOf` | same names, PascalCase | Distance to nearest point of the base rect. |
+| `game/damage.ts` (character health) | `freshUnitHp`, `aliveUnitIds`, `teamKnockedOut`, `winnerOfUnits`, `winnerOfMatch`, `unitDamage`, `resolveUnitBlast`, `pathGap` | `UnitHp`, `UnitBlast` | Only used when `MatchOptions.characterHealth` is true (flag `CHARACTER_HEALTH.enabled`, off). See GAME_SPEC "Character health". |
 | `game/reload.ts` | `scoreReload` | `ScoreReload` | 2 / 1 / 0 scrap. Never throws. |
 | `game/names.ts` | `validateName` | `ValidateName` | Trim, 1..12 chars, small local blocklist. |
-| `game/match.ts` | `createMatch` | `CreateMatch` | Returns a `MatchController`. No Phaser. |
+| `game/match.ts` | `createMatch` | `CreateMatch` | Returns a `MatchController`. No Phaser. The snapshot also has `characterHealth: boolean`, `unitHp: Record<UnitId, number>`, `maxUnitHp: number`, `aliveCount: Record<Team, number>`. `baseHp` stays, unused for the win when `characterHealth` is true. `shotLanded()` adds optional `units: UnitOutcome[]` and `knockedOut: UnitId[]` in that mode. |
 | `questions/pick.ts` | `pickQuestion`, `isCorrect` | `PickQuestion`, `IsCorrect` | Rules in the `PickQuestion` doc comment. |
 | `questions/validate.ts` | `validateQuestion`, `recomputeMathAnswer` | same | Used by `npm run check:questions`. |
 | `questions/bank/index.ts` | `BANK` | `QuestionBank` | Static JSON imports. |

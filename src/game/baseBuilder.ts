@@ -4,6 +4,17 @@
 // bricks in the same spot". Every function returns a new state and never changes the old one.
 // A base also has four weapon spots: round pads where a cannon, laser or other weapon is mounted.
 import { BASE_BUILDER as B } from './config';
+import {
+  customId,
+  isCustomId,
+  parseCustomId,
+  rotateCells,
+  shapeKey,
+  shapeProblem,
+  cellsFromKey,
+  type Cell,
+  type ShapeProblem,
+} from './customShapes';
 import { walletKey } from './loadout';
 import type { Team } from './types';
 import { TEAMS } from './types';
@@ -23,6 +34,8 @@ export type PieceDef = Readonly<{
   hp: number;
   /** Owned from the start. Other pieces cost Scrap (see BASE_BUILDER.pieceScrap). */
   free: boolean;
+  /** Only for a shape of your own: its filled squares (column, row), before turning. */
+  cells?: readonly Cell[];
 }>;
 
 const piece = (
@@ -53,7 +66,40 @@ export const PIECES: readonly PieceDef[] = [
   piece('powerCore', 'FUTURE', 'Power core', 2, 2, B.hp.medium, false),
 ];
 
-export const pieceById = (id: unknown): PieceDef | undefined => PIECES.find((p) => p.id === id);
+const customDefs = new Map<string, PieceDef | null>();
+
+/** The piece for a shape of your own, or undefined when the id is not a clean shape. */
+function customDef(id: string): PieceDef | undefined {
+  let def = customDefs.get(id);
+  if (def === undefined) {
+    const parts = parseCustomId(id);
+    let w = 0;
+    let h = 0;
+    for (const [c, r] of parts?.cells ?? []) {
+      w = Math.max(w, c + 1);
+      h = Math.max(h, r + 1);
+    }
+    def = parts
+      ? {
+          id,
+          team: parts.team,
+          name: 'Your shape',
+          w,
+          h,
+          hp: parts.cells.length * B.hpPerCell,
+          free: true,
+          cells: parts.cells,
+        }
+      : null;
+    if (customDefs.size >= 500) customDefs.clear();
+    customDefs.set(id, def);
+  }
+  return def ?? undefined;
+}
+
+/** A normal piece, or a shape of your own (its id carries its side and squares). */
+export const pieceById = (id: unknown): PieceDef | undefined =>
+  isCustomId(id) ? customDef(id) : PIECES.find((p) => p.id === id);
 export const piecesOf = (team: Team): readonly PieceDef[] => PIECES.filter((p) => p.team === team);
 /** Scrap to unlock a piece, or null if it is free from the start. */
 export const pieceScrap = (def: PieceDef): number | null =>
@@ -68,7 +114,8 @@ export function ownedPieceIds(team: Team, unlocked: readonly string[] | undefine
   );
   for (const id of unlocked ?? []) {
     const def = pieceById(id);
-    if (def && def.team === team) owned.add(id);
+    // A shape of your own is never "unlocked": it travels inside the base that uses it.
+    if (def && def.team === team && !def.cells) owned.add(id);
   }
   return owned;
 }
@@ -163,6 +210,23 @@ export function rectOf(p: Placed): Rect | null {
   return { l, t, r: l + f.w * S, b: t + f.h * S };
 }
 
+/**
+ * The boxes a brick really fills, in steps. A normal brick is one box. A shape of your own is one
+ * box for each filled square, so a brick can sit in its empty corner. Empty for a bad brick.
+ */
+export function occupiedRects(p: Placed): Rect[] {
+  const def = pieceById(p.piece);
+  const box = rectOf(p);
+  if (!def || !box) return [];
+  if (!def.cells) return [box];
+  return rotateCells(def.cells, p.rot).map(([c, r]) => ({
+    l: box.l + c * S,
+    t: box.t + r * S,
+    r: box.l + (c + 1) * S,
+    b: box.t + (r + 1) * S,
+  }));
+}
+
 const inside = (r: Rect): boolean =>
   r.l >= 0 && r.t >= 0 && r.r <= PLOT_STEPS.w && r.b <= PLOT_STEPS.h;
 /** Touching edges are fine. Only a shared area counts. */
@@ -178,10 +242,14 @@ export function check(
   const rect = rectOf(cand);
   if (!rect || !isWhole(cand.ox, 0, S - 1) || !isWhole(cand.oy, 0, S - 1)) return 'unknown';
   if (!inside(rect)) return 'outside';
+  const mine = occupiedRects(cand);
   for (let i = 0; i < pieces.length; i++) {
     if (i === skip) continue;
     const other = rectOf(pieces[i] as Placed);
-    if (other && overlaps(rect, other)) return 'overlap';
+    // The boxes are checked first. Only then the filled squares of a shape of your own.
+    if (!other || !overlaps(rect, other)) continue;
+    const theirs = occupiedRects(pieces[i] as Placed);
+    if (mine.some((a) => theirs.some((b) => overlaps(a, b)))) return 'overlap';
   }
   return null;
 }
@@ -560,7 +628,9 @@ export function repairBase(raw: unknown, team: Team, owned?: ReadonlySet<string>
     if (!Array.isArray(row) || row.length < 6) continue;
     const [id, x, y, ox, oy, rot, hp] = row as unknown[];
     const def = pieceById(id);
-    if (!def || def.team !== team || (owned && !owned.has(def.id))) continue;
+    // A shape of your own is part of the base, so it needs no unlock.
+    const unowned = owned && !def?.cells && !owned.has(def?.id ?? '');
+    if (!def || def.team !== team || unowned) continue;
     if (!isWhole(x, -1000, 1000) || !isWhole(y, -1000, 1000)) continue;
     if (!isWhole(ox, 0, S - 1) || !isWhole(oy, 0, S - 1) || !isRotation(rot)) continue;
     const cand: Placed = {
@@ -584,6 +654,8 @@ export type TeamBases = {
   chosen: number;
   /** Null is an empty slot. */
   slots: Array<SavedBase | null>;
+  /** Shapes of your own that this player drew for this side (keys, see customShapes.ts). */
+  shapes?: string[];
 };
 export type BasesState = { players: Record<string, Record<Team, TeamBases>> };
 
@@ -633,6 +705,66 @@ export function saveSlot(
 export function chooseSlot(state: BasesState, name: string, team: Team, slot: number): BasesState {
   if (!isWhole(slot, 0, B.slots - 1)) return state;
   return withTeamBases(state, name, team, { ...basesOf(state, name, team), chosen: slot });
+}
+
+// ---------- Your own shapes: the saved list for each player and side ----------
+
+/** The saved shape keys that are clean, new, and within the most shapes. */
+function cleanShapes(raw: unknown): string[] {
+  if (!Array.isArray(raw)) return [];
+  const out: string[] = [];
+  for (const key of raw.slice(0, B.maxShapes * 4)) {
+    if (out.length >= B.maxShapes) break;
+    if (cellsFromKey(key) !== null && !out.includes(key as string)) out.push(key as string);
+  }
+  return out;
+}
+
+/** The shapes a player drew for a side, as keys. Make a piece id with `customId(team, key)`. */
+export function shapesOf(state: BasesState, name: string, team: Team): string[] {
+  return cleanShapes(basesOf(state, name, team).shapes);
+}
+
+export type ShapeSaveRefusal = ShapeProblem | 'duplicate' | 'full' | 'noname';
+export type ShapeSaveResult =
+  { ok: true; state: BasesState; key: string; id: string } | { ok: false; reason: ShapeSaveRefusal };
+
+/**
+ * Saves a drawing in the player's list for this side. It is free. The same shape drawn in another
+ * place on the pad is a duplicate. A player keeps at most BASE_BUILDER.maxShapes for each side.
+ */
+export function saveShape(
+  state: BasesState,
+  name: string,
+  team: Team,
+  cells: readonly Cell[],
+): ShapeSaveResult {
+  const problem = shapeProblem(cells);
+  if (problem) return { ok: false, reason: problem };
+  if (walletKey(name) === '') return { ok: false, reason: 'noname' };
+  const key = shapeKey(cells);
+  const have = shapesOf(state, name, team);
+  if (have.includes(key)) return { ok: false, reason: 'duplicate' };
+  if (have.length >= B.maxShapes) return { ok: false, reason: 'full' };
+  const next = withTeamBases(state, name, team, {
+    ...basesOf(state, name, team),
+    shapes: [...have, key],
+  });
+  return { ok: true, state: next, key, id: customId(team, key) };
+}
+
+/**
+ * Takes a shape off the saved list. A base that already uses it keeps it, because a placed shape
+ * carries its own squares. A key that is not in the list changes nothing (the same state returns).
+ */
+export function deleteShape(state: BasesState, name: string, team: Team, key: string): BasesState {
+  const have = shapesOf(state, name, team);
+  if (!have.includes(key)) return state;
+  const cur = basesOf(state, name, team);
+  const left = have.filter((k) => k !== key);
+  const next: TeamBases = { chosen: cur.chosen, slots: cur.slots };
+  if (left.length) next.shapes = left;
+  return withTeamBases(state, name, team, next);
 }
 
 /** The bricks in one slot, cleaned. */
@@ -689,7 +821,9 @@ export function parseBases(raw: unknown): BasesState | null {
       const t = value[team];
       if (!isObject(t)) continue;
       const slots = Array.isArray(t.slots) ? t.slots : [];
+      const shapes = cleanShapes(t.shapes);
       entry[team] = {
+        ...(shapes.length ? { shapes } : {}),
         chosen: isWhole(t.chosen, 0, B.slots - 1) ? t.chosen : 0,
         slots: Array.from({ length: B.slots }, (_, i) => {
           const pieces = repairBase(slots[i], team);

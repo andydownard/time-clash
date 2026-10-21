@@ -191,6 +191,30 @@ export type BlastOutcome = {
   tumble: boolean;
   /** Index into copy TUMBLE_LINES when tumble is true, else null. Chosen by a seeded shuffle bag. */
   bubbleIndex: number | null;
+  /**
+   * Only when CHARACTER_HEALTH is on: what happened to each fighter the blast touched.
+   * Then `result` is the best of them, `damage` is the total health lost, `tumble` is true when
+   * any fighter tumbled, and `bubbleIndex` is the first tumble line. Base health is untouched.
+   */
+  units?: UnitOutcome[];
+  /** Only when CHARACTER_HEALTH is on: fighters that reached 0 on THIS shot. Each appears once, ever. */
+  knockedOut?: UnitId[];
+};
+
+/** One fighter's result from one blast (CHARACTER_HEALTH on). */
+export type UnitOutcome = {
+  unit: UnitId;
+  result: 'direct' | 'near';
+  /** Health lost: 1 for a direct hit, 2 for a Power Shot, 0 for a near miss. */
+  damage: number;
+  /** Health left after the blast. */
+  hp: number;
+  /** True when the fighter tumbles: a near miss, or the hit that took it to 0. */
+  tumble: boolean;
+  /** True on the one shot that took the fighter to 0. The scene plays the awkward fall. */
+  knockedOut: boolean;
+  /** Index into copy TUMBLE_LINES when tumble is true, else null. */
+  bubbleIndex: number | null;
 };
 
 /**
@@ -260,7 +284,16 @@ export type Match = {
   readonly turn: TurnState;
   /** Wind for the current turn, from windForTurn(seed, turn.turnNumber). */
   readonly wind: number;
+  /** Base health. Unused for the win when `characterHealth` is on (it stays at full). */
   readonly baseHp: Record<Team, number>;
+  /** True when each fighter has its own health and the win is "all fighters out" (CHARACTER_HEALTH). */
+  readonly characterHealth: boolean;
+  /** Health of every fighter by id. Starts at `maxUnitHp`; changes only when `characterHealth` is on. */
+  readonly unitHp: Record<UnitId, number>;
+  /** A fighter's full health (CHARACTER_HEALTH.hp). */
+  readonly maxUnitHp: number;
+  /** Fighters still standing per team (health above 0). The HUD health pips read this. */
+  readonly aliveCount: Record<Team, number>;
   /** Each base's full health. 100 unless an upgrade raised it. */
   readonly maxBaseHp: Record<Team, number>;
   readonly scrap: Record<Team, number>;
@@ -281,6 +314,8 @@ export type MatchOptions = {
   layout?: BattleLayout;
   /** Weapons and upgrades for each team. Default: the starter weapons, no upgrades (Phase 1). */
   effects?: MatchEffects;
+  /** Character health on or off. Default CHARACTER_HEALTH.enabled (off). Tests pass it here. */
+  characterHealth?: boolean;
 };
 
 export class MatchOverError extends Error {

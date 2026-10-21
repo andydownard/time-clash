@@ -12,7 +12,8 @@ import {
 import { DEFAULT_EFFECTS, type MatchEffects } from './loadout';
 import { otherTeam } from './types';
 import type { AimInput, BattleLayout, Match, Rect, Rng, Team, Vec2 } from './types';
-import { DEFAULT_UNIT, firingOrigin, unitById, type UnitId } from './units';
+import { aliveUnitIds, pathGap } from './damage';
+import { DEFAULT_UNIT, firingOrigin, unitBox, unitById, type UnitId } from './units';
 
 export type BotShot = AimInput & { unit: UnitId };
 
@@ -64,13 +65,15 @@ const solve = (
   layout: BattleLayout,
   speedScale: number,
   rng: Rng,
+  /** A fighter to aim at (character health on). Default: the other team's base. */
+  mark?: { id: UnitId; box: Rect },
 ): AimInput => {
   const perLayout = solutions.get(layout) ?? new Map<string, Solution>();
   solutions.set(layout, perLayout);
-  const key = `${team}|${origin.x}|${origin.y}|${wind}|${speedScale}`;
+  const key = `${team}|${origin.x}|${origin.y}|${wind}|${speedScale}|${mark?.id ?? 'base'}`;
   const cached = perLayout.get(key);
   if (cached) return pickAim(cached, rng);
-  const target = layout.bases[otherTeam(team)];
+  const target = mark ? mark.box : layout.bases[otherTeam(team)];
   const { angleStepDeg, powerStep, fineRadius, fineStep } = PRACTICE_BOT.search;
   const tryAim = (angleDeg: number, power: number): Candidate => {
     const r = simulateShot({
@@ -82,6 +85,8 @@ const solve = (
       layout,
       speedScale,
     });
+    // A fighter can be hit in flight, so its score is the closest the shell comes.
+    if (mark) return { angleDeg, power, score: pathGap(r.path, target) };
     const flewAway = r.hit.kind === 'out_of_bounds' || r.hit.kind === 'timeout';
     const score = flewAway ? Number.MAX_SAFE_INTEGER : gap(r.landing, target);
     return { angleDeg, power, score };
@@ -120,14 +125,36 @@ export const chooseShotWith = (
 ): BotShot => {
   const layout = ctx.layout ?? PHASE1_LAYOUT;
   const effects = ctx.effects ?? DEFAULT_EFFECTS;
-  const unitId = state.selected[side] ?? DEFAULT_UNIT[side];
+  // With character health on, only a fighter still standing may shoot.
+  const standing = state.characterHealth ? aliveUnitIds(state.unitHp, side) : null;
+  const picked = state.selected[side] ?? DEFAULT_UNIT[side];
+  const unitId =
+    standing && standing.length > 0 && !standing.includes(picked)
+      ? standing.includes(DEFAULT_UNIT[side])
+        ? DEFAULT_UNIT[side]
+        : (standing[0] as UnitId)
+      : picked;
   const unit =
     unitById(unitId) ?? (unitById(DEFAULT_UNIT[side]) as NonNullable<ReturnType<typeof unitById>>);
   const origin = firingOrigin(side, unit.id, layout);
   const speedScale = effects[side].speedScale * unit.speedScale;
   // The bot reads only a share of the wind, like a child who half-notices the arrows.
   const seenWind = state.wind * profile.windSkill;
-  const ideal = solve(origin, side, seenWind, layout, speedScale, rng);
+  // With character health on, aim at one of the other team's fighters still standing.
+  const foes = state.characterHealth ? aliveUnitIds(state.unitHp, otherTeam(side)) : [];
+  const foe = foes.length > 0 ? rng.pick(foes) : null;
+  const mark = foe ? { id: foe, box: unitBox(otherTeam(side), foe, layout) } : undefined;
+  // Aiming at fighters has many more cases to search, so the wind is rounded to a whole number
+  // there (an error far smaller than the bot's own aim spread).
+  const ideal = solve(
+    origin,
+    side,
+    mark ? Math.round(seenWind) : seenWind,
+    layout,
+    speedScale,
+    rng,
+    mark,
+  );
   const aim = clampAim({
     angleDeg: Math.round(ideal.angleDeg + normal(rng) * profile.angleSpreadDeg),
     power: Math.round(ideal.power + normal(rng) * profile.powerSpreadPct),

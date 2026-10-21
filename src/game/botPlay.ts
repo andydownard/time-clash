@@ -30,6 +30,8 @@ export type SimOptions = {
   grade?: Grade;
   /** Safety cap on turns. Default PRACTICE_BOT.maxSimTurns. */
   maxTurns?: number;
+  /** Character health on or off. Default: the game's own setting. */
+  characterHealth?: boolean;
 };
 
 /** Plays one match to the end (or to the safety cap). */
@@ -39,6 +41,7 @@ export const playBotMatch = (opts: SimOptions): SimResult => {
     players: [player('PAST', grade), player('FUTURE', grade)],
     seed: opts.seed,
     firstTeam: opts.firstTeam ?? 'PAST',
+    ...(opts.characterHealth === undefined ? {} : { characterHealth: opts.characterHealth }),
   });
   const rng = createRng((opts.seed ^ 0x626f74) >>> 0);
   const shoot = (team: Team): boolean => {
