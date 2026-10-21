@@ -13,7 +13,7 @@ import {
   gradeChipLabel,
 } from '../../src/data/copy';
 import { INTRO_SCRIPT } from '../../src/data/introScript';
-import { DEFAULT_NAMES, TIMING } from '../../src/game/config';
+import { CELEBRATE, DEFAULT_NAMES, TIMING } from '../../src/game/config';
 import type { Players, TeamStats } from '../../src/game/types';
 import { TEST_IDS, Z } from '../../src/ui/types';
 import { click, flush, key, q, qa, setup } from './helpers';
@@ -585,6 +585,15 @@ describe('victory screen', () => {
   it('plays the cheer once', () => {
     void s.overlay.showVictory(opts);
     expect(s.sfx.filter((n) => n === 'cheer')).toHaveLength(1);
+  });
+
+  it('throws confetti that is decoration only and stays out of the layout', () => {
+    void s.overlay.showVictory(opts);
+    const c = q(TEST_IDS.victory)!.querySelector('[data-role="confetti"]')!;
+    expect(c).not.toBeNull();
+    expect(c.getAttribute('aria-hidden')).toBe('true');
+    expect(c.querySelectorAll('.tc-confetti-bit')).toHaveLength(CELEBRATE.confettiCount);
+    expect(c.textContent).toBe('');
   });
 
   it('puts names in as text', () => {
