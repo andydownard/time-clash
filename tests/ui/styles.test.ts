@@ -113,6 +113,37 @@ describe('ui.css: colors, fonts, network', () => {
   });
 });
 
+describe('ui.css: the Fire button', () => {
+  const body = (sel: string): string =>
+    all
+      .filter((r) => r.selector.split(',').map((x) => x.trim()).includes(sel))
+      .map((r) => r.body)
+      .join(';');
+
+  it('winds up with a token fill and glow while charging', () => {
+    expect(body(".tc-btn-fire[data-charging='true']")).toMatch(/box-shadow:\s*var\(--tc-glow-charge\)/);
+    // A disabled button is dimmed. The charging one is not, so the wind-up reads clearly.
+    expect(body(".tc-btn-fire[data-charging='true']")).toMatch(/opacity:\s*1/);
+    expect(body(".tc-btn-fire[data-charging='true']::after")).toMatch(
+      /animation:\s*tc-fire-charge var\(--tc-fire-charge\)/,
+    );
+    expect(body('.tc-btn-fire::after')).toMatch(/background:\s*var\(--tc-fire-charge-fill\)/);
+    expect(body('.tc-btn-fire::after')).toMatch(/pointer-events:\s*none/);
+    expect(ui).toMatch(/@keyframes tc-fire-charge/);
+  });
+
+  it('Team Future gets the neon edge, Team Past keeps the Ember edge', () => {
+    expect(body(".tc-btn-fire[data-team='FUTURE']")).toMatch(/border-color:\s*var\(--tc-pulse\)/);
+    expect(body(".tc-btn-fire[data-team='FUTURE']")).toMatch(/box-shadow:\s*var\(--tc-glow-neon\)/);
+    expect(body('.tc-btn-fire')).toMatch(/border:\s*var\(--tc-btn-primary-border\)/);
+  });
+
+  it('stays a big target with big text', () => {
+    expect(body('.tc-btn-fire')).toMatch(/font-size:\s*var\(--tc-fs-button-lg\)/);
+    expect(body('.tc-btn-fire')).toMatch(/min-height:\s*64px/);
+  });
+});
+
 describe('ui.css: focus and motion', () => {
   it('has a visible focus ring of at least 3px using the focus token', () => {
     const rule = all.find((r) => r.selector.includes(':focus-visible'));

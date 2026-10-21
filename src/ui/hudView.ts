@@ -177,7 +177,11 @@ export function createHud(ctx: UiCtx) {
 
   const fireNow = (h_: HudHandlers): void => {
     hasFired = true;
-    if (parts) parts.hint.hidden = true;
+    if (parts) {
+      parts.hint.hidden = true;
+      // The wind-up look. It stays on through the flight and clears when Fire is ready again.
+      parts.fire.dataset.charging = 'true';
+    }
     h_.onFire();
   };
 
@@ -392,6 +396,9 @@ export function createHud(ctx: UiCtx) {
       parts.angle.disabled = !canFire;
       parts.power.disabled = !canFire;
       parts.fire.disabled = !canFire;
+      if (canFire) delete parts.fire.dataset.charging;
+      if (state.activeTeam) parts.fire.dataset.team = state.activeTeam;
+      else delete parts.fire.dataset.team;
       paintUnits(state);
       // A disabled control drops focus to the page. Keep it inside the HUD instead.
       const active = doc.activeElement;

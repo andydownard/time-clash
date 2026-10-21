@@ -39,6 +39,20 @@ function computerWorld(level: BotLevel = 'hard', seed = 11, reduced = false) {
 }
 
 describe('BattleFlow with the Computer player', () => {
+  it('the computer winds up before every shot too, after its thinking note is gone', async () => {
+    const w = computerWorld();
+    await w.flow.run();
+    const order = w.log.filter((l) => /^(charge|fly):FUTURE/.test(l));
+    expect(order.length).toBeGreaterThanOrEqual(4);
+    for (let i = 0; i < order.length; i += 2) {
+      expect(order.slice(i, i + 2)).toEqual(['charge:FUTURE', 'fly:FUTURE']);
+    }
+    const computerCharges = w.charges.filter((c) => c.team === 'FUTURE');
+    // Fire is never on for the computer, and its shot is not taken before the wind-up.
+    for (const c of computerCharges) expect(c.canFireShown).toBe(false);
+    expect(w.thinking.at(-1) ?? null).toBeNull();
+  });
+
   it('never shows the pass-the-mouse screen, before or after the computer', async () => {
     const w = computerWorld();
     await w.flow.run();

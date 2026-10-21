@@ -38,7 +38,7 @@ PASS_SCREEN --READY--> AIMING(0) --FIRE--> SHOT_1 --SHOT_LANDED--> AIMING(1)
   --FIRE--> SHOT_2 --SHOT_LANDED--> RELOAD --RELOAD_DONE--> NEXT_PLAYER
   --PASS--> PASS_SCREEN (other team, turnNumber + 1)
 ```
-Any other pair throws. Battle scene loop: `pass screen → ready() → banner → setAim/fire() → animate path → shotLanded() → (tumble, bubble) → ... → pickQuestion → showReloadModal → reloadDone() → pass()`.
+Any other pair throws. Battle scene loop: `pass screen → ready() → banner → setAim → Fire tap → wind-up (playCharge) → fire() → animate path → shotLanded() → (tumble, bubble) → ... → pickQuestion → showReloadModal → reloadDone() → pass()`. The shot is not taken until the wind-up ends, so leaving the game during it fires nothing.
 
 ## Decisions
 1. **`shotsFired` (0, 1, 2) tells the two AIMING states apart.** Keeps the six state names from BUILD.md exactly, with no extra states.

@@ -44,6 +44,8 @@ export function makeWorld(
     matchOptions?: Partial<MatchOptions>;
     levels?: Levels;
     players?: Players;
+    /** Runs inside the wind-up, before the shot is fired. */
+    onCharge?: () => void;
     /** The voice service is set up, so funny lines are spoken. */
     clips?: boolean;
   } = {},
@@ -63,6 +65,13 @@ export function makeWorld(
   const selections: Array<{ team: Team; id: UnitId }> = [];
   const shots: Array<{ team: Team; kind: string | undefined; start: { x: number; y: number } }> =
     [];
+  const charges: Array<{
+    team: Team;
+    from: { x: number; y: number };
+    sfxSoFar: number;
+    canFireShown: boolean | undefined;
+    shotsFired: number;
+  }> = [];
   const previews: Array<{ team: Team; dots: readonly PreviewDot[] | null }> = [];
   const histories: PickHistory[] = [];
   const levelsSaved: Levels[] = [];
@@ -99,6 +108,18 @@ export function makeWorld(
       guard('animateShot');
       shots.push({ team: shooter, kind, start: { ...result.path[0]! } });
       log.push(`fly:${shooter}`);
+    },
+    playCharge: async (team, from) => {
+      guard('playCharge');
+      charges.push({
+        team,
+        from: { ...from },
+        sfxSoFar: sfx.length,
+        canFireShown: hudStates[hudStates.length - 1]?.canFire,
+        shotsFired: match.snapshot().stats[team].shotsFired,
+      });
+      log.push(`charge:${team}`);
+      opts.onCharge?.();
     },
     playImpact: async (info) => {
       guard('playImpact');
@@ -221,6 +242,7 @@ export function makeWorld(
     previews,
     selections,
     shots,
+    charges,
     histories,
     levelsSaved,
     results,

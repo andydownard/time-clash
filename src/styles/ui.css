@@ -184,6 +184,38 @@ body {
 .tc-btn-fire {
   font-size: var(--tc-fs-button-lg);
   min-width: 160px;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+/* Team Future's turn: the neon edge. Team Past keeps the Ember edge. The word Fire! is the cue. */
+.tc-btn-fire[data-team='FUTURE'] {
+  border-color: var(--tc-pulse);
+  box-shadow: var(--tc-glow-neon);
+}
+/* The wind-up: a fill sweeps across behind the word, and the glow flares. Fire is off by now,
+   but it is not dimmed, so the wind-up reads clearly. Reduced motion: glow only, no sweep. */
+.tc-btn-fire::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--tc-fire-charge-fill);
+  transform: scaleX(0);
+  transform-origin: left center;
+  pointer-events: none;
+}
+.tc-btn-fire[data-charging='true'] {
+  opacity: 1;
+  box-shadow: var(--tc-glow-charge);
+}
+.tc-btn-fire[data-charging='true']::after {
+  animation: tc-fire-charge var(--tc-fire-charge) ease-in forwards;
+}
+@keyframes tc-fire-charge {
+  to {
+    transform: scaleX(1);
+  }
 }
 .tc-btn-huge {
   font-size: calc(var(--tc-text-min) * 2);
