@@ -483,3 +483,50 @@ export const BASE_BUILDER = {
     { id: 'shieldGen', team: 'FUTURE', name: 'Shield generator', scrap: 35, role: 'guard', damage: 0, hp: 40 },
   ],
 } as const;
+
+// ---------- Built bases in battle ----------
+/**
+ * The bricks and weapon spots a player built take part in the match (owner decision, 2026-10-20:
+ * "the bricks take hits", weapons on spots are real firing positions, a hit brick falls away, a
+ * weapon falls with its brick). Nobody is hurt: bricks puff and tumble. Off until the scene draws
+ * it. Read only as the default of `MatchOptions.baseInBattle`; tests pass the option. It only
+ * works together with `CHARACTER_HEALTH` (the win is still "all fighters out").
+ */
+export const BASE_IN_BATTLE = {
+  enabled: false,
+  /** Battlefield pixels per build step. The plot is 192 by 88 steps, so 384 by 176 px. */
+  scale: 2,
+  /** Where the plot's outer edge sits, in world px from its own side of the screen. */
+  margin: 40,
+  /** The plot's bottom edge (the top of the foundation) is the ground line. */
+  plotBottomY: TERRAIN.groundY,
+  /** A weapon's hit box, centered on its pad, in world px (the pad is 2 x 5 steps wide). */
+  mountBox: { w: 20, h: 20 },
+  /** Mounted weapons fire with this range scale (squad upgrades do not change them). */
+  mountSpeedScale: 1,
+  /**
+   * Damage to a brick or weapon (in brick hit points, see BASE_BUILDER.hp) from a shell that
+   * reaches it. A near miss chips 0. A Power Shot multiplies by BONUS.damageMultiplier (rounded).
+   * A fighter's shot does `fighterShot` times its damageScale. A mounted weapon does its catalog
+   * `damage` times its role's multiplier (`lob` is the splash weapon: it hits the hardest).
+   */
+  brickDamage: {
+    fighterShot: 20,
+    roleMultiplier: { direct: 1, lob: 1.5, volley: 1, guard: 0 },
+  },
+  /** How a shot is aimed from a mount, by role. Angles are degrees (0 flat, 90 up). */
+  aimByRole: {
+    direct: { minAngleDeg: 0, maxAngleDeg: 45 },
+    lob: { minAngleDeg: 45, maxAngleDeg: 90 },
+    volley: { minAngleDeg: 0, maxAngleDeg: 90 },
+    guard: { minAngleDeg: 0, maxAngleDeg: 90 },
+  },
+  /** A volley: this many small shells fanned this far apart (degrees), each with the weapon's damage. */
+  volley: { shots: 3, spreadDeg: 4, maxFighterHealth: 1 },
+  /** A shield generator blocks the first hit per enemy turn that lands this close to its pad (px). */
+  guardRadius: 90,
+  /** Fighters with these roles shoot over walls like a lob (they fly above them). */
+  flierRoles: ['balloon', 'helicopter'] as readonly string[],
+  /** The Computer player picks a mounted weapon this often when it has one that can fire. */
+  botMountChance: 0.5,
+} as const;
