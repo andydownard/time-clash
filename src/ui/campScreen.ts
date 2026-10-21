@@ -1,5 +1,7 @@
 // The Camp hub: the home base between Setup and Battle. A sunset field with both camps and four
-// buttons. Time to Clash! starts the match. Forge Weapon and Upgrade Base open their own screens.
+// buttons. Time to Clash! starts the match. Forge Weapon and Build Base open their own screens.
+// With the base builder on, each side has one Build Base button that opens the builder. With it
+// off, the Future side keeps the old Build Base shop button (code name: upgrade).
 // Change players goes back to Setup.
 import { BUILDER_COPY, CAMP, GAME_TITLE } from '../data/copy';
 import type { Team } from '../game/types';
@@ -102,8 +104,7 @@ export function showCamp(ctx: UiCtx, options?: CampOptions): Promise<CampChoice>
           doc,
           'div',
           { class: 'tc-camp-slot', 'data-kind': 'future' },
-          ...builderBits('FUTURE'),
-          upgrade,
+          ...(options?.builder ? builderBits('FUTURE') : [upgrade]),
         ),
       ),
       players,

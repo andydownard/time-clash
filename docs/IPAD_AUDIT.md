@@ -6,7 +6,7 @@ Screenshots: `docs/screenshots/ipad-audit/<device>-<orientation>/<screen>.png`. 
 
 Sizes: iPad mini 1133x744 and 744x1133, iPad Pro 11in 1194x834 and 834x1194, iPad Pro 13in 1376x1032 and 1032x1376.
 
-Screens covered (20 per size): Tap to Start, four Intro cards, Loading failed, Setup, Settings, How to Play reopened, Camp, Forge, Upgrade Base, pass screen (twice), Battle start, Pause, Leave dialog, mid-shot, reload question, reload feedback, Victory. The first Loading frame is too short to catch, so the failed-load state stands in for it.
+Screens covered (20 per size): Tap to Start, four Intro cards, Loading failed, Setup, Settings, How to Play reopened, Camp, Forge, Build Base, pass screen (twice), Battle start, Pause, Leave dialog, mid-shot, reload question, reload feedback, Victory. The first Loading frame is too short to catch, so the failed-load state stands in for it.
 
 ## Summary
 
@@ -30,9 +30,9 @@ Screens covered (20 per size): Tap to Start, four Intro cards, Loading failed, S
 | 5 | Battle | iPad mini landscape | Dense: the Power readout overlaps the balloon unit A, the wind box and the top cards crowd the sky, and the coach line sits tight over the ground bar. Nothing is clipped, but it is the tightest screen. | P3 | Move the Power readout beside the slider on small heights, or hide the coach line after the first tap. | **FIXED 2026-10-18: the Power meter and label slide away from the enemy (`meterLeft`), so they clear balloon A on the mini (about 15px gap in the new screenshot). The coach line and wind box are unchanged.**
 | 6 | Battle | iPad Pro 13in landscape | The board is 4:3, so the picture grows but the bottom band is plain green and navy panels with a hard seam. The 13in also leaves about 43px of empty body under the canvas (the canvas centers sideways only). | P3 | Center the canvas both ways (`Phaser.Scale.CENTER_BOTH`) and paint the band with one color. | **NOT FIXED: the green/navy split in the band is part of the art and the 43px strip is the body color, so a blend needs art changes, not a small CSS fix. Left for the design pass.**
 | 7 | All screens | iPad mini landscape | The 1.39 board in a 1.52 screen leaves 48px bars on each side (16px on the Pro 11in). Camp scenery stops at the edge. | P3 | Extend the sky and ground art past the board, or accept the bars. |
-| 8 | Camp | iPad mini landscape | Forge Weapon and Upgrade Base sit about 20px from the screen bottom, and the scenery behind them is busy. Contrast is fine. | P3 | Same safe-area padding as #4. | **FIXED 2026-10-18 with #4: Camp is a screen, so its bottom padding now respects the safe inset.**
+| 8 | Camp | iPad mini landscape | Forge Weapon and Build Base sit about 20px from the screen bottom, and the scenery behind them is busy. Contrast is fine. | P3 | Same safe-area padding as #4. | **FIXED 2026-10-18 with #4: Camp is a screen, so its bottom padding now respects the safe inset.**
 
-Checked and fine: Tap to Start, Intro cards, Camp, Forge, Upgrade Base, pass screen, reload question and feedback, Victory, Settings. All use buttons of 56px or more and text of 20px or more in landscape. The 13in has no wasted space beyond #6. Nothing sits under a notch (iPads have none), but see #4 for the home bar.
+Checked and fine: Tap to Start, Intro cards, Camp, Forge, Build Base, pass screen, reload question and feedback, Victory, Settings. All use buttons of 56px or more and text of 20px or more in landscape. The 13in has no wasted space beyond #6. Nothing sits under a notch (iPads have none), but see #4 for the home bar.
 
 ## What to fix first
 

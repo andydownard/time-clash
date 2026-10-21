@@ -2321,7 +2321,7 @@ button.tc-forge-row[aria-disabled='true'],
   }
 }
 
-/* Upgrade Base pictures: a stone drops into the broken tower, and the silo hologram flickers and
+/* Build Base (old shop) pictures: a stone drops into the broken tower, and the silo hologram flickers and
    scans. Reduced motion stops it all. */
 .tc-upgrade-holo {
   animation: tc-upgrade-holo 3.2s steps(1) infinite;
