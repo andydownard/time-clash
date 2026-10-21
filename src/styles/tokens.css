@@ -34,6 +34,8 @@
   /* Room for the fixed ? and gear row (chrome.ts): two tap targets, a gap, and margins. */
   --tc-chrome-row: calc(var(--tc-tap) + 24px);
   --tc-chrome-clear: calc(var(--tc-tap) * 2 + 36px);
+  /* How far the Battle picture drops below the top. Portrait raises it (ui.css). */
+  --tc-battle-drop: 0px;
   /* Height of the HUD card row. The turn banner sits below it. */
   --tc-hud-row: 184px;
   --tc-focus: #2f6fed;
