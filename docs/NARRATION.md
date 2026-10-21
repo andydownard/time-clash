@@ -38,9 +38,15 @@ Card title: "Wipeouts and Turns"
 
 **Total:** about 60 seconds.
 
+## Pass screen line (built)
+Each time the pass screen (the cover between turns) opens, Chrono says its own words: "Pass the screen! No peeking at their question!" (`src/ui/passScreen.ts`, built from `PASS_SCREEN.heading` and `PASS_SCREEN.noPeeking`).
+- It goes through the AudioManager, so it is silent before the first tap, while muted, and in a browser driven by a test tool. The caption shows in every case, above the cover, unless captions are off in Settings.
+- "I'm ready!" is its Skip: it stops the line and clears the caption. The cover's Sound button hushes it mid-line.
+- The line is fixed text. It never holds the child's name (names never leave the device, even as a clip request) or any question text.
+- A match against the computer has no pass screen, so it has no pass line.
+
 ## Short replays (optional, build later)
 - Reload tip (5 seconds, plays the first time the Reload modal opens): "Take your time. Fast answers earn bonus scrap, but any answer reloads."
-- Turn tip (4 seconds, first pass screen): "Pass the screen. No peeking!"
 
 ## How the audio is made
 The clips are generated with the Kokoro text-to-speech model (voice `am_michael`) and stored in `db/voice.sqlite` (see `db/README.md` and `public/audio/CREDITS.md`). The site is static, so `python3 scripts/extract-voice-clips.py` copies the five intro clips into `public/audio/voice/` as `.m4a` files (AAC in an MP4 container). Chromium, WebKit and iPad Safari all play that format. A real family recording can replace any clip later: rebuild the database, run the extract script, and commit the files.

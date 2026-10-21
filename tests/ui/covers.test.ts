@@ -129,6 +129,103 @@ describe('pass-the-mouse cover', () => {
   });
 });
 
+describe('pass cover voice line', () => {
+  const LINE = `${PASS_SCREEN.heading} ${PASS_SCREEN.noPeeking}`;
+  const captionLayerZ = () =>
+    Number((document.querySelector('[data-layer="caption"]') as HTMLElement).style.zIndex);
+
+  it('after the first tap, Chrono says the pass line aloud and it shows as a caption', () => {
+    void s.audio.unlock();
+    void s.overlay.showPassScreen({ nextName: 'Sam', nextTeam: 'FUTURE' });
+    expect(s.harness.speech.spoken.map((u) => u.text)).toEqual([LINE]);
+    const bar = q(TEST_IDS.captionBar)!;
+    expect(bar.hidden).toBe(false);
+    expect(bar.textContent).toBe(LINE);
+  });
+
+  it('puts the caption above the pass cover so it can be read', () => {
+    void s.overlay.showPassScreen({ nextName: 'Sam', nextTeam: 'FUTURE' });
+    expect(captionLayerZ()).toBeGreaterThan(Z.cover);
+  });
+
+  it('never says or captions the child\'s name (names stay on the device)', () => {
+    const said: string[] = [];
+    const real = s.audio.speak.bind(s.audio);
+    s.audio.speak = (line, o) => {
+      said.push(line.text, ...line.captions.map((c) => c.text));
+      return real(line, o);
+    };
+    void s.audio.unlock();
+    void s.overlay.showPassScreen({ nextName: 'Zebulon', nextTeam: 'PAST' });
+    expect(said.length).toBeGreaterThan(0);
+    for (const t of said) expect(t).not.toContain('Zebulon');
+  });
+
+  it('makes no sound before the first tap, but the caption still shows', () => {
+    void s.overlay.showPassScreen({ nextName: 'Sam', nextTeam: 'FUTURE' });
+    expect(s.audio.unlocked).toBe(false);
+    expect(s.harness.speech.spoken).toEqual([]);
+    expect(q(TEST_IDS.captionBar)!.textContent).toBe(LINE);
+  });
+
+  it('stays silent when muted, and the caption still shows', () => {
+    void s.audio.unlock();
+    s.audio.setMuted(true);
+    void s.overlay.showPassScreen({ nextName: 'Sam', nextTeam: 'FUTURE' });
+    expect(s.harness.speech.spoken).toEqual([]);
+    expect(q(TEST_IDS.captionBar)!.textContent).toBe(LINE);
+  });
+
+  it('the cover Sound off button hushes the line mid-way', () => {
+    void s.audio.unlock();
+    void s.overlay.showPassScreen({ nextName: 'Sam', nextTeam: 'FUTURE' });
+    const before = s.harness.speech.cancelCalls;
+    click(q('cover-mute'));
+    expect(s.audio.muted).toBe(true);
+    expect(s.harness.speech.cancelCalls).toBeGreaterThan(before);
+  });
+
+  it('hides the caption when captions are off in Settings', () => {
+    s.overlay.applySettings({ ...s.settings, captions: false });
+    void s.overlay.showPassScreen({ nextName: 'Sam', nextTeam: 'FUTURE' });
+    expect(q(TEST_IDS.captionBar)!.hidden).toBe(true);
+  });
+
+  it('"I\'m ready!" skips the line: speech stops and the caption clears', async () => {
+    void s.audio.unlock();
+    let stopped = 0;
+    const realStop = s.audio.stopSpeech.bind(s.audio);
+    s.audio.stopSpeech = () => {
+      stopped++;
+      realStop();
+    };
+    const p = s.overlay.showPassScreen({ nextName: 'Sam', nextTeam: 'FUTURE' });
+    click(q(TEST_IDS.passReady));
+    await p;
+    expect(stopped).toBeGreaterThan(0);
+    expect(q(TEST_IDS.captionBar)!.hidden).toBe(true);
+    expect(captionLayerZ()).toBeLessThan(Z.cover);
+  });
+
+  it('the spoken line holds no question text, even right after a reload', async () => {
+    void s.audio.unlock();
+    const r = s.overlay.showReloadModal({ question: mathQ, team: 'PAST', playerName: 'Alex' });
+    click(q(TEST_IDS.reloadChoice(1)));
+    s.clock.advance(RELOAD.rightAnswerBeatMs);
+    await r;
+    void s.overlay.showPassScreen({ nextName: 'Sam', nextTeam: 'FUTURE' });
+    const spoken = s.harness.speech.spoken.map((u) => u.text).join(' ');
+    expect(spoken).not.toContain(mathQ.prompt);
+    expect(q(TEST_IDS.captionBar)!.textContent).not.toContain(mathQ.prompt);
+  });
+
+  it('works with no audio at all: the caption shows and nothing throws', () => {
+    s = setup({ withAudio: false });
+    void s.overlay.showPassScreen({ nextName: 'Sam', nextTeam: 'FUTURE' });
+    expect(q(TEST_IDS.captionBar)!.textContent).toBe(LINE);
+  });
+});
+
 describe('reload modal', () => {
   const open = (question = mathQ, extra: Record<string, unknown> = {}) =>
     s.overlay.showReloadModal({ question, team: 'PAST', playerName: 'Alex', ...extra });
