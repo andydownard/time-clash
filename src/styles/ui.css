@@ -272,9 +272,11 @@ body {
   letter-spacing: var(--tc-ls-caps);
 }
 .tc-chip-wide {
-  flex: 1 1 auto;
-  min-width: 96px;
+  flex: 1 1 0;
+  min-width: 0;
+  padding-inline: var(--tc-s-2);
   letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 .tc-chip[aria-checked='true'] {
   background: var(--tc-chip-on-bg);
@@ -473,6 +475,11 @@ body {
   box-shadow:
     0 0 0 6px var(--tc-blue-500),
     var(--tc-glow-neon);
+}
+.tc-pass-art {
+  width: 240px;
+  height: 90px;
+  color: var(--tc-parchment-warm);
 }
 .tc-team-tag {
   font-family: var(--tc-font-voice-new);
@@ -1597,6 +1604,95 @@ body {
 }
 .tc-frac-bottom {
   padding: 0 4px;
+}
+
+/* ---------- Celebration: confetti on Victory, scrap burst on a fast answer ---------- */
+.tc-screen > .tc-confetti {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.tc-confetti-bit {
+  position: absolute;
+  top: -24px;
+  left: var(--tc-bit-x);
+  width: 14px;
+  height: 20px;
+  border: 3px solid var(--tc-ink-deep);
+  border-radius: 4px;
+  background: var(--tc-ember);
+  opacity: 0;
+  animation: tc-confetti-fall 2.6s ease-in var(--tc-bit-delay) 1 both;
+}
+.tc-confetti-bit[data-bit='1'] {
+  background: var(--tc-pulse);
+}
+.tc-confetti-bit[data-bit='2'] {
+  background: var(--tc-purple-300);
+}
+.tc-confetti-bit[data-bit='3'] {
+  background: var(--tc-blue-500);
+}
+.tc-confetti-bit[data-bit='4'] {
+  background: var(--tc-purple-500);
+}
+.tc-confetti-bit[data-bit='5'] {
+  background: var(--tc-steel);
+}
+@keyframes tc-confetti-fall {
+  0% {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg);
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(110vh) rotate(540deg);
+  }
+}
+[data-motion='reduced'] .tc-confetti {
+  display: none;
+}
+.tc-bonus-burst {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tc-s-3);
+  margin-top: var(--tc-s-2);
+  animation: tc-bonus-pop 0.5s ease-out 1 both;
+}
+.tc-bonus-coin {
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border: 4px solid var(--tc-ink-deep);
+  border-radius: 50%;
+  background: var(--tc-ember);
+}
+.tc-bonus-pop {
+  font-family: var(--tc-font-display);
+  font-size: var(--tc-fs-title);
+  font-weight: 700;
+}
+.tc-bonus-sound {
+  font-weight: 700;
+  font-style: italic;
+}
+@keyframes tc-bonus-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  70% {
+    transform: scale(1.15);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 /* ---------- Wipeout (end of match) ---------- */
@@ -4167,6 +4263,15 @@ button.tc-forge-row[aria-disabled='true'],
     grid-template-areas: 'past future';
     padding: var(--tc-chrome-row) 12px 12px;
   }
+  /* Portrait: the picture drops a little so the top cards never cover a fighter, even on the
+     Skyscraper (Team Future's fighters stand highest there). */
+  :root {
+    --tc-battle-drop: 40px;
+  }
+  body:has(.tc-hud-bottom) #game canvas {
+    /* Phaser writes an inline margin-top, so this needs !important. */
+    margin-top: var(--tc-battle-drop) !important;
+  }
   .tc-hud-top > [data-team='PAST'] {
     grid-area: past;
   }
@@ -4189,8 +4294,9 @@ button.tc-forge-row[aria-disabled='true'],
   /* Portrait: the band is taller, so the controls wrap to two rows. The aim panel and Fire
      share the second row. */
   .tc-hud-bottom {
-    /* Starts right under the picture (width x 920/1280 tall: battlefield plus band). */
-    top: calc(100vw * 920 / 1280);
+    /* Starts right under the picture (width x 920/1280 tall: battlefield plus band), which sits
+       below the team cards' gap. */
+    top: calc(100vw * 920 / 1280 + var(--tc-battle-drop));
     bottom: auto;
     align-items: stretch;
     padding-top: var(--tc-s-2);

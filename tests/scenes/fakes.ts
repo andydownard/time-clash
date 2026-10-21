@@ -73,6 +73,7 @@ export function fakeController(
     armEvasion: unused,
     disarmEvasion: unused,
     currentLayout: () => PHASE1_LAYOUT,
+    previewShot: unused,
     fire: unused,
     shotLanded: unused,
     reloadDone: unused,

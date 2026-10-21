@@ -69,6 +69,8 @@ export interface BattleView {
   setActiveTeam(team: Team | null): void;
   /** Dotted preview of the next shot. null clears it. */
   showPreview(team: Team, dots: readonly PreviewDot[] | null): void;
+  /** The full arc of the shot just taken, kept as a guide. null clears it. Never up under a cover. */
+  showTrace(team: Team, points: readonly Vec2[] | null): void;
   /** The player dragged the dial handle. Pass null to turn dragging off. */
   setAimDragHandler(handler: ((aim: AimInput) => void) | null): void;
   /** The wind-up glow at the launch point before a shot. Resolves when the shot should go. */

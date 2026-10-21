@@ -70,6 +70,14 @@ describe('fallback order', () => {
     await expect(handle.done).resolves.toBe('ended');
   });
 
+  it('a line marked noClip never asks the voice service, and uses the device voice', async () => {
+    const { h, a } = await unlocked();
+    const handle = a.speak({ ...line, noClip: true });
+    expect(h.elements).toHaveLength(0);
+    expect(handle.source).toBe('synthesis');
+    expect(h.speech.spoken.map((u) => u.text)).toEqual([TEXT]);
+  });
+
   it('feature off: speech only, exactly as before', async () => {
     const { h, a } = await unlocked(createClipPlayer(false));
     const handle = a.speak(line);

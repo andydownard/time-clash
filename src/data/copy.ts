@@ -274,6 +274,9 @@ export const RELOAD = {
   reloaded: 'RELOADED!',
   fastBonus: '+2 scrap! Super fast!',
   slowCorrect: '+1 scrap! Nice work!',
+  bonusPop: '+2 scrap',
+  /** Caption for the bonus sound. */
+  bonusSound: 'Ka-ching!',
   wrong: (answer: string): string => `Good try! The answer is ${answer}.`,
   lostQuestion: 'Oops! Chrono lost the question. Free reload!',
   wrongReloaded: 'Reloaded anyway. You always get to reload!',

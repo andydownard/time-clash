@@ -337,6 +337,11 @@ export const UI = {
   choicesPerQuestion: 4,
 } as const;
 
+/** Victory confetti and the fast-answer burst. Decoration only. */
+export const CELEBRATE = {
+  confettiCount: 24,
+} as const;
+
 // ---------- Audio and settings ----------
 export const AUDIO = {
   defaultVolume: 0.7,

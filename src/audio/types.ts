@@ -16,7 +16,8 @@ export type SfxName =
   | 'clunk' // reload done
   | 'thud' // shot hits ground or base (soft, toy-like)
   | 'click' // button press
-  | 'cheer'; // victory
+  | 'cheer' // victory
+  | 'bonus'; // fast answer: two bright coin pings
 
 export const SFX_NAMES: readonly SfxName[] = [
   'launch',
@@ -28,6 +29,7 @@ export const SFX_NAMES: readonly SfxName[] = [
   'thud',
   'click',
   'cheer',
+  'bonus',
 ];
 
 export type Caption = { text: string; startMs: number };
@@ -37,6 +39,8 @@ export type VoiceLine = {
   id: string;
   /** e.g. "/audio/voice/intro-02-aim.mp3". Optional: no file means speech synthesis. */
   audioSrc?: string;
+  /** True: never ask the voice service for this line (no network request). The device voice reads it. */
+  noClip?: boolean;
   /** Full text, read by speechSynthesis when the file is missing or fails. */
   text: string;
   /** Shown in the caption bar on the audio timeline. At least one entry. */

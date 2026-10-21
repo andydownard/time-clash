@@ -17,9 +17,8 @@ import {
 } from '../../game/practice';
 import type { MatchEffects } from '../../game/loadout';
 import { kindForRole } from './projectileKinds';
-import { EVASION, PRACTICE_BOT, RNG_SALT, TEAM_FACING, TURN } from '../../game/config';
+import { EVASION, PRACTICE_BOT, RNG_SALT, TURN } from '../../game/config';
 import type { AmmoId } from '../../game/ammo';
-import { simulateShot } from '../../game/ballistics';
 import { createShuffleBag } from '../../game/bag';
 import { createRng } from '../../game/rng';
 import type { AimInput, MatchController, Rng, Team } from '../../game/types';
@@ -38,7 +37,7 @@ import type { PickHistory, QuestionBank } from '../../questions/types';
 import type { HudHandlers, HudState, Overlay } from '../../ui/types';
 import { bubbleAnchor, bubbleTailTarget } from './geometry';
 import { describeImpact } from './impact';
-import { previewDots } from './trajectory';
+import { previewDots, traceDots } from './trajectory';
 import { bubbleText, tumblingTeam } from './tumble';
 import type { BattleResult, BattleView, ViewStatus } from './types';
 import { IMPACT_BEAT_MS, SCRAP_POPUP_MS, WIN_BEAT_MS } from './visual';
@@ -151,6 +150,7 @@ export class BattleFlow {
     this.pushStatus(false);
     view.setActiveTeam(null);
     await this.gate();
+    view.showTrace(team, null);
     // One child alone has nobody to hide the screen from, so there is no cover in this mode.
     if (needsPassScreen(this.deps.practice ?? null)) {
       await overlay.showPassScreen({ nextName: names[team], nextTeam: team });
@@ -267,6 +267,8 @@ export class BattleFlow {
     const unit = unitById(match.snapshot().selected[team]);
     await view.animateShot(team, result, unit ? kindForRole(unit.role) : undefined);
     this.live();
+    // The whole arc stays up as a guide for the next shot. A cover clears it first.
+    view.showTrace(team, traceDots(result.path));
 
     const ammo = match.snapshot().lastShot?.ammo;
     const outcome = match.shotLanded();
@@ -327,6 +329,8 @@ export class BattleFlow {
   /** The learning moment. A wrong answer still reloads (Gate 2). */
   /** Returns true when a right answer earned the Power Shot. */
   private async reload(team: Team): Promise<boolean> {
+    // The question cover goes up next: nothing about the last shot stays on the board.
+    this.deps.view.showTrace(team, null);
     if (this.isComputer(team)) return this.computerReload(team);
     const { match, overlay, view, audio, bank } = this.deps;
     const player = match.snapshot().players[team === 'PAST' ? 0 : 1];
@@ -611,17 +615,8 @@ export class BattleFlow {
 
   private drawPreview(team: Team): void {
     const { match, view } = this.deps;
-    const s = match.snapshot();
-    const aim = s.aim[team];
-    const ammo = s.ammo[team];
-    const sim = simulateShot({
-      ...aim,
-      origin: this.originFor(team),
-      facing: TEAM_FACING[team],
-      wind: s.wind,
-      layout: match.currentLayout(),
-      ...(ammo === 'standard' ? {} : { ammo }),
-    });
+    // The rules layer flies it, so the guide matches the real shot: fighter range, ammo, walls.
+    const sim = match.previewShot();
     view.showPreview(team, previewDots(sim.path));
   }
 

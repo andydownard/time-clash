@@ -116,6 +116,9 @@ export const WIND_ARROW_MAX = 120;
 export const PREVIEW_STRIDE = 3;
 /** Alpha of the last preview dot. The first is 1. */
 export const PREVIEW_MIN_ALPHA = 0.15;
+/** The arc left after a shot keeps every Nth step, and is drawn this see-through. */
+export const TRACE_STRIDE = 4;
+export const TRACE_ALPHA = 0.55;
 
 /** Chrono stands this far outside its base, on the ground. Chrono is small so it fits the gap. */
 export const CHARACTER_OFFSET = 16;

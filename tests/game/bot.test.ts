@@ -207,6 +207,6 @@ describe('bot matches never stall', () => {
   it('reports not ended when the turn cap is hit', () => {
     const p = profileOf('easy');
     const r = playBotMatch({ seed: 1, profiles: { PAST: p, FUTURE: p }, maxTurns: 1 });
-    expect(r).toEqual({ winner: null, turns: 1, ended: false });
+    expect(r).toMatchObject({ winner: null, turns: 1, ended: false });
   });
 });

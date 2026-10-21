@@ -498,6 +498,11 @@ export interface MatchController {
   disarmEvasion(): void;
   /** The field as it is right now: the layout plus any wall standing this turn. */
   currentLayout(): BattleLayout;
+  /**
+   * The path the active fighter's shot would fly with the current aim, wind, ammo and walls.
+   * A drawing aid only. It changes nothing and takes no shot.
+   */
+  previewShot(): ShotResult;
   /** AIMING -> SHOT_n, or BONUS_AIMING -> BONUS_SHOT. Runs the full flight now. The scene animates result.path. */
   fire(): ShotResult;
   /**

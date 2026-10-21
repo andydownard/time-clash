@@ -73,6 +73,7 @@ export function makeWorld(
     shotsFired: number;
   }> = [];
   const previews: Array<{ team: Team; dots: readonly PreviewDot[] | null }> = [];
+  const traces: Array<{ team: Team; points: readonly { x: number; y: number }[] | null }> = [];
   const histories: PickHistory[] = [];
   const levelsSaved: Levels[] = [];
   const results: BattleResult[] = [];
@@ -100,6 +101,10 @@ export function makeWorld(
     },
     setActiveTeam: (t) => log.push(`active:${t}`),
     showPreview: (team, dots) => previews.push({ team, dots }),
+    showTrace: (team, points) => {
+      if (points) guard('showTrace');
+      traces.push({ team, points });
+    },
     setAimDragHandler: (h) => {
       dragHandler = h;
     },
@@ -240,6 +245,7 @@ export function makeWorld(
     hudStates,
     statuses,
     previews,
+    traces,
     selections,
     shots,
     charges,

@@ -2,7 +2,7 @@
 import { AIM, BALLISTICS } from '../../game/config';
 import type { ShotResult, Vec2 } from '../../game/types';
 import type { PreviewDot } from './types';
-import { PREVIEW_MIN_ALPHA, PREVIEW_STRIDE } from './visual';
+import { PREVIEW_MIN_ALPHA, PREVIEW_STRIDE, TRACE_STRIDE } from './visual';
 
 const STEP_MS = BALLISTICS.stepSeconds * 1000;
 
@@ -41,4 +41,13 @@ export function previewDots(path: readonly Vec2[]): PreviewDot[] {
     y: p.y,
     alpha: n <= 1 ? 1 : 1 - (1 - PREVIEW_MIN_ALPHA) * (i / (n - 1)),
   }));
+}
+
+/** The full arc left on screen after a shot: every Nth step, always ending on the landing spot. */
+export function traceDots(path: readonly Vec2[]): Vec2[] {
+  const out: Vec2[] = [];
+  for (let i = 0; i < path.length; i += TRACE_STRIDE) out.push({ ...(path[i] as Vec2) });
+  const last = path[path.length - 1];
+  if (last && (path.length - 1) % TRACE_STRIDE !== 0) out.push({ ...last });
+  return out;
 }

@@ -220,7 +220,8 @@ export const createAudioManager: CreateAudioManagerWithSave = (
 
     const tryFile = (): boolean => {
       // Order: the line's own file, else a clip from the voice service, else speech.
-      const clipUrl = line.audioSrc ? null : (env.clips?.urlFor(line.text) ?? null);
+      const clipUrl =
+        line.audioSrc || line.noClip ? null : (env.clips?.urlFor(line.text) ?? null);
       const src = line.audioSrc ?? clipUrl;
       if (!src || !env.createAudioElement || muted) return false;
       try {
