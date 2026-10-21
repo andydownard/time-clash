@@ -7,6 +7,7 @@ import type { Rect, Team, Vec2 } from '../../game/types';
 import { createFlashLimiter, hitBurstPlan } from './hitFx';
 import { baseBlastPlan, explosionPlan, type Debris } from './impact';
 import type { EffectKind } from './types';
+import { chargeFrame, chargeMs } from './charge';
 import { starOffsets, vanishFrame } from './tumble';
 import { PALETTE, VANISH_MS } from './visual';
 
@@ -309,4 +310,35 @@ export function startStars(scene: Phaser.Scene, headAt: () => Vec2, reduced: boo
     counter?.stop();
     for (const s of stars) s.destroy();
   };
+}
+
+/**
+ * The wind-up before a shot: a team-colored ring pulls in to the launcher and a bright core grows.
+ * Reduced motion: nothing to draw, the shot goes at once.
+ */
+export function playCharge(
+  scene: Phaser.Scene,
+  at: Vec2,
+  color: number,
+  reduced: boolean,
+): Promise<void> {
+  const ms = chargeMs(reduced);
+  if (ms <= 0) return Promise.resolve();
+  const ring = scene.add.circle(at.x, at.y, 1, color, 0).setDepth(DEPTH);
+  const core = scene.add.circle(at.x, at.y, 1, PALETTE.shared.white, 0).setDepth(DEPTH + 1);
+  const paint = (u: number): void => {
+    const f = chargeFrame(u);
+    ring.setRadius(f.ringRadius).setStrokeStyle(5, color, f.ringAlpha);
+    core.setRadius(f.coreRadius).setFillStyle(color, f.coreAlpha);
+  };
+  paint(0);
+  return tweenDone(scene, {
+    targets: { u: 0 },
+    u: 1,
+    duration: ms,
+    onUpdate: (_t, target: { u: number }) => paint(target.u),
+  }).then(() => {
+    ring.destroy();
+    core.destroy();
+  });
 }

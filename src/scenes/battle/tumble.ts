@@ -5,7 +5,7 @@ import type { BlastOutcome, Team, Vec2 } from '../../game/types';
 import { tumblePool } from '../../data/copy';
 import { HIT_FX } from '../../game/config';
 import { createRng } from '../../game/rng';
-import { FALL_DX, FALL_HEIGHT, FALL_MS } from './visual';
+import { BOUNCE_HEIGHT, FALL_DX, FALL_HEIGHT, FALL_MS } from './visual';
 
 export const TUMBLE_STEPS = [
   'fold',
@@ -123,13 +123,16 @@ export function bubbleText(outcome: BlastOutcome): string | null {
 }
 
 // ---------- Fall, topple and vanish ----------
-// A hit fighter flies off its feet, lands, then lies down (or lands on its feet and falls over).
-// Nobody is hurt. The fighter then vanishes in a puff and comes back on the next turn.
-// All three are pure: same time in, same frame out.
+// The setup: the fighter teeters on the spot, arms flailing, looking both ways ("uh oh").
+// Then it flies off its feet, lands with a squash and bounces once (the payoff: a flat plank
+// bounce for a face-plant, a roll for a flop), then a little hop, and it lies there dizzy.
+// Nobody is hurt. It vanishes in a puff and comes back on the next turn.
+// All of these are pure: same time in, same frame out.
 
 /** 'face' is a face-plant (forward). 'flop' is a backward flop. */
 export type FallVariant = 'face' | 'flop';
-export type FallPhase = 'fly' | 'land' | 'wobble' | 'topple';
+export const FALL_PHASES = ['teeter', 'fly', 'land', 'bounce', 'wobble', 'topple'] as const;
+export type FallPhase = (typeof FALL_PHASES)[number];
 
 export type FallFrame = {
   phase: FallPhase;
@@ -150,9 +153,18 @@ export type FallFrame = {
 };
 
 /** Where each phase ends, as a share of the total. */
-const FALL_ENDS = { fly: 0.45, land: 0.57, wobble: 0.72, topple: 1 } as const;
+const FALL_ENDS: Record<FallPhase, number> = {
+  teeter: 0.2,
+  fly: 0.5,
+  land: 0.58,
+  bounce: 0.72,
+  wobble: 0.84,
+  topple: 1,
+};
 export const LYING_DEG = 90;
-const LAND_SQUASH = 0.35;
+const LAND_SQUASH = 0.45;
+/** The teeter rocks back and forth up to this far (degrees), then stands straight to launch. */
+const TEETER_TILT = 14;
 const easeInOut = (u: number): number => (u < 0.5 ? 2 * u * u : 1 - 2 * (1 - u) * (1 - u));
 const clamp01 = (u: number): number => Math.min(1, Math.max(0, u));
 
@@ -174,21 +186,9 @@ export function fallFrame(
   const t = Number.isFinite(timeMs) ? Math.min(totalMs, Math.max(0, timeMs)) : 0;
   const f = totalMs > 0 ? t / totalMs : 1;
   const within = (from: number, to: number): number => clamp01((f - from) / (to - from));
-  let phase: FallPhase;
-  let u: number;
-  if (f < FALL_ENDS.fly) {
-    phase = 'fly';
-    u = within(0, FALL_ENDS.fly);
-  } else if (f < FALL_ENDS.land) {
-    phase = 'land';
-    u = within(FALL_ENDS.fly, FALL_ENDS.land);
-  } else if (f < FALL_ENDS.wobble) {
-    phase = 'wobble';
-    u = within(FALL_ENDS.land, FALL_ENDS.wobble);
-  } else {
-    phase = 'topple';
-    u = within(FALL_ENDS.wobble, 1);
-  }
+  const phase: FallPhase = FALL_PHASES.find((p) => f < FALL_ENDS[p]) ?? 'topple';
+  const i = FALL_PHASES.indexOf(phase);
+  const u = within(i === 0 ? 0 : FALL_ENDS[FALL_PHASES[i - 1]!], FALL_ENDS[phase]);
   const lying = lyingDeg(variant);
   const flip = Math.sign(lying) * 360 + lying;
   let dx = FALL_DX;
@@ -198,6 +198,14 @@ export function fallFrame(
   let armSwingDeg = 0;
   let lookDir: -1 | 0 | 1 = 0;
   switch (phase) {
+    case 'teeter':
+      // On tiptoe, rocking back and forth, arms going round. Looks one way, then the other.
+      dx = 0;
+      rotationDeg = -TEETER_TILT * Math.sin(Math.PI * 3 * u) * Math.sin(Math.PI * u);
+      squashY = 1 + 0.08 * Math.sin(Math.PI * u);
+      armSwingDeg = (900 * u) % 360;
+      lookDir = u < 0.5 ? -1 : 1;
+      break;
     case 'fly':
       dx = FALL_DX * easeOut(u);
       lift = 4 * FALL_HEIGHT * u * (1 - u);
@@ -206,6 +214,12 @@ export function fallFrame(
       break;
     case 'land':
       squashY = 1 - LAND_SQUASH * Math.sin(Math.PI * u);
+      break;
+    case 'bounce':
+      // Boing: up and back down. A face-plant bounces flat like a plank. A flop rolls over once.
+      lift = BOUNCE_HEIGHT * Math.sin(Math.PI * u);
+      squashY = 1 + 0.1 * Math.sin(Math.PI * u);
+      if (variant === 'flop') rotationDeg = lying - 360 * easeInOut(u);
       break;
     case 'wobble':
       // A little bounce off the ground, then it lies there looking around, dizzy.
@@ -225,7 +239,12 @@ export function fallFrame(
     squashY,
     armSwingDeg,
     lookDir,
-    scale: phase === 'fly' ? lerp(1, HIT_FX.fallScale, easeOut(u)) : HIT_FX.fallScale,
+    scale:
+      phase === 'teeter'
+        ? 1
+        : phase === 'fly'
+          ? lerp(1, HIT_FX.fallScale, easeOut(u))
+          : HIT_FX.fallScale,
   };
 }
 
@@ -275,8 +294,10 @@ export function headPosition(feetX: number, feetY: number, angleDeg: number): Ve
 /** The same frame as a TumblePose, so the character sprite can draw it. */
 export function fallPose(frame: FallFrame): TumblePose {
   const step: Record<FallPhase, TumbleStep> = {
+    teeter: 'windmill',
     fly: 'fold',
     land: 'pancake',
+    bounce: 'spring',
     wobble: 'lookLeft',
     topple: 'spring',
   };

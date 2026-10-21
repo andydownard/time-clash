@@ -225,6 +225,46 @@ describe('HUD', () => {
     expect(h.calls).toEqual(['fire']);
   });
 
+  it('Fire winds up after a tap: it shows a charge state until it is ready again', () => {
+    const h = handlers();
+    s.overlay.showHud(h);
+    s.overlay.updateHud(state());
+    const fire = q<HTMLButtonElement>(TEST_IDS.fireButton)!;
+    expect(fire.dataset.charging).toBeUndefined();
+    click(fire);
+    expect(fire.dataset.charging).toBe('true');
+    // The flow turns Fire off for the flight. The charge look stays on until the next aim.
+    s.overlay.updateHud(state({ canFire: false }));
+    expect(fire.dataset.charging).toBe('true');
+    s.overlay.updateHud(state({ canFire: true }));
+    expect(fire.dataset.charging).toBeUndefined();
+  });
+
+  it('Space winds up Fire too, and a refused fire does not', () => {
+    const h = handlers();
+    s.overlay.showHud(h);
+    s.overlay.updateHud(state({ canFire: false }));
+    const fire = q<HTMLButtonElement>(TEST_IDS.fireButton)!;
+    key(document.body, ' ');
+    click(fire);
+    expect(fire.dataset.charging).toBeUndefined();
+    s.overlay.updateHud(state());
+    key(document.body, ' ');
+    expect(h.calls).toEqual(['fire']);
+    expect(fire.dataset.charging).toBe('true');
+  });
+
+  it('Fire wears the colors of the team whose turn it is', () => {
+    s.overlay.showHud(handlers());
+    s.overlay.updateHud(state({ activeTeam: 'PAST' }));
+    const fire = q<HTMLButtonElement>(TEST_IDS.fireButton)!;
+    expect(fire.dataset.team).toBe('PAST');
+    s.overlay.updateHud(state({ activeTeam: 'FUTURE' }));
+    expect(fire.dataset.team).toBe('FUTURE');
+    // The word is still the cue. Color is never the only one.
+    expect(fire.textContent).toBe(HUD.fire);
+  });
+
   it('dragging a slider reports both angle and power', () => {
     const h = handlers();
     s.overlay.showHud(h);

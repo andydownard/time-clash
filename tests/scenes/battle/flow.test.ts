@@ -24,6 +24,37 @@ describe('BattleFlow: one turn', () => {
     ]);
   });
 
+  it('winds up before every shot: Fire turns off, then the charge, then the boom and the flight', async () => {
+    const miss = findAim(SEED, 0, 'PAST', 'miss');
+    const w = makeWorld({ seed: SEED, script: [miss, miss] });
+    void w.flow.run();
+    await settle();
+    const order = w.log.filter((l) => /^(charge|fly):PAST/.test(l));
+    expect(order.slice(0, 4)).toEqual(['charge:PAST', 'fly:PAST', 'charge:PAST', 'fly:PAST']);
+    expect(w.charges).toHaveLength(2);
+    w.charges.forEach((c, i) => {
+      // The wind-up glows where the shot starts, from the shooter's launcher.
+      expect(c.from).toEqual(w.shots[i]!.start);
+      // Fire is already off, so a second tap cannot stack a shot.
+      expect(c.canFireShown).toBe(false);
+      // No boom yet, and the shot is not counted until the wind-up ends.
+      expect(w.sfx.slice(0, c.sfxSoFar).filter((s) => s === 'cannonBoom')).toHaveLength(i);
+      expect(c.shotsFired).toBe(i);
+    });
+  });
+
+  it('a destroyed battle during the wind-up fires nothing', async () => {
+    const miss = findAim(SEED, 0, 'PAST', 'miss');
+    let w: ReturnType<typeof makeWorld> | null = null;
+    w = makeWorld({ seed: SEED, script: [miss, miss], onCharge: () => w?.flow.destroy() });
+    void w.flow.run();
+    await settle();
+    expect(w.log).toContain('charge:PAST');
+    expect(w.log).not.toContain('fly:PAST');
+    expect(w.sfx).not.toContain('cannonBoom');
+    expect(w.match.snapshot().stats.PAST.shotsFired).toBe(0);
+  });
+
   it('plays the cannon for each Team Past shot', async () => {
     const miss = findAim(SEED, 0, 'PAST', 'miss');
     const w = makeWorld({ seed: SEED, script: [miss, miss] });

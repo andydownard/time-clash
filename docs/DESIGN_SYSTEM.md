@@ -60,6 +60,8 @@ All interactive parts are at least 56px tall and wide (`--tc-tap`).
 
 **Primary button (READY style).** Orbitron 900, capitals. Background `--tc-btn-primary-bg` (purple to blue split), text `--tc-btn-primary-text`, gold border `--tc-btn-primary-border`, shadow `--tc-glow-ready`, radius `--tc-r-button-lg`. One per screen.
 
+**Fire! (Battle).** The primary recipe at `--tc-fs-button-lg`, at least 64px tall and 160px wide. Team Past keeps the Ember edge. On Team Future's turn the edge is `--tc-pulse` with `--tc-glow-neon` (the word Fire! is still the cue, so color is never the only one). After a tap or Space it winds up: `data-charging` flares the glow (`--tc-glow-charge`) and a fill (`--tc-fire-charge-fill`) sweeps across behind the word in `--tc-fire-charge` (380 ms, the same as `CHARGE_MS`). The button is off during the wind-up and the flight, but it is not dimmed. Reduced motion keeps the glow and drops the sweep. On the canvas, a team-colored ring pulls in to the launcher over the same time, then the shot goes (none when motion is reduced).
+
 **Turn banner.** Orbitron 900 capitals. Background `--tc-banner-turn-bg` (Ember), text `--tc-banner-turn-text`, border `--tc-banner-turn-border`, shadow `--tc-shadow-banner`, tilt `--tc-banner-turn-tilt`. Example text: "YOUR TURN! (SHOT 1 OF 2)". The words carry the meaning, not the color.
 
 **Speech bubble.** MedievalSharp `--tc-fs-lead`. Background `--tc-bubble-bg`, text `--tc-bubble-text`, border `--tc-bubble-border`, radius `--tc-r-bubble`, tail 22px tall below the bubble. Chrono speaks here. Every spoken line also shows as a caption.
