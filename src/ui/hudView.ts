@@ -1,7 +1,7 @@
 // Battle HUD: base health, scrap, wind, aim sliders, Fire, and the corner buttons.
 // Keyboard: Up/Down = angle, Left/Right = power (Shift = bigger steps), Space = fire.
 import { COMPUTER, computerTurnBanner } from '../data/computerCopy';
-import { BUTTONS, HUD, TEAM_NAMES, turnBanner, windLabel } from '../data/copy';
+import { BUTTONS, HUD, TEAM_NAMES, goTurnBanner, turnBanner, windLabel } from '../data/copy';
 import { AIM, TIMING, TURN, WIND } from '../game/config';
 import { TEAMS, type Team } from '../game/types';
 import type { UnitId } from '../game/units';
@@ -9,6 +9,7 @@ import { LOCAL_IDS } from './constants';
 import type { UiCtx } from './ctx';
 import { h } from './dom';
 import { createGear } from './hudGear';
+import { createSquadBar, type SquadBar } from './squadBar';
 import { hudIcon } from './hudIcons';
 import { TEST_IDS, type HudHandlers, type HudState } from './types';
 
@@ -38,6 +39,7 @@ type Parts = {
   hpFill: Record<Team, HTMLElement>;
   scrap: Record<Team, HTMLElement>;
   gear: ReturnType<typeof createGear>;
+  squadBar: SquadBar;
 };
 
 export function createHud(ctx: UiCtx) {
@@ -49,6 +51,8 @@ export function createHud(ctx: UiCtx) {
     power: AIM.defaultPower,
   };
   let canFire = false;
+  /** Squads S1: a dasher is picked, so Fire stays off and the spots show. */
+  let dasherUp = false;
   /** The active team's fighter ids, as last drawn. Keys outside this list do nothing. */
   let unitIds: UnitId[] = [];
   /** The coach line stays until the first shot of the session, so a new player learns the controls. */
@@ -97,7 +101,7 @@ export function createHud(ctx: UiCtx) {
     switch (e.key) {
       case ' ':
         e.preventDefault();
-        if (canFire) fireNow(handlers);
+        if (canFire && !dasherUp) fireNow(handlers);
         return;
       case 'ArrowUp':
       case 'ArrowDown':
@@ -230,7 +234,7 @@ export function createHud(ctx: UiCtx) {
       text: HUD.fire,
     });
     fire.addEventListener('click', () => {
-      if (canFire) fireNow(h_);
+      if (canFire && !dasherUp) fireNow(h_);
     });
 
     const mute = h(doc, 'button', {
@@ -342,6 +346,7 @@ export function createHud(ctx: UiCtx) {
       ammo: (id) => h_.onAmmo?.(id),
       evasion: () => h_.onEvasion?.(),
     });
+    const squadBar = createSquadBar(doc, () => handlers);
     const root = h(
       doc,
       'div',
@@ -359,6 +364,7 @@ export function createHud(ctx: UiCtx) {
         'div',
         { class: 'tc-hud-bottom' },
         strip,
+        squadBar.root,
         units,
         aimPanel,
         fire,
@@ -392,6 +398,7 @@ export function createHud(ctx: UiCtx) {
       hpFill,
       scrap,
       gear,
+      squadBar,
     };
   }
 
@@ -420,7 +427,8 @@ export function createHud(ctx: UiCtx) {
       paintAim();
       parts.angle.disabled = !canFire;
       parts.power.disabled = !canFire;
-      parts.fire.disabled = !canFire;
+      dasherUp = parts.squadBar.update(state.squads, canFire);
+      parts.fire.disabled = !canFire || dasherUp;
       if (canFire) delete parts.fire.dataset.charging;
       if (state.activeTeam) parts.fire.dataset.team = state.activeTeam;
       else delete parts.fire.dataset.team;
@@ -456,7 +464,9 @@ export function createHud(ctx: UiCtx) {
       parts.turnText.textContent = who
         ? state.computerTeam === who
           ? computerTurnBanner(turnShot)
-          : turnBanner(state.names[who], turnShot)
+          : state.squads && !state.bonus
+            ? goTurnBanner(state.names[who], shot)
+            : turnBanner(state.names[who], turnShot)
         : '';
       paintPips(parts.pips, state.shotsLeft, state.bonus);
       for (const t of TEAMS) {
@@ -503,6 +513,7 @@ export function createHud(ctx: UiCtx) {
       handlers = null;
       canFire = false;
       unitIds = [];
+      dasherUp = false;
     },
   };
 }

@@ -93,6 +93,9 @@ export const TEST_IDS = {
   powerControl: 'aim-power',
   fireButton: 'fire',
   unit: (id: string) => `unit-${id}`,
+  goBanner: 'go-banner',
+  helper: (id: string) => `helper-${id}`,
+  dashSpot: (spot: string) => `dash-${spot}`,
   wind: 'wind',
   baseHp: (team: Team) => `base-hp-${team}`,
   shotsLeft: 'shots-left',
@@ -165,6 +168,18 @@ export type HudState = {
   computerTeam?: Team;
   /** Phase 2 gear for the active team: ammo and the evasion ability. Missing hides the gear. */
   gear?: HudGear;
+  /** Squads S1. Missing hides the helper bar and everything stays as today. */
+  squads?: HudSquads;
+};
+
+/** The helper bar: which go is next, the active team's two helpers, and the dash spots. */
+export type HudSquads = {
+  /** Goes already used this turn (0, 1 or 2). */
+  goesDone: number;
+  helpers: ReadonlyArray<{ id: string; name: string; kind: 'launcher' | 'dasher' }>;
+  picked: string;
+  /** Ground spots the picked dasher may roll to. Empty for a launcher. */
+  targets: readonly string[];
 };
 
 /** The active team's ammo and evasion ability, for the two gear buttons. */
@@ -185,6 +200,10 @@ export type HudHandlers = {
   onAmmo?: (id: AmmoId) => void;
   /** Arm or take back the evasion ability (Phase 2). */
   onEvasion?: () => void;
+  /** Squads S1: pick a helper (free). */
+  onHelper?: (id: string) => void;
+  /** Squads S1: roll the picked dasher to a ground spot. That is the whole go. */
+  onDash?: (spot: string) => void;
 };
 
 export type VictoryOptions = {
