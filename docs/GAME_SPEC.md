@@ -218,3 +218,43 @@ A fighter at 0 is knocked out. It takes no more hits or tumbles, it cannot be pi
 Win: a team loses when ALL its fighters are knocked out. The last fighter standing keeps the turn shape: 2 shots, then reload, and a right answer earns one Power Shot. `winnerOfMatch` gives the winner in both modes (fighters when the flag is on, base health when off). Matches always end: a test plays 200 seeded Computer player matches with the flag on and each one ends with a winner under the turn cap. The Computer player (`chooseShot`) only picks standing fighters and aims at a standing enemy fighter.
 
 What stays the same: 2 shots then reload, the Power Shot, wind, scrap, the reload question, the tumble lines, seeded randomness.
+
+## Built bases in battle (rules built, flag off)
+
+Owner decision (2026-10-20): "the bricks take hits", the weapons on the four spots are real firing positions, a brick that is hit enough falls away, and a weapon sits on its brick so it falls when the brick falls. Nobody is hurt: bricks puff and tumble, and a fighter behind a falling wall is never damaged by it. The rules are pure, in `src/game/builtBase.ts` and `src/game/match.ts`, with numbers in `BASE_IN_BATTLE` in `src/game/config.ts`. The flag is `BASE_IN_BATTLE.enabled = false`. A match reads it as the default of `MatchOptions.baseInBattle`; tests pass the option and never change the constant. It only works together with `CHARACTER_HEALTH` (`characterHealth`): without it the option is ignored. With it off the game is exactly as before.
+
+**Choosing the bases.** `MatchOptions.bases` is `{ PAST?: ChosenBase, FUTURE?: ChosenBase }`, where `ChosenBase = { pieces, spots }` is `chosenBase` plus `chosenSpots` from the base builder (`chosenBaseFor(bases, name, team)` makes one). A missing base is the default fixed base, as today. A team that brings a base (bricks or weapons) no longer has the default base box stopping shells: its bricks are its base.
+
+**Layout.** The build plot (24 by 12 cells, 192 by 88 steps) maps to the battlefield at `BASE_IN_BATTLE.scale` (2 px per step, so 384 by 176 px). Team Past builds from the left (`margin` 40 px from the edge). Team Future is mirrored and sits on the right, so both face each other. The plot's bottom edge is the ground line. The snapshot holds each brick's box (`bricks`) and the four spots (`spots`), all in battlefield px. Custom-shape pieces do not exist in the base builder yet, so every brick is one rectangle.
+
+**Brick hit points.** Each brick starts with the `hp` saved in the base. A shell that reaches a brick box bursts there (a direct hit) and does damage in brick hit points. A near miss (a shell that lands next to a wall) does 0. One hit per shell.
+
+| Shot | Damage to a brick or weapon |
+|---|---|
+| Fighter shot | 20 times the fighter's `damageScale` (`brickDamage.fighterShot`) |
+| Mounted `direct` weapon | its catalog `damage` times 1 |
+| Mounted `lob` weapon (splash) | its catalog `damage` times 1.5 |
+| Mounted `volley` weapon | its catalog `damage` times 1, for each small shell |
+| `guard` | does not fire |
+| Power Shot | the damage above times 1.5, rounded (`BONUS.damageMultiplier`) |
+
+A brick at 0 hit points falls away: the shot result lists it in `built.brickFell`. Nobody is hurt, the scene puffs it.
+
+**Support rule.** A brick is held up if it rests on the foundation (its bottom is the bottom of the plot) or on a standing brick directly under it (that brick's top touches its bottom and they overlap sideways). When a brick falls, every brick that is no longer held up falls too, in a fixed order: lowest bottom edge first, then leftmost, then by index. One pass is enough, because what holds a brick up is always lower. All of them are listed, in that order, in `built.bricksFell` (the brick the shell took out comes first). A brick that was already floating when the match began (nothing under it) is anchored and never falls by support. A fallen brick never comes back and never blocks a shell again.
+
+**Shells and walls.** A shell stops at the first standing enemy brick or mounted weapon its path touches, and bursts there. The result's `path` and `landing` end at the contact point and `stoppedBy` names the brick or weapon (`hit` then means the original flight and should be ignored). A fighter the shell touches first is hit first and the wall is not. Two kinds of shell arc over walls: a `lob` weapon, and any shot from a flier (balloon, helicopter; `flierRoles`). They pass over walls on the way up and across, and only meet one coming down. A team's own bricks never stop its own shells. Fighter hits, near misses and the Power Shot work exactly as in Character health.
+
+**Mounted weapons.** With the flag on, a weapon on spot `i` is a shooter with its own id, `mount:i` (`mount:0` to `mount:3`). The selector id space is `ShooterId = UnitId | MountId`. `selectUnit('mount:2')` picks it; the fighter pick stays as it was (`snapshot().selected`) and `selectedMount[team]` names the weapon (`null` for a fighter). A shot from a mount starts at its pad and `lastShot.mount` records it. The weapon sits on the highest brick under its pad (or on the foundation, which never falls): `MountView.brick`. If that brick falls, the weapon falls too and is out (`built.mountDown`, reason `brickFell`). A weapon also has the `hp` from the catalog, takes hits like a brick, and is out at 0 (reason `hit`). A weapon that is down cannot be picked.
+
+| Role | How it fires |
+|---|---|
+| `direct` | Flat: the angle is held between 0 and 45 degrees. |
+| `lob` | Arc: the angle is held between 45 and 90 degrees. Arcs over walls. |
+| `volley` | A burst of 3 small shells, fanned 4 degrees apart, each with the weapon's small damage. A fighter loses at most 1 health to one volley (2 for a Power Shot). |
+| `guard` (Shield generator) | No shot. It blocks the first hit per enemy turn that lands within 90 px of its pad: nothing is damaged and `built.guardBlocked` names it. It is ready again after the turn passes. |
+
+**Win.** Unchanged: a team loses when all its FIGHTERS are out (Character health). Bricks and weapons do not count. A team whose fighters all stand behind a pile of rubble is still alive. A team with no weapons and no bricks still has its fighters as before. Matches always end: a seeded test plays 240 Computer player matches with all three flags on and random built bases, and each ends with a winner under the turn cap.
+
+**Computer player.** `chooseShot` may pick a mounted weapon that can fire (`mount` on the result; half the time when it has one) and uses the same aim search from the weapon's pad, held to the role's angle limits. It has no wall logic in v1: it aims by the plain physics at a standing fighter and ignores bricks, so a shell that meets a wall simply hits the wall. It always chooses a legal shot.
+
+**What the snapshot and the shot result add** (all optional, only with `baseInBattle`): `Match.baseInBattle`, `selectedMount`, `bricks` (by `BrickId`, such as `"FUTURE:3"`), `mounts`, `spots`, `builtBase`; `ShotResult.stoppedBy` and `volley`; `BlastOutcome.built` with `brickHits`, `brickFell`, `bricksFell`, `mountHits`, `mountDown`, `guardBlocked`. See docs/CONTRACTS.md.
