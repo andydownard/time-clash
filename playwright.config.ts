@@ -2,6 +2,8 @@ import { defineConfig, devices } from '@playwright/test';
 
 // The e2e build uses vite's "e2e" mode (not "production"), because the ?e2e=1 test hook is
 // switched off in production builds. It goes to node_modules/.e2e-dist (ignored by git and eslint), never to dist/.
+// The pages are served by the real production app server (app-server/), so e2e also checks the
+// security headers and the same-origin clip route that production sends.
 const PORT = Number(process.env.E2E_PORT ?? 4173);
 
 const sizes = [
@@ -28,12 +30,12 @@ export default defineConfig({
     ...sizes.flatMap(({ name, viewport }) => [
       {
         name: `chromium-${name}`,
-        testIgnore: /portrait\.spec\.ts/,
+        testIgnore: /(portrait|turn-screen)\.spec\.ts/,
         use: { ...devices['Desktop Chrome'], viewport, ...quiet },
       },
       {
         name: `webkit-${name}`,
-        testIgnore: /portrait\.spec\.ts/,
+        testIgnore: /(portrait|turn-screen)\.spec\.ts/,
         use: { ...devices['Desktop Safari'], viewport },
       },
     ]),
@@ -47,11 +49,22 @@ export default defineConfig({
       testMatch: /(portrait|look)\.spec\.ts/,
       use: { ...devices['Desktop Safari'], viewport: portrait.viewport },
     },
+    // Touch tablet checks set their own viewport and touch input.
+    {
+      name: 'chromium-turn-screen',
+      testMatch: /turn-screen\.spec\.ts/,
+      use: { ...devices['Desktop Chrome'], ...quiet },
+    },
+    {
+      name: 'webkit-turn-screen',
+      testMatch: /turn-screen\.spec\.ts/,
+      use: { ...devices['Desktop Safari'] },
+    },
   ],
   webServer: {
     command:
       'npx vite build --mode e2e --outDir node_modules/.e2e-dist --emptyOutDir && echo e2e > node_modules/.e2e-dist/version.txt && ' +
-      `npx vite preview --mode e2e --outDir node_modules/.e2e-dist --port ${PORT} --strictPort`,
+      `PORT=${PORT} DIST_DIR=node_modules/.e2e-dist npx tsx app-server/server.ts`,
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI && process.env.E2E_REUSE_SERVER === '1',
     timeout: 180_000,

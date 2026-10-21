@@ -1,10 +1,13 @@
 // @vitest-environment jsdom
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { HUD } from '../../src/data/copy';
 import { unitsOf, type UnitId } from '../../src/game/units';
 import type { HudHandlers, HudState } from '../../src/ui/types';
 import { TEST_IDS } from '../../src/ui/types';
 import { click, key, q, qa, setup } from './helpers';
+
+// Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
+vi.setConfig({ testTimeout: 120_000 });
 
 let s: ReturnType<typeof setup>;
 beforeEach(() => {

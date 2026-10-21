@@ -535,5 +535,443 @@
     "answer": "but",
     "hint": "The two ideas are different.",
     "tags": ["grammar", "conjunction"]
+  },
+  {
+    "id": "reading-4-0041",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this story?",
+    "choices": [
+      "A brave knight learns that something he feared was actually friendly.",
+      "Squirrels are dangerous to castles.",
+      "Knights should never go near fountains.",
+      "Acorns are good for helmets."
+    ],
+    "answer": "A brave knight learns that something he feared was actually friendly.",
+    "hint": "Think about how the story changes from start to end.",
+    "tags": ["main-idea"],
+    "passage": "Sir Reginald was the bravest knight in Castle Crumble, but squirrels made his knees shake like jelly. Every morning a squirrel named Nutmeg sat on the castle wall and stared at him, so he hid behind a barrel until she left. One day Nutmeg dropped an acorn on his helmet with a loud clunk. Sir Reginald jumped so high he landed in the fountain. Splash! The other knights tried not to laugh, but it was hopeless. Then Nutmeg held out a second acorn like a tiny gift, and he took it. From then on, she rode on his shoulder."
+  },
+  {
+    "id": "reading-4-0042",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "Why did Sir Reginald hide behind a barrel?",
+    "choices": [
+      "He was playing hide and seek.",
+      "He was afraid of squirrels.",
+      "He wanted to guard the castle.",
+      "He was tired of the king."
+    ],
+    "answer": "He was afraid of squirrels.",
+    "hint": "Read what he did every morning when she showed up.",
+    "tags": ["inference"],
+    "passage": "Sir Reginald was the bravest knight in Castle Crumble, but squirrels made his knees shake like jelly. Every morning a squirrel named Nutmeg sat on the castle wall and stared at him, so he hid behind a barrel until she left. One day Nutmeg dropped an acorn on his helmet with a loud clunk. Sir Reginald jumped so high he landed in the fountain. Splash! The other knights tried not to laugh, but it was hopeless. Then Nutmeg held out a second acorn like a tiny gift, and he took it. From then on, she rode on his shoulder."
+  },
+  {
+    "id": "reading-4-0043",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "In this story, the word 'hopeless' describes how hard it was to",
+    "choices": [
+      "climb out of the fountain.",
+      "find an acorn.",
+      "stop laughing.",
+      "scare the goose."
+    ],
+    "answer": "stop laughing.",
+    "hint": "Look at how the knights reacted.",
+    "tags": ["vocabulary-in-context"],
+    "passage": "Sir Reginald was the bravest knight in Castle Crumble, but squirrels made his knees shake like jelly. Every morning a squirrel named Nutmeg sat on the castle wall and stared at him, so he hid behind a barrel until she left. One day Nutmeg dropped an acorn on his helmet with a loud clunk. Sir Reginald jumped so high he landed in the fountain. Splash! The other knights tried not to laugh, but it was hopeless. Then Nutmeg held out a second acorn like a tiny gift, and he took it. From then on, she rode on his shoulder."
+  },
+  {
+    "id": "reading-4-0044",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "What does the ending suggest about Sir Reginald?",
+    "choices": [
+      "He moved out of the castle.",
+      "He is now afraid of nothing.",
+      "He dislikes Nutmeg.",
+      "He became braver by being kind."
+    ],
+    "answer": "He became braver by being kind.",
+    "hint": "Think about what Sir Reginald did with the second acorn.",
+    "tags": ["theme"],
+    "passage": "Sir Reginald was the bravest knight in Castle Crumble, but squirrels made his knees shake like jelly. Every morning a squirrel named Nutmeg sat on the castle wall and stared at him, so he hid behind a barrel until she left. One day Nutmeg dropped an acorn on his helmet with a loud clunk. Sir Reginald jumped so high he landed in the fountain. Splash! The other knights tried not to laugh, but it was hopeless. Then Nutmeg held out a second acorn like a tiny gift, and he took it. From then on, she rode on his shoulder."
+  },
+  {
+    "id": "reading-4-0045",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "How is this passage mostly organized?",
+    "choices": [
+      "In the order of the steps of Mia's route",
+      "By comparing two towns",
+      "By listing problems and their solutions",
+      "By describing the pond in detail"
+    ],
+    "answer": "In the order of the steps of Mia's route",
+    "hint": "Look at the order words like First, Next and Then.",
+    "tags": ["text-structure"],
+    "passage": "Mia delivered letters in the town of Skyview on a hoverboard. First, she loaded her bag at the post office. Next, she glided over the park, where ducks quacked at her. Then she stopped at each window to hand letters to waving neighbors. Finally, she parked her hoverboard at its charging stand. One windy Monday, a gust blew her hat into a pond. Mia did not panic. She dipped low, scooped it up, and kept going."
+  },
+  {
+    "id": "reading-4-0046",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "Which word shows the order of events?",
+    "choices": ["Because", "Finally", "Simply", "Even"],
+    "answer": "Finally",
+    "hint": "Pick the word that tells the last step.",
+    "tags": ["text-structure"],
+    "passage": "Mia delivered letters in the town of Skyview on a hoverboard. First, she loaded her bag at the post office. Next, she glided over the park, where ducks quacked at her. Then she stopped at each window to hand letters to waving neighbors. Finally, she parked her hoverboard at its charging stand. One windy Monday, a gust blew her hat into a pond. Mia did not panic. She dipped low, scooped it up, and kept going."
+  },
+  {
+    "id": "reading-4-0047",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "Which word best describes Mia?",
+    "choices": ["lazy", "grumpy", "calm", "scared"],
+    "answer": "calm",
+    "hint": "Think about how she acted when her hat blew away.",
+    "tags": ["character"],
+    "passage": "Mia delivered letters in the town of Skyview on a hoverboard. First, she loaded her bag at the post office. Next, she glided over the park, where ducks quacked at her. Then she stopped at each window to hand letters to waving neighbors. Finally, she parked her hoverboard at its charging stand. One windy Monday, a gust blew her hat into a pond. Mia did not panic. She dipped low, scooped it up, and kept going."
+  },
+  {
+    "id": "reading-4-0048",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "What does 'glided' most likely mean in this passage?",
+    "choices": ["fell quickly", "shouted loudly", "stopped suddenly", "moved smoothly"],
+    "answer": "moved smoothly",
+    "hint": "She moved over the park above the ground. Think of a smooth ride.",
+    "tags": ["vocabulary-in-context"],
+    "passage": "Mia delivered letters in the town of Skyview on a hoverboard. First, she loaded her bag at the post office. Next, she glided over the park, where ducks quacked at her. Then she stopped at each window to hand letters to waving neighbors. Finally, she parked her hoverboard at its charging stand. One windy Monday, a gust blew her hat into a pond. Mia did not panic. She dipped low, scooped it up, and kept going."
+  },
+  {
+    "id": "reading-4-0049",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of the passage?",
+    "choices": [
+      "Cats purr for several reasons, and scientists are still learning why.",
+      "Cats only purr when they are happy.",
+      "Kittens cannot purr.",
+      "Cat bones are weaker than dog bones."
+    ],
+    "answer": "Cats purr for several reasons, and scientists are still learning why.",
+    "hint": "Think about what the whole passage explains.",
+    "tags": ["main-idea"],
+    "passage": "Scientists still have not figured out every reason cats purr. Most people think purring means a cat is happy, and that is often true. But cats also purr when they are nervous or sleepy. Some scientists believe purring helps cats feel calm, a bit like a person humming to feel better. Kittens begin to purr when they are only a few days old, which tells their mother where they are. So a purr could be saying many different things."
+  },
+  {
+    "id": "reading-4-0050",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "According to the passage, when do kittens begin to purr?",
+    "choices": [
+      "When they are a year old",
+      "When they are a few days old",
+      "When they first eat solid food",
+      "When they leave their mother"
+    ],
+    "answer": "When they are a few days old",
+    "hint": "Look at the sentence about kittens.",
+    "tags": ["details"],
+    "passage": "Scientists still have not figured out every reason cats purr. Most people think purring means a cat is happy, and that is often true. But cats also purr when they are nervous or sleepy. Some scientists believe purring helps cats feel calm, a bit like a person humming to feel better. Kittens begin to purr when they are only a few days old, which tells their mother where they are. So a purr could be saying many different things."
+  },
+  {
+    "id": "reading-4-0051",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "Why does the author say 'a bit like a person humming'?",
+    "choices": [
+      "To prove that cats can sing",
+      "To say cats hum songs",
+      "To compare purring to something familiar",
+      "To show people dislike purring"
+    ],
+    "answer": "To compare purring to something familiar",
+    "hint": "A comparison to something familiar helps you picture it.",
+    "tags": ["figurative-language"],
+    "passage": "Scientists still have not figured out every reason cats purr. Most people think purring means a cat is happy, and that is often true. But cats also purr when they are nervous or sleepy. Some scientists believe purring helps cats feel calm, a bit like a person humming to feel better. Kittens begin to purr when they are only a few days old, which tells their mother where they are. So a purr could be saying many different things."
+  },
+  {
+    "id": "reading-4-0052",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "Which sentence best states the author's point of view about purring?",
+    "choices": [
+      "It is annoying and loud.",
+      "It is only a sign of hunger.",
+      "It is not worth studying.",
+      "It is more complicated than most people think."
+    ],
+    "answer": "It is more complicated than most people think.",
+    "hint": "Think about what the author says about many reasons.",
+    "tags": ["author-s-point-of-view"],
+    "passage": "Scientists still have not figured out every reason cats purr. Most people think purring means a cat is happy, and that is often true. But cats also purr when they are nervous or sleepy. Some scientists believe purring helps cats feel calm, a bit like a person humming to feel better. Kittens begin to purr when they are only a few days old, which tells their mother where they are. So a purr could be saying many different things."
+  },
+  {
+    "id": "reading-4-0053",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "Who is telling this story?",
+    "choices": ["A narrator outside the story", "Princess Pearl", "Baron Bumble", "Lady Lila"],
+    "answer": "A narrator outside the story",
+    "hint": "The story says he and she, not I.",
+    "tags": ["point-of-view"],
+    "passage": "At the castle bake sale, Princess Pearl made a berry pie, and Baron Bumble made a mud pie by mistake. He had grabbed the wrong bucket in a rush. When the judges came by, the baron slid his pie behind a stack of napkins. But the second judge found it, sniffed, and said, \"Interesting. It smells like a garden.\" The baron turned the color of a tomato. Then he laughed, and everyone laughed with him."
+  },
+  {
+    "id": "reading-4-0054",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "Why did the baron hide his pie behind napkins?",
+    "choices": [
+      "He wanted to eat it later.",
+      "He knew it was the wrong pie.",
+      "He was saving it for the princess.",
+      "He forgot where he put it."
+    ],
+    "answer": "He knew it was the wrong pie.",
+    "hint": "Think about why he slid it away from the judges.",
+    "tags": ["inference"],
+    "passage": "At the castle bake sale, Princess Pearl made a berry pie, and Baron Bumble made a mud pie by mistake. He had grabbed the wrong bucket in a rush. When the judges came by, the baron slid his pie behind a stack of napkins. But the second judge found it, sniffed, and said, \"Interesting. It smells like a garden.\" The baron turned the color of a tomato. Then he laughed, and everyone laughed with him."
+  },
+  {
+    "id": "reading-4-0055",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "The phrase 'turned the color of a tomato' means the baron was",
+    "choices": ["sick.", "hungry.", "embarrassed.", "sleepy."],
+    "answer": "embarrassed.",
+    "hint": "Think of how people look when they feel shy or silly.",
+    "tags": ["figurative-language"],
+    "passage": "At the castle bake sale, Princess Pearl made a berry pie, and Baron Bumble made a mud pie by mistake. He had grabbed the wrong bucket in a rush. When the judges came by, the baron slid his pie behind a stack of napkins. But the second judge found it, sniffed, and said, \"Interesting. It smells like a garden.\" The baron turned the color of a tomato. Then he laughed, and everyone laughed with him."
+  },
+  {
+    "id": "reading-4-0056",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "What is the theme of this story?",
+    "choices": [
+      "Always bake pies in a hurry.",
+      "Judges are never fair.",
+      "Princesses are better bakers.",
+      "It is okay to laugh at your own mistakes."
+    ],
+    "answer": "It is okay to laugh at your own mistakes.",
+    "hint": "Think about how the baron ended up feeling.",
+    "tags": ["theme"],
+    "passage": "At the castle bake sale, Princess Pearl made a berry pie, and Baron Bumble made a mud pie by mistake. He had grabbed the wrong bucket in a rush. When the judges came by, the baron slid his pie behind a stack of napkins. But the second judge found it, sniffed, and said, \"Interesting. It smells like a garden.\" The baron turned the color of a tomato. Then he laughed, and everyone laughed with him."
+  },
+  {
+    "id": "reading-4-0057",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "What problem happens in the story?",
+    "choices": [
+      "A stuck button changes Mr. Bolt's beeps into a song.",
+      "The playground closes.",
+      "The children lose their oil cans.",
+      "The repair bot breaks."
+    ],
+    "answer": "A stuck button changes Mr. Bolt's beeps into a song.",
+    "hint": "Look for the thing that goes wrong with Mr. Bolt.",
+    "tags": ["plot"],
+    "passage": "At Gearwheel Elementary, the robot teacher Mr. Bolt had one rule: no running with oil cans. During recess he rolled behind the students, beeping, \"Walk, please!\" One day, a button on his chest got stuck, and his beeps turned into a silly song. The kids stopped and stared. Then the whole playground was twirling and giggling. Mr. Bolt's wheels spun in happy circles, and from then on, recess had music."
+  },
+  {
+    "id": "reading-4-0058",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "What does 'stared' tell you about the kids?",
+    "choices": [
+      "They were sleepy.",
+      "They were surprised.",
+      "They were angry.",
+      "They were bored."
+    ],
+    "answer": "They were surprised.",
+    "hint": "Think of how you look when you see something unexpected.",
+    "tags": ["inference"],
+    "passage": "At Gearwheel Elementary, the robot teacher Mr. Bolt had one rule: no running with oil cans. During recess he rolled behind the students, beeping, \"Walk, please!\" One day, a button on his chest got stuck, and his beeps turned into a silly song. The kids stopped and stared. Then the whole playground was twirling and giggling. Mr. Bolt's wheels spun in happy circles, and from then on, recess had music."
+  },
+  {
+    "id": "reading-4-0059",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "What is the best summary of the story?",
+    "choices": [
+      "A robot teacher quits his job.",
+      "Kids learn to fix robots.",
+      "A malfunction turns recess into a dance party, and everyone enjoys it.",
+      "A repair bot wins a dance contest."
+    ],
+    "answer": "A malfunction turns recess into a dance party, and everyone enjoys it.",
+    "hint": "A summary tells the big events in a few words.",
+    "tags": ["summary"],
+    "passage": "At Gearwheel Elementary, the robot teacher Mr. Bolt had one rule: no running with oil cans. During recess he rolled behind the students, beeping, \"Walk, please!\" One day, a button on his chest got stuck, and his beeps turned into a silly song. The kids stopped and stared. Then the whole playground was twirling and giggling. Mr. Bolt's wheels spun in happy circles, and from then on, recess had music."
+  },
+  {
+    "id": "reading-4-0060",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "Which word could replace 'giggling' without changing the meaning?",
+    "choices": ["crying", "whispering", "falling", "laughing"],
+    "answer": "laughing",
+    "hint": "Think about what kids do when something is funny.",
+    "tags": ["vocabulary-in-context"],
+    "passage": "At Gearwheel Elementary, the robot teacher Mr. Bolt had one rule: no running with oil cans. During recess he rolled behind the students, beeping, \"Walk, please!\" One day, a button on his chest got stuck, and his beeps turned into a silly song. The kids stopped and stared. Then the whole playground was twirling and giggling. Mr. Bolt's wheels spun in happy circles, and from then on, recess had music."
+  },
+  {
+    "id": "reading-4-0061",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "Why was John White gone for three years?",
+    "choices": [
+      "Ships could not cross the ocean right away.",
+      "He forgot about the colony.",
+      "He wanted to stay in England forever.",
+      "He built a new town."
+    ],
+    "answer": "Ships could not cross the ocean right away.",
+    "hint": "Look for what kept ships from sailing.",
+    "tags": ["cause-and-effect"],
+    "passage": "Long ago, about one hundred fifteen settlers built a small town on Roanoke Island. Their leader, John White, sailed back to England to get more supplies. He planned to return in a few months, but ships could not cross the ocean right away, and it was three years before he came back. When he arrived, the town was empty. The only clue was the word CROATOAN carved into a post. Some historians think the settlers moved to a nearby island. Today, no one can say for sure, and the mystery is one of the oldest puzzles in American history."
+  },
+  {
+    "id": "reading-4-0062",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "What was the only clue White found?",
+    "choices": [
+      "A burned house",
+      "The word CROATOAN carved into a post",
+      "A map with a red X",
+      "A letter from the settlers"
+    ],
+    "answer": "The word CROATOAN carved into a post",
+    "hint": "Read the sentence about the clue.",
+    "tags": ["details"],
+    "passage": "Long ago, about one hundred fifteen settlers built a small town on Roanoke Island. Their leader, John White, sailed back to England to get more supplies. He planned to return in a few months, but ships could not cross the ocean right away, and it was three years before he came back. When he arrived, the town was empty. The only clue was the word CROATOAN carved into a post. Some historians think the settlers moved to a nearby island. Today, no one can say for sure, and the mystery is one of the oldest puzzles in American history."
+  },
+  {
+    "id": "reading-4-0063",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "Which statement is a fact from the passage?",
+    "choices": [
+      "The settlers went to England.",
+      "The settlers were captured.",
+      "The colony was built on Roanoke Island.",
+      "The colony was a failure from the start."
+    ],
+    "answer": "The colony was built on Roanoke Island.",
+    "hint": "A fact can be checked and found true. Look for a place name.",
+    "tags": ["fact-and-opinion"],
+    "passage": "Long ago, about one hundred fifteen settlers built a small town on Roanoke Island. Their leader, John White, sailed back to England to get more supplies. He planned to return in a few months, but ships could not cross the ocean right away, and it was three years before he came back. When he arrived, the town was empty. The only clue was the word CROATOAN carved into a post. Some historians think the settlers moved to a nearby island. Today, no one can say for sure, and the mystery is one of the oldest puzzles in American history."
+  },
+  {
+    "id": "reading-4-0064",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "What does 'mystery' mean in the last sentence?",
+    "choices": [
+      "A long boat trip",
+      "A funny story",
+      "A kind of island",
+      "Something no one has fully explained"
+    ],
+    "answer": "Something no one has fully explained",
+    "hint": "Think about a puzzle that nobody has solved.",
+    "tags": ["vocabulary-in-context"],
+    "passage": "Long ago, about one hundred fifteen settlers built a small town on Roanoke Island. Their leader, John White, sailed back to England to get more supplies. He planned to return in a few months, but ships could not cross the ocean right away, and it was three years before he came back. When he arrived, the town was empty. The only clue was the word CROATOAN carved into a post. Some historians think the settlers moved to a nearby island. Today, no one can say for sure, and the mystery is one of the oldest puzzles in American history."
+  },
+  {
+    "id": "reading-4-0065",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "vocab",
+    "prompt": "What does the prefix 'un-' mean in the word 'unlock'?",
+    "choices": ["not or the opposite of", "again", "before", "too much"],
+    "answer": "not or the opposite of",
+    "hint": "Think of what happens when you unlock a door.",
+    "tags": ["prefixes"]
+  },
+  {
+    "id": "reading-4-0066",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "vocab",
+    "prompt": "The word 'rebuild' means",
+    "choices": ["build before", "build again", "not build", "build badly"],
+    "answer": "build again",
+    "hint": "Re- means do it one more time.",
+    "tags": ["prefixes"]
+  },
+  {
+    "id": "reading-4-0067",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "vocab",
+    "prompt": "The suffix '-less' in 'fearless' means",
+    "choices": ["full of", "able to", "without", "before"],
+    "answer": "without",
+    "hint": "Think of words like helpless or careless.",
+    "tags": ["suffixes"]
+  },
+  {
+    "id": "reading-4-0068",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "vocab",
+    "prompt": "Which word has the root 'port,' meaning 'carry'?",
+    "choices": ["portrait", "potion", "poster", "transport"],
+    "answer": "transport",
+    "hint": "Port means carry. Which word is about carrying things from place to place?",
+    "tags": ["root-words"]
+  },
+  {
+    "id": "reading-4-0069",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "grammar",
+    "prompt": "Which sentence uses a simile?",
+    "choices": [
+      "The robot was very slow.",
+      "The robot was as slow as a sleepy snail.",
+      "The robot ran away.",
+      "The robot is a snail."
+    ],
+    "answer": "The robot was as slow as a sleepy snail.",
+    "hint": "A simile uses like or as to compare.",
+    "tags": ["figurative-language"]
   }
 ]

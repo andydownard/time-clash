@@ -1,6 +1,7 @@
 // Shared contract for the DOM layer that sits on top of the Phaser canvas.
 // All buttons, text inputs, modals, banners, and captions are plain DOM.
 // Phaser draws only the world (backdrop, bases, shots, tumbles).
+import type { BasesState, Placed } from '../game/baseBuilder';
 import type { CampState } from '../game/loadout';
 import type { Grade, Players, Team, TeamStats, Vec2 } from '../game/types';
 import type { UnitId } from '../game/units';
@@ -65,6 +66,8 @@ export const TEST_IDS = {
   forgeTeam: (team: Team) => `forge-team-${team}`,
   forgeWeapon: (id: string) => `forge-weapon-${id}`,
   campPlayers: 'camp-players',
+  campBuild: (team: Team) => `camp-build-${team}`,
+  campBase: (team: Team) => `camp-base-${team}`,
   turnBanner: 'turn-banner',
   passScreen: 'pass-screen',
   passReady: 'pass-ready',
@@ -114,6 +117,8 @@ export type ReloadAnswer = {
   choice: string;
 };
 
+export type ThinkingOptions = { text: string; team: Team };
+
 export type BubbleOptions = {
   text: string;
   team: Team;
@@ -143,6 +148,8 @@ export type HudState = {
   selected: UnitId;
   /** The active team's five fighters. Empty when no team is up. */
   units: ReadonlyArray<{ id: UnitId; name: string }>;
+  /** The side the Computer player plays, when one child plays alone. */
+  computerTeam?: Team;
 };
 
 export type HudHandlers = {
@@ -159,7 +166,29 @@ export type VictoryOptions = {
 };
 
 /** The Camp starts the match, or sends the family back to Setup to change the players. */
-export type CampChoice = 'battle' | 'players' | 'forge' | 'upgrade';
+export type CampChoice = 'battle' | 'players' | 'forge' | 'upgrade' | 'buildPast' | 'buildFuture';
+
+/** What the Camp needs to show the base builder buttons and the small picture of each base. */
+export type CampOptions = {
+  /** True when the base builder is switched on. Without it the Camp looks as it always did. */
+  builder: boolean;
+  /** The chosen base of each side, for the small picture. */
+  bases?: Record<Team, Placed[]>;
+  names?: Record<Team, string>;
+};
+
+export type BuilderOptions = {
+  /** The side being built. */
+  team: Team;
+  camp: CampState;
+  /** Who plays each side. Their Scrap and saved bases are the ones used. */
+  names: Record<Team, string>;
+  bases: BasesState;
+  /** Called with the new camp after Scrap is spent. */
+  saveCamp: (camp: CampState) => void;
+  /** Called with the new bases after every change, so it is saved at once. */
+  saveBases: (bases: BasesState) => void;
+};
 
 export type ForgeOptions = {
   /** What everyone owns now, by name. */
@@ -206,13 +235,20 @@ export interface Overlay {
   /** Resolves with validated players (index 0 PAST, 1 FUTURE). */
   showSetup(initial: Players | null): Promise<Players>;
   /** With a Back button. Resolves null when Back is tapped, and saves nothing. */
-  showSetup(initial: Players | null, options: { back: true }): Promise<Players | null>;
+  showSetup(
+    initial: Players | null,
+    options: { back: true; computer?: boolean },
+  ): Promise<Players | null>;
+  /** Offers the Computer player choice. Only used when the flag is on. */
+  showSetup(initial: Players | null, options: { computer: boolean }): Promise<Players>;
   /** The Camp hub. Resolves when the big "Time to Clash!" button is tapped. */
-  showCamp(): Promise<CampChoice>;
+  showCamp(options?: CampOptions): Promise<CampChoice>;
   /** Forge Weapon. Changes go through `save`. Resolves when Back is tapped. */
   showForge(options: ForgeOptions): Promise<void>;
-  /** Upgrade Base. Same options as the Forge. Resolves when Back is tapped. */
+  /** Build Base (old shop). Same options as the Forge. Resolves when Back is tapped. */
   showUpgrade(options: ForgeOptions): Promise<void>;
+  /** The base builder. Changes go through `saveBases` and `saveCamp`. Resolves on Done or Back. */
+  showBaseBuilder(options: BuilderOptions): Promise<void>;
   showVictory(options: VictoryOptions): Promise<VictoryChoice>;
 
   // Battle HUD (Z.hud)
@@ -231,6 +267,8 @@ export interface Overlay {
    */
   showReloadModal(options: ReloadModalOptions): Promise<ReloadAnswer>;
   showSpeechBubble(options: BubbleOptions): void;
+  /** "Computer player is thinking". Pass null to hide it. Text only, never a question. */
+  showThinking(options: ThinkingOptions | null): void;
 
   // Captions (Z.caption). Hidden when captions are off.
   setCaption(text: string | null): void;

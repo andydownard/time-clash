@@ -13,13 +13,16 @@ import { showIntro } from './introScreen';
 import type { LoadingEnv } from './loadingLogic';
 import { isReducedMotion } from './motion';
 import { showCamp } from './campScreen';
+import { showBaseBuilder } from './baseBuilderScreen';
 import { showForge } from './forgeScreen';
 import { showUpgrade } from './upgradeScreen';
 import { showPassScreen } from './passScreen';
 import { showReloadModal } from './reloadModal';
 import { showSetup } from './setupScreen';
 import { showLoading, showTapToStart, showVictory } from './simpleScreens';
+import { createThinking } from './computerPlayer';
 import { showSpeechBubble } from './transient';
+import { awayMs } from './turnScreen';
 import { TEST_IDS, Z, type CoverKind, type CreateOverlay, type Overlay } from './types';
 
 export type OverlayDeps = {
@@ -52,7 +55,8 @@ export const createOverlay: CreateOverlayWithDeps = (
 ): Overlay => {
   const view = doc.defaultView;
   const env: LoadingEnv = deps.env ?? {
-    now: () => (view?.performance ?? performance).now(),
+    // Time on the Turn-your-iPad screen does not count against a reload answer.
+    now: () => (view?.performance ?? performance).now() - awayMs(),
     setTimeout: (fn, ms) => (view ?? globalThis).setTimeout(fn, ms),
     clearTimeout: (id) => (view ?? globalThis).clearTimeout(id as number),
   };
@@ -191,6 +195,7 @@ export const createOverlay: CreateOverlayWithDeps = (
   };
 
   const hud = createHud(ctx);
+  const thinking = createThinking(ctx);
 
   return {
     mount(root, canvas) {
@@ -210,11 +215,14 @@ export const createOverlay: CreateOverlayWithDeps = (
     showTapToStart: (handlers) => showTapToStart(ctx, handlers),
     showIntro: (script, play) => showIntro(ctx, script, play),
     showLoading: (messages) => showLoading(ctx, messages),
-    showSetup: ((initial: Players | null, options?: { back: true }) =>
-      options ? showSetup(ctx, initial, options) : showSetup(ctx, initial)) as Overlay['showSetup'],
-    showCamp: () => showCamp(ctx),
+    showSetup: ((initial: Players | null, options?: { back?: true; computer?: boolean }) =>
+      options
+        ? showSetup(ctx, initial, options as { back: true; computer?: boolean })
+        : showSetup(ctx, initial)) as Overlay['showSetup'],
+    showCamp: (options) => showCamp(ctx, options),
     showForge: (options) => showForge(ctx, options),
     showUpgrade: (options) => showUpgrade(ctx, options),
+    showBaseBuilder: (options) => showBaseBuilder(ctx, options),
     showVictory: (options) => showVictory(ctx, options),
     showHud: (handlers) => hud.show(handlers),
     updateHud: (state) => hud.update(state),
@@ -225,6 +233,7 @@ export const createOverlay: CreateOverlayWithDeps = (
     showReloadModal: (options) => showReloadModal(ctx, options),
     showSpeechBubble: (options) => showSpeechBubble(ctx, options, () => canvasEl),
     setCaption: (text) => ctx.setCaption(text),
+    showThinking: (options) => thinking.show(options?.text ?? null, options?.team ?? 'FUTURE'),
     get cover() {
       return ctx.coverKind();
     },

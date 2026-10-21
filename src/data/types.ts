@@ -7,14 +7,14 @@ export type IntroCard = {
   id: IntroCardId;
   /** Card title, e.g. "Aim". */
   title: string;
-  /** e.g. "/audio/voice/intro-02-aim.mp3". The file may be missing; speech synthesis covers it. */
+  /** e.g. "/audio/voice/intro-02-aim.m4a". If the file fails to load, speech synthesis covers it. */
   audio: string;
   /** Full text for speechSynthesis and the caption fallback. */
   fallbackText: string;
   captions: Caption[];
   /** Illustration id from the design. Placeholder shapes until art lands. */
   art: string;
-  /** Rough length, used to time captions when no voice is available. */
+  /** Real clip length (rounded to 100 ms). Times the captions, also when no voice plays. */
   durationMs: number;
 };
 

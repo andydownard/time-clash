@@ -2,6 +2,7 @@
 // Confetti, plasma rings and toy blocks are all silly and harmless. When motion is reduced,
 // each one becomes a soft fade (docs: Accessibility, reduced-motion support).
 import Phaser from 'phaser';
+import { HIT_FX } from '../../game/config';
 import { createRng } from '../../game/rng';
 import type { Rect, Vec2 } from '../../game/types';
 import type { EffectKind } from './types';
@@ -184,6 +185,34 @@ export function floatLabel(
     alpha: { from: 1, to: 0 },
     delay: 400,
     duration: 900,
+    onComplete: () => t.destroy(),
+  });
+}
+
+/** A "-N" pip that rises and fades over what was hit. Reduced motion: it stays put and fades. */
+export function playDamagePip(
+  scene: Phaser.Scene,
+  pos: Vec2,
+  text: string,
+  reduced: boolean,
+  scaleFont: (basePx: number) => number = (px) => px,
+): Promise<void> {
+  const style = textStyle('scrap');
+  const t = scene.add
+    .text(pos.x, pos.y, text, {
+      ...style,
+      fontSize: `${scaleFont(TEXT_ROLES.scrap.basePx)}px`,
+      padding: { x: 14, y: 6 },
+    })
+    .setOrigin(0.5)
+    .setDepth(51);
+  return tweenDone(scene, {
+    targets: t,
+    y: reduced ? pos.y : pos.y - HIT_FX.pipRisePx,
+    alpha: { from: 1, to: 0 },
+    delay: HIT_FX.pipHoldMs,
+    duration: HIT_FX.pipFadeMs,
+    ease: 'Quad.easeOut',
     onComplete: () => t.destroy(),
   });
 }

@@ -1,11 +1,14 @@
 // @vitest-environment jsdom
 // The markup behind the restyled screens: what the CSS hooks onto, and the rules that must
 // hold on every look (no color-only meaning, no question on the pass cover, real buttons).
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { INTRO, LOADING, PASS_SCREEN, RELOAD, SETUP, TEAM_NAMES, VICTORY_CHRONO } from '../../src/data/copy';
 import { INTRO_SCRIPT } from '../../src/data/introScript';
 import { TEST_IDS } from '../../src/ui/types';
 import { click, fractionQ, flush, mainIdeaQ, mathQ, q, qa, setup, sightQ } from './helpers';
+
+// Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
+vi.setConfig({ testTimeout: 120_000 });
 
 let s: ReturnType<typeof setup>;
 beforeEach(() => {

@@ -89,9 +89,12 @@ describe('sizes', () => {
       expect(DIAL.grabRadius * 2 * scale, `${w} wide`).toBeGreaterThanOrEqual(UI.tapTargetMinPx);
     }
   });
-  it('draws the handle itself larger than the old 18px radius', () => {
-    expect(DIAL.handleRadius).toBeGreaterThanOrEqual(22);
-    expect(DIAL.grabRadius).toBeGreaterThan(DIAL.handleRadius);
+  it('keeps the visible handle small and the invisible grab circle much larger', () => {
+    expect(DIAL.grabRadius).toBeGreaterThanOrEqual(DIAL.handleRadius * 3);
+  });
+  it('keeps the guide line short (90 to 120 px on a 1280x800 board)', () => {
+    expect(DIAL.guideLength).toBeGreaterThanOrEqual(90);
+    expect(DIAL.guideLength).toBeLessThanOrEqual(120);
   });
 });
 
@@ -113,14 +116,13 @@ describe('contrast of drawn shapes (3:1 for large UI)', () => {
     ['Future shot dot on the Future panel', PALETTE.future.glow, [PALETTE.future.night]],
     ['Future panel edge on the ground', PALETTE.future.glow, soil],
     ['wind arrow on its pill', PALETTE.past.gold, [PALETTE.shared.ink]],
-    ['Past power fill on the meter', TEAM_COLOR.PAST, [PALETTE.shared.ink]],
-    ['Future power fill on the meter', TEAM_COLOR.FUTURE, [PALETTE.shared.ink]],
+    ['Past angle guide on its ink outline', TEAM_COLOR.PAST, [PALETTE.shared.ink]],
+    ['Future angle guide on its ink outline', TEAM_COLOR.FUTURE, [PALETTE.shared.ink]],
     ['podium edge on the ground', [PALETTE.shared.ink, PALETTE.past.gold], grass],
   ];
-  // Rims drawn on the sky must still show (wind pill and power meter sit over the sky).
+  // Rims drawn on the sky must still show (the wind pill sits over the sky).
   const rims: Array<[string, number | number[], number[]]> = [
     ['wind pill rim on the sky', PALETTE.past.parchment, sky],
-    ['power meter rim on the sky', PALETTE.past.parchment, sky],
   ];
   for (const [name, fg, bgs] of [...pairs, ...rims]) {
     it(name, () => {

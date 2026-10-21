@@ -10,10 +10,13 @@ import {
   gradeChipLabel,
   gradeLabel,
 } from '../data/copy';
-import { DEFAULT_NAMES, GRADE, NAME } from '../game/config';
+import { COMPUTER } from '../data/computerCopy';
+import { DEFAULT_NAMES, GRADE, NAME, PRACTICE_BOT } from '../game/config';
+import { withComputer } from '../game/practice';
 import { TEAMS, type Grade, type Players, type Subject, type Team } from '../game/types';
-import { clearMyData } from '../storage/storage';
+import { clearMyData, loadPractice } from '../storage/storage';
 import { skyline } from './art';
+import { COMPUTER_TEAM, createPracticeSetup } from './computerPlayer';
 import { LOCAL_IDS } from './constants';
 import type { UiCtx } from './ctx';
 import { h } from './dom';
@@ -33,12 +36,17 @@ export function showSetup(ctx: UiCtx, initial: Players | null): Promise<Players>
 export function showSetup(
   ctx: UiCtx,
   initial: Players | null,
-  options: { back: true },
+  options: { back: true; computer?: boolean },
 ): Promise<Players | null>;
 export function showSetup(
   ctx: UiCtx,
   initial: Players | null,
-  options?: { back: true },
+  options: { computer: boolean },
+): Promise<Players>;
+export function showSetup(
+  ctx: UiCtx,
+  initial: Players | null,
+  options?: { back?: true; computer?: boolean },
 ): Promise<Players | null> {
   const { doc } = ctx;
 
@@ -48,7 +56,11 @@ export function showSetup(
   });
   const state = defaults();
   if (initial) {
-    for (const p of initial) state[p.team] = { name: p.name, grade: p.grade, subject: p.subject };
+    // The Computer player is not a name to type back in. Its side starts fresh.
+    for (const p of initial) {
+      if (p.name === PRACTICE_BOT.displayName) continue;
+      state[p.team] = { name: p.name, grade: p.grade, subject: p.subject };
+    }
   }
 
   // Set once the read-back line exists. Every chip pick calls it.
@@ -112,6 +124,10 @@ export function showSetup(
   }
 
   const painters: Array<() => void> = [];
+  // The Play with choice. Off by default: with no `computer` option nothing below changes Setup.
+  const practice = options?.computer
+    ? createPracticeSetup(ctx, loadPractice(ctx.storage), () => painters.forEach((p) => p()))
+    : null;
 
   const cards = TEAMS.map((team) => {
     const lower = team.toLowerCase();
@@ -210,6 +226,14 @@ export function showSetup(
       h(doc, 'p', { class: 'tc-muted tc-subject-help', text: SETUP.subjectHelper }),
     );
   });
+  const humanCards = cards;
+  // Computer player picked: its card takes the place of the Team Future card.
+  if (practice) {
+    painters.push(() => {
+      humanCards[1]!.hidden = practice.isComputer();
+      practice.card.hidden = !practice.isComputer();
+    });
+  }
   // Says the picks in words, so a parent sees the start grade was not skipped.
   const readBack = h(doc, 'p', {
     class: 'tc-match-helper',
@@ -218,11 +242,13 @@ export function showSetup(
   });
   const paintReadBack = (): void => {
     readBack.textContent = TEAMS.map((t) =>
-      SETUP.readBack(
-        TEAM_NAMES[t],
-        gradeChipLabel(state[t].grade),
-        SUBJECT_LABELS[state[t].subject],
-      ),
+      practice?.isComputer() && t === COMPUTER_TEAM
+        ? `${TEAM_NAMES[t]}: ${COMPUTER.readBack(COMPUTER.levels[practice.choice().level])}`
+        : SETUP.readBack(
+            TEAM_NAMES[t],
+            gradeChipLabel(state[t].grade),
+            SUBJECT_LABELS[state[t].subject],
+          ),
     ).join('. ');
   };
   onPick = paintReadBack;
@@ -265,6 +291,7 @@ export function showSetup(
   yes.addEventListener('click', () => {
     clearMyData(ctx.storage);
     Object.assign(state, defaults());
+    practice?.reset();
     for (const t of TEAMS) {
       (inputs[t] as HTMLInputElement).value = state[t].name;
       errorEls[t]!.textContent = '';
@@ -295,6 +322,7 @@ export function showSetup(
     doc,
     'form',
     { class: 'tc-setup-form', novalidate: true },
+    ...(practice ? [practice.playWithRow] : []),
     h(
       doc,
       'div',
@@ -302,6 +330,7 @@ export function showSetup(
       cards[0],
       h(doc, 'div', { class: 'tc-vs', 'aria-hidden': 'true', text: SETUP.versus }),
       cards[1],
+      ...(practice ? [practice.card] : []),
     ),
     readBack,
     h(doc, 'p', { class: 'tc-sr-only', text: SETUP.matchHelper }),
@@ -319,7 +348,11 @@ export function showSetup(
   const screen = h(
     doc,
     'section',
-    { class: 'tc-screen tc-setup tc-split', 'data-screen': 'setup', 'data-motion': ctx.motion() },
+    {
+      class: `tc-screen tc-setup tc-split${practice ? ' tc-setup-choice' : ''}`,
+      'data-screen': 'setup',
+      'data-motion': ctx.motion(),
+    },
     skyline(doc),
     h(doc, 'h1', { class: 'tc-setup-title', text: SETUP.heading }),
     h(doc, 'p', { class: 'tc-setup-sub', text: SETUP.subtitle }),
@@ -335,18 +368,23 @@ export function showSetup(
     });
     form.addEventListener('submit', (e) => {
       e.preventDefault();
+      const alone = practice?.isComputer() === true;
       const result = validateSetup({
         PAST: { name: inputs.PAST.value, grade: state.PAST.grade, subject: state.PAST.subject },
-        FUTURE: {
-          name: inputs.FUTURE.value,
-          grade: state.FUTURE.grade,
-          subject: state.FUTURE.subject,
-        },
+        // Playing alone: the other side is not typed, so check it with the default name.
+        FUTURE: alone
+          ? { name: DEFAULT_NAMES.FUTURE, grade: state.PAST.grade, subject: state.PAST.subject }
+          : {
+              name: inputs.FUTURE.value,
+              grade: state.FUTURE.grade,
+              subject: state.FUTURE.subject,
+            },
       });
       if (result.ok) {
         ctx.sfx('click');
+        if (practice) ctx.storage.set('timeclash.practice', practice.choice());
         close();
-        resolve(result.players);
+        resolve(alone ? withComputer(result.players, COMPUTER_TEAM) : result.players);
         return;
       }
       let focused = false;

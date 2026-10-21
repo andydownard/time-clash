@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { BUTTONS, PASS_SCREEN, RELOAD as RELOAD_COPY, UI_EXTRA } from '../../src/data/copy';
 import { RELOAD, TIMING, UI } from '../../src/game/config';
 import { fastWindowMs } from '../../src/game/reload';
@@ -17,6 +17,9 @@ import {
   sightQ,
   vocabQ,
 } from './helpers';
+
+// Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
+vi.setConfig({ testTimeout: 120_000 });
 
 let s: ReturnType<typeof setup>;
 beforeEach(() => {

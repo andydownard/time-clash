@@ -2,7 +2,7 @@
 // builds, the host sends security headers, and Phaser does not announce itself.
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { findHookLeak } from '../scripts/check-dist';
+import { findHookLeak, findServerLeak } from '../scripts/check-dist';
 
 const read = (p: string): string => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8');
 
@@ -19,6 +19,16 @@ describe('findHookLeak (the dist check)', () => {
       { name: 'b.js', text: '__timeclash' },
     ]);
     expect(hit).toEqual(['b.js']);
+  });
+});
+
+describe('findServerLeak (the dist check)', () => {
+  it('flags a bundle that holds app-server code', () => {
+    expect(findServerLeak([{ name: 'a.js', text: 'import "node:http"' }])).toEqual(['a.js']);
+    expect(findServerLeak([{ name: 'b.js', text: 'createClipHandler()' }])).toEqual(['b.js']);
+  });
+  it('passes a clean bundle', () => {
+    expect(findServerLeak([{ name: 'a.js', text: 'console.log(1)' }])).toEqual([]);
   });
 });
 
@@ -41,6 +51,14 @@ describe('public/_headers', () => {
     'Permissions-Policy: camera=(), microphone=(), geolocation=()',
   ])('sends %s', (line) => {
     expect(headers).toContain(line);
+  });
+  it('allows no outside origin anywhere (clips come from the same origin)', () => {
+    const csp = /Content-Security-Policy: (.+)/.exec(headers)![1]!;
+    expect(csp).not.toMatch(/https?:|\/\/|\*/);
+    expect(csp).toContain("media-src 'self'");
+    expect(csp).toContain("connect-src 'self'");
+    expect(csp).toContain("script-src 'self';");
+    expect(read('index.html')).not.toMatch(/voice\.timeclash/);
   });
   it('sends the same Content-Security-Policy as the page meta tag', () => {
     const meta = /http-equiv="Content-Security-Policy"\s+content="([^"]+)"/.exec(

@@ -1,5 +1,7 @@
 // The five "How to Play" cards. Text is exactly docs/NARRATION.md, split into one
 // caption per sentence. tests/data/introScript.test.ts reads that file and compares.
+// Each durationMs is the real clip length in db/voice.sqlite, rounded to 100 ms. The clips are
+// extracted to public/audio/voice/ by scripts/extract-voice-clips.py.
 import type { IntroCard, IntroCardId, IntroScript } from './types';
 
 /**
@@ -43,19 +45,19 @@ export const INTRO_SCRIPT: IntroScript = [
   card(
     'welcome',
     'Welcome',
-    '/audio/voice/intro-01-welcome.mp3',
+    '/audio/voice/intro-01-welcome.m4a',
     [
       'Welcome to Time Clash!',
       'One of you commands a castle from the Past.',
       'The other commands a secret base from the Future.',
       "Let's learn how to win!",
     ],
-    10000,
+    9400,
   ),
   card(
     'aim',
     'Aim',
-    '/audio/voice/intro-02-aim.mp3',
+    '/audio/voice/intro-02-aim.m4a',
     [
       'On your turn, aim your launcher.',
       'Turn the angle dial to point up or down.',
@@ -63,24 +65,24 @@ export const INTRO_SCRIPT: IntroScript = [
       'Watch the wind.',
       'It pushes your shot sideways!',
     ],
-    12000,
+    11800,
   ),
   card(
     'two-shots',
     'Two Shots',
-    '/audio/voice/intro-03-two-shots.mp3',
+    '/audio/voice/intro-03-shoot-twice.m4a',
     [
       'You get two shots each turn.',
       'Hit the other base to lower its health.',
       'Each base starts with one hundred health.',
       'Empty the bar to win!',
     ],
-    10000,
+    8900,
   ),
   card(
     'reload',
     'Reload',
-    '/audio/voice/intro-04-reload.mp3',
+    '/audio/voice/intro-04-reload.m4a',
     [
       'After shot two, you reload your launcher.',
       'Answer a question to reload it.',
@@ -90,12 +92,12 @@ export const INTRO_SCRIPT: IntroScript = [
       "Don't worry about mistakes.",
       'You always get to reload.',
     ],
-    15000,
+    15900,
   ),
   card(
     'wipeouts',
     'Wipeouts and Turns',
-    '/audio/voice/intro-05-wipeouts.mp3',
+    '/audio/voice/intro-05-wipeouts-and-passing-the-screen.m4a',
     [
       'A blast can bump you.',
       'Then you do a silly wipeout!',
@@ -106,6 +108,6 @@ export const INTRO_SCRIPT: IntroScript = [
       'Ready?',
       "Let's clash across time!",
     ],
-    13000,
+    13800,
   ),
 ];

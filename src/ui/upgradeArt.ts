@@ -1,4 +1,4 @@
-// The Upgrade Base pictures, drawn as inline SVG. Adapted from the design handoff (boards 8 and 8b):
+// The Build Base (old shop) pictures, drawn as inline SVG. Adapted from the design handoff (boards 8 and 8b):
 // a broken castle tower being rebuilt for Team Past, a silo bunker cut open like a hologram for
 // Team Future, and a small picture for each upgrade. No files are fetched. Every picture is
 // decorative, so it is aria-hidden (each upgrade row is named in words). Colors come from the
