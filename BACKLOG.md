@@ -24,7 +24,12 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 - The win moment has no celebration.
 - The reward for a fast answer is easy to miss.
 - Wood plank and neon pod card skins, bigger castle and rocket pictures on Setup cards, brighter Tap to Play silhouettes with a visual gag, and bouncing victory blocks are new art.
-- Phase 2 base placement, biomes, and evasion abilities (docs/BUILD.md). The Camp Hub is built.
+- Phase 2 Battle Plan, biomes, base spots, ammo and evasion are wired in. Open calls for Andy: one ability per team (Past wall, Future dodge) or both for each side; wall size and once per match versus dodge every 3rd turn (balance); Food Trucks as the default spot (it adds a low wall that Phase 1 did not have); ammo unlock lives on the Battle Plan, not the Forge.
+- P2: Portrait (768x1024) with the Skyscraper spot: the Team Future card covers the tank and laser robot on top of the tower. Move the top cards or lower the tower in portrait.
+- P2: Biome art is simple: cherry trees recolor the aspens and the temple uses plain columns. The spot shapes (tower, bridge deck, food truck wall) are plain steel blocks. Real art from a design board would help.
+- P3: The aim preview ignores the weapon and fighter range scale (it did before Phase 2 too). It does use the ammo and any standing wall.
+- P3: The Computer player does not aim around a standing stone wall.
+- P3: Ammo and the dodge only change damage in the base-health game. With character health (flag off) ammo still changes the flight, but not damage.
 - Camp scrap counter and saved scrap between matches. The Main board has no scrap counter, so it waits for Phase 3 and the Forge.
 - There are about 40 items per grade and subject (grades K to 2 now have 62 to 70, with story and word-meaning questions added). Families who play many rematches will see repeats. Grades 3 to 12 still need more.
 - There is no way to end a match early and no setting for match length.
