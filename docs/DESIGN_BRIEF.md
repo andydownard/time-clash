@@ -48,7 +48,7 @@ Deliver each screen with its states: default, hover or focus, pressed, disabled,
 A big friendly "TAP TO PLAY" button over a sunrise-to-sunset time-warp backdrop. Browsers block sound until a tap, so this screen also unlocks the intro voice. Small mute icon and a "Captions on" toggle in the corner.
 
 ### 1. Intro: How to Play (spoken)
-A narrator character, a goofy time-traveling announcer named **Chrono**, speaks the how-to-play lesson for about 60 seconds. Design:
+A narrator character, a goofy time-traveling announcer named **Chrono**, speaks the how-to-play lesson for about 40 seconds. Design:
 - Chrono in a corner, mouth moving, plus 5 illustrated "cards" that change as he talks: (1) aim, (2) shoot twice, (3) reload by answering, (4) wipeouts are funny, (5) win by emptying the other base's health.
 - Live captions at the bottom, one sentence at a time, large type.
 - Buttons: **Skip**, **Replay**, **Mute**. A progress dots row for the 5 cards.
