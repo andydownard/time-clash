@@ -1,11 +1,11 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { INTRO_SCRIPT } from '../../src/data/introScript';
+import { INTRO_SCRIPT, timeCaptions } from '../../src/data/introScript';
 
 const md = readFileSync(new URL('../../docs/NARRATION.md', import.meta.url), 'utf8');
 
 /** duration_ms of the intro rows in db/voice.sqlite (table voice_clips), in card order. */
-const DB_DURATIONS_MS = [9365, 11819, 8896, 15872, 13803];
+const DB_DURATIONS_MS = [6443, 7381, 6400, 11307, 10624];
 
 /** Reads the length of an MP4/M4A file from its moov > mvhd box. */
 function mp4DurationMs(buf: Buffer): number {
@@ -126,6 +126,18 @@ describe('INTRO_SCRIPT matches docs/NARRATION.md', () => {
     for (const card of INTRO_SCRIPT) {
       for (const c of card.captions) expect(c.text.length).toBeLessThanOrEqual(60);
     }
+  });
+
+  it('the intro runs about 40 seconds and Card 4 has 4 captions or fewer', () => {
+    const total = INTRO_SCRIPT.reduce((n, c) => n + c.durationMs, 0);
+    expect(total).toBeGreaterThanOrEqual(35_000);
+    expect(total).toBeLessThanOrEqual(45_000);
+    expect(INTRO_SCRIPT[3]!.captions.length).toBeLessThanOrEqual(4);
+  });
+
+  it('captions are spread in proportion to sentence length (timeCaptions)', () => {
+    const [a, b, c] = timeCaptions(['aaaa', 'bbbb', 'cccc'], 10_000);
+    expect([a!.startMs, b!.startMs, c!.startMs]).toEqual([0, 3000, 6000]);
   });
 
   it('every card has an art id', () => {
