@@ -19,8 +19,6 @@ test('the Camp has no Build buttons unless the builder is switched on', async ({
   await page.waitForFunction(() => Boolean(window.__timeclash));
   await expect(tid(page, 'camp-build-PAST')).toHaveCount(0);
   await expect(tid(page, 'camp-build-FUTURE')).toHaveCount(0);
-  // The old shop button stays, under the new name.
-  await expect(tid(page, 'camp-upgrade')).toHaveText('Build Base');
 });
 
 test('with the builder on, each side has one Build Base button and no old shop button', async ({
@@ -136,7 +134,7 @@ test('a locked piece costs Scrap, once, and then is yours', async ({ page }) => 
   await openBuilder(page, 'PAST');
   await expect(tid(page, 'bb-scrap')).toContainText('7');
   await tid(page, 'bb-brick-gate').click();
-  await expect(tid(page, 'bb-status')).toHaveText('Not yet. You need 3 more Scrap.');
+  await expect(tid(page, 'bb-status')).toHaveText('Not enough Scrap yet. You need 3 more.');
   await tid(page, 'bb-brick-arch').click();
   await expect(tid(page, 'bb-status')).toHaveText('You unlocked Arch!');
   await expect(tid(page, 'bb-scrap')).toContainText('1');
@@ -245,7 +243,7 @@ test('weapons: a locked weapon needs Scrap, once, and then mounts', async ({ pag
   await chooseSpot(page, 1);
   await expect(tid(page, 'bb-weapon-ballista')).toHaveAttribute('data-state', 'locked');
   await tid(page, 'bb-weapon-ballista').click();
-  await expect(tid(page, 'bb-status')).toHaveText('Not yet. You need 15 more Scrap.');
+  await expect(tid(page, 'bb-status')).toHaveText('Not enough Scrap yet. You need 15 more.');
   await expect(tid(page, 'bb-scrap')).toContainText('20');
   await expect(spotPad(page, 1)).toHaveAttribute('aria-label', 'Spot 1, empty, selected');
 

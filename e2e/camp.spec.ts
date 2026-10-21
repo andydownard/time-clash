@@ -27,6 +27,8 @@ test('Setup leads to the Camp, and Time to Clash! starts the match', async ({ pa
 
 test('Build Base (builder off) opens the old shop screen and Back returns to the Camp', async ({ page }) => {
   await toCamp(page);
+  await expect(tid(page, 'camp-upgrade')).toHaveText('Build Base');
+  await expect(tid(page, 'camp-build-PAST')).toHaveCount(0);
   await tid(page, 'camp-upgrade').click();
   await expect(page.locator('[data-screen="upgrade"] h1')).toHaveText('Build Base');
   await tid(page, 'upgrade-back').click();
