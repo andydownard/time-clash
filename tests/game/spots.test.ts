@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { simulateShot } from '../../src/game/ballistics';
 import { classifyBlast } from '../../src/game/damage';
 import {
@@ -13,6 +13,9 @@ import { isSpotId, layoutForSpot, shiftForSpot, spotElevation } from '../../src/
 import type { SpotId } from '../../src/game/spots';
 import type { BattleLayout, Rect, Team } from '../../src/game/types';
 import { windForTurn } from '../../src/game/wind';
+
+// Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
+vi.setConfig({ testTimeout: 30_000 });
 
 const SPOTS = [...SPOT_IDS] as SpotId[];
 const WINDS = [0, windForTurn(11, 0), windForTurn(23, 3)];

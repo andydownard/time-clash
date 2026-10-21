@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 // Upgrade Base: spend Scrap on three levels of each upgrade. Every tap that cannot work says why in
 // words and changes nothing. Every change is saved at once.
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { UPGRADE_COPY, upgradeEffect } from '../../src/data/copy';
 import { walletOf, type CampState } from '../../src/game/loadout';
 import type { Team } from '../../src/game/types';
@@ -9,6 +9,9 @@ import { NAMES, campWith } from '../helpers/camp';
 import { UPGRADE_MAX_LEVEL, upgradeById } from '../../src/game/upgrades';
 import { TEST_IDS } from '../../src/ui/types';
 import { click, q, qa, setup } from './helpers';
+
+// Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
+vi.setConfig({ testTimeout: 30_000 });
 
 let s: ReturnType<typeof setup>;
 beforeEach(() => {

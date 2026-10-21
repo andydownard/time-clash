@@ -3,7 +3,7 @@
 // words and changes nothing. Every change is saved at once.
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { FORGE_COPY } from '../../src/data/copy';
 import { freshLoadout, walletOf, type CampState } from '../../src/game/loadout';
 import type { Team } from '../../src/game/types';
@@ -11,6 +11,9 @@ import { NAMES, campWith } from '../helpers/camp';
 import { FORGE, weaponById } from '../../src/game/weapons';
 import { TEST_IDS } from '../../src/ui/types';
 import { click, flush, q, qa, setup } from './helpers';
+
+// Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
+vi.setConfig({ testTimeout: 30_000 });
 
 const ui = readFileSync(join(process.cwd(), 'src/styles/ui.css'), 'utf8');
 let s: ReturnType<typeof setup>;

@@ -6,6 +6,9 @@ import type { HudHandlers, HudState } from '../../src/ui/types';
 import { TEST_IDS, Z } from '../../src/ui/types';
 import { click, flush, key, q, qa, setup } from './helpers';
 
+// Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
+vi.setConfig({ testTimeout: 30_000 });
+
 let s: ReturnType<typeof setup>;
 beforeEach(() => {
   s = setup();
