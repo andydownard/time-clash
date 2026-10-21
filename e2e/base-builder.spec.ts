@@ -18,6 +18,19 @@ test('the Camp has no Build buttons unless the builder is switched on', async ({
   await page.goto('/?e2e=1');
   await page.waitForFunction(() => Boolean(window.__timeclash));
   await expect(tid(page, 'camp-build-PAST')).toHaveCount(0);
+  await expect(tid(page, 'camp-build-FUTURE')).toHaveCount(0);
+});
+
+test('with the builder on, each side has one Build Base button and no old shop button', async ({
+  page,
+}) => {
+  await toBuilderCamp(page);
+  await expect(tid(page, 'camp-upgrade')).toHaveCount(0);
+  await expect(tid(page, 'camp-build-PAST')).toHaveText('Build Base');
+  await expect(tid(page, 'camp-build-FUTURE')).toHaveText('Build Base');
+  await tid(page, 'camp-build-FUTURE').click();
+  await expect(page.locator('[data-screen="builder"]')).toBeVisible();
+  await expect(page.locator('[data-screen="upgrade"]')).toHaveCount(0);
 });
 
 test('drag, turn, undo, save to slot 2, reload and see the base again', async ({ page }) => {
@@ -121,7 +134,7 @@ test('a locked piece costs Scrap, once, and then is yours', async ({ page }) => 
   await openBuilder(page, 'PAST');
   await expect(tid(page, 'bb-scrap')).toContainText('7');
   await tid(page, 'bb-brick-gate').click();
-  await expect(tid(page, 'bb-status')).toHaveText('Not yet. You need 3 more Scrap.');
+  await expect(tid(page, 'bb-status')).toHaveText('Not enough Scrap yet. You need 3 more.');
   await tid(page, 'bb-brick-arch').click();
   await expect(tid(page, 'bb-status')).toHaveText('You unlocked Arch!');
   await expect(tid(page, 'bb-scrap')).toContainText('1');
@@ -230,7 +243,7 @@ test('weapons: a locked weapon needs Scrap, once, and then mounts', async ({ pag
   await chooseSpot(page, 1);
   await expect(tid(page, 'bb-weapon-ballista')).toHaveAttribute('data-state', 'locked');
   await tid(page, 'bb-weapon-ballista').click();
-  await expect(tid(page, 'bb-status')).toHaveText('Not yet. You need 15 more Scrap.');
+  await expect(tid(page, 'bb-status')).toHaveText('Not enough Scrap yet. You need 15 more.');
   await expect(tid(page, 'bb-scrap')).toContainText('20');
   await expect(spotPad(page, 1)).toHaveAttribute('aria-label', 'Spot 1, empty, selected');
 

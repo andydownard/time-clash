@@ -38,7 +38,7 @@ export const FORGE_COPY = {
   atTop: 'This weapon is at the top level.',
 } as const;
 
-// ---------- Upgrade Base ----------
+// ---------- Build Base (the old shop screen, shown when the base builder is off) ----------
 /** What an upgrade does, in words a child can read. `n` is the total at the level shown. */
 export const upgradeEffect = (effect: UpgradeEffect, n: number): string => {
   switch (effect) {
@@ -58,7 +58,7 @@ export const upgradeEffect = (effect: UpgradeEffect, n: number): string => {
 };
 
 export const UPGRADE_COPY = {
-  title: 'Upgrade Base',
+  title: 'Build Base',
   back: 'Back',
   scrap: 'Scrap',
   pickTeam: 'Choose a team',
@@ -79,7 +79,7 @@ export const CAMP = {
   logoTime: 'Time',
   logoClash: 'Clash',
   forge: 'Forge Weapon',
-  upgrade: 'Upgrade Base',
+  upgrade: 'Build Base',
   /** The big button. It starts the match. */
   start: GAME_TAGLINE,
   /** A small way back to Setup, to change names, grades and subjects. */
@@ -428,9 +428,12 @@ export const UI_EXTRA = {
 
 // ---------- Base builder ----------
 export const BUILDER_COPY = {
-  title: { PAST: 'Build your castle', FUTURE: 'Build your base' } as Record<Team, string>,
-  /** The Camp buttons that open the builder. */
-  campButton: { PAST: 'Build Castle', FUTURE: 'Build Base' } as Record<Team, string>,
+  /** The screen is called Build Base for both sides. */
+  title: { PAST: 'Build Base', FUTURE: 'Build Base' } as Record<Team, string>,
+  /** The one Camp button per side that opens the builder. */
+  campButton: { PAST: 'Build Base', FUTURE: 'Build Base' } as Record<Team, string>,
+  /** A tap on a locked piece or weapon when the purse is short. */
+  needMore: (n: number): string => `Not enough Scrap yet. You need ${n} more.`,
   campThumb: (team: Team, name: string): string => `${name}'s ${TEAM_HOMES[team]}`,
   back: 'Back',
   scrap: 'Scrap',

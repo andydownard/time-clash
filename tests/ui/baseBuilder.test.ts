@@ -15,7 +15,7 @@ import {
   type BasesState,
 } from '../../src/game/baseBuilder';
 import { BASE_BUILDER as B, UI } from '../../src/game/config';
-import { BUILDER_COPY, FORGE_COPY } from '../../src/data/copy';
+import { BUILDER_COPY } from '../../src/data/copy';
 import { walletOf, type CampState } from '../../src/game/loadout';
 import { plotPoint } from '../../src/ui/baseBuilderScreen';
 import { TEST_IDS } from '../../src/ui/types';
@@ -420,7 +420,7 @@ describe('Scrap and locked pieces', () => {
   it('too little Scrap says how much more and changes nothing', () => {
     const o = open('PAST', campWith(2));
     click(brick('arch'));
-    expect(status()).toBe(FORGE_COPY.needMore((B.pieceScrap.arch as number) - 2));
+    expect(status()).toBe(BUILDER_COPY.needMore((B.pieceScrap.arch as number) - 2));
     expect(o.camps).toHaveLength(0);
     expect(brick('arch').getAttribute('data-state')).toBe('locked');
     expect(q('bb-scrap')!.textContent).toContain('2');
@@ -632,7 +632,7 @@ describe('weapon spots', () => {
     toWeapons();
     tap(pad(1));
     click(q('bb-weapon-ballista'));
-    expect(status()).toBe(FORGE_COPY.needMore(25));
+    expect(status()).toBe(BUILDER_COPY.needMore(25));
     expect(o.camps).toHaveLength(0);
     expect(q('bb-weapon-ballista')!.getAttribute('data-state')).toBe('locked');
   });
