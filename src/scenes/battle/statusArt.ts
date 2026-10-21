@@ -6,7 +6,7 @@ import Phaser from 'phaser';
 import { HUD, windWord } from '../../data/copy';
 import { DAMAGE, HIT_FX } from '../../game/config';
 import type { BattleLayout, Team } from '../../game/types';
-import { hpFraction, shotIcons, windArrow } from './geometry';
+import { hpFraction, shotIcons, windArrow, windGusts } from './geometry';
 import { textStyle } from './textStyle';
 import type { LabelScaler } from './textScale';
 import type { ViewStatus } from './types';
@@ -168,6 +168,11 @@ export function createStatusArt(
         tip - a.dir * 14,
         WIND_POS.y + 13,
       );
+      // Gust streaks behind the tail, so a pre-reader sees wind, not just an arrow.
+      windGfx.lineStyle(4, PALETTE.past.parchment, 1);
+      for (const s of windGusts(wind, WIND_POS.x, WIND_POS.y)) {
+        windGfx.lineBetween(s.x1, s.y, s.x2, s.y);
+      }
     } else {
       // Calm: a small dot, not an empty box.
       windGfx.fillStyle(PALETTE.past.parchment, 1);

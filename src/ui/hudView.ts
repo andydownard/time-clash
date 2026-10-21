@@ -8,6 +8,7 @@ import type { UnitId } from '../game/units';
 import { LOCAL_IDS } from './constants';
 import type { UiCtx } from './ctx';
 import { h } from './dom';
+import { hudIcon } from './hudIcons';
 import { TEST_IDS, type HudHandlers, type HudState } from './types';
 
 const clamp = (n: number, lo: number, hi: number): number => Math.min(hi, Math.max(lo, n));
@@ -124,8 +125,10 @@ export function createHud(ctx: UiCtx) {
   };
 
   // One pip per shot (spent ones show a cross) and a last pip: a question comes after shot 2.
+  // A ball picture leads the pips, so a pre-reader knows they count shots.
   const paintPips = (el: HTMLElement, shotsLeft: number, bonus = false): void => {
     el.replaceChildren(
+      hudIcon(doc, 'shots'),
       ...Array.from({ length: TURN.shotsPerTurn }, (_, i) =>
         h(doc, 'span', {
           class: 'tc-pip',
@@ -285,12 +288,13 @@ export function createHud(ctx: UiCtx) {
           'div',
           { 'data-testid': TEST_IDS.baseHp(t), class: 'tc-hp' },
           h(doc, 'span', { class: 'tc-hp-label tc-sr-only', text: HUD.baseHealth }),
-          h(doc, 'div', { class: 'tc-hp-row' }, hpMeter[t], hpText[t]),
+          h(doc, 'div', { class: 'tc-hp-row' }, hudIcon(doc, 'health'), hpMeter[t], hpText[t]),
         ),
         h(
           doc,
           'div',
           { class: 'tc-scrap-row' },
+          hudIcon(doc, 'scrap'),
           h(doc, 'span', { text: `${HUD.scrap}: ` }),
           scrap[t],
         ),

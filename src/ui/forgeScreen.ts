@@ -8,6 +8,7 @@ import { FORGE, forgeCost, weaponStats, weaponsOf, type Weapon } from '../game/w
 import { walletOf, type CampState } from '../game/loadout';
 import type { UiCtx } from './ctx';
 import { h } from './dom';
+import { hudIcon } from './hudIcons';
 import { forgeScene, weaponIcon } from './forgeArt';
 import { TEST_IDS, type ForgeOptions } from './types';
 
@@ -37,6 +38,7 @@ export function showForge(ctx: UiCtx, options: ForgeOptions): Promise<void> {
       'p',
       { class: 'tc-forge-scrap', 'data-testid': TEST_IDS.forgeScrap },
       ownerName,
+      hudIcon(doc, 'scrap'),
       h(doc, 'span', { text: `${FORGE_COPY.scrap}: ` }),
       scrapValue,
     );

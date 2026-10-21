@@ -2,7 +2,7 @@
 // The markup behind the restyled screens: what the CSS hooks onto, and the rules that must
 // hold on every look (no color-only meaning, no question on the pass cover, real buttons).
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { INTRO, LOADING, PASS_SCREEN, RELOAD, SETUP, TEAM_NAMES } from '../../src/data/copy';
+import { INTRO, LOADING, PASS_SCREEN, RELOAD, SETUP, TEAM_NAMES, VICTORY_CHRONO } from '../../src/data/copy';
 import { INTRO_SCRIPT } from '../../src/data/introScript';
 import { TEST_IDS } from '../../src/ui/types';
 import { click, fractionQ, flush, mainIdeaQ, mathQ, q, qa, setup, sightQ } from './helpers';
@@ -306,11 +306,12 @@ describe('Wipeout look', () => {
     );
   });
 
-  it('Chrono has a face beside the good-sport line', () => {
+  it("Chrono has a face beside his line, and never takes the losing fighter's dignity line", () => {
     void s.overlay.showVictory(opts);
     const says = q(TEST_IDS.victory)!.querySelector('[data-role="chrono-says"]')!;
     expect(says.querySelector('svg.tc-chrono-face')).not.toBeNull();
-    expect(says.textContent).toContain('Rematch? My dignity needs a rematch!');
+    expect(Object.values(VICTORY_CHRONO).some((l) => says.textContent!.includes(l))).toBe(true);
+    expect(says.textContent).not.toContain('dignity');
   });
 });
 

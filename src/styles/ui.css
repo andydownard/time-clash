@@ -801,6 +801,22 @@ body {
   display: block;
   font-size: var(--tc-fs-label);
 }
+/* Pre-reader pictures beside Base health, Shots left and Scrap. Decorative: the words stay. */
+.tc-hud-icon {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  vertical-align: middle;
+}
+.tc-scrap-row .tc-hud-icon,
+.tc-forge-scrap .tc-hud-icon {
+  margin-right: 6px;
+  margin-top: -4px;
+}
+.tc-pips .tc-hud-icon {
+  width: 30px;
+  height: 30px;
+}
 .tc-hp-row {
   display: flex;
   align-items: center;
@@ -1502,6 +1518,18 @@ body {
 }
 .tc-feedback p {
   margin: 0;
+}
+/* Chrono's quip on the reload card: his face, his name, his line. */
+.tc-chrono-quip {
+  display: flex;
+  align-items: center;
+  gap: var(--tc-s-2);
+  margin-top: var(--tc-s-2);
+}
+.tc-chrono-quip .tc-chrono-face {
+  flex: none;
+  width: 40px;
+  height: 43px;
 }
 .tc-why {
   font-weight: 700;
