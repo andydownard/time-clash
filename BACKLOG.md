@@ -26,7 +26,6 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 - P2: Portrait (768x1024) with the Skyscraper spot: the Team Future card covers the tank and laser robot on top of the tower. Move the top cards or lower the tower in portrait.
 - P2: Biome art is simple: cherry trees recolor the aspens and the temple uses plain columns. The spot shapes (tower, bridge deck, food truck wall) are plain steel blocks. Real art from a design board would help.
 - P3: The aim preview ignores the weapon and fighter range scale (it did before Phase 2 too). It does use the ammo and any standing wall.
-- P3: The Computer player does not aim around a standing stone wall.
 - P3: Ammo and the dodge only change damage in the base-health game. With character health (flag off) ammo still changes the flight, but not damage.
 - Camp scrap counter and saved scrap between matches. The Main board has no scrap counter, so it waits for Phase 3 and the Forge.
 - There are about 40 items per grade and subject (grades K to 2 now have 62 to 70, with story and word-meaning questions added). Families who play many rematches will see repeats. Grades 3 to 12 still need more.
