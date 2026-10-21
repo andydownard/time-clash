@@ -8,6 +8,7 @@ import { TEAMS, type Team } from '../game/types';
 import { UPGRADE_MAX_LEVEL, upgradeCost, upgradesOf, type Upgrade } from '../game/upgrades';
 import type { UiCtx } from './ctx';
 import { h } from './dom';
+import { hudIcon } from './hudIcons';
 import { upgradeIcon, upgradeScene } from './upgradeArt';
 import { TEST_IDS, type ForgeOptions } from './types';
 
@@ -37,6 +38,7 @@ export function showUpgrade(ctx: UiCtx, options: ForgeOptions): Promise<void> {
       'p',
       { class: 'tc-forge-scrap', 'data-testid': TEST_IDS.upgradeScrap },
       ownerName,
+      hudIcon(doc, 'scrap'),
       h(doc, 'span', { text: `${UPGRADE_COPY.scrap}: ` }),
       scrapValue,
     );
