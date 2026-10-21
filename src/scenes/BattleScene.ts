@@ -260,6 +260,10 @@ export class BattleScene extends Phaser.Scene implements BattleView {
     this.aimArt.showPreview(team, dots);
   }
 
+  showTrace(team: Team, points: readonly Vec2[] | null): void {
+    this.aimArt.showTrace(team, points);
+  }
+
   setAimDragHandler(handler: ((aim: AimInput) => void) | null): void {
     this.dragHandler = handler;
     if (!handler) {
