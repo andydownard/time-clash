@@ -6,12 +6,14 @@
 import type { AudioManager } from '../../audio/types';
 import { DEFAULT_UNIT, unitById, unitsOf, type UnitId } from '../../game/units';
 import { kindForRole } from './projectileKinds';
-import { RNG_SALT, TEAM_FACING, TURN } from '../../game/config';
+import { EVASION, RNG_SALT, TEAM_FACING, TURN } from '../../game/config';
+import type { AmmoId } from '../../game/ammo';
+import { unitOrigin } from '../../game/battlefield';
 import { simulateShot } from '../../game/ballistics';
 import { createShuffleBag } from '../../game/bag';
 import { createRng } from '../../game/rng';
 import type { AimInput, MatchController, Rng, Team } from '../../game/types';
-import { HIT_LINES, RELOAD as RELOAD_COPY, RELOAD_QUIPS } from '../../data/copy';
+import { GEAR_COPY, HIT_LINES, RELOAD as RELOAD_COPY, RELOAD_QUIPS } from '../../data/copy';
 import { timeCaptions } from '../../data/introScript';
 import {
   effectiveGrade,
@@ -186,11 +188,18 @@ export class BattleFlow {
     await view.animateShot(team, result, unit ? kindForRole(unit.role) : undefined);
     this.live();
 
+    const ammo = match.snapshot().lastShot?.ammo;
     const outcome = match.shotLanded();
     audio?.playSfx('thud');
     this.pushStatus(false);
-    const label = HIT_LINES[outcome.result][this.hitBags[outcome.result].next()];
-    await view.playImpact(describeImpact(team, result, outcome, label));
+    const label = outcome.dodged
+      ? GEAR_COPY.dodgedLine
+      : HIT_LINES[outcome.result][this.hitBags[outcome.result].next()];
+    if (outcome.dodged) await view.playDodge?.(outcome.target);
+    const impact = describeImpact(team, result, outcome, label);
+    // Confetti and plasma ammo burst in their own colors when they land near a base.
+    if ((ammo === 'confetti' || ammo === 'plasma') && outcome.result !== 'miss') impact.kind = ammo;
+    await view.playImpact(impact);
     this.live();
     await this.deps.wait(IMPACT_BEAT_MS);
     this.live();
@@ -324,7 +333,50 @@ export class BattleFlow {
       },
       onSelect: (id) => this.selectUnit(id),
       onMuteToggle: () => this.deps.onMuteToggle?.(),
+      onAmmo: (id) => this.selectAmmo(id),
+      onEvasion: () => this.toggleEvasion(),
     };
+  }
+
+  private selectAmmo(id: AmmoId): void {
+    if (!this.awaitingFire || this.stopped) return;
+    try {
+      this.deps.match.selectAmmo(id);
+    } catch {
+      return; // not owned, none left, or the wrong phase; ignore
+    }
+    this.drawPreview(this.deps.match.snapshot().turn.team);
+    this.pushStatus(true);
+  }
+
+  /** Arms the evasion ability, or takes it back if it was armed this turn. */
+  private toggleEvasion(): void {
+    if (!this.awaitingFire || this.stopped) return;
+    const { match, overlay, audio } = this.deps;
+    const s = match.snapshot();
+    const mine = s.evasion[s.turn.team];
+    try {
+      if (mine.phase === 'armed') {
+        match.disarmEvasion();
+      } else {
+        match.armEvasion();
+        // Chrono says what it does, with a caption, so a pre-reader knows it worked.
+        const text = GEAR_COPY.armedLine[mine.id];
+        overlay.setCaption(text);
+        audio?.speak?.(
+          {
+            id: `evasion-${mine.id}`,
+            text,
+            captions: timeCaptions([text], 2500),
+            durationMs: 2500,
+          },
+          { onCaption: (t) => overlay.setCaption(t) },
+        );
+      }
+    } catch {
+      return; // not ready yet, used up, or the wrong phase; ignore
+    }
+    this.pushStatus(true);
   }
 
   private selectUnit(id: UnitId): void {
@@ -383,8 +435,15 @@ export class BattleFlow {
       canFire,
       selected: s.selected[team],
       units: unitsOf(team).map((u) => ({ id: u.id, name: u.name })),
+      gear: { ammo: s.ammo[team], ammoLeft: s.ammoLeft[team], evasion: s.evasion[team] },
     };
     overlay.updateHud(hud);
+    // A stone wall stands only while a barricade guards its base.
+    view.setWalls?.(
+      (['PAST', 'FUTURE'] as const)
+        .filter((t) => s.evasion[t].id === 'barricade' && s.evasion[t].phase === 'active')
+        .map(() => ({ ...EVASION.barricade.wall })),
+    );
     const status: ViewStatus = {
       activeTeam: team,
       names: hud.names,
@@ -402,12 +461,14 @@ export class BattleFlow {
     const { match, view } = this.deps;
     const s = match.snapshot();
     const aim = s.aim[team];
+    const ammo = s.ammo[team];
     const sim = simulateShot({
       ...aim,
       origin: this.originFor(team),
       facing: TEAM_FACING[team],
       wind: s.wind,
-      layout: match.layout,
+      layout: match.currentLayout(),
+      ...(ammo === 'standard' ? {} : { ammo }),
     });
     view.showPreview(team, previewDots(sim.path));
   }
@@ -416,7 +477,9 @@ export class BattleFlow {
   private originFor(team: Team) {
     const { match } = this.deps;
     const unit = unitById(match.snapshot().selected[team]);
-    return !unit || unit.id === DEFAULT_UNIT[team] ? match.layout.launchOrigins[team] : unit.origin;
+    return !unit || unit.id === DEFAULT_UNIT[team]
+      ? match.layout.launchOrigins[team]
+      : unitOrigin(match.layout, unit);
   }
 
   // ---------- helpers ----------

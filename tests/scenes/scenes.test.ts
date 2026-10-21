@@ -181,6 +181,9 @@ describe('the whole flow', () => {
     await flush();
     expect(q(TEST_IDS.campStart)).not.toBeNull();
     click(q(TEST_IDS.campStart));
+    await flush();
+    // The Battle Plan comes next. Lock it in! with the default plan starts the match.
+    click(q(TEST_IDS.planGo));
     const battle = await next();
     expect(battle.key).toBe(SCENE_KEYS.battle);
     const data = battle.data as BattleSceneData;

@@ -2,6 +2,9 @@
 // Coordinates: world pixels, origin top-left, y grows DOWN (same as Phaser, so no conversion).
 // See docs/CONTRACTS.md for the reasons behind each choice.
 
+import type { AmmoId } from './ammo';
+import type { BIOME_IDS, SPOT_IDS } from './config';
+import type { EvasionId, EvasionPhase } from './evasion';
 import type { MatchEffects } from './loadout';
 import type { UnitId } from './units';
 
@@ -42,6 +45,11 @@ export type Terrain = {
 
 export type Bases = Record<Team, Rect>;
 
+/** A place to fight (Phase 2). Each has its own backdrop and middle obstacle. */
+export type BiomeId = (typeof BIOME_IDS)[number];
+/** Where Team Future hides its base (Phase 2). */
+export type SpotIdValue = (typeof SPOT_IDS)[number];
+
 /** Everything static about one battlefield. Phase 2 adds more layouts. */
 export type BattleLayout = {
   width: number;
@@ -49,6 +57,12 @@ export type BattleLayout = {
   terrain: Terrain;
   bases: Bases;
   launchOrigins: Record<Team, Vec2>;
+  /** The place, for the backdrop. Missing means aspen (Phase 1). */
+  biome?: BiomeId;
+  /** Team Future's base spot. Missing or null means the Phase 1 spot. */
+  spot?: SpotIdValue | null;
+  /** How far each base moved from its Phase 1 place. Fighters standing on it move too. */
+  baseShift?: Partial<Record<Team, Vec2>>;
 };
 
 // ---------- RNG (rng.ts) ----------
@@ -77,7 +91,14 @@ export type AimInput = {
 };
 
 /** One fired shot, enough to replay it exactly. Wind is fixed per turn. */
-export type Shot = AimInput & { team: Team; wind: number; turnNumber: number; unit: UnitId };
+export type Shot = AimInput & {
+  team: Team;
+  wind: number;
+  turnNumber: number;
+  unit: UnitId;
+  /** What the shot was made of. Missing means Standard. */
+  ammo?: AmmoId;
+};
 
 export type ShotInput = AimInput & {
   origin: Vec2;
@@ -187,6 +208,8 @@ export type BlastOutcome = {
   damage: number;
   /** True when the target's force field stopped a hit that would have done damage. */
   blocked?: boolean;
+  /** True when the target's Hoverboard Dodge made a damaging hit miss. */
+  dodged?: boolean;
   /** True on 'near'. The scene plays the Awkward Tumble and a bubble. */
   tumble: boolean;
   /** Index into copy TUMBLE_LINES when tumble is true, else null. Chosen by a seeded shuffle bag. */
@@ -270,6 +293,22 @@ export type Match = {
   readonly selected: Record<Team, UnitId>;
   readonly stats: Record<Team, TeamStats>;
   readonly lastShot: Shot | null;
+  /** The ammo each team will fire next. Standard unless the player picked a special kind. */
+  readonly ammo: Record<Team, AmmoId>;
+  /** Shots left this match of each special ammo a team owns. Standard is never listed. */
+  readonly ammoLeft: Record<Team, Partial<Record<AmmoId, number>>>;
+  /** Each team's evasion ability and where it is in its cycle. */
+  readonly evasion: Record<Team, EvasionView>;
+};
+
+/** What the screens need to know about one team's evasion ability. */
+export type EvasionView = {
+  id: EvasionId;
+  phase: EvasionPhase;
+  /** Own turns until it is ready again (recharging only), else 0. */
+  turnsLeft: number;
+  /** Uses left this match. Infinity when there is no limit. */
+  usesLeft: number;
 };
 
 export type MatchOptions = {
@@ -281,6 +320,8 @@ export type MatchOptions = {
   layout?: BattleLayout;
   /** Weapons and upgrades for each team. Default: the starter weapons, no upgrades (Phase 1). */
   effects?: MatchEffects;
+  /** Special ammo each team has unlocked at the Camp. Default: none (Standard only). */
+  ammo?: Partial<Record<Team, readonly AmmoId[]>>;
 };
 
 export class MatchOverError extends Error {
@@ -309,6 +350,20 @@ export interface MatchController {
    * Another team's fighter or an unknown id throws RangeError.
    */
   selectUnit(id: UnitId): void;
+  /**
+   * Only in AIMING or BONUS_AIMING. Loads the ammo for the next shot. Free (not a shot).
+   * Standard always works. A special kind the team does not own, or has no shots of, throws RangeError.
+   */
+  selectAmmo(id: AmmoId): void;
+  /**
+   * Only in AIMING or BONUS_AIMING. Arms the active team's evasion ability. Free (not a shot).
+   * It guards their base during the other team's next turn. Throws EvasionError when it is not ready.
+   */
+  armEvasion(): void;
+  /** Only in AIMING or BONUS_AIMING. Takes back an ability armed this turn. Throws EvasionError otherwise. */
+  disarmEvasion(): void;
+  /** The field as it is right now: the layout plus any wall standing this turn. */
+  currentLayout(): BattleLayout;
   /** AIMING -> SHOT_n, or BONUS_AIMING -> BONUS_SHOT. Runs the full flight now. The scene animates result.path. */
   fire(): ShotResult;
   /**

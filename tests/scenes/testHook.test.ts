@@ -8,6 +8,7 @@ import {
 } from '../../src/scenes/testHook';
 import { createStorage } from '../../src/storage/storage';
 import type { MatchController } from '../../src/game/types';
+import { PHASE1_LAYOUT } from '../../src/game/config';
 import { fakeController, players } from './fakes';
 
 describe('e2eEnabled', () => {
@@ -108,6 +109,11 @@ describe('installTestHook', () => {
   it('prefers the session match, which the loading step sets', () => {
     const t = make({ sessionMatch: fakeController({ seed: 5 }) });
     expect(t.win.__timeclash!.match()!.seed).toBe(5);
+  });
+  it('reads the field as it stands now, or null with no match', () => {
+    const t = make({ sessionMatch: fakeController({ seed: 5 }) });
+    expect(t.win.__timeclash!.layout()).toEqual(PHASE1_LAYOUT);
+    expect(make().win.__timeclash!.layout()).toBeNull();
   });
   it('returns null when no scene has a controller', () => {
     expect(

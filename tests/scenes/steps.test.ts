@@ -24,6 +24,13 @@ beforeEach(() => {
   t = makeServices();
 });
 
+/** Time to Clash!, then Lock it in! on the Battle Plan with whatever is picked. */
+async function clash(): Promise<void> {
+  click(q(TEST_IDS.campStart));
+  await flush();
+  click(q(TEST_IDS.planGo));
+}
+
 /** A player's saved wallet, by the side they play (Alex is Past, Sam is Future). */
 const who = (team: 'PAST' | 'FUTURE') =>
   walletOf(loadCamp(t.storage), team === 'PAST' ? 'Alex' : 'Sam');
@@ -212,7 +219,7 @@ describe('camp step', () => {
     t.services.session.bank = tinyBank;
     t.storage.set('timeclash.players', players);
     const p = runCampStep(t.services);
-    click(q(TEST_IDS.campStart));
+    await clash();
     const route = await p;
     expect(route.key).toBe(SCENE_KEYS.battle);
     const data = route.data as BattleSceneData;
@@ -226,7 +233,7 @@ describe('camp step', () => {
   it('loads the bank first if it is somehow missing', async () => {
     t.storage.set('timeclash.players', players);
     const p = runCampStep(t.services);
-    click(q(TEST_IDS.campStart));
+    await clash();
     const route = await p;
     expect(route.key).toBe(SCENE_KEYS.loading);
     expect(route.data).toMatchObject({ next: SCENE_KEYS.battle, setup: { seed: 1234 } });
@@ -269,10 +276,70 @@ describe('camp step', () => {
     click(q(TEST_IDS.upgradeBack));
     await upgrade;
     const match = runCampStep(t.services);
-    click(q(TEST_IDS.campStart));
+    await clash();
     const data = (await match).data as BattleSceneData;
     expect(data.match.snapshot().maxBaseHp.PAST).toBe(112);
     expect(data.match.snapshot().baseHp.PAST).toBe(112);
+  });
+});
+
+describe('camp step: Battle Plan', () => {
+  it('shows the Battle Plan after Time to Clash!, with the default plan picked', async () => {
+    t.services.session.bank = tinyBank;
+    t.storage.set('timeclash.players', players);
+    void runCampStep(t.services);
+    click(q(TEST_IDS.campStart));
+    await flush();
+    expect(q(TEST_IDS.planGo)).not.toBeNull();
+    expect(q(TEST_IDS.planBiome('aspen'))!.getAttribute('aria-checked')).toBe('true');
+    expect(q(TEST_IDS.planSpot('foodTruck'))!.getAttribute('aria-checked')).toBe('true');
+    expect(t.services.session.match).toBeNull();
+  });
+  it('Back goes to the Camp, starts no match and saves no plan', async () => {
+    t.services.session.bank = tinyBank;
+    t.storage.set('timeclash.players', players);
+    const p = runCampStep(t.services);
+    click(q(TEST_IDS.campStart));
+    await flush();
+    click(q(TEST_IDS.planBiome('temple')));
+    click(q(TEST_IDS.planBack));
+    expect(await p).toEqual({ key: SCENE_KEYS.camp });
+    expect(t.services.session.match).toBeNull();
+    expect(t.storage.get('timeclash.plan')).toBeNull();
+  });
+  it('the picked place and spot build the battlefield, and the plan is remembered', async () => {
+    t.services.session.bank = tinyBank;
+    t.storage.set('timeclash.players', players);
+    const p = runCampStep(t.services);
+    click(q(TEST_IDS.campStart));
+    await flush();
+    click(q(TEST_IDS.planBiome('cherry')));
+    click(q(TEST_IDS.planSpot('skyscraper')));
+    click(q(TEST_IDS.planGo));
+    const data = (await p).data as BattleSceneData;
+    expect(data.match.layout.biome).toBe('cherry');
+    expect(data.match.layout.spot).toBe('skyscraper');
+    expect(data.match.layout.bases.FUTURE.y).toBe(330);
+    expect(t.storage.get('timeclash.plan')).toEqual({ biome: 'cherry', spot: 'skyscraper' });
+    // Next time, the same plan is picked already.
+    void runCampStep(t.services);
+    click(q(TEST_IDS.campStart));
+    await flush();
+    expect(q(TEST_IDS.planBiome('cherry'))!.getAttribute('aria-checked')).toBe('true');
+  });
+  it('ammo unlocked on the Battle Plan is saved and goes into the match', async () => {
+    t.services.session.bank = tinyBank;
+    t.storage.set('timeclash.players', players);
+    t.storage.set('timeclash.camp', campWith(30, 0));
+    const p = runCampStep(t.services);
+    click(q(TEST_IDS.campStart));
+    await flush();
+    click(q(TEST_IDS.planAmmo('PAST', 'confetti')));
+    expect(who('PAST').loadout.PAST.ammo).toEqual(['confetti']);
+    click(q(TEST_IDS.planGo));
+    const data = (await p).data as BattleSceneData;
+    expect(data.match.snapshot().ammoLeft.PAST).toEqual({ confetti: 3 });
+    expect(data.match.snapshot().ammoLeft.FUTURE).toEqual({});
   });
 });
 
@@ -313,7 +380,7 @@ describe('camp step: Forge Weapon', () => {
     click(q(TEST_IDS.forgeBack));
     await forge;
     const match = runCampStep(t.services);
-    click(q(TEST_IDS.campStart));
+    await clash();
     const data = (await match).data as BattleSceneData;
     expect(data.match.rematchOptions().effects?.PAST.direct).toBe(32);
   });
@@ -334,7 +401,7 @@ describe('camp step: weapons and upgrades', () => {
       }),
     );
     const p = runCampStep(t.services);
-    click(q(TEST_IDS.campStart));
+    await clash();
     const data = (await p).data as BattleSceneData;
     expect(data.match.snapshot().maxBaseHp.PAST).toBe(100 + 2 * 12);
     expect(data.match.snapshot().maxBaseHp.FUTURE).toBe(100);
@@ -343,7 +410,7 @@ describe('camp step: weapons and upgrades', () => {
     t.services.session.bank = tinyBank;
     t.storage.set('timeclash.players', players);
     const p = runCampStep(t.services);
-    click(q(TEST_IDS.campStart));
+    await clash();
     const data = (await p).data as BattleSceneData;
     expect(data.match.snapshot().maxBaseHp).toEqual({ PAST: 100, FUTURE: 100 });
   });
@@ -361,7 +428,7 @@ describe('camp step: weapons and upgrades', () => {
       }),
     );
     const p = runCampStep(t.services);
-    click(q(TEST_IDS.campStart));
+    await clash();
     const data = (await p).data as BattleSceneData;
     expect(data.match.rematchOptions().effects?.FUTURE.shieldHits).toBe(1);
   });
@@ -439,7 +506,7 @@ describe('scrap in hand during a match', () => {
     t.storage.set('timeclash.players', players);
     t.storage.set('timeclash.camp', campWith(17, 4));
     const p = runCampStep(t.services);
-    click(q(TEST_IDS.campStart));
+    await clash();
     const data = (await p).data as BattleSceneData;
     expect(data.scrapBase).toEqual({ PAST: 17, FUTURE: 4 });
   });
@@ -447,7 +514,7 @@ describe('scrap in hand during a match', () => {
     t.services.session.bank = tinyBank;
     t.storage.set('timeclash.players', players);
     const p = runCampStep(t.services);
-    click(q(TEST_IDS.campStart));
+    await clash();
     const data = (await p).data as BattleSceneData;
     expect(data.scrapBase).toEqual({ PAST: 0, FUTURE: 0 });
   });

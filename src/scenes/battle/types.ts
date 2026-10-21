@@ -6,6 +6,7 @@ import type {
   BlastOutcome,
   MatchController,
   MatchOptions,
+  Rect,
   ShotResult,
   Team,
   TeamStats,
@@ -74,6 +75,10 @@ export interface BattleView {
   /** Show which fighter is up for that team. */
   setSelectedUnit(team: Team, id: UnitId): void;
   showScrapPopup(team: Team, amount: number): void;
+  /** Phase 2: draw these stone walls (none clears them). Optional so older fakes still work. */
+  setWalls?(walls: readonly Rect[]): void;
+  /** Phase 2: the base zips aside and back (a Hoverboard Dodge). Resolves when it is back. */
+  playDodge?(team: Team): Promise<void>;
 }
 
 /** What Victory needs. */

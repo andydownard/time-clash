@@ -1,6 +1,7 @@
 // Scrap and what it buys, by player name. Pure functions: each takes the Camp state and returns a
 // new one, or a plain reason why not. Scrap never goes below zero, nothing is bought twice, and a
 // bad input (wrong team, unknown id, NaN, an empty name) changes nothing.
+import { ammoById, isSpecialAmmo, type AmmoId } from './ammo';
 import { walletOf, withWallet, walletKey, type CampState, type Wallet } from './loadout';
 import type { Team } from './types';
 import { TEAMS } from './types';
@@ -115,5 +116,25 @@ export function buyUpgrade(camp: CampState, name: string, team: Team, id: Upgrad
   return {
     ok: true,
     camp: withWallet(camp, withLoadout({ ...paid, name: name.trim() }, team, { upgrades })),
+  };
+}
+
+/** Unlocks a special ammo kind for one side. Standard is free and cannot be unlocked. */
+export function unlockAmmo(camp: CampState, name: string, team: Team, id: AmmoId): Outcome {
+  if (!hasName(name) || !isTeam(team) || !isSpecialAmmo(id))
+    return { ok: false, reason: 'unknown' };
+  const ammo = ammoById(id);
+  if (!ammo) return { ok: false, reason: 'unknown' };
+  const wallet = walletOf(camp, name);
+  const have = wallet.loadout[team].ammo ?? [];
+  if (have.includes(id)) return { ok: false, reason: 'already_owned' };
+  const paid = pay(wallet, ammo.cost);
+  if (!paid) return { ok: false, reason: 'not_enough_scrap' };
+  return {
+    ok: true,
+    camp: withWallet(
+      camp,
+      withLoadout({ ...paid, name: name.trim() }, team, { ammo: [...have, id] }),
+    ),
   };
 }

@@ -2,7 +2,15 @@
 // and an old save (one pile per team) moves onto the current players' names.
 import { expect, test } from './fixtures';
 import { CAMP_KEY, giveScrap, savedCamp } from './support/camp';
-import { FUTURE_SIDE, PAST_SIDE, fillTeam, readyUp, tid, toSetup } from './support/game';
+import {
+  FUTURE_SIDE,
+  PAST_SIDE,
+  fillTeam,
+  readyUp,
+  tid,
+  toSetup,
+  clashFromCamp,
+} from './support/game';
 
 async function toCamp(page: Parameters<typeof tid>[0]): Promise<void> {
   await toSetup(page);
@@ -16,7 +24,7 @@ test('the Scrap each player has is shown while playing', async ({ page }) => {
   await toCamp(page);
   await giveScrap(page, 17, 4);
   await page.reload();
-  await tid(page, 'camp-start').click();
+  await clashFromCamp(page);
   await expect(tid(page, 'pass-screen')).toBeVisible({ timeout: 10_000 });
   await readyUp(page);
   await expect(tid(page, 'hud-scrap-PAST')).toHaveText('17');

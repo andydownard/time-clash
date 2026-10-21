@@ -200,7 +200,7 @@ export const HUD = {
   scrap: 'Scrap',
   shotsLeft: 'Shots left',
   reloadPip: 'Reload',
-  keyboardHint: 'Arrow keys aim. Space fires. Press a fighter\'s letter or number to pick it.',
+  keyboardHint: "Arrow keys aim. Space fires. Press a fighter's letter or number to pick it.",
   pickOne: 'Pick one',
   unitLabel: (name: string, id: string): string => `${name} ${id}`,
   /** The gold star pip and screen-reader text while the Power Shot is up. */
@@ -383,4 +383,61 @@ export const UI_EXTRA = {
   stepsLabel: 'Steps',
   loadingLabel: 'Loading',
   playerCard: (team: Team): string => `${TEAM_NAMES[team]} player`,
+} as const;
+
+// ---------- Phase 2: Battle Plan, ammo and evasion (additive) ----------
+/** The Battle Plan screen between the Camp and the battle. */
+export const PLAN_COPY = {
+  title: 'Battle Plan',
+  back: 'Back',
+  go: 'Lock it in!',
+  placeHeading: 'Pick a place',
+  spotHeading: (futureName: string): string => `${futureName}, hide your base`,
+  ammoHeading: 'Special ammo',
+  ammoNote: 'A few shots each match. Unlock it once with Scrap.',
+  scrap: 'Scrap',
+  biomes: {
+    aspen: { name: 'Aspen Forest', note: 'A big hill in the middle.' },
+    cherry: { name: 'Cherry Blossoms', note: 'A low, wide hill.' },
+    temple: { name: 'Ruined Temple', note: 'A tall old pillar.' },
+  },
+  spots: {
+    skyscraper: { name: 'Skyscraper', height: 'Height: high', note: 'Best view. No cover.' },
+    foodTruck: { name: 'Food Trucks', height: 'Height: middle', note: 'A low wall. Tacos too.' },
+    bridge: { name: 'Bridge', height: 'Height: low', note: 'The bridge blocks flat shots.' },
+  },
+  ammo: {
+    confetti: { name: 'Confetti', note: 'Bigger blast.' },
+    plasma: { name: 'Bouncy Plasma', note: 'Bounces once.' },
+    bowling: { name: 'Bowling Ball', note: 'Hits hard. Wind barely moves it.' },
+  },
+  unlock: (cost: number): string => `Unlock: ${cost} Scrap`,
+  owned: (uses: number): string => `Ready: ${uses} shots`,
+  unlocked: (name: string): string => `${name} unlocked!`,
+  needScrap: (cost: number): string => `You need ${cost} Scrap for that. Answer fast to earn more.`,
+} as const;
+
+/** The two gear buttons in the battle bar: ammo and the evasion ability. */
+export const GEAR_COPY = {
+  standard: 'Standard',
+  ammoButton: (name: string, left: string): string => `Ammo: ${name}, ${left}. Tap to change.`,
+  unlimited: 'no limit',
+  shotsLeft: (n: number): string => `${n} left`,
+  abilities: {
+    dodge: { name: 'Hoverboard Dodge', short: 'Dodge' },
+    barricade: { name: 'Stone Wall', short: 'Wall' },
+  },
+  ready: (name: string): string => `${name}: ready. Tap to use it on the next turn.`,
+  armed: (name: string): string => `${name}: set for the next turn. Tap to take it back.`,
+  active: (name: string): string => `${name}: guarding now.`,
+  recharging: (name: string, turns: number): string =>
+    `${name}: charging. Ready in ${turns} ${turns === 1 ? 'turn' : 'turns'}.`,
+  used: (name: string): string => `${name}: used up this match.`,
+  /** Chrono says these out loud (with a caption) when a player sets an ability. */
+  armedLine: {
+    dodge: 'Hoverboard charged! The next hit will whoosh right past.',
+    barricade: 'Stone wall ready! It pops up on the next turn.',
+  },
+  /** Floating words when a dodge makes a hit miss. */
+  dodgedLine: 'Whoosh! Dodged!',
 } as const;

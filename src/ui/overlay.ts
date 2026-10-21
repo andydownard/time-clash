@@ -15,6 +15,7 @@ import { isReducedMotion } from './motion';
 import { showCamp } from './campScreen';
 import { showForge } from './forgeScreen';
 import { showUpgrade } from './upgradeScreen';
+import { showPlan } from './planScreen';
 import { showPassScreen } from './passScreen';
 import { showReloadModal } from './reloadModal';
 import { showSetup } from './setupScreen';
@@ -215,6 +216,7 @@ export const createOverlay: CreateOverlayWithDeps = (
     showCamp: () => showCamp(ctx),
     showForge: (options) => showForge(ctx, options),
     showUpgrade: (options) => showUpgrade(ctx, options),
+    showPlan: (options) => showPlan(ctx, options),
     showVictory: (options) => showVictory(ctx, options),
     showHud: (handlers) => hud.show(handlers),
     updateHud: (state) => hud.update(state),

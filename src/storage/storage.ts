@@ -1,4 +1,6 @@
 // Typed, never-throwing wrapper around localStorage. Nothing here leaves the device.
+import { isSpecialAmmo, type AmmoId } from '../game/ammo';
+import { normalizePlan, type BattlePlan } from '../game/battlefield';
 import { DEFAULT_SETTINGS, GRADE } from '../game/config';
 import {
   freshCamp,
@@ -124,7 +126,12 @@ function parseLoadout(v: unknown, team: Team): TeamLoadout {
       if (level !== null) upgrades[u.id] = level;
     }
   }
-  return { weapon, owned, upgrades };
+  // Special ammo kinds, once each, in a fixed order. Standard and junk are dropped.
+  const ammoList = Array.isArray(v.ammo) ? v.ammo : [];
+  const ammo = (['confetti', 'plasma', 'bowling'] as AmmoId[]).filter(
+    (id) => isSpecialAmmo(id) && ammoList.includes(id),
+  );
+  return { weapon, owned, upgrades, ...(ammo.length > 0 ? { ammo } : {}) };
 }
 
 /** One wallet, cleaned. Bad numbers become 0 and the starter weapons are always owned. */
@@ -246,6 +253,11 @@ export function loadLevels(storage: TypedStorage): Levels {
   return storage.get('timeclash.levels') ?? {};
 }
 
+/** The Battle Plan picked last time (biome and base spot), or the default plan. Never throws. */
+export function loadPlan(storage: TypedStorage): BattlePlan {
+  return normalizePlan(storage.get('timeclash.plan'));
+}
+
 /** Each key has a shape guard. It returns the clean value, or null if the shape is wrong. */
 const GUARDS: { [K in StorageKey]: (v: unknown) => StorageSchema[K] | null } = {
   'timeclash.players': parsePlayers,
@@ -254,6 +266,7 @@ const GUARDS: { [K in StorageKey]: (v: unknown) => StorageSchema[K] | null } = {
   'timeclash.history': parseHistory,
   'timeclash.camp': parseCamp,
   'timeclash.levels': parseLevels,
+  'timeclash.plan': (v) => (typeof v === 'object' && v !== null ? normalizePlan(v) : null),
 };
 
 function defaultBacking(): BackingStore | null {

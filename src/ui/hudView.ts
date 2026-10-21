@@ -7,6 +7,7 @@ import type { UnitId } from '../game/units';
 import { LOCAL_IDS } from './constants';
 import type { UiCtx } from './ctx';
 import { h } from './dom';
+import { createGear } from './hudGear';
 import { TEST_IDS, type HudHandlers, type HudState } from './types';
 
 const clamp = (n: number, lo: number, hi: number): number => Math.min(hi, Math.max(lo, n));
@@ -34,6 +35,7 @@ type Parts = {
   hpMeter: Record<Team, HTMLElement>;
   hpFill: Record<Team, HTMLElement>;
   scrap: Record<Team, HTMLElement>;
+  gear: ReturnType<typeof createGear>;
 };
 
 export function createHud(ctx: UiCtx) {
@@ -326,6 +328,11 @@ export function createHud(ctx: UiCtx) {
       h(doc, 'span', { class: 'tc-sr-only', text: ` ${HUD.keyboardHint}` }),
     );
 
+    // Phase 2 gear (ammo and the evasion ability) floats by Fire, outside the one-row layout.
+    const gear = createGear(ctx, {
+      ammo: (id) => h_.onAmmo?.(id),
+      evasion: () => h_.onEvasion?.(),
+    });
     const root = h(
       doc,
       'div',
@@ -338,7 +345,19 @@ export function createHud(ctx: UiCtx) {
         ...TEAMS.slice(1).map((t) => panel[t]),
         h(doc, 'div', { class: 'tc-hud-corner' }, mute),
       ),
-      h(doc, 'div', { class: 'tc-hud-bottom' }, strip, units, aimPanel, fire, hint, wind, shots),
+      h(
+        doc,
+        'div',
+        { class: 'tc-hud-bottom' },
+        strip,
+        units,
+        aimPanel,
+        fire,
+        hint,
+        wind,
+        shots,
+        gear.root,
+      ),
     );
     return {
       root,
@@ -363,8 +382,13 @@ export function createHud(ctx: UiCtx) {
       hpMeter,
       hpFill,
       scrap,
+      gear,
     };
   }
+
+  const placeGear = (): void => {
+    if (parts) parts.gear.place(parts.fire, [parts.strip, parts.units, parts.aimPanel]);
+  };
 
   return {
     show(next: HudHandlers): void {
@@ -374,6 +398,7 @@ export function createHud(ctx: UiCtx) {
       ctx.layer.hud.append(parts.root);
       parts.root.style.pointerEvents = 'auto';
       doc.addEventListener('keydown', onKey);
+      doc.defaultView?.addEventListener('resize', placeGear);
       unsubscribe = ctx.onSettings(() => {
         if (parts) parts.mute.textContent = muteLabel();
       });
@@ -388,6 +413,8 @@ export function createHud(ctx: UiCtx) {
       parts.power.disabled = !canFire;
       parts.fire.disabled = !canFire;
       paintUnits(state);
+      parts.gear.update(state.gear, canFire);
+      placeGear();
       // A disabled control drops focus to the page. Keep it inside the HUD instead.
       const active = doc.activeElement;
       if (
@@ -446,6 +473,7 @@ export function createHud(ctx: UiCtx) {
     },
     hide(): void {
       doc.removeEventListener('keydown', onKey);
+      doc.defaultView?.removeEventListener('resize', placeGear);
       unsubscribe?.();
       unsubscribe = null;
       parts?.root.remove();

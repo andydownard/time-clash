@@ -42,6 +42,8 @@ import {
 import { FALL_MS, REDUCED_FADE_MS, TEAM_COLOR } from './battle/visual';
 import { drawUnits, type UnitArt } from './battle/unitArt';
 import { UNITS, type UnitId } from '../game/units';
+import { ridesBase } from '../game/battlefield';
+import { ART } from './battle/visual';
 
 const TEAMS: readonly Team[] = ['PAST', 'FUTURE'];
 
@@ -108,7 +110,12 @@ export class BattleScene extends Phaser.Scene implements BattleView {
     }
 
     this.fighters = drawUnits(this, this.labels, () => this.reduced());
-    for (const u of UNITS) this.fighters[u.id].container.setDepth(11);
+    for (const u of UNITS) {
+      this.fighters[u.id].container.setDepth(11);
+      // Phase 2: a fighter standing on a base moves with it to Team Future's spot.
+      const shift = layout.baseShift?.[u.team];
+      if (shift && ridesBase(u)) this.fighters[u.id].container.setPosition(shift.x, shift.y);
+    }
     const chosen = this.data0.match.snapshot().selected;
     for (const t of TEAMS) this.setSelectedUnit(t, chosen[t]);
 
@@ -388,6 +395,59 @@ export class BattleScene extends Phaser.Scene implements BattleView {
     }
   }
 
+  /** Phase 2: the Stone Barricade Wall, drawn while it stands. An empty list clears it. */
+  setWalls(walls: readonly Rect[]): void {
+    const key = JSON.stringify(walls);
+    if (key === this.wallKey) return;
+    this.wallKey = key;
+    this.walls?.destroy();
+    this.walls = null;
+    if (walls.length === 0) return;
+    const g = this.add.graphics().setDepth(9);
+    for (const w of walls) {
+      g.fillStyle(ART.stone, 1);
+      g.fillRect(w.x, w.y, w.w, w.h);
+      g.lineStyle(4, ART.stoneLine, 1);
+      g.strokeRect(w.x, w.y, w.w, w.h);
+      // Brick lines, so it reads as a wall and not a plain bar.
+      g.lineStyle(2, ART.stoneEdge, 1);
+      for (let y = w.y + 24; y < w.y + w.h; y += 24) g.lineBetween(w.x, y, w.x + w.w, y);
+    }
+    this.walls = g;
+  }
+
+  /** Phase 2: the Hoverboard Dodge. The whole side zips aside and back. Reduced motion: a blink. */
+  playDodge(team: Team): Promise<void> {
+    const side = this.sides[team];
+    return new Promise<void>((resolve) => {
+      if (this.reduced()) {
+        this.tweens.add({
+          targets: side,
+          alpha: 0.4,
+          duration: REDUCED_FADE_MS,
+          yoyo: true,
+          onComplete: () => resolve(),
+        });
+        return;
+      }
+      this.tweens.add({
+        targets: side,
+        x: team === 'PAST' ? -70 : 70,
+        duration: 180,
+        yoyo: true,
+        hold: 120,
+        ease: 'Sine.easeOut',
+        onComplete: () => {
+          side.setX(0);
+          resolve();
+        },
+      });
+    });
+  }
+
+  private walls: Phaser.GameObjects.Graphics | null = null;
+  private wallKey = '[]';
+
   showScrapPopup(team: Team, amount: number): void {
     const spot: Vec2 = characterSpot(team, this.layout);
     floatLabel(this, { x: spot.x, y: spot.y - 150 }, `+${amount}`, 'scrap', this.fontPx);
@@ -469,6 +529,9 @@ export class BattleScene extends Phaser.Scene implements BattleView {
     this.glowTween?.stop();
     if (this.fighters) for (const u of UNITS) this.fighters[u.id].destroy();
     this.fighters = null;
+    this.walls?.destroy();
+    this.walls = null;
+    this.wallKey = '[]';
     this.dragHandler = null;
     this.input.off('pointerdown');
     this.input.off('pointermove');
