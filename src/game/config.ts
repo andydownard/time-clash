@@ -445,6 +445,14 @@ export const BASE_BUILDER = {
   maxPieces: 60,
   /** Steps Undo can go back. */
   undoDepth: 50,
+  /** Your own shapes: the drawing pad is this many squares on a side. */
+  shapePad: 4,
+  /** Most squares in one shape of your own. */
+  maxShapeCells: 8,
+  /** Most shapes of your own a player keeps for each side. */
+  maxShapes: 6,
+  /** Hit points for each square of a shape of your own (the shape has squares times this). */
+  hpPerCell: 8,
   /** How far (in cells) Turn looks for a free spot when a turned brick would overlap. */
   turnSearchRadius: 3,
   /** Scrap to unlock a locked piece, by piece id. */
