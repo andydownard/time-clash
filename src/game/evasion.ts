@@ -96,6 +96,12 @@ export const wallsFor = (all: Record<Team, EvasionState>): Rect[] =>
     .filter((t) => all[t].id === 'barricade' && all[t].phase === 'active')
     .map(() => ({ ...EVASION.barricade.wall }));
 
+/** The same as `wallsFor`, read from the public view (what the Computer player is allowed to see). */
+export const wallsInView = (all: Record<Team, Pick<EvasionView, 'id' | 'phase'>>): Rect[] =>
+  (['PAST', 'FUTURE'] as const)
+    .filter((t) => all[t].id === 'barricade' && all[t].phase === 'active')
+    .map(() => ({ ...EVASION.barricade.wall }));
+
 export const evasionView = (s: EvasionState): EvasionView => ({
   id: s.id,
   phase: s.phase,
