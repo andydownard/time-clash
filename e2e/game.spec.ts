@@ -79,7 +79,18 @@ test('plays a full match: aim, fire, reload, pass, win, rematch', async ({ page,
   expect(m.turn).toMatchObject({ phase: 'PASS_SCREEN', team: 'PAST', turnNumber: 0 });
   await expectCover(page, 'pass-screen');
   await expect(tid(page, 'reload-modal')).toHaveCount(0);
-  await expect(page.getByText('Pass the screen!')).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Pass the screen!' })).toBeVisible();
+  // Chrono's pass line has a caption above the cover, clear of the ready button. A browser
+  // driven by a test tool never really speaks it (Regression 17).
+  const caption = tid(page, 'caption-bar');
+  await expect(caption).toHaveText('Pass the screen! No peeking at their question!');
+  await expect(caption).toBeVisible();
+  const [capBox, readyBox] = await Promise.all([
+    caption.boundingBox(),
+    tid(page, 'pass-ready').boundingBox(),
+  ]);
+  expect(capBox!.y).toBeGreaterThanOrEqual(readyBox!.y + readyBox!.height);
+  expect(await page.evaluate(() => window.__silent?.speakCalls)).toBe(0);
   await saveShot(page, browserName, 'pass-screen');
 
   // Other keys on the pass screen must not start anything (Space on the focused
