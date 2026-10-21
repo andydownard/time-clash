@@ -3,6 +3,7 @@
 // Every change is saved at once through `saveBases`. The rules live in src/game/baseBuilder.ts.
 import '../styles/baseBuilder.css';
 import { BUILDER_COPY, FORGE_COPY } from '../data/copy';
+import { SHAPE_COPY } from '../data/shapeCopy';
 import {
   assignWeapon,
   basesOf,
@@ -11,6 +12,7 @@ import {
   clearBuild,
   clearSpot,
   check,
+  deleteShape,
   findSpot,
   footprint,
   movePiece,
@@ -25,7 +27,9 @@ import {
   rectOf,
   removePiece,
   resolveSpots,
+  saveShape,
   saveSlot,
+  shapesOf,
   slotPieces,
   slotSpots,
   spotWeaponById,
@@ -42,6 +46,7 @@ import {
   type Rotation,
 } from '../game/baseBuilder';
 import { BASE_BUILDER as B } from '../game/config';
+import { cellsFromKey, customId, shapeKey, shapeProblem, type Cell } from '../game/customShapes';
 import { unlockPiece, unlockSpotWeapon } from '../game/economy';
 import { walletOf, type CampState } from '../game/loadout';
 import type { UiCtx } from './ctx';
@@ -53,6 +58,7 @@ import {
   nodesFromMarkup,
   placedMarkup,
   plotScene,
+  shapeIcon,
   spotsMarkup,
   weaponIcon,
   PLOT_H,
@@ -180,6 +186,21 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<vo
     const spotsLayer = plotArt.querySelector('.tc-bb-spots') as SVGGElement;
     const previewLayer = plotArt.querySelector('.tc-bb-preview') as SVGGElement;
 
+    const confirmText = h(doc, 'p', { text: BUILDER_COPY.clearAsk });
+    const confirmYes = h(doc, 'button', {
+      type: 'button',
+      class: 'tc-btn tc-btn-primary',
+      'data-testid': 'bb-clear-yes',
+      'data-act': 'yes',
+      text: BUILDER_COPY.clearYes,
+    });
+    const confirmNo = h(doc, 'button', {
+      type: 'button',
+      class: 'tc-btn tc-btn-neutral',
+      'data-testid': 'bb-clear-no',
+      'data-act': 'no',
+      text: BUILDER_COPY.clearNo,
+    });
     const confirm = h(
       doc,
       'div',
@@ -189,27 +210,28 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<vo
         'aria-label': BUILDER_COPY.clearAsk,
         hidden: true,
       },
-      h(doc, 'p', { text: BUILDER_COPY.clearAsk }),
-      h(
-        doc,
-        'div',
-        { class: 'tc-row' },
-        h(doc, 'button', {
-          type: 'button',
-          class: 'tc-btn tc-btn-primary',
-          'data-testid': 'bb-clear-yes',
-          'data-act': 'yes',
-          text: BUILDER_COPY.clearYes,
-        }),
-        h(doc, 'button', {
-          type: 'button',
-          class: 'tc-btn tc-btn-neutral',
-          'data-testid': 'bb-clear-no',
-          'data-act': 'no',
-          text: BUILDER_COPY.clearNo,
-        }),
-      ),
+      confirmText,
+      h(doc, 'div', { class: 'tc-row' }, confirmYes, confirmNo),
     );
+    /** What the question does on Yes, and where focus goes back to when it closes. */
+    let onYes: (() => void) | null = null;
+    let askFrom: HTMLElement | null = null;
+    const ask = (
+      text: string,
+      yes: string,
+      no: string,
+      from: HTMLElement,
+      then: () => void,
+    ): void => {
+      confirmText.textContent = text;
+      confirm.setAttribute('aria-label', text);
+      confirmYes.textContent = yes;
+      confirmNo.textContent = no;
+      onYes = then;
+      askFrom = from;
+      confirm.hidden = false;
+      confirmNo.focus();
+    };
     // Mode switch, spots chip and the weapon list sit over the plot.
     const modeBtn = (id: 'build' | 'weapons', label: string, aria: string): HTMLButtonElement => {
       const b = h(doc, 'button', {
@@ -314,9 +336,84 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<vo
     );
 
     const tray = h(doc, 'section', { class: 'tc-bb-tray', 'aria-label': BUILDER_COPY.tray });
+    const shapesTray = h(doc, 'section', {
+      class: 'tc-bb-shapes',
+      'aria-label': SHAPE_COPY.group,
+      'data-testid': 'bb-shapes',
+    });
+
+    // The drawing pad: a small grid of big squares. It covers the plot while it is open.
+    const padSquares: HTMLButtonElement[] = [];
+    for (let r = 0; r < B.shapePad; r++) {
+      for (let c = 0; c < B.shapePad; c++) {
+        padSquares.push(
+          h(doc, 'button', {
+            type: 'button',
+            class: 'tc-bb-sq',
+            'data-r': String(r),
+            'data-c': String(c),
+            'aria-label': SHAPE_COPY.square(r + 1, c + 1, false),
+            'data-testid': `bb-sq-${r + 1}-${c + 1}`,
+          }),
+        );
+      }
+    }
+    const padGrid = h(
+      doc,
+      'div',
+      { class: 'tc-bb-pad-grid', role: 'group', 'aria-label': SHAPE_COPY.grid },
+      ...padSquares,
+    );
+    const padPreview = h(doc, 'div', {
+      class: 'tc-bb-pad-preview',
+      role: 'img',
+      'aria-label': SHAPE_COPY.preview,
+      'data-testid': 'bb-pad-preview',
+    });
+    const padCount = h(doc, 'p', { class: 'tc-bb-pad-count', 'data-testid': 'bb-pad-count' });
+    const padMsg = h(doc, 'p', {
+      class: 'tc-bb-pad-msg',
+      role: 'status',
+      'aria-live': 'polite',
+      'data-testid': 'bb-pad-msg',
+    });
+    const padBtn = (id: string, text: string, label: string, extra = ''): HTMLButtonElement =>
+      h(doc, 'button', {
+        type: 'button',
+        class: `tc-bb-pad-btn ${extra}`.trim(),
+        'data-testid': `bb-pad-${id}`,
+        'aria-label': label,
+        text,
+      });
+    const padClear = padBtn('clear', SHAPE_COPY.clear, SHAPE_COPY.clearLabel);
+    const padSave = padBtn('save', SHAPE_COPY.save, SHAPE_COPY.save, 'tc-bb-pad-save');
+    const padClose = padBtn('close', SHAPE_COPY.close, SHAPE_COPY.closeLabel);
+    const pad = h(
+      doc,
+      'section',
+      {
+        class: 'tc-bb-pad',
+        role: 'dialog',
+        'aria-label': SHAPE_COPY.padLabel,
+        'data-testid': 'bb-pad',
+        hidden: true,
+      },
+      h(doc, 'h2', { class: 'tc-bb-pad-title', text: SHAPE_COPY.pad }),
+      padGrid,
+      h(
+        doc,
+        'div',
+        { class: 'tc-bb-pad-side' },
+        h(doc, 'p', { class: 'tc-bb-pad-help', text: SHAPE_COPY.help }),
+        h(doc, 'div', { class: 'tc-bb-pad-row' }, padPreview, padCount),
+        padMsg,
+        h(doc, 'div', { class: 'tc-bb-pad-actions' }, padClear, padSave, padClose),
+      ),
+    );
     const ghost = h(doc, 'div', { class: 'tc-bb-ghost', 'aria-hidden': 'true', hidden: true });
     const keys = h(doc, 'p', { class: 'tc-sr-only', text: BUILDER_COPY.keys });
     const spotKeys = h(doc, 'p', { class: 'tc-sr-only', text: BUILDER_COPY.spotKeys });
+    const padKeys = h(doc, 'p', { class: 'tc-sr-only', text: SHAPE_COPY.keys });
 
     const screen = h(
       doc,
@@ -329,11 +426,13 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<vo
       },
       h(doc, 'h1', { class: 'tc-sr-only', text: BUILDER_COPY.title[team] }),
       h(doc, 'header', { class: 'tc-bb-top' }, back, slotNav, scrapBox),
-      h(doc, 'div', { class: 'tc-bb-main' }, plotWrap, tools),
+      h(doc, 'div', { class: 'tc-bb-main' }, plotWrap, tools, pad),
       status,
       keys,
       spotKeys,
+      padKeys,
       tray,
+      shapesTray,
       ghost,
     );
 
@@ -467,6 +566,87 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<vo
           return b;
         }),
       );
+      renderShapes();
+    }
+
+    /** The "My own shape" tile at the end of the tray. */
+    const ownTile = h(doc, 'button', {
+      type: 'button',
+      class: 'tc-bb-own',
+      'aria-label': SHAPE_COPY.ownTileLabel,
+      'data-testid': 'bb-own',
+    });
+    ownTile.append(
+      svgFromString(
+        doc,
+        '<svg viewBox="0 0 48 48" width="36" height="36" class="tc-bb-own-icon" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"><rect x="5" y="5" width="38" height="38" rx="8" stroke-dasharray="8 6"/><path d="M24,14 V34 M14,24 H34"/></svg>',
+      ),
+      h(doc, 'span', { class: 'tc-bb-own-name', text: SHAPE_COPY.ownTile }),
+    );
+    ownTile.addEventListener('click', () => openPad());
+
+    /** The saved shapes, as tiles that drag like bricks, each with a delete button. */
+    function renderShapes(): void {
+      const keys = shapesOf(bases, name, team);
+      shapesTray.replaceChildren(
+        ownTile,
+        h(doc, 'h2', {
+          class: keys.length > 3 ? 'tc-bb-shapes-title tc-sr-only' : 'tc-bb-shapes-title',
+          text: SHAPE_COPY.group,
+        }),
+        ...keys.map((key, i) => {
+          const id = customId(team, key);
+          const cells = cellsFromKey(key) ?? [];
+          const tile = h(doc, 'button', {
+            type: 'button',
+            class: 'tc-bb-mine',
+            'data-piece': id,
+            'data-state': 'owned',
+            'aria-pressed': String(armed?.id === id),
+            'aria-label': SHAPE_COPY.shapeLabel(i + 1, cells.length),
+            'data-testid': `bb-shape-${i + 1}`,
+          });
+          tile.append(shapeIcon(doc, team, cells, 48));
+          tile.addEventListener('click', (e) => {
+            if (e.detail === 0) pickWithKeyboard(pieceById(id)!);
+          });
+          tile.addEventListener('pointerdown', (e) => {
+            if ((e.button ?? 0) !== 0) return;
+            startDrag(e, { kind: 'new', id, rot: armed?.id === id ? armed.rot : 0 });
+          });
+          const del = h(doc, 'button', {
+            type: 'button',
+            class: 'tc-bb-mine-del',
+            'aria-label': SHAPE_COPY.deleteLabel(i + 1),
+            'data-testid': `bb-shape-del-${i + 1}`,
+          });
+          del.append(
+            svgFromString(
+              doc,
+              '<svg viewBox="0 0 48 48" width="32" height="32" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M10,14 H38 M19,14 V8 H29 V14 M14,14 L16,40 H32 L34,14"/></svg>',
+            ),
+          );
+          del.addEventListener('click', () =>
+            ask(SHAPE_COPY.deleteAsk, SHAPE_COPY.deleteYes, SHAPE_COPY.deleteNo, del, () =>
+              removeShape(key),
+            ),
+          );
+          return h(doc, 'div', { class: 'tc-bb-mine-wrap' }, tile, del);
+        }),
+      );
+    }
+
+    function removeShape(key: string): void {
+      bases = deleteShape(bases, name, team, key);
+      options.saveBases(bases);
+      if (armed?.id === customId(team, key)) {
+        armed = null;
+        cursor = null;
+        drawArmed();
+      }
+      say(SHAPE_COPY.deleted);
+      renderShapes();
+      (shapesTray.querySelector<HTMLElement>('.tc-bb-mine') ?? ownTile).focus();
     }
 
     function renderTools(): void {
@@ -541,7 +721,8 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<vo
             { class: 'tc-bb-weapon-words' },
             h(doc, 'span', { class: 'tc-bb-weapon-name', text: def.name }),
           );
-          if (!open) words.append(h(doc, 'span', { text: BUILDER_COPY.unlockCost(def.scrap ?? 0) }));
+          if (!open)
+            words.append(h(doc, 'span', { text: BUILDER_COPY.unlockCost(def.scrap ?? 0) }));
           else if (on) words.append(h(doc, 'span', { text: BUILDER_COPY.onThisSpot }));
           b.append(weaponIcon(doc, def.id, 44), words);
           if (!open) {
@@ -566,7 +747,7 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<vo
       weaponsModeBtn.setAttribute('aria-pressed', String(weapons));
       screen.setAttribute('data-mode', mode);
       // Bricks and the tray wait while weapons are picked.
-      tray.toggleAttribute('inert', weapons);
+      syncInert();
       turnBtn.setAttribute('aria-disabled', String(weapons));
       snapBtn.setAttribute('aria-disabled', String(weapons));
     }
@@ -795,7 +976,9 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<vo
     // ---------- Picking a brick (tap or key) ----------
     /** Marks the picked tray brick without redrawing the whole tray. */
     function syncTray(): void {
-      for (const b of tray.querySelectorAll<HTMLElement>('.tc-bb-brick[data-state="owned"]')) {
+      for (const b of screen.querySelectorAll<HTMLElement>(
+        '.tc-bb-brick[data-state="owned"], .tc-bb-mine',
+      )) {
         b.setAttribute('aria-pressed', String(armed?.id === b.getAttribute('data-piece')));
       }
     }
@@ -945,7 +1128,9 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<vo
         return;
       }
       // Dropped off the plot. A placed brick dropped on the tray comes off. Anything else cancels.
-      const overTray = within(tray.getBoundingClientRect(), e.clientX, e.clientY);
+      const overTray =
+        within(tray.getBoundingClientRect(), e.clientX, e.clientY) ||
+        within(shapesTray.getBoundingClientRect(), e.clientX, e.clientY);
       if (d.kind === 'move' && overTray) doRemove(d.index);
       else {
         say(BUILDER_COPY.cancelled);
@@ -1053,21 +1238,24 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<vo
     });
     clearBtn.addEventListener('click', () => {
       if (build.pieces.length === 0) return;
-      confirm.hidden = false;
-      (confirm.querySelector('[data-act="no"]') as HTMLElement).focus();
-    });
-    confirm.addEventListener('click', (e) => {
-      const act = (e.target as HTMLElement).closest('[data-act]')?.getAttribute('data-act');
-      if (!act) return;
-      confirm.hidden = true;
-      if (act === 'yes') {
+      ask(BUILDER_COPY.clearAsk, BUILDER_COPY.clearYes, BUILDER_COPY.clearNo, clearBtn, () => {
         build = clearBuild(build);
         selected = null;
         persist();
         say(BUILDER_COPY.cleared);
         renderAll();
-      }
-      clearBtn.focus();
+      });
+    });
+    confirm.addEventListener('click', (e) => {
+      const act = (e.target as HTMLElement).closest('[data-act]')?.getAttribute('data-act');
+      if (!act) return;
+      confirm.hidden = true;
+      const yes = onYes;
+      const back = askFrom;
+      onYes = null;
+      askFrom = null;
+      if (act === 'yes') yes?.();
+      if (back?.isConnected) back.focus();
     });
 
     // ---------- Keyboard ----------
@@ -1119,6 +1307,10 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<vo
 
     screen.addEventListener('keydown', (e) => {
       const k = e.key;
+      if (padOpen) {
+        padKeyDown(e);
+        return;
+      }
       if ((e.ctrlKey || e.metaKey) && (k === 'z' || k === 'Z')) {
         e.preventDefault();
         doUndo();
@@ -1205,10 +1397,207 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<vo
       }
     });
 
+    // ---------- Your own shapes: the drawing pad ----------
+    /** The L the pad starts with, so a first shape is one tap away. */
+    const STARTER: readonly Cell[] = [
+      [0, 0],
+      [0, 1],
+      [0, 2],
+      [1, 2],
+    ];
+    let padOpen = false;
+    /** Filled squares as "column,row". */
+    let padOn = new Set<string>();
+    /** The one square that Tab reaches (the arrow keys move it). */
+    let padAt = { r: 0, c: 0 };
+    let paint: boolean | null = null;
+    let skipClick: Element | null = null;
+
+    const sqAt = (r: number, c: number): HTMLButtonElement | undefined =>
+      padSquares[r * B.shapePad + c];
+    const padCells = (): Cell[] =>
+      [...padOn].map((k) => {
+        const [c, r] = k.split(',').map(Number);
+        return [c!, r!] as Cell;
+      });
+
+    /** Can this drawing be saved? If not, the plain words that say why. */
+    function padStatus(): { ok: boolean; text: string } {
+      const cells = padCells();
+      const problem = shapeProblem(cells);
+      if (problem) return { ok: false, text: SHAPE_COPY.problem[problem] };
+      const have = shapesOf(bases, name, team);
+      if (have.includes(shapeKey(cells))) return { ok: false, text: SHAPE_COPY.problem.duplicate };
+      if (have.length >= B.maxShapes) return { ok: false, text: SHAPE_COPY.problem.full };
+      return { ok: true, text: SHAPE_COPY.ok };
+    }
+
+    function syncInert(): void {
+      const weapons = mode === 'weapons';
+      tray.toggleAttribute('inert', weapons || padOpen);
+      shapesTray.toggleAttribute('inert', weapons || padOpen);
+      plotWrap.toggleAttribute('inert', padOpen);
+      tools.toggleAttribute('inert', padOpen);
+    }
+
+    function renderPad(): void {
+      for (const [i, sq] of padSquares.entries()) {
+        const r = Math.floor(i / B.shapePad);
+        const c = i % B.shapePad;
+        const on = padOn.has(`${c},${r}`);
+        sq.setAttribute('aria-pressed', String(on));
+        sq.setAttribute('aria-label', SHAPE_COPY.square(r + 1, c + 1, on));
+        sq.tabIndex = r === padAt.r && c === padAt.c ? 0 : -1;
+      }
+      const cells = padCells();
+      padPreview.replaceChildren(...(cells.length ? [shapeIcon(doc, team, cells, 72)] : []));
+      padCount.textContent = SHAPE_COPY.count(padOn.size);
+      const st = padStatus();
+      padMsg.textContent = st.text;
+      padMsg.setAttribute('data-ok', String(st.ok));
+      padSave.setAttribute('aria-disabled', String(!st.ok));
+    }
+
+    function setSquare(r: number, c: number, on: boolean): void {
+      const k = `${c},${r}`;
+      if (padOn.has(k) === on) return;
+      if (on) padOn.add(k);
+      else padOn.delete(k);
+      padAt = { r, c };
+      renderPad();
+    }
+
+    function openPad(): void {
+      armed = null;
+      cursor = null;
+      selected = null;
+      drawArmed();
+      padOn = new Set(STARTER.map(([c, r]) => `${c},${r}`));
+      padAt = { r: 0, c: 0 };
+      padOpen = true;
+      pad.hidden = false;
+      syncInert();
+      renderPad();
+      sqAt(0, 0)?.focus();
+    }
+
+    function closePad(refocus = true): void {
+      padOpen = false;
+      pad.hidden = true;
+      syncInert();
+      if (refocus) ownTile.focus();
+    }
+
+    function savePad(): void {
+      const st = padStatus();
+      if (!st.ok) {
+        padMsg.textContent = '';
+        padMsg.textContent = st.text;
+        return;
+      }
+      const result = saveShape(bases, name, team, padCells());
+      if (!result.ok) {
+        padMsg.textContent = SHAPE_COPY.problem[result.reason];
+        return;
+      }
+      bases = result.state;
+      options.saveBases(bases);
+      closePad(false);
+      renderAll();
+      say(SHAPE_COPY.saved);
+      const tile = [...shapesTray.querySelectorAll<HTMLElement>('.tc-bb-mine')].find(
+        (t) => t.getAttribute('data-piece') === result.id,
+      );
+      tile?.focus();
+    }
+
+    function endPaint(): void {
+      paint = null;
+      doc.removeEventListener('pointermove', onPaint);
+      doc.removeEventListener('pointerup', endPaint);
+      doc.removeEventListener('pointercancel', endPaint);
+      // The click that follows a press has already run by the time this timer does.
+      doc.defaultView?.setTimeout(() => (skipClick = null), 0);
+    }
+
+    /** Dragging across the pad fills (or empties) every square the pointer crosses. */
+    function onPaint(e: PointerEvent): void {
+      if (paint === null) return;
+      const under = doc.elementFromPoint?.(e.clientX, e.clientY)?.closest?.('.tc-bb-sq');
+      if (!under || !padGrid.contains(under)) return;
+      setSquare(Number(under.getAttribute('data-r')), Number(under.getAttribute('data-c')), paint);
+      if (e.cancelable) e.preventDefault();
+    }
+
+    padGrid.addEventListener('pointerdown', (e) => {
+      if ((e.button ?? 0) !== 0 || paint !== null) return;
+      const sq = (e.target as Element | null)?.closest?.('.tc-bb-sq');
+      if (!sq) return;
+      const r = Number(sq.getAttribute('data-r'));
+      const c = Number(sq.getAttribute('data-c'));
+      paint = !padOn.has(`${c},${r}`);
+      skipClick = sq;
+      setSquare(r, c, paint);
+      doc.addEventListener('pointermove', onPaint);
+      doc.addEventListener('pointerup', endPaint);
+      doc.addEventListener('pointercancel', endPaint);
+    });
+    // A key press (Space) or a tap that sent no pointer events toggles here.
+    padGrid.addEventListener('click', (e) => {
+      const sq = (e.target as Element | null)?.closest?.('.tc-bb-sq');
+      if (!sq) return;
+      if (skipClick === sq) {
+        skipClick = null;
+        return;
+      }
+      const r = Number(sq.getAttribute('data-r'));
+      const c = Number(sq.getAttribute('data-c'));
+      setSquare(r, c, !padOn.has(`${c},${r}`));
+    });
+    padClear.addEventListener('click', () => {
+      padOn = new Set();
+      renderPad();
+      sqAt(padAt.r, padAt.c)?.focus();
+    });
+    padSave.addEventListener('click', savePad);
+    padClose.addEventListener('click', () => closePad());
+
+    function padKeyDown(e: KeyboardEvent): void {
+      const k = e.key;
+      if (k === 'Escape') {
+        e.preventDefault();
+        closePad();
+        return;
+      }
+      const sq = (e.target as Element).closest?.('.tc-bb-sq');
+      if (!sq) return;
+      const r = Number(sq.getAttribute('data-r'));
+      const c = Number(sq.getAttribute('data-c'));
+      const move: Record<string, [number, number]> = {
+        ArrowLeft: [-1, 0],
+        ArrowRight: [1, 0],
+        ArrowUp: [0, -1],
+        ArrowDown: [0, 1],
+      };
+      const dir = move[k];
+      if (dir) {
+        e.preventDefault();
+        const nr = Math.min(Math.max(r + dir[1], 0), B.shapePad - 1);
+        const nc = Math.min(Math.max(c + dir[0], 0), B.shapePad - 1);
+        padAt = { r: nr, c: nc };
+        renderPad();
+        sqAt(nr, nc)?.focus();
+      } else if (k === 'Enter') {
+        e.preventDefault();
+        savePad();
+      }
+    }
+
     // ---------- Finish ----------
     const close = ctx.openScreen(screen);
     const finish = (): void => {
       endDrag();
+      endPaint();
       doc.defaultView?.removeEventListener('resize', onResize);
       close();
       resolve();
