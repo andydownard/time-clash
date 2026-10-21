@@ -76,6 +76,9 @@ test('Change players opens Setup with the saved players, then returns to the Cam
 test('the keyboard starts the match from the Camp', async ({ page }) => {
   await toCamp(page);
   await page.keyboard.press('Enter');
+  // The Battle Plan opens with Lock it in! focused, so a second Enter starts the match.
+  await expect(tid(page, 'plan-go')).toBeFocused();
+  await page.keyboard.press('Enter');
   await expect(tid(page, 'pass-screen')).toBeVisible({ timeout: 10_000 });
 });
 
