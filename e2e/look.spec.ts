@@ -154,6 +154,14 @@ test('every screen keeps the floors, and the screenshots are retaken', async ({
     await shot('upgrade-future');
     await tid(page, 'upgrade-back').click();
     await expect(tid(page, 'camp-start')).toBeVisible();
+    // The Battle Plan (Phase 2), then Back to the Camp. startMatch locks it in after this.
+    await tid(page, 'camp-start').click();
+    await expect(tid(page, 'plan-go')).toBeVisible();
+    await floors(page, 'Battle Plan');
+    await fitsOnScreen(page, 'plan', 'Battle Plan');
+    await shot('plan');
+    await tid(page, 'plan-back').click();
+    await expect(tid(page, 'camp-start')).toBeVisible();
   });
   await floors(page, 'Pass screen');
   await shot('pass-screen');

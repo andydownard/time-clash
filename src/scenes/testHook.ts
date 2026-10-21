@@ -1,7 +1,7 @@
 // A small hook so Playwright can pin the seed, make a load fail, and read state.
 // Only installed when the URL has ?e2e=1 AND the build is not a production build.
 // It never exposes questions or answers (risk 3).
-import type { Match, MatchController, Players } from '../game/types';
+import type { BattleLayout, Match, MatchController, Players } from '../game/types';
 import type { TypedStorage } from '../storage/types';
 import type { SeedSource } from './flow';
 import type { Session } from './registry';
@@ -15,6 +15,8 @@ export type TimeClashHook = {
   scene(): string | null;
   /** A copy of the current match, or null. */
   match(): Match | null;
+  /** The field as it stands now (biome, base spot, any wall), or null. Never secret. */
+  layout(): BattleLayout | null;
   /** Saved players, or null. */
   players(): Players | null;
   /** Smallest size, in screen pixels, of any label drawn on the canvas, or null. */
@@ -82,6 +84,7 @@ export function installTestHook(win: { __timeclash?: TimeClashHook }, deps: Hook
     failNextLoads: (count) => deps.faults.failNext(count),
     scene: () => deps.activeScenes()[0]?.scene?.key ?? null,
     match: () => findController()?.snapshot() ?? null,
+    layout: () => findController()?.currentLayout() ?? null,
     players: () => deps.storage.get('timeclash.players'),
     labelPx: () => deps.activeScenes()[0]?.labels?.minRenderedPx() ?? null,
     aim: () => deps.activeScenes()[0]?.aimState?.() ?? null,

@@ -1,4 +1,18 @@
+import { isSpecialAmmo, radiusScale, resolveAmmo, type AmmoId } from './ammo';
 import { clampAim, simulateShot } from './ballistics';
+import { withWalls } from './battlefield';
+import {
+  arm,
+  disarm,
+  dodgesNow,
+  endOwnTurn,
+  evasionView,
+  freshEvasion,
+  spend,
+  startOwnTurn,
+  wallsFor,
+  type EvasionState,
+} from './evasion';
 import {
   AIM,
   BASE_IN_BATTLE,
@@ -81,6 +95,12 @@ type ShellSource =
 
 const perTeam = <T>(make: () => T): Record<Team, T> => ({ PAST: make(), FUTURE: make() });
 
+/** The special kinds a team owns, once each, in a fixed order. Junk and Standard are dropped. */
+const ownedAmmo = (list: readonly AmmoId[] | undefined): AmmoId[] => {
+  const ids = new Set((list ?? []).filter(isSpecialAmmo));
+  return (['confetti', 'plasma', 'bowling'] as const).filter((id) => ids.has(id));
+};
+
 export const createMatch: CreateMatch = (options: MatchOptions): MatchController => {
   const { players, seed } = options;
   const layout = options.layout ?? PHASE1_LAYOUT;
@@ -122,6 +142,24 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
   }));
   const selected: Record<Team, UnitId> = { ...DEFAULT_UNIT };
   const stats: Record<Team, TeamStats> = perTeam(freshStats);
+  // Phase 2: special ammo and evasion.
+  const owned: Record<Team, AmmoId[]> = {
+    PAST: ownedAmmo(options.ammo?.PAST),
+    FUTURE: ownedAmmo(options.ammo?.FUTURE),
+  };
+  /** Shots left of each special kind. Standard is unlimited and never listed. */
+  const ammoLeft: Record<Team, Partial<Record<AmmoId, number>>> = {
+    PAST: Object.fromEntries(owned.PAST.map((id) => [id, resolveAmmo(id).uses])),
+    FUTURE: Object.fromEntries(owned.FUTURE.map((id) => [id, resolveAmmo(id).uses])),
+  };
+  const loaded: Record<Team, AmmoId> = { PAST: 'standard', FUTURE: 'standard' };
+  let inFlightAmmo: AmmoId = 'standard';
+  let evasion: Record<Team, EvasionState> = {
+    PAST: freshEvasion('PAST'),
+    FUTURE: freshEvasion('FUTURE'),
+  };
+  /** The field right now: the layout plus a stone wall that is standing. */
+  const currentLayout = () => withWalls(layout, wallsFor(evasion));
   const unitHp = freshUnitHp();
   /** Keeps a team's pick on a fighter that is still standing. */
   const keepSelectionStanding = (team: Team): void => {
@@ -147,6 +185,11 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
   };
   const step = (event: TurnEvent): void => {
     turn = transition(turn, event);
+  };
+  /** Free actions (load ammo, arm an ability) only work while aiming. */
+  const aimingOnly = (event: string): void => {
+    if (turn.phase !== 'AIMING' && turn.phase !== 'BONUS_AIMING')
+      throw new IllegalTransitionError(turn.phase, event);
   };
 
   /** Character health: score a landed shot against the target's standing fighters. */
@@ -289,6 +332,9 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       selected: { ...selected },
       stats: { PAST: { ...stats.PAST }, FUTURE: { ...stats.FUTURE } },
       lastShot: lastShot ? { ...lastShot } : null,
+      ammo: { ...loaded },
+      ammoLeft: { PAST: { ...ammoLeft.PAST }, FUTURE: { ...ammoLeft.FUTURE } },
+      evasion: { PAST: evasionView(evasion.PAST), FUTURE: evasionView(evasion.FUTURE) },
       ...(built
         ? {
             baseInBattle: true,
@@ -300,6 +346,8 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
           }
         : {}),
     }),
+
+    currentLayout,
 
     ready(): void {
       guard('get ready');
@@ -343,6 +391,28 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       selectedMount[turn.team] = null;
     },
 
+    selectAmmo(id: AmmoId): void {
+      guard('load ammo');
+      aimingOnly('SELECT_AMMO');
+      const team = turn.team;
+      if (id !== 'standard' && !((ammoLeft[team][id] ?? 0) > 0)) {
+        throw new RangeError(`${team} has no ${String(id)} ammo left`);
+      }
+      loaded[team] = id;
+    },
+
+    armEvasion(): void {
+      guard('arm an ability');
+      aimingOnly('ARM_EVASION');
+      evasion = { ...evasion, [turn.team]: arm(evasion[turn.team]) };
+    },
+
+    disarmEvasion(): void {
+      guard('take back an ability');
+      aimingOnly('DISARM_EVASION');
+      evasion = { ...evasion, [turn.team]: disarm(evasion[turn.team]) };
+    },
+
     fire(): ShotResult {
       guard('fire');
       const mountId = built ? selectedMount[turn.team] : null;
@@ -359,6 +429,9 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       const shotAim = mount ? mountAim(mount.role, aim[team]) : aim[team];
       const { angleDeg, power } = shotAim;
       const origin = mount ? mount.origin : firingOrigin(team, unit.id, layout);
+      // A mounted weapon fires its own shells. Fighters fire the loaded ammo.
+      const ammo: AmmoId = mount ? 'standard' : loaded[team];
+      const walls = wallsFor(evasion);
       const speedScale = mount
         ? BASE_IN_BATTLE.mountSpeedScale
         : effects[team].speedScale * unit.speedScale;
@@ -369,8 +442,9 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
           origin,
           facing: TEAM_FACING[team],
           wind,
-          layout: flightLay,
+          layout: walls.length > 0 ? withWalls(flightLay, walls) : flightLay,
           speedScale,
+          ...(ammo === 'standard' ? {} : { ammo }),
         });
       let result: ShotResult;
       if (built) {
@@ -391,6 +465,12 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
         result = fly(angleDeg);
       }
       inFlight = result;
+      inFlightAmmo = ammo;
+      if (ammo !== 'standard') {
+        const left = Math.max(0, (ammoLeft[team][ammo] ?? 0) - 1);
+        ammoLeft[team] = { ...ammoLeft[team], [ammo]: left };
+        if (left === 0) loaded[team] = 'standard';
+      }
       lastShot = {
         angleDeg,
         power,
@@ -399,6 +479,7 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
         turnNumber: turn.turnNumber,
         unit: unit.id,
         ...(mount ? { mount: mount.id } : {}),
+        ...(ammo === 'standard' ? {} : { ammo }),
       };
       stats[team].shotsFired += 1;
       return result;
@@ -417,11 +498,12 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       const flewAway = flight.hit.kind === 'out_of_bounds' || flight.hit.kind === 'timeout';
       const result: BlastResult = flewAway
         ? 'miss'
-        : classifyBlast(flight.landing, layout.bases[target]);
+        : classifyBlast(flight.landing, layout.bases[target], radiusScale(inFlightAmmo));
       const tumble = result === 'near';
       const shooter = effects[team];
       const defender = effects[target];
-      const scale = unitOf(team).damageScale;
+      // The fighter and the ammo both scale the weapon. Standard ammo scales by exactly 1.
+      const scale = unitOf(team).damageScale * resolveAmmo(inFlightAmmo).damageScale;
       // A hit's damage: the shooter's weapon, less the defender's walls, never below 1.
       // The Power Shot multiplies the weapon's damage first, then the walls cut it.
       const boost = (n: number): number => (isBonus ? Math.round(n * BONUS.damageMultiplier) : n);
@@ -433,6 +515,13 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
         );
       } else if (result === 'near') {
         damage = Math.max(1, boost(Math.round(shooter.near * scale)) - defender.nearCut);
+      }
+      // A Hoverboard Dodge makes the first damaging hit miss. It goes before the force field.
+      let dodged = false;
+      if (damage > 0 && dodgesNow(evasion[target])) {
+        evasion = { ...evasion, [target]: spend(evasion[target]) };
+        damage = 0;
+        dodged = true;
       }
       // A force field blocks the first hits that would have done damage.
       let blocked = false;
@@ -454,6 +543,7 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
         target,
         damage,
         ...(blocked ? { blocked: true } : {}),
+        ...(dodged ? { dodged: true } : {}),
         tumble,
         bubbleIndex: tumble ? nextBubble() : null,
       };
@@ -491,6 +581,9 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
         baseHp = { ...baseHp, [ending]: Math.min(maxHp[ending], baseHp[ending] + repair) };
       }
       wind = windForTurn(seed, turn.turnNumber);
+      // An ability armed this turn starts guarding. The new team's guard from last time ends.
+      evasion = { ...evasion, [ending]: endOwnTurn(evasion[ending]) };
+      evasion = { ...evasion, [turn.team]: startOwnTurn(evasion[turn.team]) };
     },
 
     rematchOptions: (): MatchOptions => ({
@@ -499,6 +592,7 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       firstTeam: otherTeam(firstTeam),
       layout,
       effects,
+      ammo: { PAST: [...owned.PAST], FUTURE: [...owned.FUTURE] },
       characterHealth,
       ...(options.baseInBattle === undefined ? {} : { baseInBattle: options.baseInBattle }),
       ...(options.bases ? { bases: options.bases } : {}),

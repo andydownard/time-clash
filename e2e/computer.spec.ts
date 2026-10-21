@@ -3,7 +3,15 @@
 import type { Page } from '@playwright/test';
 import { expect, test } from './fixtures';
 import { smallTargets, smallText } from './support/audit';
-import { SEED, answerReload, fillTeam, PAST_SIDE, takeShot, tid } from './support/game';
+import {
+  SEED,
+  answerReload,
+  clashFromCamp,
+  fillTeam,
+  PAST_SIDE,
+  takeShot,
+  tid,
+} from './support/game';
 import { saveShot } from './support/shots';
 import './support/globals';
 
@@ -63,7 +71,7 @@ test('flag on: pick Computer player and Hard, play a whole match to Victory', as
   await expect(tid(page, 'camp-start')).toBeVisible({ timeout: 10_000 });
   const saved = await page.evaluate(() => window.__timeclash!.players());
   expect(saved![1]).toMatchObject({ name: 'Computer player', team: 'FUTURE' });
-  await tid(page, 'camp-start').click();
+  await clashFromCamp(page);
   await page.waitForFunction(() => window.__timeclash!.match() !== null);
 
   // No pass-the-mouse screen at all: the child keeps the screen.

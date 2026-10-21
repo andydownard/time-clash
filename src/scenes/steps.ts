@@ -4,8 +4,9 @@ import { LOADING } from '../data/copy';
 import { baseBuilderOn, chosenBase, type Placed } from '../game/baseBuilder';
 import { creditMatch } from '../game/economy';
 import { TEAMS, type Players, type Team } from '../game/types';
-import { matchEffectsFor, type CampState } from '../game/loadout';
-import { loadBases, loadCamp } from '../storage/storage';
+import { buildLayout } from '../game/battlefield';
+import { matchAmmoFor, matchEffectsFor, type CampState } from '../game/loadout';
+import { loadBases, loadCamp, loadPlan } from '../storage/storage';
 import type { QuestionBank } from '../questions/types';
 import { loadingMinFor, runLoading } from '../ui/loadingLogic';
 import { buildBattleData } from './battleData';
@@ -128,9 +129,21 @@ export async function runCampStep(s: AppServices): Promise<SceneRoute> {
     // Back from the Forge or Build Base: the Camp again, which shows what the family now has.
     return { key: SCENE_KEYS.camp };
   }
-  // The weapons and upgrades the family chose at the Camp go into the match.
-  const effects = matchEffectsFor(loadCamp(s.storage), names);
-  const setup = buildMatchSetup(players, s.newSeed(), effects);
+  // The Battle Plan: where to fight, where Team Future hides its base, and special ammo.
+  const plan = await s.overlay.showPlan({
+    plan: loadPlan(s.storage),
+    camp: loadCamp(s.storage),
+    names,
+    save: (next: CampState) => void s.storage.set('timeclash.camp', next),
+  });
+  if (plan === null) return { key: SCENE_KEYS.camp };
+  s.storage.set('timeclash.plan', plan);
+  // The weapons, upgrades and ammo the family chose at the Camp go into the match.
+  const camp = loadCamp(s.storage);
+  const setup = buildMatchSetup(players, s.newSeed(), matchEffectsFor(camp, names), {
+    layout: buildLayout(plan),
+    ammo: matchAmmoFor(camp, names),
+  });
   // The bank is loaded once, before Setup. If it is somehow missing, load it first.
   if (!s.session.bank) {
     const data: LoadingData = { next: SCENE_KEYS.battle, setup };

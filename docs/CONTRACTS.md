@@ -67,6 +67,8 @@ Any other pair throws. Battle scene loop: `pass screen → ready() → banner �
 25. **Every question card can be read aloud (Hear it).** A sight word item reads only the word. Other items read the passage, the question, and the choices. With sound off, a sight word item shows the word to match instead of "Tap the word you hear." The pass screen and the question card each have a Sound on/off button.
 26. **The corner ? and gear buttons are one fixed row, and the HUD leaves room for it.** The HUD has no ? button of its own. The turn banner sits below the HUD cards. The aim controls sit between the two bases.
 23. **Victory has "Back to Start", not "Main Menu".** "Menu" is on the never-say list.
+27. **Ammo and evasion are free actions while aiming, like picking a fighter.** `selectAmmo`, `armEvasion` and `disarmEvasion` work only in AIMING or BONUS_AIMING and never count as a shot, so a turn is still exactly 2 shots, then the reload. Out of phase they throw `IllegalTransitionError`. A kind the team does not own throws `RangeError`. An ability that is not ready throws `EvasionError` with a reason.
+28. **An ability guards the other team's next turn, not the turn it was armed.** The match flips armed to active in `pass()`, and ends the guard when the owner's next turn starts. `currentLayout()` is the field with any standing wall. The preview and the shot both use it.
 
 ## Copy rules
 All UI text comes from `src/data/copy.ts`. `tests/contracts/copy.test.ts` checks the banned list and the never-say column of the vocabulary table, by whole word and (for the worst words) inside other words.
