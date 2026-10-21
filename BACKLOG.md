@@ -11,8 +11,6 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 - The intro runs about 60 seconds. Card 4 (Reload) has 7 captions over 15 seconds and only one joke.
 - The shot has no build-up, and Fire! is a plain red box.
 - Caption times are still estimated from sentence length across the real clip length. Measure real sentence times (for example from the TTS output) if a caption looks early or late.
-- Base health, Shots left, Wind, Scrap, and award names are text a pre-reader cannot use.
-- Miss, near-miss, and wrong-answer lines are plain. Chrono has no label or quip on the reload card. "My dignity needs a rematch" shows even when it does not fit.
 
 ## P2
 - Reload card: an optional "hide the bonus ring" setting for slow readers.
@@ -20,6 +18,7 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 - Portrait Setup: the Both chip wraps to its own row at 768 wide. Moot: iPad portrait now shows the Turn your iPad screen (docs/IPAD_AUDIT.md).
 - iPad landscape fixes from docs/IPAD_AUDIT.md: Clear my data is cut off on Setup at 1133x744, the Leave dialog body text is 16px, and the bottom controls have no safe-area margin.
 - Chrome host (? and gear) has no data-motion attribute. Add it if animation is ever added there.
+- Scrap counts and the brain stats line on Victory are still numbers in words. A pre-reader may want dots or stars to count.
 - The pass screen needs a picture for pre-readers, beyond the team icon in the medium item.
 - The win moment has no celebration.
 - The reward for a fast answer is easy to miss.

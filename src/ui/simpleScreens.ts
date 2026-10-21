@@ -7,6 +7,7 @@ import {
   TEAM_NAMES,
   UI_EXTRA,
   VICTORY,
+  VICTORY_CHRONO,
   GAME_SUBTITLE,
   GAME_TITLE,
 } from '../data/copy';
@@ -17,6 +18,7 @@ import { chronoFace, loadingScene, loadingTimeline, skyline } from './art';
 import { LOCAL_IDS } from './constants';
 import type { UiCtx } from './ctx';
 import { awardIcon } from './awardIcons';
+import { victoryMood } from './victoryMood';
 import { h } from './dom';
 import { TEST_IDS, type LoadingHandle, type VictoryChoice, type VictoryOptions } from './types';
 
@@ -302,7 +304,8 @@ export function showVictory(ctx: UiCtx, options: VictoryOptions): Promise<Victor
           'p',
           {},
           h(doc, 'strong', { text: `${UI_EXTRA.chronoName}: ` }),
-          h(doc, 'span', { text: VICTORY.goodSport }),
+          // Chrono's line fits the match. The dignity line belongs to the losing fighter (canvas).
+          h(doc, 'span', { text: VICTORY_CHRONO[victoryMood(winner, stats)] }),
         ),
       ),
       table,
