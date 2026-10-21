@@ -14,7 +14,9 @@ import { DEFAULT_EFFECTS, type MatchEffects } from './loadout';
 import { otherTeam } from './types';
 import type { AimInput, BattleLayout, Match, MountId, Rect, Rng, Team, Vec2 } from './types';
 import { flightLayout, mountAim, roleAngles } from './builtBase';
+import { withWalls } from './battlefield';
 import { aliveUnitIds, pathGap } from './damage';
+import { wallsInView } from './evasion';
 import { DEFAULT_UNIT, firingOrigin, unitBox, unitById, type UnitId } from './units';
 
 /** `mount` is set when the bot picked a mounted weapon (BASE_IN_BATTLE on); `unit` is then the fighter that stays picked. */
@@ -124,6 +126,18 @@ const pickAim = ({ best, exact }: Solution, rng: Rng): AimInput => {
   return { angleDeg: chosen.angleDeg, power: chosen.power };
 };
 
+/** One walled copy of each field, so the search cache below still finds its answers. */
+const walled = new WeakMap<BattleLayout, BattleLayout>();
+const withStandingWall = (layout: BattleLayout, state: Match): BattleLayout => {
+  const walls = state.evasion ? wallsInView(state.evasion) : [];
+  if (walls.length === 0) return layout;
+  const known = walled.get(layout);
+  if (known) return known;
+  const made = withWalls(layout, walls);
+  walled.set(layout, made);
+  return made;
+};
+
 /** Shot choice for any profile (a level, or the scripted player the simulation uses). */
 export const chooseShotWith = (
   state: Match,
@@ -133,10 +147,13 @@ export const chooseShotWith = (
   ctx: BotContext = {},
 ): BotShot => {
   // A team that brought a built base has no fixed base box. The bot still aims by the plain
-  // physics and ignores the bricks (no wall logic in v1): a shell that meets a wall just hits it.
-  const layout = state.builtBase
+  // physics and ignores the bricks: a shell that meets a brick just hits it.
+  // The field includes the biome's middle shape, and the Stone Wall while it stands (both are
+  // plain to see, so the bot plans its arc over them, then adds its usual aim error).
+  const flat = state.builtBase
     ? flightLayout(ctx.layout ?? PHASE1_LAYOUT, state.builtBase)
     : (ctx.layout ?? PHASE1_LAYOUT);
+  const layout = withStandingWall(flat, state);
   const effects = ctx.effects ?? DEFAULT_EFFECTS;
   // With character health on, only a fighter still standing may shoot.
   const standing = state.characterHealth ? aliveUnitIds(state.unitHp, side) : null;

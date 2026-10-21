@@ -3,10 +3,16 @@ import { answerReloadWith, chooseShotWith, type BotQuestion } from './bot';
 import { PRACTICE_BOT, type BotProfile } from './config';
 import { createMatch } from './match';
 import { createRng } from './rng';
-import type { Grade, MatchOptions, Players, Team } from './types';
+import type { BattleLayout, Grade, MatchOptions, Players, Team } from './types';
 import { TEAMS } from './types';
 
-export type SimResult = { winner: Team | null; turns: number; ended: boolean };
+export type SimResult = {
+  winner: Team | null;
+  turns: number;
+  ended: boolean;
+  /** True when a Stone Wall was raised at least once. */
+  wallRaised?: boolean;
+};
 
 const player = (team: Team, grade: Grade): Players[number] => ({
   name: team === 'PAST' ? 'Knight' : 'Rocket',
@@ -36,6 +42,10 @@ export type SimOptions = {
   baseInBattle?: boolean;
   /** Each team's built base (with `baseInBattle`). */
   bases?: MatchOptions['bases'];
+  /** The field (biome and spot). Default: the Phase 1 layout. */
+  layout?: BattleLayout;
+  /** Team Past raises its Stone Wall (about half its turns while it is ready). */
+  raiseWall?: boolean;
 };
 
 /** Plays one match to the end (or to the safety cap). */
@@ -48,34 +58,46 @@ export const playBotMatch = (opts: SimOptions): SimResult => {
     ...(opts.characterHealth === undefined ? {} : { characterHealth: opts.characterHealth }),
     ...(opts.baseInBattle === undefined ? {} : { baseInBattle: opts.baseInBattle }),
     ...(opts.bases ? { bases: opts.bases } : {}),
+    ...(opts.layout ? { layout: opts.layout } : {}),
   });
   const rng = createRng((opts.seed ^ 0x626f74) >>> 0);
   const shoot = (team: Team): boolean => {
     const state = match.snapshot();
-    const shot = chooseShotWith(state, team, opts.profiles[team], rng);
+    const shot = chooseShotWith(state, team, opts.profiles[team], rng, {
+      ...(opts.layout ? { layout: opts.layout } : {}),
+    });
     match.selectUnit(shot.mount ?? shot.unit);
     match.setAim(shot);
     match.fire();
     match.shotLanded();
     return match.snapshot().status === 'OVER';
   };
+  let wallRaised = false;
   const cap = opts.maxTurns ?? PRACTICE_BOT.maxSimTurns;
   for (let turns = 0; turns < cap; turns++) {
     const team = match.snapshot().turn.team;
     match.ready();
-    if (shoot(team) || shoot(team)) return finish(match.snapshot(), turns + 1);
+    if (opts.raiseWall && match.snapshot().evasion[team].id === 'barricade') {
+      const view = match.snapshot().evasion[team];
+      if (view.phase === 'ready' && view.usesLeft > 0 && rng.next() < 0.5) {
+        match.armEvasion();
+        wallRaised = true;
+      }
+    }
+    if (shoot(team) || shoot(team)) return finish(match.snapshot(), turns + 1, wallRaised);
     const answer = answerReloadWith(stubQuestion(grade), opts.profiles[team], rng);
     match.reloadDone({ correct: answer.correct, elapsedMs: answer.delayMs, kind: 'choice', grade });
-    if (answer.correct && shoot(team)) return finish(match.snapshot(), turns + 1);
+    if (answer.correct && shoot(team)) return finish(match.snapshot(), turns + 1, wallRaised);
     match.pass();
   }
-  return { winner: null, turns: cap, ended: false };
+  return { winner: null, turns: cap, ended: false, wallRaised };
 };
 
-const finish = (m: { winner: Team | null }, turns: number): SimResult => ({
+const finish = (m: { winner: Team | null }, turns: number, wallRaised: boolean): SimResult => ({
   winner: m.winner,
   turns,
   ended: true,
+  wallRaised,
 });
 
 export { TEAMS };
