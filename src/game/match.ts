@@ -2,13 +2,22 @@ import { clampAim, simulateShot } from './ballistics';
 import {
   AIM,
   BONUS,
+  CHARACTER_HEALTH,
   PHASE1_LAYOUT,
   RNG_SALT,
   SCRAP,
   TEAM_FACING,
   TUMBLE_LINE_COUNT,
 } from './config';
-import { classifyBlast, winnerOf } from './damage';
+import {
+  aliveUnitIds,
+  classifyBlast,
+  freshUnitHp,
+  resolveUnitBlast,
+  unitDamage,
+  winnerOf,
+  winnerOfUnits,
+} from './damage';
 import { DEFAULT_EFFECTS } from './loadout';
 import { scoreReload } from './reload';
 import { createShuffleBag } from './bag';
@@ -30,6 +39,7 @@ import type {
   Team,
   TeamStats,
   TurnEvent,
+  UnitOutcome,
 } from './types';
 import { windForTurn } from './wind';
 
@@ -49,6 +59,7 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
   const { players, seed } = options;
   const layout = options.layout ?? PHASE1_LAYOUT;
   const firstTeam = options.firstTeam ?? 'PAST';
+  const characterHealth = options.characterHealth ?? CHARACTER_HEALTH.enabled;
 
   let turn = createTurn(firstTeam, 0);
   let wind = windForTurn(seed, 0);
@@ -72,6 +83,15 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
   }));
   const selected: Record<Team, UnitId> = { ...DEFAULT_UNIT };
   const stats: Record<Team, TeamStats> = perTeam(freshStats);
+  const unitHp = freshUnitHp();
+  /** Keeps a team's pick on a fighter that is still standing. */
+  const keepSelectionStanding = (team: Team): void => {
+    const standing = aliveUnitIds(unitHp, team);
+    if (standing.length === 0 || standing.includes(selected[team])) return;
+    selected[team] = standing.includes(DEFAULT_UNIT[team])
+      ? DEFAULT_UNIT[team]
+      : (standing[0] as UnitId);
+  };
   /** The fighter for a team. Always valid: selectUnit checks ids. */
   const unitOf = (team: Team): UnitDef => unitById(selected[team]) as UnitDef;
   let lastShot: Match['lastShot'] = null;
@@ -88,6 +108,51 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
     turn = transition(turn, event);
   };
 
+  /** Character health: score a landed shot against the target's standing fighters. */
+  const landOnFighters = (
+    team: Team,
+    target: Team,
+    flight: ShotResult,
+    isBonus: boolean,
+  ): BlastOutcome => {
+    const blast = resolveUnitBlast(flight.path, flight.landing, target, unitHp, layout);
+    const units: UnitOutcome[] = blast.hits.map((h) => {
+      const damage = unitDamage(h.result, isBonus);
+      unitHp[h.unit] = Math.max(0, unitHp[h.unit] - damage);
+      const knockedOut = unitHp[h.unit] === 0;
+      const tumble = h.result === 'near' || knockedOut;
+      return {
+        unit: h.unit,
+        result: h.result,
+        damage,
+        hp: unitHp[h.unit],
+        tumble,
+        knockedOut,
+        bubbleIndex: tumble ? nextBubble() : null,
+      };
+    });
+    const direct = units.some((u) => u.result === 'direct');
+    const result: BlastResult = direct ? 'direct' : units.length > 0 ? 'near' : 'miss';
+    if (direct) stats[team].directHits += 1;
+    else if (result === 'near') stats[team].nearHits += 1;
+    keepSelectionStanding(target);
+    const won = winnerOfUnits(unitHp);
+    if (won) {
+      status = 'OVER';
+      winner = won;
+    }
+    const firstTumble = units.find((u) => u.tumble);
+    return {
+      result,
+      target,
+      damage: units.reduce((sum, u) => sum + u.damage, 0),
+      tumble: firstTumble !== undefined,
+      bubbleIndex: firstTumble ? firstTumble.bubbleIndex : null,
+      units,
+      knockedOut: units.filter((u) => u.knockedOut).map((u) => u.unit),
+    };
+  };
+
   return {
     layout,
 
@@ -99,6 +164,13 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       turn: { ...turn },
       wind,
       baseHp: { ...baseHp },
+      characterHealth,
+      unitHp: { ...unitHp },
+      maxUnitHp: CHARACTER_HEALTH.hp,
+      aliveCount: {
+        PAST: aliveUnitIds(unitHp, 'PAST').length,
+        FUTURE: aliveUnitIds(unitHp, 'FUTURE').length,
+      },
       maxBaseHp: { ...maxHp },
       scrap: { ...scrap },
       aim: { PAST: { ...aim.PAST }, FUTURE: { ...aim.FUTURE } },
@@ -129,11 +201,17 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       if (unit.team !== turn.team) {
         throw new RangeError(`Fighter ${id} is not on ${turn.team}`);
       }
+      if (characterHealth && unitHp[unit.id] <= 0) {
+        throw new RangeError(`Fighter ${id} is knocked out`);
+      }
       selected[turn.team] = unit.id;
     },
 
     fire(): ShotResult {
       guard('fire');
+      if (characterHealth && unitHp[selected[turn.team]] <= 0) {
+        throw new RangeError(`Fighter ${selected[turn.team]} is knocked out and cannot fire`);
+      }
       step({ type: 'FIRE' });
       const team = turn.team;
       const { angleDeg, power } = aim[team];
@@ -162,6 +240,7 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       const target = otherTeam(team);
       const flight = inFlight as ShotResult;
       inFlight = null;
+      if (characterHealth) return landOnFighters(team, target, flight, isBonus);
       const flewAway = flight.hit.kind === 'out_of_bounds' || flight.hit.kind === 'timeout';
       const result: BlastResult = flewAway
         ? 'miss'
@@ -246,6 +325,7 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       firstTeam: otherTeam(firstTeam),
       layout,
       effects,
+      characterHealth,
     }),
   };
 };

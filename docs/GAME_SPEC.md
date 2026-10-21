@@ -194,3 +194,27 @@ Simulation (`npx tsx scripts/simulate-bot.ts 2000`: 2,000 seeded matches per pai
 | hard | 62.8% | 60 to 65% |
 
 Bot against bot (row wins): easy 30.9% vs medium, 20.6% vs hard; medium 67.5% vs easy, 37.0% vs hard; hard 79.3% vs easy, 63.1% vs medium. Matches last about 3 to 4 turns each.
+
+## Character health (rules built, flag off)
+
+Owner decision (2026-10-20): "Every character has three health. It REPLACES base health." The rules are pure, in `src/game/damage.ts` and `src/game/match.ts`, with numbers in `CHARACTER_HEALTH` in `src/game/config.ts`. The flag is `CHARACTER_HEALTH.enabled = false`. It stays off until the Battle scene and the HUD draw health pips and play the awkward fall. With it off the game is exactly as before. A match reads it as the default of `MatchOptions.characterHealth`; tests pass the option and never change the constant.
+
+What changes with the flag on:
+- All ten fighters (five per team: balloon, archer, cannon, catapult, spear; tank, helicopter, bunkers, saber robot, laser robot) start with `hp: 3`. The snapshot holds `unitHp` by fighter id.
+- Each fighter has a hit box (`unitBox` in `units.ts`, `CHARACTER_HEALTH.box`, centered on its firing spot). A shell flies along its path and bursts on the first standing enemy fighter whose box it touches (with 24 px of slack, `classifyBlast` with `directScale`). That is one direct hit. Air fighters can be hit in flight. If the shell touches none, it bursts where it lands. Any other standing enemy within 90 px of the burst (`nearScale`) has a near miss.
+- Base health is not used. A shot at the base does nothing to the base. `baseHp` stays in the snapshot at full, only for saves and old tests.
+
+| Event | Health lost | What the fighter does |
+|---|---|---|
+| Direct hit | 1 (`directHit`) | Flashes. Keeps playing. |
+| Power Shot direct hit | 2 (`powerHit`) | Same. |
+| Near miss | 0 (`nearHit`) | Tumbles (the existing wipeout fall and line). |
+| Reaches 0 | n/a | `knockedOut`: the awkward fall and a funny line. Nobody is hurt. |
+
+The Power Shot is "1.5 times as hard". Health is whole numbers, so 1 x 1.5 rounds up to 2. A test pins `powerHit` to `round(directHit x 1.5)`. Weapon upgrades, walls and force fields do not change fighter damage in this mode.
+
+A fighter at 0 is knocked out. It takes no more hits or tumbles, it cannot be picked (`selectUnit` throws), and it cannot fire. If the team's pick is knocked out, the pick moves to a standing fighter (the default if it stands). The `knockedOut` list on the shot result names each fighter once, on the shot that took it to 0, so the scene plays the fall one time.
+
+Win: a team loses when ALL its fighters are knocked out. The last fighter standing keeps the turn shape: 2 shots, then reload, and a right answer earns one Power Shot. `winnerOfMatch` gives the winner in both modes (fighters when the flag is on, base health when off). Matches always end: a test plays 200 seeded Computer player matches with the flag on and each one ends with a winner under the turn cap. The Computer player (`chooseShot`) only picks standing fighters and aims at a standing enemy fighter.
+
+What stays the same: 2 shots then reload, the Power Shot, wind, scrap, the reload question, the tumble lines, seeded randomness.

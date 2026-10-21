@@ -1,8 +1,8 @@
 // The fighters: five per side. Only one acts at a time. Pure, no Phaser.
 // Mirror pairs (A~2, B~5, C~1, D~3, E~4) share speedScale and damageScale, so neither side is favored.
 // The default fighters (C and 1) are today's launchers, so a fresh game plays exactly as before.
-import { LAUNCH_ORIGINS } from './config';
-import type { BattleLayout, Team, Vec2 } from './types';
+import { CHARACTER_HEALTH, LAUNCH_ORIGINS } from './config';
+import type { BattleLayout, Rect, Team, Vec2 } from './types';
 
 export type UnitId = 'A' | 'B' | 'C' | 'D' | 'E' | '1' | '2' | '3' | '4' | '5';
 
@@ -147,4 +147,21 @@ export function firingOrigin(
     return layout.launchOrigins[team];
   }
   return unit.origin;
+}
+
+/** Every fighter id, both teams, in roster order. */
+export const UNIT_IDS: readonly UnitId[] = UNITS.map((u) => u.id);
+
+/**
+ * A fighter's hit box: CHARACTER_HEALTH.box, centered on where its shot starts.
+ * The same spot the shot, the bot and the angle guide use (`firingOrigin`).
+ */
+export function unitBox(
+  team: Team,
+  unitId: string,
+  layout: Pick<BattleLayout, 'launchOrigins'>,
+): Rect {
+  const { w, h } = CHARACTER_HEALTH.box;
+  const o = firingOrigin(team, unitId, layout);
+  return { x: o.x - w / 2, y: o.y - h / 2, w, h };
 }

@@ -32,7 +32,8 @@ test: `npm test` · lint: `npm run lint` · typecheck: `npm run typecheck` · bu
 | Reload | `reload` | quiz, test, exam |
 | Camp | `camp` | lobby, menu |
 | Wipeout | `tumble` | death, kill, die, dead, defeat |
-| Base health | `baseHp` | lives |
+| Health (per character, 3 each) | `unitHp` | lives |
+| Base health (replaced by per-character health when `CHARACTER_HEALTH` is on) | `baseHp` | lives |
 | Rematch | `rematch` | retry, play again |
 | How to Play | `intro` | tutorial |
 
