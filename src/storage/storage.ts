@@ -1,7 +1,7 @@
 // Typed, never-throwing wrapper around localStorage. Nothing here leaves the device.
 import { isSpecialAmmo, type AmmoId } from '../game/ammo';
 import { normalizePlan, type BattlePlan } from '../game/battlefield';
-import { DEFAULT_SETTINGS, GRADE } from '../game/config';
+import { DEFAULT_SETTINGS, GRADE, TOPIC_FOCUS, TOPIC_IDS } from '../game/config';
 import {
   freshCamp,
   freshLoadout,
@@ -13,7 +13,13 @@ import {
 } from '../game/loadout';
 import { DEFAULT_PRACTICE, isBotLevel, type PracticeChoice } from '../game/practice';
 import type { Grade, Player, Players, Subject, Team } from '../game/types';
-import { freshBases, parseBases, pieceById, spotWeaponById, type BasesState } from '../game/baseBuilder';
+import {
+  freshBases,
+  parseBases,
+  pieceById,
+  spotWeaponById,
+  type BasesState,
+} from '../game/baseBuilder';
 import { FORGE, WEAPONS, type WeaponId } from '../game/weapons';
 import { UPGRADES, UPGRADE_MAX_LEVEL, type UpgradeId } from '../game/upgrades';
 import { CALIBRATION, type CalibrationState, type Levels } from '../questions/calibration';
@@ -49,7 +55,11 @@ function parsePlayer(v: unknown, team: Team): Player | null {
   if (typeof grade !== 'number' || !Number.isInteger(grade)) return null;
   if (grade < GRADE.min || grade > GRADE.max) return null;
   if (typeof subject !== 'string' || !SUBJECTS.includes(subject as Subject)) return null;
-  return { name, team, grade: grade as Grade, subject: subject as Subject };
+  const player: Player = { name, team, grade: grade as Grade, subject: subject as Subject };
+  // A saved topic must still be one this side is offered. Anything else is dropped, not fatal.
+  const topic = TOPIC_IDS.find((t) => t === v.topic);
+  if (topic && TOPIC_FOCUS.offer[team].includes(topic)) player.topic = topic;
+  return player;
 }
 
 function parsePlayers(v: unknown): Players | null {

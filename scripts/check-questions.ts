@@ -2,7 +2,7 @@
 import { checkBankFiles } from '../src/questions/checkBank';
 import { loadBankFiles } from './load-bank-files';
 
-const { problems, counts } = checkBankFiles(loadBankFiles());
+const { problems, counts } = checkBankFiles(loadBankFiles(), { requireTopics: true });
 const total = Object.values(counts).reduce((a, b) => a + b, 0);
 
 if (problems.length > 0) {

@@ -21,12 +21,17 @@ export type Grade = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 /** What a family picks on Setup. 'both' alternates reading and math, reading first. */
 export type Subject = 'reading' | 'math' | 'both';
 
+/** A math topic a parent can focus a side on at Setup. Off by default. */
+export type Topic = 'multiplication';
+
 export type Player = {
   /** Trimmed, 1 to 12 characters. Never leaves the device. */
   name: string;
   team: Team;
   grade: Grade;
   subject: Subject;
+  /** Optional math focus. Absent means no focus. Only changes which math questions are asked. */
+  topic?: Topic;
 };
 
 /** Index 0 is always Team Past, index 1 is always Team Future. */

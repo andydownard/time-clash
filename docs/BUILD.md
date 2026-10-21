@@ -101,6 +101,7 @@ Camp, Deploy, and biomes arrive in Phase 2. In Phase 1 the Future base uses a fi
 - Reading 4 to 12: vocabulary in context, main idea, and grammar. Write original questions only.
 - Math K to 12: counting, add and subtract, times tables, fractions, ratios, pre-algebra, algebra, geometry, trig basics.
 - At least 40 questions per grade per subject before launch. Phase 1 may ship with 15 per grade for grades K, 2, 5, and 8, with a generic fallback to the nearest grade.
+- Topic tag: a question that belongs to a math topic carries the tag `topic:<name>` (today `topic:multiplication`, 20 or more per grade, K to 12). `check:questions` requires the topic prompt to be checkable by the recompute (no `manual`), the kind to be `numeric`, the prompt to really multiply, and no wrong choice worth the same as the answer. Equal-groups word problems ("3 baskets have 4 apples each. How many apples in all?") are checkable too. Setup sets `Player.topic`; the picker narrows math picks to the tag, keeps its own used-list per topic (`math-3-multiplication`), and falls back to plain math if the bank has none.
 - Question picker never repeats a question until the pool is used up, then reshuffles with a seeded RNG.
 - Every math question has its answer checked by a script (`npm run check:questions`) that recomputes the answer from the prompt where possible. Done when: this script runs in CI.
 

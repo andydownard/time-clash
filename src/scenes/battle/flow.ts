@@ -345,7 +345,7 @@ export class BattleFlow {
       );
       const pick = pickQuestion(
         bank,
-        { subject, grade, who: team },
+        { subject, grade, who: team, topic: player.topic },
         this.history,
         this.questionRng,
       );
@@ -426,7 +426,7 @@ export class BattleFlow {
       );
       const pick = pickQuestion(
         bank,
-        { subject, grade: player.grade, who: team },
+        { subject, grade: player.grade, who: team, topic: player.topic },
         this.history,
         this.botRng,
       );

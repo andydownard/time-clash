@@ -1,4 +1,5 @@
 // Question checks used by `npm run check:questions` and the tests. Pure TypeScript.
+import { TOPIC_FOCUS, TOPIC_IDS } from '../game/config';
 import {
   add,
   div,
@@ -77,6 +78,10 @@ function recomputeValue(prompt: string): Rational | null {
     return rhs ? div(rhs, coef) : null;
   }
 
+  // N boxes have M things each. How many things in all?   (equal groups, K to 2)
+  const groups = /^(\d+) (\w+) have (\d+) (\w+) each\. How many \4 in all\?$/.exec(prompt);
+  if (groups) return mul(fromInt(Number(groups[1])), fromInt(Number(groups[3])));
+
   if (!prompt.startsWith('What is ') || !prompt.endsWith('?')) return null;
   const inner = prompt.slice('What is '.length, -1);
 
@@ -135,6 +140,38 @@ function hintLeaks(hint: string, answer: string): boolean {
   if (a.length < minLength) return false;
   const re = new RegExp(`(?<![\\w.])${escapeRegExp(a)}(?![\\w]|\\.\\d)`, 'i');
   return re.test(hint);
+}
+
+const TOPIC_PREFIX = 'topic:';
+const MULTIPLIES = /\d\s[x*×]\s[\d(]|\)\s[x*×]\s|\beach\b/;
+
+/** Checks the topic tags: known topic, math only, and a question that really belongs to it. */
+function topicProblems(q: Record<string, unknown>): string[] {
+  const out: string[] = [];
+  const tags = Array.isArray(q.tags)
+    ? q.tags.filter((t): t is string => typeof t === 'string')
+    : [];
+  const known = new Set(Object.values(TOPIC_FOCUS.tags));
+  for (const tag of tags) {
+    if (tag.startsWith(TOPIC_PREFIX) && !known.has(tag)) {
+      out.push(`unknown topic tag "${tag}" (known: ${[...known].join(', ')})`);
+    }
+  }
+  const topics = TOPIC_IDS.filter((t) => tags.includes(TOPIC_FOCUS.tags[t]));
+  if (topics.length > 0 && q.subject !== 'math') out.push('topic tag is for math, not reading');
+  if (topics.includes('multiplication') && q.subject === 'math') {
+    if (q.kind !== 'numeric') out.push('multiplication topic question must be kind "numeric"');
+    if (
+      tags.includes(MANUAL_TAG) ||
+      (typeof q.prompt === 'string' && recomputeMathAnswer(q.prompt) === null)
+    ) {
+      out.push('multiplication topic question must be checkable by the answer-key recompute');
+    }
+    if (typeof q.prompt === 'string' && !MULTIPLIES.test(q.prompt)) {
+      out.push('multiplication topic question does not multiply (needs "x" or "each")');
+    }
+  }
+  return out;
 }
 
 export const validateQuestion: ValidateQuestion = (input) => {
@@ -229,6 +266,22 @@ export const validateQuestion: ValidateQuestion = (input) => {
         `banned word "${bad}" in ${JSON.stringify(text.length > 40 ? `${text.slice(0, 40)}...` : text)}`,
       );
   }
+
+  // a wrong choice that is worth the same as the answer (56 and 56.0) is a second right answer
+  if (q.subject === 'math' && choicesOk && typeof q.answer === 'string') {
+    const key = parseAnswerValue(q.answer);
+    const twins = (choices as string[]).filter(
+      (c) =>
+        c !== q.answer &&
+        key !== null &&
+        equalRational(parseAnswerValue(c) ?? { n: 0n, d: 0n }, key),
+    );
+    if (twins.length > 0) {
+      problems.push(`choice ${JSON.stringify(twins[0])} has the same value as the answer`);
+    }
+  }
+
+  problems.push(...topicProblems(q));
 
   // math answer key
   if (q.subject === 'math' && typeof q.prompt === 'string') {

@@ -74,6 +74,23 @@ describe('BattleFlow: one turn', () => {
     expect(w.modalQuestions[0]!.grade).toBe(2);
   });
 
+  it('asks only multiplication when the shooter has the topic on, at the shooter grade', async () => {
+    const miss = findAim(SEED, 0, 'PAST', 'miss');
+    const w = makeWorld({
+      seed: SEED,
+      script: [miss, miss],
+      players: [
+        { name: 'Alex', team: 'PAST', grade: 4, subject: 'math', topic: 'multiplication' },
+        { name: 'Sam', team: 'FUTURE', grade: 9, subject: 'math' },
+      ],
+    });
+    void w.flow.run();
+    await settle();
+    expect(w.modalQuestions).toHaveLength(1);
+    expect(w.modalQuestions[0]!.tags).toContain('topic:multiplication');
+    expect(w.modalQuestions[0]!.grade).toBe(4);
+  });
+
   it('passes to the other team after the reload, with a pass screen first', async () => {
     const miss = findAim(SEED, 0, 'PAST', 'miss');
     const w = makeWorld({ seed: SEED, script: [miss, miss] });

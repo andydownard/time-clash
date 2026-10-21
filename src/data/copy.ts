@@ -187,6 +187,10 @@ export const SETUP = {
   subjectLabel: 'Subject',
   gradeHelper: 'Each team gets questions for its own grade. That keeps it fair.',
   subjectHelper: 'Both mixes reading and math.',
+  /** Optional math focus (a parent picks it). Off at first. */
+  topicLabel: 'Focus',
+  topicChips: { multiplication: 'Focus: Multiplication' } as Record<string, string>,
+  topicHelper: 'Math questions are all multiplication.',
   start: "Let's clash!",
   matchHelper: 'Questions will match your grade.',
   namesStay: 'Names stay on this device. Nothing is sent anywhere.',
@@ -578,8 +582,7 @@ export const BUILDER_COPY = {
   clearSpotLabel: (n: number): string => `Clear spot ${n}`,
   spotLabel: (weapon: string | null, n: number, selected: boolean): string =>
     `Spot ${n}, ${weapon ? weapon.toLowerCase() : 'empty'}${selected ? ', selected' : ''}`,
-  weaponLabel: (name: string, onSpot: boolean): string =>
-    onSpot ? `${name}, on this spot` : name,
+  weaponLabel: (name: string, onSpot: boolean): string => (onSpot ? `${name}, on this spot` : name),
   weaponLockedLabel: (name: string, n: number): string => `${name}, locked. Costs ${n} Scrap.`,
   weaponPlaced: (name: string, n: number): string => `${name} is on spot ${n}.`,
   weaponCleared: (n: number): string => `Spot ${n} is empty now.`,
