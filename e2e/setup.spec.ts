@@ -82,17 +82,23 @@ test('names, grades and subjects are remembered after a reload', async ({ page }
   await expect(tid(page, 'setup-subject-PAST-math')).toHaveAttribute('aria-checked', 'true');
 });
 
-test('the multiplication focus is off, is Team Past only, and is remembered', async ({ page }) => {
+test('the focus switches are off, are one topic per team, and are remembered', async ({ page }) => {
   await toSetup(page);
   const chip = tid(page, 'setup-topic-PAST-multiplication');
   await expect(chip).toHaveAttribute('aria-checked', 'false');
   await expect(tid(page, 'setup-topic-FUTURE-multiplication')).toHaveCount(0);
+  await expect(tid(page, 'setup-topic-PAST-division')).toHaveCount(0);
+  const divChip = tid(page, 'setup-topic-FUTURE-division');
+  await expect(divChip).toHaveAttribute('aria-checked', 'false');
   const box = await chip.boundingBox();
   expect(box!.height).toBeGreaterThanOrEqual(56);
+  expect((await divChip.boundingBox())!.height).toBeGreaterThanOrEqual(56);
   await fillTeam(page, 'PAST', PAST_SIDE);
   await fillTeam(page, 'FUTURE', FUTURE_SIDE);
   await chip.click();
   await expect(chip).toHaveAttribute('aria-checked', 'true');
+  await divChip.click();
+  await expect(divChip).toHaveAttribute('aria-checked', 'true');
   await tid(page, 'setup-next').click();
   await expect(tid(page, 'camp-start')).toBeVisible();
 
@@ -103,6 +109,7 @@ test('the multiplication focus is off, is Team Past only, and is remembered', as
     'aria-checked',
     'true',
   );
+  await expect(tid(page, 'setup-topic-FUTURE-division')).toHaveAttribute('aria-checked', 'true');
   await expect(tid(page, 'setup-grade-FUTURE-3')).toHaveAttribute('aria-checked', 'true');
 });
 

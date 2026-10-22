@@ -147,3 +147,101 @@ describe('pickQuestion with a topic', () => {
     expect(sanitizeHistory(h).used['math-5-multiplication' as never]).toEqual(['math-5-0100']);
   });
 });
+
+describe('division topic', () => {
+  const DIV = TOPIC_FOCUS.tags.division;
+  const div = (over = {}) =>
+    mq({
+      tags: [DIV],
+      prompt: 'What is 56 / 7?',
+      choices: ['8', '7', '9', '6'],
+      answer: '8',
+      ...over,
+    });
+
+  it('is offered to Team Future only, with its own tag', () => {
+    expect(TOPIC_FOCUS.offer.FUTURE).toContain('division');
+    expect(TOPIC_FOCUS.offer.PAST).not.toContain('division');
+    expect(DIV).toBe('topic:division');
+  });
+  it('accepts a division question with the topic tag', () => {
+    expect(validateQuestion(div())).toEqual([]);
+  });
+  it('rejects a division-topic question that does not divide', () => {
+    const q = div({ prompt: 'What is 7 + 8?', choices: ['15', '14', '16', '13'], answer: '15' });
+    expect(validateQuestion(q).join()).toContain('does not divide');
+  });
+  it('rejects a division-topic question that needs a manual check', () => {
+    expect(validateQuestion(div({ tags: [DIV, 'manual'] })).join()).toContain('must be checkable');
+  });
+  it('rejects the division tag on a reading question', () => {
+    const q = {
+      ...div(),
+      subject: 'reading' as const,
+      id: 'reading-5-0001',
+      kind: 'vocab' as const,
+    };
+    expect(validateQuestion(q).join()).toContain('topic tag is for math');
+  });
+  it('recomputes shared-equally word problems', () => {
+    expect(
+      recomputeMathAnswer(
+        '12 cookies are shared equally by 3 kids. How many cookies does each kid get?',
+      ),
+    ).toBe('4');
+    expect(
+      recomputeMathAnswer('20 apples are put in groups of 5. How many groups are there?'),
+    ).toBe('4');
+  });
+  it('catches a wrong key on a shared-equally problem', () => {
+    const q = div({
+      prompt: '12 cookies are shared equally by 3 kids. How many cookies does each kid get?',
+      choices: ['3', '4', '9', '36'],
+      answer: '3',
+    });
+    expect(validateQuestion(q).join()).toContain('recomputed');
+  });
+  it('recomputes a remainder', () => {
+    expect(recomputeMathAnswer('What is the remainder when 17 is divided by 5?')).toBe('2');
+    expect(recomputeMathAnswer('What is the remainder when 20 is divided by 5?')).toBe('0');
+    expect(recomputeMathAnswer('What is the remainder when 20 is divided by 0?')).toBeNull();
+  });
+  it('recomputes a fraction divided by a fraction', () => {
+    expect(recomputeMathAnswer('What is (3/4) \u00f7 (1/4)?')).toBe('3');
+  });
+  it('the real bank has the minimum per grade, K to 12, all numeric and valid', () => {
+    const topical = BANK.questions.filter((q) => q.tags.includes(DIV));
+    for (let g = 0; g <= 12; g++) {
+      expect(topical.filter((q) => q.grade === g).length, `grade ${g}`).toBeGreaterThanOrEqual(
+        TOPIC_FOCUS.minPerGrade,
+      );
+    }
+    for (const q of topical) {
+      expect(validateQuestion(q), q.id).toEqual([]);
+      expect(q.kind).toBe('numeric');
+      expect(q.subject).toBe('math');
+    }
+  });
+  it('picks only division when the topic is set', () => {
+    const topical = pool('math', 5, 4).map((q, i) => ({
+      ...q,
+      id: `math-5-01${i}0`,
+      prompt: `What is ${(i + 2) * 3} / 3?`,
+      tags: [DIV],
+    }));
+    const bank = bankOf(pool('math', 5, 6), topical);
+    const rng = testRng(5);
+    let h: PickHistory = EMPTY_HISTORY;
+    for (let i = 0; i < 10; i++) {
+      const r = pickQuestion(
+        bank,
+        { subject: 'math', grade: 5, who: 'FUTURE', topic: 'division' },
+        h,
+        rng,
+      );
+      expect(r.question.tags).toContain(DIV);
+      h = r.history;
+    }
+    expect(Object.keys(h.used)).toEqual(['math-5-division']);
+  });
+});

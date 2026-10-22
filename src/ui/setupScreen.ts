@@ -239,7 +239,7 @@ export function showSetup(
             h(doc, 'p', {
               class: 'tc-sr-only',
               id: `tc-topic-help-${lower}`,
-              text: SETUP.topicHelper,
+              text: topics.map((t) => SETUP.topicHelpers[t] ?? '').join(' '),
             }),
           );
 
