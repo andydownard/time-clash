@@ -547,7 +547,12 @@
     "grade": 10,
     "kind": "vocab",
     "prompt": "What does \"compassionate\" mean? \"The compassionate nurse sat beside the scared boy and held his hand.\"",
-    "choices": ["proud of her own work", "quick to give orders", "bored by others' problems", "caring about others' feelings"],
+    "choices": [
+      "proud of her own work",
+      "quick to give orders",
+      "bored by others' problems",
+      "caring about others' feelings"
+    ],
     "answer": "caring about others' feelings",
     "hint": "Notice how she treats the scared boy.",
     "tags": ["vocab"]
@@ -580,7 +585,12 @@
     "grade": 10,
     "kind": "vocab",
     "prompt": "What does \"adapt\" mean? \"Polar bears adapt to cold weather with thick fur.\"",
-    "choices": ["grow very large", "stay the same", "move far away", "change to fit new conditions"],
+    "choices": [
+      "grow very large",
+      "stay the same",
+      "move far away",
+      "change to fit new conditions"
+    ],
     "answer": "change to fit new conditions",
     "hint": "Thick fur is a change that helps with the cold.",
     "tags": ["vocab"]
@@ -602,7 +612,12 @@
     "grade": 10,
     "kind": "vocab",
     "prompt": "What does \"plentiful\" mean? \"Fish were plentiful in the lake, so the family ate well.\"",
-    "choices": ["unsafe to eat", "easy to find in large amounts", "kept in a tank", "rare and hard to catch"],
+    "choices": [
+      "unsafe to eat",
+      "easy to find in large amounts",
+      "kept in a tank",
+      "rare and hard to catch"
+    ],
     "answer": "easy to find in large amounts",
     "hint": "The family ate well.",
     "tags": ["vocab"]
@@ -625,7 +640,12 @@
     "kind": "mainidea",
     "prompt": "What is the main idea of this passage?",
     "passage": "Coral reefs cover only a tiny part of the ocean floor. Still, about one quarter of all sea creatures live in or near them. Reefs give fish food, shelter, and a place to raise their young.",
-    "choices": ["Coral reefs are important homes for sea life.", "Coral reefs cover most of the ocean.", "Young animals do not need shelter.", "Fish cannot live outside the reef."],
+    "choices": [
+      "Coral reefs are important homes for sea life.",
+      "Coral reefs cover most of the ocean.",
+      "Young animals do not need shelter.",
+      "Fish cannot live outside the reef."
+    ],
     "answer": "Coral reefs are important homes for sea life.",
     "hint": "Small in size, big in importance.",
     "tags": ["mainidea"]
@@ -637,7 +657,12 @@
     "kind": "mainidea",
     "prompt": "Why does a refrigerator keep food fresh longer?",
     "passage": "Long ago, people kept food from spoiling by drying it in the sun or packing it in salt. Today, most homes have refrigerators. Cold air slows the growth of the tiny living things that spoil food.",
-    "choices": ["It makes food taste sweeter.", "It packs food in salt.", "It dries food in the sun.", "Cold air slows what makes food spoil."],
+    "choices": [
+      "It makes food taste sweeter.",
+      "It packs food in salt.",
+      "It dries food in the sun.",
+      "Cold air slows what makes food spoil."
+    ],
     "answer": "Cold air slows what makes food spoil.",
     "hint": "Look at the last sentence.",
     "tags": ["mainidea"]
@@ -661,7 +686,12 @@
     "kind": "mainidea",
     "prompt": "What is the main idea of this passage?",
     "passage": "Some plants, like the Venus flytrap, catch insects. They grow in soil that has few nutrients. The insects give the plants the food that the soil cannot.",
-    "choices": ["Soil is the best food for every plant.", "Venus flytraps grow only in pots.", "Insects are afraid of plants.", "Some plants catch insects to get food they need."],
+    "choices": [
+      "Soil is the best food for every plant.",
+      "Venus flytraps grow only in pots.",
+      "Insects are afraid of plants.",
+      "Some plants catch insects to get food they need."
+    ],
     "answer": "Some plants catch insects to get food they need.",
     "hint": "Ask why these plants catch insects.",
     "tags": ["mainidea"]
@@ -673,7 +703,12 @@
     "kind": "mainidea",
     "prompt": "What do you do right after folding the sheet in half?",
     "passage": "To make a paper airplane, first fold the sheet in half lengthwise. Next, open it and fold the top corners to the center line. Finally, fold each wing down along the edge.",
-    "choices": ["Open it and fold the top corners to the center.", "Fold each wing down.", "Throw the plane.", "Fold it in half again."],
+    "choices": [
+      "Open it and fold the top corners to the center.",
+      "Fold each wing down.",
+      "Throw the plane.",
+      "Fold it in half again."
+    ],
     "answer": "Open it and fold the top corners to the center.",
     "hint": "Find the word that signals the second step.",
     "tags": ["mainidea"]
@@ -685,7 +720,12 @@
     "kind": "mainidea",
     "prompt": "What will the trees most likely do in the future?",
     "passage": "Last spring, our class planted twenty trees along the school fence. We water them every Friday. Some day, they will give shade to the whole playground.",
-    "choices": ["Give shade to the playground.", "Stop growing next year.", "Be moved to another school.", "Need water every day."],
+    "choices": [
+      "Give shade to the playground.",
+      "Stop growing next year.",
+      "Be moved to another school.",
+      "Need water every day."
+    ],
     "answer": "Give shade to the playground.",
     "hint": "Read the last sentence.",
     "tags": ["mainidea"]
@@ -697,7 +737,12 @@
     "kind": "mainidea",
     "prompt": "What caused the road to close?",
     "passage": "The river rose after three days of heavy rain. The water spilled over its banks and covered the nearby road. The town closed the road until the water went down.",
-    "choices": ["Water from the river covered it.", "A new bridge was built.", "The road was too old.", "A parade filled the street."],
+    "choices": [
+      "Water from the river covered it.",
+      "A new bridge was built.",
+      "The road was too old.",
+      "A parade filled the street."
+    ],
     "answer": "Water from the river covered it.",
     "hint": "Follow what the river did.",
     "tags": ["mainidea"]
@@ -719,7 +764,12 @@
     "grade": 10,
     "kind": "grammar",
     "prompt": "Which sentence uses a semicolon correctly?",
-    "choices": ["I like soccer; my sister likes tennis.", "I like; soccer my sister likes tennis.", "I like soccer my sister; likes tennis.", "I like soccer; and my sister likes tennis."],
+    "choices": [
+      "I like soccer; my sister likes tennis.",
+      "I like; soccer my sister likes tennis.",
+      "I like soccer my sister; likes tennis.",
+      "I like soccer; and my sister likes tennis."
+    ],
     "answer": "I like soccer; my sister likes tennis.",
     "hint": "A semicolon joins two complete thoughts.",
     "tags": ["grammar"]
@@ -741,7 +791,12 @@
     "grade": 10,
     "kind": "grammar",
     "prompt": "Which sentence is written in the past tense?",
-    "choices": ["She will walk to school tomorrow.", "She walked to school yesterday.", "She walks to school every day.", "She is walking to school now."],
+    "choices": [
+      "She will walk to school tomorrow.",
+      "She walked to school yesterday.",
+      "She walks to school every day.",
+      "She is walking to school now."
+    ],
     "answer": "She walked to school yesterday.",
     "hint": "Look for a verb that shows it already happened.",
     "tags": ["grammar"]
@@ -763,9 +818,269 @@
     "grade": 10,
     "kind": "grammar",
     "prompt": "Which phrase shows that the books belong to many students?",
-    "choices": ["the student's books", "the students' books", "the students's books", "the studens' books"],
+    "choices": [
+      "the student's books",
+      "the students' books",
+      "the students's books",
+      "the studens' books"
+    ],
     "answer": "the students' books",
     "hint": "The word already ends in s, so add the mark after it.",
     "tags": ["grammar"]
+  },
+  {
+    "id": "reading-10-0061",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "vocab",
+    "prompt": "What does \"abrupt\" mean? \"The bus came to an abrupt stop, and the bags slid forward.\"",
+    "choices": ["slow and smooth", "gentle and soft", "sudden and unexpected", "long and tiring"],
+    "answer": "sudden and unexpected",
+    "hint": "The bags slid, so the stop was not gentle.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-10-0062",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "vocab",
+    "prompt": "What does \"fluctuate\" mean? \"Temperatures fluctuate a lot in the spring.\"",
+    "choices": ["stay the same", "rise and fall often", "drop for good", "climb slowly"],
+    "answer": "rise and fall often",
+    "hint": "Think of a number that keeps changing.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-10-0064",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "vocab",
+    "prompt": "What does \"sparse\" mean? \"Grass was sparse on the rocky hill.\"",
+    "choices": ["thick and tall", "bright and fresh", "wet and soft", "thinly spread"],
+    "answer": "thinly spread",
+    "hint": "A rocky hill has only a little here and there.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-10-0065",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "vocab",
+    "prompt": "What does \"vigilant\" mean? \"The vigilant guard watched the gate all night.\"",
+    "choices": ["sleepy", "cheerful", "watchful", "forgetful"],
+    "answer": "watchful",
+    "hint": "He watched the gate all night.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-10-0066",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "vocab",
+    "prompt": "What does \"diminish\" mean? \"Closing the curtains will diminish the glare.\"",
+    "choices": ["make louder", "make smaller", "hide away", "say again"],
+    "answer": "make smaller",
+    "hint": "The curtains block some of the light.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-10-0067",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "vocab",
+    "prompt": "What does \"adjacent\" mean? \"The library is adjacent to the park, so we can walk between them.\"",
+    "choices": ["next to", "far from", "taller than", "older than"],
+    "answer": "next to",
+    "hint": "You can walk between them quickly.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-10-0068",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "vocab",
+    "prompt": "What does \"fertile\" mean? \"Rich, fertile soil helps crops grow.\"",
+    "choices": ["dry and sandy", "full of rocks", "hard and cold", "able to grow plants well"],
+    "answer": "able to grow plants well",
+    "hint": "Think of soil that helps crops grow.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-10-0069",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of the passage?",
+    "passage": "Glaciers are rivers of slow-moving ice. They form where more snow falls than melts. Over many years the snow packs down into thick ice that slides downhill.",
+    "choices": [
+      "Snow only falls on mountains.",
+      "Rivers are made of ice.",
+      "Glaciers form from packed snow and slowly move.",
+      "Ice is warmer than snow."
+    ],
+    "answer": "Glaciers form from packed snow and slowly move.",
+    "hint": "Find the idea that explains how glaciers form.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-10-0070",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of the passage?",
+    "passage": "Many jobs now need people who can work with computers. Schools teach coding so students are ready. Even farmers use computer tools to plan their fields.",
+    "choices": [
+      "Farmers do not like computers.",
+      "Computer skills help in many kinds of work.",
+      "Coding is hard for most students.",
+      "Schools should close."
+    ],
+    "answer": "Computer skills help in many kinds of work.",
+    "hint": "Look at how many kinds of jobs the passage names.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-10-0071",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of the passage?",
+    "passage": "Priya was nervous about her first speech. She practiced in front of the mirror each night. On the day, her voice shook at first, but by the end she was smiling.",
+    "choices": [
+      "Practice helped Priya feel braver about speaking.",
+      "Mirrors make people nervous.",
+      "Priya did not want to speak.",
+      "Speeches are always short."
+    ],
+    "answer": "Practice helped Priya feel braver about speaking.",
+    "hint": "Think about what changed between the first night and the big day.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-10-0072",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of the passage?",
+    "passage": "The printing press changed how people shared ideas. Books that once took months to copy by hand could be made much faster. More people could read, and knowledge spread.",
+    "choices": [
+      "Hand copying was a joy.",
+      "Books were never made before.",
+      "Only kings could read.",
+      "The printing press helped ideas spread faster."
+    ],
+    "answer": "The printing press helped ideas spread faster.",
+    "hint": "Ask what the press made faster.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-10-0073",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of the passage?",
+    "passage": "Wetlands soak up extra rain like a sponge. This helps stop floods in nearby towns. They also clean water and give many animals a home.",
+    "choices": [
+      "Wetlands are always dry.",
+      "Floods are good for animals.",
+      "Wetlands protect towns and help wildlife.",
+      "Sponges live in wetlands."
+    ],
+    "answer": "Wetlands protect towns and help wildlife.",
+    "hint": "Find the idea that covers floods, water, and animals.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-10-0074",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of the passage?",
+    "passage": "A good night of sleep is not the only way to feel rested. Short breaks, a walk outside, and a glass of water can all lift your energy during a busy day.",
+    "choices": [
+      "Sleep is not important at all.",
+      "Small breaks can help you feel more energetic.",
+      "Walking is the only fix for tiredness.",
+      "Busy days are never fun."
+    ],
+    "answer": "Small breaks can help you feel more energetic.",
+    "hint": "Look at what the breaks, the walk, and the water have in common.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-10-0075",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "grammar",
+    "prompt": "Which word completes the sentence? \"Everyone in the choir ___ the song.\"",
+    "choices": ["knows", "know", "knowing", "known"],
+    "answer": "knows",
+    "hint": "Everyone counts as a single person-word.",
+    "tags": ["grammar", "subject-verb-agreement"]
+  },
+  {
+    "id": "reading-10-0076",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "grammar",
+    "prompt": "Which word completes the sentence? \"The box of crayons ___ on the shelf.\"",
+    "choices": ["are", "were", "be", "is"],
+    "answer": "is",
+    "hint": "The box is the subject, not the crayons.",
+    "tags": ["grammar", "subject-verb-agreement"]
+  },
+  {
+    "id": "reading-10-0077",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "grammar",
+    "prompt": "Which word completes the sentence? \"She was nervous, ___ she spoke clearly.\"",
+    "choices": ["because", "unless", "yet", "since"],
+    "answer": "yet",
+    "hint": "The second part is a surprise after the first.",
+    "tags": ["grammar", "conjunctions"]
+  },
+  {
+    "id": "reading-10-0078",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "grammar",
+    "prompt": "Which sentence uses a colon correctly?",
+    "choices": [
+      "You will: need three things a pencil, paper, and a ruler.",
+      "You will need three things: a pencil, paper, and a ruler.",
+      "You will need three things a pencil: paper, and a ruler.",
+      "You will need three: things a pencil, paper, and a ruler."
+    ],
+    "answer": "You will need three things: a pencil, paper, and a ruler.",
+    "hint": "A colon comes after a complete thought and before a list.",
+    "tags": ["grammar", "punctuation"]
+  },
+  {
+    "id": "reading-10-0079",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "grammar",
+    "prompt": "Which sentence has the verb tense right?",
+    "choices": [
+      "Yesterday, I walked to school and met my friend.",
+      "Yesterday, I walk to school and met my friend.",
+      "Yesterday, I walked to school and meet my friend.",
+      "Yesterday, I will walk to school and met my friend."
+    ],
+    "answer": "Yesterday, I walked to school and met my friend.",
+    "hint": "Yesterday means both actions are finished.",
+    "tags": ["grammar", "verb-tense"]
+  },
+  {
+    "id": "reading-10-0080",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "grammar",
+    "prompt": "Which word completes the sentence? \"The coach praised Sam and ___ for working hard.\"",
+    "choices": ["I", "myself", "we", "me"],
+    "answer": "me",
+    "hint": "Try the sentence with only the missing word after praised.",
+    "tags": ["grammar", "pronouns"]
   }
 ]

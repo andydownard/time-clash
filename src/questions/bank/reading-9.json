@@ -621,7 +621,12 @@
     "kind": "mainidea",
     "prompt": "What is the main idea of this passage?",
     "passage": "Octopuses are clever animals. In tests, they open jars to reach food and find their way through mazes. Some even learn by watching other octopuses.",
-    "choices": ["Octopuses cannot live in jars.", "Octopuses are smart problem solvers.", "Food is hard to find under the sea.", "Mazes are built in the ocean."],
+    "choices": [
+      "Octopuses cannot live in jars.",
+      "Octopuses are smart problem solvers.",
+      "Food is hard to find under the sea.",
+      "Mazes are built in the ocean."
+    ],
     "answer": "Octopuses are smart problem solvers.",
     "hint": "Look for the idea that all three examples support.",
     "tags": ["mainidea"]
@@ -633,7 +638,12 @@
     "kind": "mainidea",
     "prompt": "How did pedals change bicycles?",
     "passage": "The first bicycles had no pedals. Riders pushed their feet along the ground to move. Later, builders added pedals to the front wheel, and rides became smoother and faster.",
-    "choices": ["Riders had to push with their feet.", "Rides became smoother and faster.", "Bikes became much heavier.", "Bikes lost their front wheel."],
+    "choices": [
+      "Riders had to push with their feet.",
+      "Rides became smoother and faster.",
+      "Bikes became much heavier.",
+      "Bikes lost their front wheel."
+    ],
     "answer": "Rides became smoother and faster.",
     "hint": "Read the last sentence again.",
     "tags": ["mainidea"]
@@ -645,7 +655,12 @@
     "kind": "mainidea",
     "prompt": "What is the main idea of this passage?",
     "passage": "Rain barrels collect water from roofs. Gardeners use that water on plants instead of water from the tap. This saves water and helps the garden grow.",
-    "choices": ["Roofs are made to hold water.", "Taps are better than barrels.", "Gardens grow best in winter.", "Rain barrels help save water for gardens."],
+    "choices": [
+      "Roofs are made to hold water.",
+      "Taps are better than barrels.",
+      "Gardens grow best in winter.",
+      "Rain barrels help save water for gardens."
+    ],
     "answer": "Rain barrels help save water for gardens.",
     "hint": "Ask what the barrels are used for.",
     "tags": ["mainidea"]
@@ -657,7 +672,12 @@
     "kind": "mainidea",
     "prompt": "What can you tell about Dana?",
     "passage": "Dana's team had practiced all week. On game day, rain began to fall, and the field turned to mud. Dana smiled, pulled on her boots, and said, \"This will be fun!\"",
-    "choices": ["She keeps a good attitude.", "She forgot her boots.", "She dislikes her team.", "She wants to stay home."],
+    "choices": [
+      "She keeps a good attitude.",
+      "She forgot her boots.",
+      "She dislikes her team.",
+      "She wants to stay home."
+    ],
     "answer": "She keeps a good attitude.",
     "hint": "Look at her words and her smile.",
     "tags": ["mainidea"]
@@ -669,7 +689,12 @@
     "kind": "mainidea",
     "prompt": "What does the dance tell other bees?",
     "passage": "Honey bees dance to share news. A bee that finds flowers returns to the hive and moves in a pattern. The pattern shows other bees which way to fly and how far.",
-    "choices": ["When the hive will move.", "Which bee is the leader.", "How to make honey.", "Where to find flowers."],
+    "choices": [
+      "When the hive will move.",
+      "Which bee is the leader.",
+      "How to make honey.",
+      "Where to find flowers."
+    ],
     "answer": "Where to find flowers.",
     "hint": "Think about what the finding bee wants to share.",
     "tags": ["mainidea"]
@@ -681,7 +706,12 @@
     "kind": "mainidea",
     "prompt": "What is the main idea of this passage?",
     "passage": "Many towns now have community gardens. Neighbors share the work of planting and picking. They also share the food, and they meet new friends along the way.",
-    "choices": ["Community gardens bring neighbors together.", "Planting is hard work for one person.", "Fresh food is hard to find.", "New friends live far away."],
+    "choices": [
+      "Community gardens bring neighbors together.",
+      "Planting is hard work for one person.",
+      "Fresh food is hard to find.",
+      "New friends live far away."
+    ],
     "answer": "Community gardens bring neighbors together.",
     "hint": "Think about what the people gain besides food.",
     "tags": ["mainidea"]
@@ -693,7 +723,12 @@
     "kind": "mainidea",
     "prompt": "Why can a glacier carve valleys?",
     "passage": "A glacier is a huge river of ice. It moves very slowly, only a few inches each day. Over many years, it can carve out valleys in the land.",
-    "choices": ["It is pushed by fast winds.", "It moves over the land for many years.", "It melts all in one day.", "It falls from the sky."],
+    "choices": [
+      "It is pushed by fast winds.",
+      "It moves over the land for many years.",
+      "It melts all in one day.",
+      "It falls from the sky."
+    ],
     "answer": "It moves over the land for many years.",
     "hint": "Time and movement work together here.",
     "tags": ["mainidea"]
@@ -715,7 +750,12 @@
     "grade": 9,
     "kind": "grammar",
     "prompt": "Which sentence is a complete sentence?",
-    "choices": ["Because the castle was old.", "The old castle stood on the hill.", "Standing on the hill.", "On the hill near the."],
+    "choices": [
+      "Because the castle was old.",
+      "The old castle stood on the hill.",
+      "Standing on the hill.",
+      "On the hill near the."
+    ],
     "answer": "The old castle stood on the hill.",
     "hint": "A complete sentence tells who or what, and what happens.",
     "tags": ["grammar"]
@@ -737,7 +777,12 @@
     "grade": 9,
     "kind": "grammar",
     "prompt": "Which sentence uses a comma correctly?",
-    "choices": ["After dinner we washed, the dishes.", "After dinner we, washed the dishes.", "After, dinner we washed the dishes.", "After dinner, we washed the dishes."],
+    "choices": [
+      "After dinner we washed, the dishes.",
+      "After dinner we, washed the dishes.",
+      "After, dinner we washed the dishes.",
+      "After dinner, we washed the dishes."
+    ],
     "answer": "After dinner, we washed the dishes.",
     "hint": "A comma goes after the opening phrase.",
     "tags": ["grammar"]
@@ -763,5 +808,276 @@
     "answer": "sleepy",
     "hint": "It describes the puppy.",
     "tags": ["grammar"]
+  },
+  {
+    "id": "reading-9-0061",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "vocab",
+    "prompt": "What does \"conserve\" mean? \"We turned off the lights to conserve energy.\"",
+    "choices": ["use up fast", "save and not waste", "make from scratch", "give away"],
+    "answer": "save and not waste",
+    "hint": "Think about turning lights off for a reason.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-9-0062",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "vocab",
+    "prompt": "What does \"humble\" mean? \"Though she won the prize, she stayed humble.\"",
+    "choices": ["not proud or boastful", "very surprised", "a little angry", "quite tired"],
+    "answer": "not proud or boastful",
+    "hint": "Think about how she acted after winning.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-9-0063",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "vocab",
+    "prompt": "What does \"adapt\" mean? \"Polar bears adapt to cold weather with thick fur.\"",
+    "choices": [
+      "run away from",
+      "complain about",
+      "pay no attention to",
+      "change to fit new conditions"
+    ],
+    "answer": "change to fit new conditions",
+    "hint": "The thick fur helps them live in the cold.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-9-0064",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "vocab",
+    "prompt": "What does \"bewildered\" mean? \"The tourist looked bewildered by the many signs.\"",
+    "choices": ["delighted", "bored", "confused", "annoyed"],
+    "answer": "confused",
+    "hint": "Too many signs make it hard to know where to go.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-9-0065",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "vocab",
+    "prompt": "What does \"concise\" mean? \"Keep your answer concise, just a sentence or two.\"",
+    "choices": ["long and detailed", "short and clear", "loud and fast", "slow and careful"],
+    "answer": "short and clear",
+    "hint": "The sentence says just a sentence or two.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-9-0066",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "vocab",
+    "prompt": "What does \"ponder\" mean? \"She sat by the window to ponder her choices.\"",
+    "choices": ["think about carefully", "forget completely", "hurry through", "argue about"],
+    "answer": "think about carefully",
+    "hint": "Sitting quietly by a window is a clue.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-9-0067",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "vocab",
+    "prompt": "What does \"rural\" mean? \"They moved from the city to a rural town with farms.\"",
+    "choices": ["very crowded", "beside the sea", "high on a peak", "in the countryside"],
+    "answer": "in the countryside",
+    "hint": "Look at the word farms.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-9-0068",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "vocab",
+    "prompt": "What does \"vast\" mean? \"From the hilltop we saw a vast field of wheat.\"",
+    "choices": ["very dry", "very old", "very large", "very green"],
+    "answer": "very large",
+    "hint": "Think of a field that goes on and on.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-9-0069",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "passage": "Honeybees dance to share news. When a bee finds good flowers, it moves in a pattern that shows the way. Other bees watch and then fly straight there.",
+    "choices": [
+      "Bees dance because they are happy.",
+      "Bees use dances to tell others where food is.",
+      "Flowers grow best near hives.",
+      "Bees cannot fly very far."
+    ],
+    "answer": "Bees use dances to tell others where food is.",
+    "hint": "Ask what the dance is for.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-9-0070",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "passage": "Lighthouses were built to guide ships. Their bright beams warned sailors about rocky shores. Today ships use satellites, but many lighthouses still shine.",
+    "choices": [
+      "Lighthouses have long helped ships stay safe.",
+      "Satellites are better than lights.",
+      "Sailors never visit rocky shores.",
+      "Lighthouses are built from rock."
+    ],
+    "answer": "Lighthouses have long helped ships stay safe.",
+    "hint": "Find the idea that fits the whole passage.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-9-0071",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "passage": "Tide pools are small homes left by the sea. When the tide goes out, water stays in rocky dips. Crabs, snails, and sea stars live there until the ocean returns.",
+    "choices": [
+      "Crabs are the best swimmers.",
+      "The ocean goes away for good.",
+      "Rocks are always wet.",
+      "Tide pools are small sea homes for many animals."
+    ],
+    "answer": "Tide pools are small sea homes for many animals.",
+    "hint": "Think about who lives in the pools.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-9-0072",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "passage": "Dana lost the school race by one step. She was upset at first. Then she shook hands with the winner and asked for tips on starting faster.",
+    "choices": [
+      "Dana never ran again.",
+      "The winner was unfair.",
+      "Dana turned a close loss into a chance to learn.",
+      "Races are only for fast people."
+    ],
+    "answer": "Dana turned a close loss into a chance to learn.",
+    "hint": "Look at what Dana did after she was upset.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-9-0073",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "passage": "Volcanoes form where hot rock rises through the earth. Over time, layers of cooled rock pile up and build a mountain. Some islands began this way.",
+    "choices": [
+      "All mountains are volcanoes.",
+      "Volcanoes build land as cooled rock piles up.",
+      "Islands float on the sea.",
+      "Hot rock is always underwater."
+    ],
+    "answer": "Volcanoes build land as cooled rock piles up.",
+    "hint": "Ask what the cooled rock does over time.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-9-0074",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "passage": "Bridges come in many shapes. Some arch over a stream, and some hang from long cables. Each shape suits a different kind of space.",
+    "choices": [
+      "Bridges have different shapes to fit different places.",
+      "Cables are the strongest part of a bridge.",
+      "Streams are hard to cross.",
+      "Every bridge looks the same."
+    ],
+    "answer": "Bridges have different shapes to fit different places.",
+    "hint": "Find the idea that covers every sentence.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-9-0075",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "grammar",
+    "prompt": "Choose the correct word: Neither the cat nor the dogs ___ hungry.",
+    "choices": ["was", "is", "be", "were"],
+    "answer": "were",
+    "hint": "Look at the subject closest to the verb.",
+    "tags": ["grammar", "subject-verb-agreement"]
+  },
+  {
+    "id": "reading-9-0076",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "grammar",
+    "prompt": "Choose the correct word: She is the girl ___ won the prize.",
+    "choices": ["whom", "whose", "who", "which"],
+    "answer": "who",
+    "hint": "The missing word is the one doing the winning.",
+    "tags": ["grammar", "pronouns"]
+  },
+  {
+    "id": "reading-9-0077",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "grammar",
+    "prompt": "Which sentence uses a semicolon correctly?",
+    "choices": [
+      "I like tea, my brother likes juice.",
+      "I like tea; my brother likes juice.",
+      "I like tea; because my brother likes juice.",
+      "I like; tea my brother likes juice."
+    ],
+    "answer": "I like tea; my brother likes juice.",
+    "hint": "A semicolon joins two full sentences that are close in meaning.",
+    "tags": ["grammar", "punctuation"]
+  },
+  {
+    "id": "reading-9-0078",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "grammar",
+    "prompt": "Choose the correct word: Between you and ___, the test was easy.",
+    "choices": ["me", "I", "myself", "mine"],
+    "answer": "me",
+    "hint": "Use the form you would use after the word between.",
+    "tags": ["grammar", "pronouns"]
+  },
+  {
+    "id": "reading-9-0079",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "grammar",
+    "prompt": "Which sentence is written in the past tense?",
+    "choices": [
+      "The bus arrives early.",
+      "The bus will arrive early.",
+      "The bus is arriving early.",
+      "The bus arrived early."
+    ],
+    "answer": "The bus arrived early.",
+    "hint": "Look for something that already happened.",
+    "tags": ["grammar", "verb-tense"]
+  },
+  {
+    "id": "reading-9-0080",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "grammar",
+    "prompt": "Choose the correct word: He worked hard, ___ he passed the test.",
+    "choices": ["but", "or", "so", "nor"],
+    "answer": "so",
+    "hint": "The second part happens because of the first.",
+    "tags": ["grammar", "conjunctions"]
   }
 ]
