@@ -984,5 +984,276 @@
     "answer": "I have told you a million times to feed the dragon.",
     "hint": "Exaggeration makes something sound bigger than it is.",
     "tags": ["figurative-language"]
+  },
+  {
+    "id": "reading-5-0070",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does \"vibrant\" mean? The vibrant mural made the gray wall come alive.",
+    "choices": [
+      "faded and dull",
+      "full of bright color and life",
+      "rough and cracked",
+      "tall and narrow"
+    ],
+    "answer": "full of bright color and life",
+    "hint": "The wall was gray before the mural.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-5-0071",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does \"ponder\" mean? I need time to ponder which book to pick.",
+    "choices": ["think about carefully", "forget about", "tear apart", "count out loud"],
+    "answer": "think about carefully",
+    "hint": "Choosing a book takes thought.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-5-0072",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does \"scarce\" mean? Fresh water was scarce in the desert camp.",
+    "choices": ["plentiful", "too salty", "very cold", "hard to find"],
+    "answer": "hard to find",
+    "hint": "Deserts are very dry.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-5-0073",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does \"elegant\" mean? The dancer moved in an elegant way across the floor.",
+    "choices": ["clumsy and slow", "loud and angry", "graceful and stylish", "small and plain"],
+    "answer": "graceful and stylish",
+    "hint": "Picture a smooth, pretty dance.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-5-0074",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does \"frustrated\" mean? Ana felt frustrated when the puzzle piece would not fit.",
+    "choices": [
+      "proud of a job well done",
+      "annoyed because something is hard",
+      "sleepy after lunch",
+      "curious about a gift"
+    ],
+    "answer": "annoyed because something is hard",
+    "hint": "Think about trying again and again.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-5-0075",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "vocab",
+    "prompt": "The word \"light\" has more than one meaning. Which meaning fits? The bag was light, so I carried it easily.",
+    "choices": ["not heavy", "bright", "pale in color", "to set on fire"],
+    "answer": "not heavy",
+    "hint": "The bag was easy to carry.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-5-0076",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "vocab",
+    "prompt": "The root \"bio\" means life. Which word is about living things?",
+    "choices": ["geography", "telescope", "photograph", "biology"],
+    "answer": "biology",
+    "hint": "It starts with the root.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-5-0077",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "vocab",
+    "prompt": "The prefix \"pre-\" means before. What does \"preheat\" mean?",
+    "choices": ["to heat again", "to heat too much", "to heat ahead of time", "to not heat"],
+    "answer": "to heat ahead of time",
+    "hint": "Pre- tells when you do it.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-5-0078",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "grammar",
+    "prompt": "Choose the correct word: \"My friends and I ___ going to the fair.\"",
+    "choices": ["is", "are", "am", "be"],
+    "answer": "are",
+    "hint": "More than one person is going.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-5-0079",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "grammar",
+    "prompt": "Which sentence has a correct apostrophe?",
+    "choices": [
+      "The dog's bone was under the porch.",
+      "The dogs bone was under the porch.",
+      "The dog's' bone was under the porch.",
+      "The do'gs bone was under the porch."
+    ],
+    "answer": "The dog's bone was under the porch.",
+    "hint": "The bone belongs to one dog.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-5-0080",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "grammar",
+    "prompt": "Which word is a conjunction? \"I wanted to go, but it rained.\"",
+    "choices": ["wanted", "rained", "go", "but"],
+    "answer": "but",
+    "hint": "It joins two ideas.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-5-0081",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "grammar",
+    "prompt": "Which sentence is in the present tense?",
+    "choices": [
+      "Mia played the flute every day.",
+      "Mia will play the flute every day.",
+      "Mia plays the flute every day.",
+      "Mia had played the flute every day."
+    ],
+    "answer": "Mia plays the flute every day.",
+    "hint": "Present tense tells what happens now.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-5-0082",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "grammar",
+    "prompt": "Which sentence is a simile?",
+    "choices": [
+      "Her smile was a bright sun.",
+      "Her smile was as bright as the sun.",
+      "Her smile is very bright.",
+      "Her smile lit the whole room."
+    ],
+    "answer": "Her smile was as bright as the sun.",
+    "hint": "A simile compares with like or as.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-5-0083",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "grammar",
+    "prompt": "Which spelling of the word for \"very pretty\" is right?",
+    "choices": ["beautiful", "beutiful", "beautifull", "buetiful"],
+    "answer": "beautiful",
+    "hint": "Say it slowly, one part at a time.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-5-0084",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "choices": [
+      "Families dislike fall.",
+      "Visitors build the lanterns.",
+      "Main Street is very long.",
+      "Millbrook has a bright yearly lantern parade."
+    ],
+    "answer": "Millbrook has a bright yearly lantern parade.",
+    "hint": "Ask what the whole passage is mostly about.",
+    "tags": ["mainidea"],
+    "passage": "The town of Millbrook held a lantern parade each fall. Families spent days building paper lanterns shaped like fish, birds, and stars. On parade night, they lit tiny lights inside and walked slowly down Main Street. The glowing shapes floated through the dark like a river of color. Visitors came from nearby towns just to see it."
+  },
+  {
+    "id": "reading-5-0085",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "What shapes did the families build?",
+    "choices": [
+      "cats, hats, and boats",
+      "flowers, kites, and cars",
+      "fish, birds, and stars",
+      "houses, trees, and moons"
+    ],
+    "answer": "fish, birds, and stars",
+    "hint": "Find the sentence about building.",
+    "tags": ["detail"],
+    "passage": "The town of Millbrook held a lantern parade each fall. Families spent days building paper lanterns shaped like fish, birds, and stars. On parade night, they lit tiny lights inside and walked slowly down Main Street. The glowing shapes floated through the dark like a river of color. Visitors came from nearby towns just to see it."
+  },
+  {
+    "id": "reading-5-0086",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "What does the writer compare the lanterns to?",
+    "choices": ["a flock of birds", "a river of color", "a night sky", "a field of snow"],
+    "answer": "a river of color",
+    "hint": "Look for the word like.",
+    "tags": ["detail"],
+    "passage": "The town of Millbrook held a lantern parade each fall. Families spent days building paper lanterns shaped like fish, birds, and stars. On parade night, they lit tiny lights inside and walked slowly down Main Street. The glowing shapes floated through the dark like a river of color. Visitors came from nearby towns just to see it."
+  },
+  {
+    "id": "reading-5-0087",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "Which lesson does this story teach?",
+    "choices": [
+      "Small steps add up to big goals.",
+      "Winning is all that matters.",
+      "Running is easy for everyone.",
+      "Fun runs happen on Monday."
+    ],
+    "answer": "Small steps add up to big goals.",
+    "hint": "Think about how Jada grew stronger.",
+    "tags": ["theme"],
+    "passage": "Jada wanted to train for the school fun run. On Monday she could jog only to the corner. She did not quit. Each day she added one more house to her route. By Friday she could run around the whole block. On race day, Jada did not finish first, but she smiled all the way across the line."
+  },
+  {
+    "id": "reading-5-0088",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "How far could Jada jog on Monday?",
+    "choices": ["around the block", "to the school", "to the park", "to the corner"],
+    "answer": "to the corner",
+    "hint": "Find the first day in the story.",
+    "tags": ["sequence"],
+    "passage": "Jada wanted to train for the school fun run. On Monday she could jog only to the corner. She did not quit. Each day she added one more house to her route. By Friday she could run around the whole block. On race day, Jada did not finish first, but she smiled all the way across the line."
+  },
+  {
+    "id": "reading-5-0089",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "How did Jada feel at the end of the race?",
+    "choices": [
+      "upset about losing",
+      "too tired to care",
+      "happy and proud",
+      "worried about Monday"
+    ],
+    "answer": "happy and proud",
+    "hint": "Look at how she crossed the line.",
+    "tags": ["inference"],
+    "passage": "Jada wanted to train for the school fun run. On Monday she could jog only to the corner. She did not quit. Each day she added one more house to her route. By Friday she could run around the whole block. On race day, Jada did not finish first, but she smiled all the way across the line."
   }
 ]

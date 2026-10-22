@@ -885,5 +885,251 @@
     "answer": "hover and board",
     "hint": "Look at where one word ends and the other begins.",
     "tags": ["compound-words"]
+  },
+  {
+    "id": "reading-3-0071",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "vocab",
+    "prompt": "Which word means the same as \"glad\"?",
+    "choices": ["angry", "tired", "cold", "happy"],
+    "answer": "happy",
+    "hint": "Think of a big smile.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-3-0072",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "vocab",
+    "prompt": "Which word means the opposite of \"hot\"?",
+    "choices": ["sunny", "tall", "cold", "loud"],
+    "answer": "cold",
+    "hint": "Think of ice.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-3-0073",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "vocab",
+    "prompt": "Which word means the same as \"quick\"?",
+    "choices": ["slow", "fast", "tall", "quiet"],
+    "answer": "fast",
+    "hint": "A cheetah is this.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-3-0074",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "vocab",
+    "prompt": "Which word means the opposite of \"loud\"?",
+    "choices": ["quiet", "noisy", "big", "fast"],
+    "answer": "quiet",
+    "hint": "Think of a library.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-3-0075",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "vocab",
+    "prompt": "The prefix re- means again. What does \"redo\" mean?",
+    "choices": ["do not", "do less", "do first", "do again"],
+    "answer": "do again",
+    "hint": "Re- tells you to try once more.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-3-0076",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "vocab",
+    "prompt": "Something that is gigantic is very ___.",
+    "choices": ["small", "cold", "big", "soft"],
+    "answer": "big",
+    "hint": "Think of a giant.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-3-0077",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "vocab",
+    "prompt": "The word \"sleepy\" has \"sleep\" in it. What does sleepy mean?",
+    "choices": ["full of food", "wanting to sleep", "very loud", "ready to run"],
+    "answer": "wanting to sleep",
+    "hint": "Look at the small word inside.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-3-0078",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "vocab",
+    "prompt": "Sam felt brave. Which words tell what brave means?",
+    "choices": ["not afraid", "very tired", "a bit sad", "running late"],
+    "answer": "not afraid",
+    "hint": "A brave knight does not run away.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-3-0079",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "grammar",
+    "prompt": "Which sentence is a question?",
+    "choices": ["I lost my hat.", "Put on your hat.", "What a big hat!", "Where is my hat?"],
+    "answer": "Where is my hat?",
+    "hint": "A question asks something.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-3-0080",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "grammar",
+    "prompt": "Which word is an action word? \"The dog runs fast.\"",
+    "choices": ["dog", "fast", "runs", "The"],
+    "answer": "runs",
+    "hint": "An action word tells what someone does.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-3-0081",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "grammar",
+    "prompt": "Choose the right word. \"The birds ___ in the tree.\"",
+    "choices": ["sings", "sing", "singing", "sung"],
+    "answer": "sing",
+    "hint": "More than one bird needs a plain verb.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-3-0082",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "grammar",
+    "prompt": "What is the plural of mouse?",
+    "choices": ["mice", "mouses", "mices", "mouse"],
+    "answer": "mice",
+    "hint": "This word does not just add s.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-3-0083",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "grammar",
+    "prompt": "Which sentence starts with a capital letter?",
+    "choices": [
+      "the frog hopped away.",
+      "a bird can sing.",
+      "we ran home.",
+      "The frog hopped away."
+    ],
+    "answer": "The frog hopped away.",
+    "hint": "The first letter should be big.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-3-0084",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "grammar",
+    "prompt": "Which word is the past tense of \"run\"?",
+    "choices": ["runned", "running", "ran", "runs"],
+    "answer": "ran",
+    "hint": "Past tense tells what already happened.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-3-0085",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "mainidea",
+    "prompt": "What is this story mostly about?",
+    "choices": [
+      "Ben likes sunny windows.",
+      "Ben helped his plant get well.",
+      "Plants are always brown.",
+      "Ben has many plants."
+    ],
+    "answer": "Ben helped his plant get well.",
+    "hint": "Think about the whole story.",
+    "tags": ["mainidea"],
+    "passage": "Ben had a sick plant. Its leaves were brown and droopy. Ben put it near a sunny window and gave it water. Soon the leaves turned green again."
+  },
+  {
+    "id": "reading-3-0086",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "mainidea",
+    "prompt": "Where did Ben put the plant?",
+    "choices": ["near a sunny window", "in the shed", "under the bed", "by the door"],
+    "answer": "near a sunny window",
+    "hint": "Look for the place in the story.",
+    "tags": ["detail"],
+    "passage": "Ben had a sick plant. Its leaves were brown and droopy. Ben put it near a sunny window and gave it water. Soon the leaves turned green again."
+  },
+  {
+    "id": "reading-3-0087",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "mainidea",
+    "prompt": "Why did the leaves turn green again?",
+    "choices": [
+      "Ben sang to it.",
+      "It got very cold.",
+      "Ben painted them.",
+      "The plant got sun and water."
+    ],
+    "answer": "The plant got sun and water.",
+    "hint": "Look at what Ben did for the plant.",
+    "tags": ["cause"],
+    "passage": "Ben had a sick plant. Its leaves were brown and droopy. Ben put it near a sunny window and gave it water. Soon the leaves turned green again."
+  },
+  {
+    "id": "reading-3-0088",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "mainidea",
+    "prompt": "What did Rosa pack first?",
+    "choices": ["a big hat", "a snack", "a towel", "a ball"],
+    "answer": "a towel",
+    "hint": "Find the word First.",
+    "tags": ["sequence"],
+    "passage": "Rosa packed a bag for the beach. First, she put in a towel. Next, she added a big hat. Last, she packed a snack. Then she was ready to go."
+  },
+  {
+    "id": "reading-3-0089",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "mainidea",
+    "prompt": "What did Rosa pack right after the towel?",
+    "choices": ["a snack", "a big hat", "a book", "a toy boat"],
+    "answer": "a big hat",
+    "hint": "Find the word Next.",
+    "tags": ["sequence"],
+    "passage": "Rosa packed a bag for the beach. First, she put in a towel. Next, she added a big hat. Last, she packed a snack. Then she was ready to go."
+  },
+  {
+    "id": "reading-3-0090",
+    "subject": "reading",
+    "grade": 3,
+    "kind": "mainidea",
+    "prompt": "What is this story mostly about?",
+    "choices": [
+      "Rosa getting ready for the beach",
+      "Rosa eating a snack",
+      "Rosa wearing a hat",
+      "Rosa swimming in the sea"
+    ],
+    "answer": "Rosa getting ready for the beach",
+    "hint": "Think about the whole story.",
+    "tags": ["mainidea"],
+    "passage": "Rosa packed a bag for the beach. First, she put in a towel. Next, she added a big hat. Last, she packed a snack. Then she was ready to go."
   }
 ]
