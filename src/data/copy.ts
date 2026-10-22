@@ -258,6 +258,18 @@ export const SQUAD_COPY = {
   spotLabel: (n: number): string => `Spot ${n}`,
   spotAria: (n: number): string => `Roll to spot ${n}`,
   rolled: (name: string, spot: number): string => `${name} rolls to spot ${spot}.`,
+  back: 'Back',
+  hear: 'Hear it',
+  backIcon: '\u21A9',
+  hearIcon: '\uD83D\uDD0A',
+  /** The first-go hint. The finger is drawn beside it, so a pre-reader can follow the picture. */
+  firstGo: 'Press Fire! Or pick a helper and roll to a spot.',
+  fingerIcon: '\uD83D\uDC46',
+  /** What Chrono says on Hear it. Plain words, one short line per kind of helper. */
+  hearLine: (kind: string, name: string): string =>
+    kind === 'dasher'
+      ? `${name} rolls to a spot. Tap a spot to roll.`
+      : `${name} fires a ball. Press Fire!`,
   bonkBase: 'Bonk! The base wobbles.',
   bonkHelper: 'Bonk! A helper tumbles home.',
   bonkBlocked: 'Bonk! The force field says no.',

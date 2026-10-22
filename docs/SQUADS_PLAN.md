@@ -10,7 +10,7 @@ Read with: [AGENTS.md](../AGENTS.md), [GAME_SPEC.md](./GAME_SPEC.md), [BUILD.md]
 
 ## S1 as built (flag off)
 
-S1 is in the code behind `SQUADS.enabled` (off). Rules: `src/game/crew.ts`, wired into `src/game/match.ts`. Screen: `src/ui/squadBar.ts` and one hook each in `src/ui/hudView.ts` and `src/scenes/battle/flow.ts`. Tests: `tests/game/crew.test.ts`, `tests/game/crewMatch.test.ts`, `tests/ui/squadBar.test.ts`.
+S1 is in the code behind `SQUADS.enabled` (off). Rules: `src/game/crew.ts`, wired into `src/game/match.ts`. Screen: `src/ui/squadBar.ts` and one hook each in `src/ui/hudView.ts` and `src/scenes/battle/flow.ts`. Tests: `tests/game/crew.test.ts`, `tests/game/crewMatch.test.ts`, `tests/ui/squadBar.test.ts`, `tests/scenes/battle/flowSquads.test.ts`, `e2e/squads.spec.ts`.
 
 Choices made where this plan was unclear (the simplest option each time). Andy can overrule any of them.
 1. **Launcher is today's shot.** The launcher helper is the existing fighter and aim. Past calls it Cannon Crew, Future calls it Rocket Button, for now only as a name. The five-fighter selector is unchanged.
@@ -22,7 +22,10 @@ Choices made where this plan was unclear (the simplest option each time). Andy c
 7. **Stats and awards.** A dash adds nothing to `shotsFired`, `directHits` or `nearHits`.
 8. **Keyboard.** Tab to a helper or spot, Enter or Space to press it. Space does not fire while the dasher is picked. No letter keys, since A to E already pick fighters.
 9. **Doc wording.** AGENTS.md, GAME_SPEC.md and NARRATION.md still say "shots", because the flag is off and players still see shots. The "2 goes" rewrite lands when the flag turns on. The copy lint banned-list additions (missile, soldier, army, troops, war, shoot, weapon) also wait for that, since the old fighter names use some of them.
-10. **Not built:** Back and Hear it corner buttons, the first-go finger hint, doorstep no-stalemate walk test (the launcher can always reach the base, so there is always a damaging go), and the e2e (the flag has no switch in the shipped page).
+10. **Back and Hear it.** Two 56px buttons with 20px text sit at the right end of the helper bar. Hear it is always there. Chrono says the picked helper's name and what it does, with a caption. It only speaks on a tap, asks for no network clip, and costs no go. Back shows while the dasher is picked and returns to the launcher (there is no "nothing picked" state in S1). Both do nothing while a cover is up or a shot flies. Escape and H are not wired (Escape pauses the game, see Regressions row 4). Tab and Enter reach both.
+11. **First-go hint.** A drawn finger (an emoji, so no new art) and the words "Press Fire! Or pick a helper and roll to a spot." show on each side's first go of a match, never for the Computer player. Chrono says the line once, with the same words as a caption. The finger bounces, and holds still under reduced motion. It is per match, not per family, since a "first squad match" needs a new storage key. That waits for Andy.
+12. **E2E switch.** With `?e2e=1` (never in a production build) `window.__timeclash.setSquads(true)` turns Squads on for matches started after it; `null` goes back to the config default. `e2e/squads.spec.ts` plays 2 goes (a dash and a shot), the covered reload with a wrong answer, then the other side with its full crew. It also pins that the default page has no helper bar.
+13. **Still open:** dasher art and ground spot markers on the battlefield, the doorstep no-stalemate walk test, a per-family first-match hint, Escape and H keys, and the "2 goes" doc rewrite when the flag turns on.
 
 ## 1. Goal and the "super simple" rules
 

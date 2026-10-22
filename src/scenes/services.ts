@@ -11,7 +11,7 @@ import type { LoadingEnv } from '../ui/loadingLogic';
 import { createHowToPlay } from './chrome';
 import { createSeedSource, type SeedSource } from './flow';
 import type { AppServices } from './registry';
-import { createLoadFaults, type LoadFaults } from './testHook';
+import { createFlags, createLoadFaults, type LoadFaults, type TestFlags } from './testHook';
 
 type AudioWindow = Partial<
   Pick<Window, 'speechSynthesis' | 'setTimeout' | 'clearTimeout' | 'performance'>
@@ -86,6 +86,7 @@ export function createServices(opts: ServiceOptions): {
   services: AppServices;
   seeds: SeedSource;
   faults: LoadFaults;
+  flags: TestFlags;
 } {
   const storage = opts.storage ?? createStorage();
   const settings = loadSettings(storage);
@@ -97,6 +98,7 @@ export function createServices(opts: ServiceOptions): {
   const overlay = createOverlay(opts.doc, { audio, storage });
   const seeds = opts.seeds ?? createSeedSource(opts.entropy ?? randomEntropy);
   const faults = opts.faults ?? createLoadFaults();
+  const flags = createFlags();
   const realLoad = opts.loadBank ?? defaultLoadBank;
   const env: LoadingEnv = {
     now: () => (opts.win.performance ?? performance).now(),
@@ -116,6 +118,7 @@ export function createServices(opts: ServiceOptions): {
     },
     newSeed: () => seeds.next(),
     computerPlayer: practiceEnabled(opts.search ?? ''),
+    flags,
   };
-  return { services, seeds, faults };
+  return { services, seeds, faults, flags };
 }

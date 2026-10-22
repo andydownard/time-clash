@@ -10,7 +10,7 @@ import { SCENES } from './scenes';
 import { createServices } from './scenes/services';
 import { installTestHook, type ActiveScene, type TimeClashHook } from './scenes/testHook';
 
-const { services, seeds, faults } = createServices({
+const { services, seeds, faults, flags } = createServices({
   doc: document,
   win: window,
   search: window.location.search,
@@ -43,6 +43,7 @@ if (import.meta.env.MODE !== 'production') {
     mode: import.meta.env.MODE,
     seeds,
     faults,
+    flags,
     storage: services.storage,
     session: services.session,
     activeScenes: () => game.scene.getScenes(true) as unknown as ActiveScene[],
