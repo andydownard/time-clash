@@ -16,6 +16,8 @@ export type Settings = {
   musicOn: boolean;
   /** 'system' follows prefers-reduced-motion. */
   reducedMotion: 'system' | 'on' | 'off';
+  /** Hide the bonus ring on the reload card. The fast-answer bonus still works. */
+  hideBonusRing: boolean;
 };
 
 /** Keys from ARCHITECTURE.md. Do not add keys without updating that file. */

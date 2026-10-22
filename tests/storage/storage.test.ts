@@ -151,6 +151,7 @@ describe('storage: bad data', () => {
           captions: true,
           musicOn: true,
           reducedMotion: 'system',
+          hideBonusRing: false,
         }),
       }),
     );
@@ -162,6 +163,7 @@ describe('storage: bad data', () => {
       captions: true,
       musicOn: false,
       reducedMotion: 'system',
+      hideBonusRing: false,
     });
     expect(s.get('timeclash.settings')?.musicOn).toBe(false);
   });
@@ -264,6 +266,7 @@ describe('loadSettings', () => {
       captions: false,
       musicOn: true,
       reducedMotion: 'on',
+      hideBonusRing: false,
     });
     expect(loadSettings(s)).toEqual({
       muted: true,
@@ -271,11 +274,31 @@ describe('loadSettings', () => {
       captions: false,
       musicOn: true,
       reducedMotion: 'on',
+      hideBonusRing: false,
     });
   });
 
   it('survives a throwing store', () => {
     expect(loadSettings(createStorage(throwing))).toEqual(DEFAULT_SETTINGS);
+  });
+
+  it('hides the bonus ring only when told to: off by default, saved, and bad values fall back', () => {
+    expect(DEFAULT_SETTINGS.hideBonusRing).toBe(false);
+    // Settings saved before this existed still load, with the ring shown.
+    const old = createStorage(
+      fakeBacking({ 'timeclash.settings': JSON.stringify({ muted: true, reducedMotion: 'on' }) }),
+    );
+    expect(loadSettings(old).hideBonusRing).toBe(false);
+    const b = fakeBacking();
+    const s = createStorage(b);
+    s.set('timeclash.settings', { ...DEFAULT_SETTINGS, hideBonusRing: true });
+    expect(loadSettings(createStorage(b)).hideBonusRing).toBe(true);
+    for (const bad of ['true', 1, null, {}]) {
+      const t = createStorage(
+        fakeBacking({ 'timeclash.settings': JSON.stringify({ hideBonusRing: bad }) }),
+      );
+      expect(loadSettings(t).hideBonusRing).toBe(false);
+    }
   });
 
   it('rejects a bad reducedMotion value', () => {
@@ -297,6 +320,7 @@ describe('saveAudioSettings', () => {
       captions: false,
       musicOn: true,
       reducedMotion: 'on',
+      hideBonusRing: false,
     });
     saveAudioSettings(s, { muted: true, volume: 0.25 });
     expect(loadSettings(createStorage(b))).toEqual({
@@ -305,6 +329,7 @@ describe('saveAudioSettings', () => {
       captions: false,
       musicOn: true,
       reducedMotion: 'on',
+      hideBonusRing: false,
     });
   });
 

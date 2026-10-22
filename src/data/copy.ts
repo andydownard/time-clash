@@ -113,6 +113,8 @@ export const BUTTONS = {
   musicOff: 'Music off',
   motionOn: 'Motion on',
   motionOff: 'Motion off',
+  bonusRingShown: 'Bonus ring: shown',
+  bonusRingHidden: 'Bonus ring: hidden',
   volume: 'Volume',
   pause: 'Pause',
   resume: 'Keep playing',

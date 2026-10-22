@@ -379,6 +379,7 @@ export const DEFAULT_SETTINGS: Readonly<Settings> = {
   captions: true,
   musicOn: true,
   reducedMotion: 'system',
+  hideBonusRing: false,
 };
 
 /** How many tumble speech bubbles exist. Must equal TUMBLE_LINES.length in src/data/copy.ts (a test pins it). */
