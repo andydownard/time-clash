@@ -973,5 +973,266 @@
     "answer": "The robot was as slow as a sleepy snail.",
     "hint": "A simile uses like or as to compare.",
     "tags": ["figurative-language"]
+  },
+  {
+    "id": "reading-4-0070",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "vocab",
+    "prompt": "What does \"dazzling\" mean? \"The dazzling lights lit up the whole stage.\"",
+    "choices": ["very bright and exciting", "dim and small", "loud and rough", "old and dusty"],
+    "answer": "very bright and exciting",
+    "hint": "Stage lights are not dull.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-4-0071",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "vocab",
+    "prompt": "What does \"peculiar\" mean? \"A peculiar sound came from the old shed.\"",
+    "choices": ["familiar", "pleasant", "short", "strange"],
+    "answer": "strange",
+    "hint": "Nobody knew what the sound was.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-4-0072",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "vocab",
+    "prompt": "What does \"hesitate\" mean? \"Do not hesitate to ask for help.\"",
+    "choices": ["run away fast", "say no", "pause because you are unsure", "forget it"],
+    "answer": "pause because you are unsure",
+    "hint": "Picture someone who stops to think first.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-4-0073",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "vocab",
+    "prompt": "What does \"tremble\" mean? \"The little pup began to tremble in the thunderstorm.\"",
+    "choices": ["sing", "shake", "dig", "nap"],
+    "answer": "shake",
+    "hint": "Thunder can make a small pup feel scared.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-4-0074",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "vocab",
+    "prompt": "Which word means almost the SAME as \"shout\"?",
+    "choices": ["yell", "whisper", "hum", "mumble"],
+    "answer": "yell",
+    "hint": "Think of a loud voice.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-4-0075",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "vocab",
+    "prompt": "Which word means the OPPOSITE of \"brave\"?",
+    "choices": ["strong", "silly", "loud", "scared"],
+    "answer": "scared",
+    "hint": "A knight who runs from a dragon feels this way.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-4-0076",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "vocab",
+    "prompt": "What does \"bark\" mean? \"The bark of the oak tree was rough.\"",
+    "choices": [
+      "sound a dog makes",
+      "a kind of leaf",
+      "outer covering of a tree",
+      "a wooden plank"
+    ],
+    "answer": "outer covering of a tree",
+    "hint": "The sentence is about a tree.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-4-0077",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "vocab",
+    "prompt": "The suffix \"-ful\" means \"full of.\" What does \"joyful\" mean?",
+    "choices": ["without joy", "full of joy", "joy again", "not joy"],
+    "answer": "full of joy",
+    "hint": "Read the suffix meaning again.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-4-0078",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "grammar",
+    "prompt": "Which sentence uses capital letters correctly?",
+    "choices": [
+      "My friend lives in Denver.",
+      "my friend lives in denver.",
+      "My friend lives in denver.",
+      "my Friend lives in Denver."
+    ],
+    "answer": "My friend lives in Denver.",
+    "hint": "A city name starts with a capital letter.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-4-0079",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "grammar",
+    "prompt": "Choose the right word. \"She ___ her lunch at school yesterday.\"",
+    "choices": ["eat", "eaten", "eating", "ate"],
+    "answer": "ate",
+    "hint": "Yesterday means it is over.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-4-0080",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "grammar",
+    "prompt": "Which word is an adverb? \"The turtle crawled slowly.\"",
+    "choices": ["turtle", "crawled", "slowly", "The"],
+    "answer": "slowly",
+    "hint": "It tells how the turtle moved.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-4-0081",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "grammar",
+    "prompt": "Which sentence has a capital letter and the right end mark?",
+    "choices": [
+      "Do you want some juice.",
+      "Do you want some juice?",
+      "Do you want some juice,",
+      "do you want some juice?"
+    ],
+    "answer": "Do you want some juice?",
+    "hint": "Check the first letter and the end mark.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-4-0082",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "grammar",
+    "prompt": "What two words make up the contraction \"can't\"?",
+    "choices": ["can not", "cat not", "can it", "could not"],
+    "answer": "can not",
+    "hint": "The apostrophe takes the place of missing letters.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-4-0083",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "grammar",
+    "prompt": "Which word is a compound word?",
+    "choices": ["flowers", "sunny", "planted", "sunflower"],
+    "answer": "sunflower",
+    "hint": "It is two small words joined together.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-4-0084",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "How did Scout seem to feel about Marco's cold?",
+    "choices": [
+      "He was bored with Marco.",
+      "He wanted to go outside.",
+      "He wanted to comfort Marco.",
+      "He was angry at Marco."
+    ],
+    "answer": "He wanted to comfort Marco.",
+    "hint": "Think about where Scout stayed.",
+    "tags": ["inference"],
+    "passage": "Every night, Marco's dog Scout waited by the door. When Marco's bike rolled into the yard, Scout barked and wagged his tail. One day, Marco had a cold and stayed home. Scout sat very still beside the sofa. He rested his head on Marco's knee and stayed there all day."
+  },
+  {
+    "id": "reading-4-0085",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "What did Scout do when Marco's bike rolled into the yard?",
+    "choices": [
+      "He hid under the sofa.",
+      "He barked and wagged his tail.",
+      "He chased the bike.",
+      "He fell asleep."
+    ],
+    "answer": "He barked and wagged his tail.",
+    "hint": "Look near the start of the story.",
+    "tags": ["detail"],
+    "passage": "Every night, Marco's dog Scout waited by the door. When Marco's bike rolled into the yard, Scout barked and wagged his tail. One day, Marco had a cold and stayed home. Scout sat very still beside the sofa. He rested his head on Marco's knee and stayed there all day."
+  },
+  {
+    "id": "reading-4-0086",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "Why did Marco stay home one day?",
+    "choices": ["He had a cold.", "His bike was broken.", "It was a holiday.", "He lost Scout."],
+    "answer": "He had a cold.",
+    "hint": "Look for the reason in the passage.",
+    "tags": ["cause"],
+    "passage": "Every night, Marco's dog Scout waited by the door. When Marco's bike rolled into the yard, Scout barked and wagged his tail. One day, Marco had a cold and stayed home. Scout sat very still beside the sofa. He rested his head on Marco's knee and stayed there all day."
+  },
+  {
+    "id": "reading-4-0087",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "choices": [
+      "Gardeners dislike worms.",
+      "Worms live only in tunnels.",
+      "Plants need no water.",
+      "Earthworms help soil and plants."
+    ],
+    "answer": "Earthworms help soil and plants.",
+    "hint": "Ask what the whole passage is mostly about.",
+    "tags": ["mainidea"],
+    "passage": "Earthworms may look simple, but they do an important job. They dig tunnels in the soil. The tunnels let air and water reach plant roots. Worm waste also adds food to the soil. That is why gardeners are glad to see worms."
+  },
+  {
+    "id": "reading-4-0088",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "What do the tunnels let reach plant roots?",
+    "choices": ["sun and wind", "rocks and sand", "air and water", "seeds and bugs"],
+    "answer": "air and water",
+    "hint": "Find the sentence about tunnels.",
+    "tags": ["detail"],
+    "passage": "Earthworms may look simple, but they do an important job. They dig tunnels in the soil. The tunnels let air and water reach plant roots. Worm waste also adds food to the soil. That is why gardeners are glad to see worms."
+  },
+  {
+    "id": "reading-4-0089",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "How do worms add food to the soil?",
+    "choices": [
+      "by eating roots",
+      "through their waste",
+      "by drinking water",
+      "by digging deep holes"
+    ],
+    "answer": "through their waste",
+    "hint": "Read the sentence that mentions food.",
+    "tags": ["detail"],
+    "passage": "Earthworms may look simple, but they do an important job. They dig tunnels in the soil. The tunnels let air and water reach plant roots. Worm waste also adds food to the soil. That is why gardeners are glad to see worms."
   }
 ]

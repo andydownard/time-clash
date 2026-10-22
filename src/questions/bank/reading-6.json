@@ -993,5 +993,276 @@
     "answer": "We packed shields, swords, and snacks for the trip.",
     "hint": "Items in a list are separated by commas.",
     "tags": ["grammar", "punctuation"]
+  },
+  {
+    "id": "reading-6-0071",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does \"solitary\" mean? A solitary heron stood on the edge of the pond.",
+    "choices": ["very tall", "very quiet", "alone", "very old"],
+    "answer": "alone",
+    "hint": "Only one bird is there.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-6-0072",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does \"obstacle\" mean? A fallen branch was an obstacle on the trail.",
+    "choices": ["a path to follow", "something in the way", "a place to rest", "a kind of tree"],
+    "answer": "something in the way",
+    "hint": "Hikers must go around it.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-6-0073",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does \"diligent\" mean? The diligent student finished every page of homework.",
+    "choices": ["hard-working", "lazy", "forgetful", "noisy"],
+    "answer": "hard-working",
+    "hint": "Finishing every page takes effort.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-6-0074",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does \"modest\" mean? Though she won three medals, Kira stayed modest about it.",
+    "choices": ["very angry", "always late", "proud to show off", "not bragging"],
+    "answer": "not bragging",
+    "hint": "She did not make a big deal of it.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-6-0075",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does \"inspect\" mean? The mechanic will inspect the bike before the race.",
+    "choices": ["paint over", "carry away", "look at closely", "ride fast"],
+    "answer": "look at closely",
+    "hint": "A mechanic checks for problems.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-6-0076",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does \"commotion\" mean? A commotion broke out when the lights went out.",
+    "choices": ["sudden silence", "noisy excitement", "a slow walk", "a bright flash"],
+    "answer": "noisy excitement",
+    "hint": "People gasped and called out.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-6-0077",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "vocab",
+    "prompt": "The word \"fair\" has many meanings. Which one fits? The judge was fair and listened to both teams.",
+    "choices": [
+      "treating all sides the same",
+      "a place with rides",
+      "light in color",
+      "pretty good"
+    ],
+    "answer": "treating all sides the same",
+    "hint": "The judge did not pick favorites.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-6-0078",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "vocab",
+    "prompt": "The root \"tele\" means far. What does a telescope help you do?",
+    "choices": [
+      "hear soft music",
+      "write long letters",
+      "grow tall plants",
+      "see things that are far away"
+    ],
+    "answer": "see things that are far away",
+    "hint": "Think about the root meaning.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-6-0079",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "grammar",
+    "prompt": "Which group of words is a complete sentence?",
+    "choices": [
+      "Because the rain stopped.",
+      "Running down the hill.",
+      "The class cleaned the park.",
+      "After the long game."
+    ],
+    "answer": "The class cleaned the park.",
+    "hint": "A sentence needs a doer and an action.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-6-0080",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "grammar",
+    "prompt": "Choose the correct word: \"Each of the students ___ a pencil.\"",
+    "choices": ["have", "has", "having", "are having"],
+    "answer": "has",
+    "hint": "Each means one at a time.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-6-0081",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "grammar",
+    "prompt": "Which sentence uses \"then\" and \"than\" correctly?",
+    "choices": [
+      "First we ate, and then we left.",
+      "She is taller then her brother.",
+      "I like cats more then dogs.",
+      "He ran faster then I did."
+    ],
+    "answer": "First we ate, and then we left.",
+    "hint": "Then tells about time. Than compares.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-6-0082",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "grammar",
+    "prompt": "What is the subject of this sentence? \"The tired hikers rested by the lake.\"",
+    "choices": ["rested", "by the lake", "lake", "The tired hikers"],
+    "answer": "The tired hikers",
+    "hint": "Who did the resting?",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-6-0083",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "grammar",
+    "prompt": "Which sentence uses a metaphor?",
+    "choices": [
+      "The classroom was as loud as a zoo.",
+      "The classroom was very loud.",
+      "The classroom was a zoo at noon.",
+      "The classroom had many students."
+    ],
+    "answer": "The classroom was a zoo at noon.",
+    "hint": "A metaphor says one thing is another.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-6-0084",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "grammar",
+    "prompt": "Which pair shows words with opposite meanings?",
+    "choices": ["big and large", "hot and cold", "quick and fast", "calm and peaceful"],
+    "answer": "hot and cold",
+    "hint": "Look for a pair that does not match.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-6-0085",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "What is the main message of this passage?",
+    "choices": [
+      "Family recipes hold memories as well as food.",
+      "Soup is better than bread.",
+      "Notebooks belong in kitchens.",
+      "Maya wants to open a bakery."
+    ],
+    "answer": "Family recipes hold memories as well as food.",
+    "hint": "Think about what Maya realized.",
+    "tags": ["theme"],
+    "passage": "Maya's grandmother kept a worn leather notebook in her kitchen drawer. When Maya finally asked about it, her grandmother smiled and opened it. Each page held a recipe, along with a small note about who had first cooked it. \"This soup was my mother's,\" she said. \"This bread belonged to your aunt.\" Maya realized the notebook held more than food. It held the story of her family."
+  },
+  {
+    "id": "reading-6-0086",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "What did each page of the notebook hold?",
+    "choices": [
+      "a drawing of the kitchen",
+      "a list of shopping needs",
+      "a photo of the family",
+      "a recipe and a note about its cook"
+    ],
+    "answer": "a recipe and a note about its cook",
+    "hint": "Find the sentence that starts with Each page.",
+    "tags": ["detail"],
+    "passage": "Maya's grandmother kept a worn leather notebook in her kitchen drawer. When Maya finally asked about it, her grandmother smiled and opened it. Each page held a recipe, along with a small note about who had first cooked it. \"This soup was my mother's,\" she said. \"This bread belonged to your aunt.\" Maya realized the notebook held more than food. It held the story of her family."
+  },
+  {
+    "id": "reading-6-0087",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "What does \"worn\" mean in the passage?",
+    "choices": ["brand new", "torn in half", "used and rubbed by age", "shiny and clean"],
+    "answer": "used and rubbed by age",
+    "hint": "Think of a notebook kept for many years.",
+    "tags": ["vocab"],
+    "passage": "Maya's grandmother kept a worn leather notebook in her kitchen drawer. When Maya finally asked about it, her grandmother smiled and opened it. Each page held a recipe, along with a small note about who had first cooked it. \"This soup was my mother's,\" she said. \"This bread belonged to your aunt.\" Maya realized the notebook held more than food. It held the story of her family."
+  },
+  {
+    "id": "reading-6-0088",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "choices": [
+      "Sea otters sleep all day.",
+      "Sea otters have clever ways to eat and stay warm.",
+      "Rocks are the best tools.",
+      "Kelp is a kind of shell."
+    ],
+    "answer": "Sea otters have clever ways to eat and stay warm.",
+    "hint": "Ask what the whole passage is mostly about.",
+    "tags": ["mainidea"],
+    "passage": "Sea otters float on their backs and use rocks as tools. An otter places a rock on its chest and cracks open a shell against it. Their fur is the thickest of any animal, which keeps them warm in cold water because they have little body fat. When they sleep, otters sometimes wrap themselves in kelp so they do not drift apart."
+  },
+  {
+    "id": "reading-6-0089",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "What does an otter use to crack open a shell?",
+    "choices": ["a rock on its chest", "its sharp claws", "a piece of kelp", "the ocean floor"],
+    "answer": "a rock on its chest",
+    "hint": "Find the sentence about tools.",
+    "tags": ["detail"],
+    "passage": "Sea otters float on their backs and use rocks as tools. An otter places a rock on its chest and cracks open a shell against it. Their fur is the thickest of any animal, which keeps them warm in cold water because they have little body fat. When they sleep, otters sometimes wrap themselves in kelp so they do not drift apart."
+  },
+  {
+    "id": "reading-6-0090",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "Why do sea otters need such thick fur?",
+    "choices": [
+      "They like to look fluffy.",
+      "It helps them crack shells.",
+      "It keeps them from drifting.",
+      "They have little body fat to keep them warm."
+    ],
+    "answer": "They have little body fat to keep them warm.",
+    "hint": "Look for the reason after the word because.",
+    "tags": ["cause"],
+    "passage": "Sea otters float on their backs and use rocks as tools. An otter places a rock on its chest and cracks open a shell against it. Their fur is the thickest of any animal, which keeps them warm in cold water because they have little body fat. When they sleep, otters sometimes wrap themselves in kelp so they do not drift apart."
   }
 ]
