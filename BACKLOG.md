@@ -22,7 +22,7 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 - P2: Biome art is simple: cherry trees recolor the aspens and the temple uses plain columns. The spot shapes (tower, bridge deck, food truck wall) are plain steel blocks. Real art from a design board would help.
 - P3: Ammo and the dodge only change damage in the base-health game. With character health (flag off) ammo still changes the flight, but not damage.
 - Camp scrap counter and saved scrap between matches. The Main board has no scrap counter, so it waits for Phase 3 and the Forge.
-- There are about 40 items per grade and subject (grades K to 2 now have 62 to 70, with story and word-meaning questions added). Families who play many rematches will see repeats. Grades 3 to 12 still need more.
+- Every grade now has 60 or more items per subject (reading 60 to 70, math 80 to 110). Families who play many rematches will still see repeats. A later pass could grow reading toward 100 per grade and add more variety in the upper grades.
 - There is no way to end a match early and no setting for match length.
 - Parents must re-pick grades every time (Clear my data now fits on screen with a privacy line).
 - P2: Battle simplification, next steps. Health shows in both the top chips and the base pills, so one of them can go. The richer scenery and the unit picker on the Battle board belong to Phase 5 (Squads).
@@ -32,7 +32,6 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 
 ## Phase 5: Squads
 Plan only: docs/SQUADS_PLAN.md. Squads starts after the look and feel phase, which is built. Each milestone ships behind `SQUADS.enabled`.
-- P1: Topic focus for Team Future. Team Past multiplication is built (see AGENTS.md). The Future topic is still Andy's call. Add it to `TOPIC_FOCUS.offer`, tag a set per grade, and the checker and Setup control pick it up.
 - P1: S1 Pick a helper. Each side gets a launcher and one dasher. Two taps per go, a "GO 1 OF 2" banner with dots, and reload after go 2.
 - P2: S2 Flyers. Hot Air Balloon and Space Plane drop payloads from sky spots.
 - P2: S3 Full crew of 4. Slingshot Squire, Laser Zapper, and Rocket Button, with fairness and no-stalemate tests.
