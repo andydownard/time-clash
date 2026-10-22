@@ -182,6 +182,14 @@ describe('validateSetup topic focus', () => {
     const r = validateSetup({ ...base, FUTURE: { ...base.FUTURE, topic: 'multiplication' } });
     expect(r.ok && r.players[1]).not.toHaveProperty('topic');
   });
+  it('keeps division for Team Future when picked', () => {
+    const r = validateSetup({ ...base, FUTURE: { ...base.FUTURE, topic: 'division' } });
+    expect(r.ok && r.players[1].topic).toBe('division');
+  });
+  it('drops division for Team Past', () => {
+    const r = validateSetup({ ...base, PAST: { ...base.PAST, topic: 'division' } });
+    expect(r.ok && r.players[0]).not.toHaveProperty('topic');
+  });
   it('drops an unknown topic', () => {
     const r = validateSetup({ ...base, PAST: { ...base.PAST, topic: 'juggling' } });
     expect(r.ok && r.players[0]).not.toHaveProperty('topic');

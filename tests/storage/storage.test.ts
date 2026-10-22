@@ -43,6 +43,17 @@ describe('storage: players with a topic focus', () => {
     s.set('timeclash.players', withTopic);
     expect(s.get('timeclash.players')).toEqual(withTopic);
   });
+  it('round-trips division on Team Future', () => {
+    const s = createStorage(fakeBacking());
+    const future: Players = [players[0], { ...players[1], topic: 'division' }];
+    s.set('timeclash.players', future);
+    expect(s.get('timeclash.players')).toEqual(future);
+  });
+  it('drops division saved on Team Past', () => {
+    const raw = JSON.stringify([{ ...players[0], topic: 'division' }, players[1]]);
+    const s = createStorage(fakeBacking({ 'timeclash.players': raw }));
+    expect(s.get('timeclash.players')).toEqual(players);
+  });
   it('drops an unknown saved topic and keeps the player', () => {
     const raw = JSON.stringify([{ ...players[0], topic: 'juggling' }, players[1]]);
     const s = createStorage(fakeBacking({ 'timeclash.players': raw }));

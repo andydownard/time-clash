@@ -357,13 +357,31 @@ describe('setup screen', () => {
     expect(text.split(SETUP.subjectHelper).length - 1).toBe(2); // once per team card
   });
 
-  it('offers the multiplication focus to Team Past only, and it starts off', async () => {
+  it('offers multiplication to Team Past and division to Team Future, both start off', async () => {
     const p = s.overlay.showSetup(null);
     const chip = q(TEST_IDS.setupTopic('PAST', 'multiplication'))!;
+    const divChip = q(TEST_IDS.setupTopic('FUTURE', 'division'))!;
     expect(chip.getAttribute('aria-checked')).toBe('false');
+    expect(divChip.getAttribute('aria-checked')).toBe('false');
+    expect(divChip.textContent).toBe('Focus: Division');
     expect(q(TEST_IDS.setupTopic('FUTURE', 'multiplication'))).toBeNull();
+    expect(q(TEST_IDS.setupTopic('PAST', 'division'))).toBeNull();
     next();
     const players = await p;
+    expect(players[0]).not.toHaveProperty('topic');
+    expect(players[1]).not.toHaveProperty('topic');
+  });
+
+  it('turns the division focus on for Team Future and hands it to the game', async () => {
+    const p = s.overlay.showSetup(null);
+    click(q(TEST_IDS.setupTopic('FUTURE', 'division')));
+    expect(q(TEST_IDS.setupTopic('FUTURE', 'division'))!.getAttribute('aria-checked')).toBe('true');
+    expect(q(TEST_IDS.setupTopic('PAST', 'multiplication'))!.getAttribute('aria-checked')).toBe(
+      'false',
+    );
+    next();
+    const players = await p;
+    expect(players[1].topic).toBe('division');
     expect(players[0]).not.toHaveProperty('topic');
   });
 
