@@ -1804,10 +1804,35 @@ body {
 .tc-victory[data-team='FUTURE'] > .tc-team-eyebrow {
   color: var(--tc-eyebrow-future);
 }
-.tc-brain-stats {
-  margin: 0 0 var(--tc-s-2);
+.tc-brain-stats,
+.tc-scrap-stats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0 var(--tc-s-2);
+  margin: 0 0 var(--tc-s-1);
   font-size: var(--tc-fs-label);
   font-weight: 700;
+}
+.tc-scrap-stats {
+  margin-bottom: var(--tc-s-2);
+}
+/* Pictures a pre-reader can count. One row never wraps: ten icons and a plus fit the card. */
+.tc-count-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  flex-wrap: nowrap;
+}
+.tc-count-icon {
+  width: 24px;
+  height: 24px;
+  flex: none;
+}
+.tc-count-more {
+  font-weight: 700;
+  color: var(--tc-panel-text);
 }
 .tc-award-card[data-team='PAST'] {
   border-color: var(--tc-purple-700);
@@ -1917,6 +1942,14 @@ body {
   }
   .tc-badge {
     padding-block: 0;
+  }
+  .tc-brain-stats,
+  .tc-scrap-stats {
+    margin-bottom: 0;
+  }
+  .tc-count-icon {
+    width: 20px;
+    height: 20px;
   }
   .tc-badge-icon {
     width: 30px;
