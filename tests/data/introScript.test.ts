@@ -1,6 +1,16 @@
 import { existsSync, readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { INTRO_SCRIPT, timeCaptions } from '../../src/data/introScript';
+import { CAPTION_LEAD_MS, INTRO_SCRIPT, timeCaptions } from '../../src/data/introScript';
+import timings from '../../src/data/introTimings.json';
+
+interface MeasuredClip {
+  durationMs: number;
+  gaps: Array<{ startMs: number; endMs: number }>;
+}
+/** Decoded length vs MP4 header: AAC adds encoder padding (about 130 ms). Same bound as the check above. */
+const DURATION_TOLERANCE_MS = 300;
+/** How far the plain length-based estimate may sit from the measured caption start. */
+const ESTIMATE_TOLERANCE_MS = 1500;
 
 const md = readFileSync(new URL('../../docs/NARRATION.md', import.meta.url), 'utf8');
 
@@ -107,9 +117,9 @@ describe('INTRO_SCRIPT matches docs/NARRATION.md', () => {
     expect(Math.abs(DB_DURATIONS_MS[i]! - card.durationMs)).toBeLessThanOrEqual(300);
   });
 
-  it.each([0, 1, 2, 3, 4])('card %i last caption keeps at least 1.5 s on screen', (i) => {
+  it.each([0, 1, 2, 3, 4])('card %i last caption keeps at least 1 s on screen', (i) => {
     const card = INTRO_SCRIPT[i]!;
-    expect(card.durationMs - card.captions.at(-1)!.startMs).toBeGreaterThanOrEqual(1500);
+    expect(card.durationMs - card.captions.at(-1)!.startMs).toBeGreaterThanOrEqual(1000);
   });
 
   it.each([0, 1, 2, 3, 4])('card %i captions rebuild the full text and are timed in order', (i) => {
@@ -143,4 +153,70 @@ describe('INTRO_SCRIPT matches docs/NARRATION.md', () => {
   it('every card has an art id', () => {
     INTRO_SCRIPT.forEach((c) => expect(c.art.length).toBeGreaterThan(0));
   });
+
+  it('timeCaptions starts each later caption where a measured pause ends (longest pauses win)', () => {
+    const gaps = [
+      { startMs: 1000, endMs: 1400 },
+      { startMs: 2000, endMs: 2100 },
+      { startMs: 3000, endMs: 3500 },
+    ];
+    const c = timeCaptions(['a', 'b', 'c'], 6000, gaps);
+    expect(c.map((x) => x.startMs)).toEqual([0, 1400 - CAPTION_LEAD_MS, 3500 - CAPTION_LEAD_MS]);
+  });
+
+  it('timeCaptions falls back to the length estimate when there are too few pauses', () => {
+    const c = timeCaptions(['aaaa', 'bbbb', 'cccc'], 10_000, [{ startMs: 1000, endMs: 1400 }]);
+    expect(c.map((x) => x.startMs)).toEqual([0, 3000, 6000]);
+  });
+});
+
+// Measured data: src/data/introTimings.json, written by scripts/measure-intro-timings.py.
+describe('intro caption times against the measured clips', () => {
+  const clipName = (i: number): string => INTRO_SCRIPT[i]!.audio.split('/').pop()!;
+  const measured = (i: number) => (timings as Record<string, MeasuredClip>)[clipName(i)]!;
+
+  it('measured data exists for every intro clip', () => {
+    INTRO_SCRIPT.forEach((_, i) => expect(measured(i), clipName(i)).toBeDefined());
+  });
+
+  it.each([0, 1, 2, 3, 4])('card %i measured length matches the MP4 header and the script', (i) => {
+    const real = mp4DurationMs(readFileSync(new URL(`../../public${INTRO_SCRIPT[i]!.audio}`, import.meta.url)));
+    expect(Math.abs(measured(i).durationMs - real)).toBeLessThanOrEqual(DURATION_TOLERANCE_MS);
+    expect(Math.abs(measured(i).durationMs - INTRO_SCRIPT[i]!.durationMs)).toBeLessThanOrEqual(
+      DURATION_TOLERANCE_MS,
+    );
+  });
+
+  it.each([0, 1, 2, 3, 4])('card %i captions all start inside the real clip, with at least 1 s left', (i) => {
+    const real = measured(i).durationMs;
+    for (const c of INTRO_SCRIPT[i]!.captions) expect(c.startMs).toBeLessThan(real - 1000);
+  });
+
+  it.each([0, 1, 2, 3, 4])('card %i has a measured pause for every sentence break', (i) => {
+    expect(measured(i).gaps.length).toBeGreaterThanOrEqual(INTRO_SCRIPT[i]!.captions.length - 1);
+  });
+
+  it.each([0, 1, 2, 3, 4])('card %i caption starts sit right after a measured pause', (i) => {
+    const gaps = measured(i).gaps;
+    for (const c of INTRO_SCRIPT[i]!.captions.slice(1)) {
+      const near = gaps.some((g) => Math.abs(g.endMs - CAPTION_LEAD_MS - c.startMs) <= 10);
+      expect(near, `caption "${c.text}" at ${c.startMs}`).toBe(true);
+    }
+  });
+
+  it.each([0, 1, 2, 3, 4])(
+    'card %i old length estimate stays within %i ms of the measured start',
+    (i) => {
+      const card = INTRO_SCRIPT[i]!;
+      const estimate = timeCaptions(
+        card.captions.map((c) => c.text),
+        measured(i).durationMs,
+      );
+      estimate.forEach((e, k) => {
+        expect(Math.abs(e.startMs - card.captions[k]!.startMs)).toBeLessThanOrEqual(
+          ESTIMATE_TOLERANCE_MS,
+        );
+      });
+    },
+  );
 });

@@ -117,6 +117,12 @@ export function mountChrome(doc: Document, deps: ChromeDeps): Chrome {
     zIndex: String(CHROME_Z),
     pointerEvents: 'none',
   });
+  const syncMotion = (): boolean => {
+    const reduced = isReducedMotion(loadSettings(storage).reducedMotion, doc.defaultView);
+    host.setAttribute('data-motion', reduced ? 'reduced' : 'full');
+    return reduced;
+  };
+  syncMotion();
   doc.body.append(host);
 
   how.addEventListener('click', () => void howTo.open());
@@ -190,7 +196,7 @@ export function mountChrome(doc: Document, deps: ChromeDeps): Chrome {
         ? BUTTONS.captionsOn
         : BUTTONS.captionsOff;
       music.textContent = audio.musicOn ? BUTTONS.musicOn : BUTTONS.musicOff;
-      const reduced = isReducedMotion(loadSettings(storage).reducedMotion, doc.defaultView);
+      const reduced = syncMotion();
       motion.textContent = reduced ? BUTTONS.motionOff : BUTTONS.motionOn;
       bonusRing.textContent = loadSettings(storage).hideBonusRing
         ? BUTTONS.bonusRingHidden
