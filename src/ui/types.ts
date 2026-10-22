@@ -96,6 +96,9 @@ export const TEST_IDS = {
   goBanner: 'go-banner',
   helper: (id: string) => `helper-${id}`,
   dashSpot: (spot: string) => `dash-${spot}`,
+  helperBack: 'helper-back',
+  helperHear: 'helper-hear',
+  goHint: 'go-hint',
   wind: 'wind',
   baseHp: (team: Team) => `base-hp-${team}`,
   shotsLeft: 'shots-left',
@@ -180,6 +183,8 @@ export type HudSquads = {
   picked: string;
   /** Ground spots the picked dasher may roll to. Empty for a launcher. */
   targets: readonly string[];
+  /** True on a side's first go in a match: show the pointing finger and the words. */
+  hint?: boolean;
 };
 
 /** The active team's ammo and evasion ability, for the two gear buttons. */
@@ -204,6 +209,8 @@ export type HudHandlers = {
   onHelper?: (id: string) => void;
   /** Squads S1: roll the picked dasher to a ground spot. That is the whole go. */
   onDash?: (spot: string) => void;
+  /** Squads S1: Chrono says the picked helper's name and what it does, with a caption. */
+  onHearHelper?: () => void;
 };
 
 export type VictoryOptions = {

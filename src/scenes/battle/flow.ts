@@ -99,6 +99,8 @@ export class BattleFlow {
   private awaitingFire: (() => void) | null = null;
   /** Squads S1: the spot a player chose for a dash. It ends the wait like Fire does. */
   private pendingDash: string | null = null;
+  /** Squads S1: sides that already took a go in this match, so the first-go hint shows once each. */
+  private readonly hintDone = new Set<Team>();
   /** The Computer player's own random stream and the time it has spent thinking this turn. */
   private readonly botRng: Rng;
   private thinkingSpentMs = 0;
@@ -209,8 +211,10 @@ export class BattleFlow {
       view.setAimDragHandler((aim) => this.setAim(aim));
       this.pushStatus(true);
       this.drawPreview(team);
+      this.sayFirstGo(team);
       await fired;
       this.live();
+      this.hintDone.add(team);
       const spot = this.pendingDash;
       this.pendingDash = null;
       if (spot) {
@@ -529,6 +533,7 @@ export class BattleFlow {
       onAmmo: (id) => this.selectAmmo(id),
       onEvasion: () => this.toggleEvasion(),
       onHelper: (id) => this.pickHelper(id),
+      onHearHelper: () => this.hearHelper(),
       onDash: (spot) => {
         const go = this.awaitingFire;
         if (!go || this.stopped) return;
@@ -578,6 +583,43 @@ export class BattleFlow {
       return; // not ready yet, used up, or the wrong phase; ignore
     }
     this.pushStatus(true);
+  }
+
+  /** The first-go hint shows on a side's first go of the match, for people only. */
+  private showsHint(team: Team, goesDone: number): boolean {
+    return goesDone === 0 && !this.hintDone.has(team) && !this.isComputer(team);
+  }
+
+  /** Chrono says the hint once, with a caption. Sound still waits for the first tap (the pass screen is one). */
+  private sayFirstGo(team: Team): void {
+    const s = this.deps.match.snapshot();
+    if (!s.squads || !this.showsHint(team, s.turn.shotsFired)) return;
+    this.speakCaptioned('squad-first-go', SQUAD_COPY.firstGo);
+  }
+
+  /** Hear it: Chrono says the picked helper's name and what it does, with a caption. Free, no go. */
+  private hearHelper(): void {
+    if (!this.awaitingFire || this.stopped) return;
+    const { match } = this.deps;
+    const s = match.snapshot();
+    if (!s.squads) return;
+    const picked = s.squads.crew.helpers.find((x) => x.id === s.squads!.picked[s.turn.team]);
+    if (!picked) return;
+    const name = SQUAD_COPY.helperName[picked.id] ?? picked.id;
+    this.speakCaptioned(`squad-hear-${picked.id}`, SQUAD_COPY.hearLine(picked.kind, name));
+  }
+
+  private speakCaptioned(id: string, text: string): void {
+    const { overlay, audio } = this.deps;
+    overlay.setCaption(text);
+    try {
+      audio?.speak?.(
+        { id, text, captions: timeCaptions([text], 2500), durationMs: 2500, noClip: true },
+        { onCaption: (t) => overlay.setCaption(t) },
+      );
+    } catch {
+      /* no voice: the caption still shows */
+    }
   }
 
   private pickHelper(id: string): void {
@@ -661,6 +703,7 @@ export class BattleFlow {
                 })),
               picked: s.squads.picked[team],
               targets: canFire ? match.helperTargets() : [],
+              hint: canFire && this.showsHint(team, s.turn.shotsFired),
             },
           }
         : {}),

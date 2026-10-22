@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { createSeedSource } from '../../src/scenes/flow';
 import {
+  createFlags,
   createLoadFaults,
   e2eEnabled,
   installTestHook,
@@ -58,6 +59,7 @@ describe('installTestHook', () => {
     const win: { __timeclash?: TimeClashHook } = {};
     const seeds = createSeedSource(() => 0.5);
     const faults = createLoadFaults();
+    const flags = createFlags();
     const storage = createStorage(null);
     const session = { match: over.sessionMatch ?? null, bank: null };
     const installed = installTestHook(win, {
@@ -65,11 +67,12 @@ describe('installTestHook', () => {
       mode: over.mode ?? 'development',
       seeds,
       faults,
+      flags,
       storage,
       session,
       activeScenes: () => (over.scenes ?? []) as never,
     });
-    return { win, seeds, faults, storage, installed };
+    return { win, seeds, faults, flags, storage, installed };
   };
 
   it('installs nothing in production', () => {
@@ -86,6 +89,18 @@ describe('installTestHook', () => {
     expect(t.seeds.next()).toBe(77);
     t.win.__timeclash!.setSeed(null);
     expect(t.seeds.next()).not.toBe(77);
+  });
+  it('starts with no squads switch, and lets a test turn Squads on and back to default', () => {
+    const t = make();
+    expect(t.flags.squads).toBeUndefined();
+    t.win.__timeclash!.setSquads(true);
+    expect(t.flags.squads).toBe(true);
+    t.win.__timeclash!.setSquads(null);
+    expect(t.flags.squads).toBeUndefined();
+  });
+  it('has no squads switch in production or without the query', () => {
+    expect(make({ mode: 'production' }).win.__timeclash).toBeUndefined();
+    expect(make({ search: '?squads=1' }).win.__timeclash).toBeUndefined();
   });
   it('lets a test fail the next loads', () => {
     const t = make();

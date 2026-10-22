@@ -30,6 +30,38 @@ export function createSquadBar(doc: Document, handlers: () => HudHandlers | null
     role: 'group',
     'aria-label': SQUAD_COPY.where,
   });
+  const back = h(doc, 'button', {
+    type: 'button',
+    class: 'tc-helper-back',
+    'data-testid': TEST_IDS.helperBack,
+    hidden: true,
+  });
+  back.append(
+    h(doc, 'span', { 'aria-hidden': 'true', text: `${SQUAD_COPY.backIcon} ` }),
+    SQUAD_COPY.back,
+  );
+  const hear = h(doc, 'button', {
+    type: 'button',
+    class: 'tc-helper-hear',
+    'data-testid': TEST_IDS.helperHear,
+  });
+  hear.append(
+    h(doc, 'span', { 'aria-hidden': 'true', text: `${SQUAD_COPY.hearIcon} ` }),
+    SQUAD_COPY.hear,
+  );
+  const hint = h(doc, 'div', { class: 'tc-go-hint', 'data-testid': TEST_IDS.goHint, hidden: true });
+  hint.append(
+    h(doc, 'span', { class: 'tc-go-finger', 'aria-hidden': 'true', text: SQUAD_COPY.fingerIcon }),
+    h(doc, 'span', { text: SQUAD_COPY.firstGo }),
+  );
+  let launcherId: string | null = null;
+  let live = false;
+  back.addEventListener('click', () => {
+    if (live && launcherId) handlers()?.onHelper?.(launcherId);
+  });
+  hear.addEventListener('click', () => {
+    if (live) handlers()?.onHearHelper?.();
+  });
   const root = h(
     doc,
     'div',
@@ -37,6 +69,8 @@ export function createSquadBar(doc: Document, handlers: () => HudHandlers | null
     h(doc, 'div', { class: 'tc-go-row' }, banner, dots),
     helpers,
     spots,
+    h(doc, 'div', { class: 'tc-helper-tools' }, back, hear),
+    hint,
   );
 
   return {
@@ -44,6 +78,9 @@ export function createSquadBar(doc: Document, handlers: () => HudHandlers | null
     update(squads, active): boolean {
       root.hidden = !squads;
       if (!squads) return false;
+      live = active;
+      launcherId = squads.helpers.find((x) => x.kind === 'launcher')?.id ?? null;
+      hint.hidden = !squads.hint;
       banner.textContent = goLabel(squads.goesDone);
       dots.replaceChildren(
         ...Array.from({ length: SQUADS.goesPerTurn }, (_, i) =>
@@ -73,6 +110,7 @@ export function createSquadBar(doc: Document, handlers: () => HudHandlers | null
       );
       const picked = squads.helpers.find((x) => x.id === squads.picked);
       const dasherUp = picked?.kind === 'dasher';
+      back.hidden = !dasherUp;
       spots.hidden = !dasherUp;
       spots.replaceChildren(
         ...(dasherUp && squads.targets.length === 0

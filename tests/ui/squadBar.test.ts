@@ -3,6 +3,7 @@
 import { readFileSync } from 'node:fs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { SQUAD_COPY, goTurnBanner } from '../../src/data/copy';
+import { SQUADS } from '../../src/game/config';
 import type { HudHandlers, HudSquads, HudState } from '../../src/ui/types';
 import { TEST_IDS } from '../../src/ui/types';
 import { click, key, q, qa, setup } from './helpers';
@@ -48,6 +49,7 @@ const show = (over: Partial<HudState>): string[] => {
     onSelect: () => {},
     onHelper: (id) => calls.push(`helper:${id}`),
     onDash: (spot) => calls.push(`dash:${spot}`),
+    onHearHelper: () => calls.push('hear'),
   };
   s.overlay.showHud(h);
   s.overlay.updateHud(state(over));
@@ -113,5 +115,67 @@ describe('flag on', () => {
     expect(block).toMatch(/min-width:\s*56px/);
     expect(block).toMatch(/min-height:\s*56px/);
     expect(block).toMatch(/font-size:\s*20px/);
+  });
+});
+
+describe('Back, Hear it and the first-go hint', () => {
+  it('Hear it is always on the bar and asks to hear the picked helper', () => {
+    const calls = show({ squads: squads() });
+    const hear = q(TEST_IDS.helperHear)!;
+    expect(hear.textContent).toContain(SQUAD_COPY.hear);
+    click(hear);
+    expect(calls).toEqual(['hear']);
+  });
+  it('Back shows only while the dasher is picked, and goes back to the launcher', () => {
+    show({ squads: squads() });
+    expect(q(TEST_IDS.helperBack)!.hidden).toBe(true);
+    const calls = show({ squads: squads({ picked: 'PAST-dasher', targets: ['g2'] }) });
+    const back = q(TEST_IDS.helperBack)!;
+    expect(back.hidden).toBe(false);
+    expect(back.textContent).toContain(SQUAD_COPY.back);
+    click(back);
+    expect(calls).toEqual(['helper:PAST-launcher']);
+  });
+  it('Back and Hear it do nothing while a cover is up or a shot flies', () => {
+    const calls = show({
+      canFire: false,
+      squads: squads({ picked: 'PAST-dasher', targets: ['g2'] }),
+    });
+    click(q(TEST_IDS.helperBack));
+    click(q(TEST_IDS.helperHear));
+    expect(calls).toEqual([]);
+  });
+  it('shows the hint with a finger and words only when asked, and hides it after', () => {
+    show({ squads: squads() });
+    expect(q(TEST_IDS.goHint)!.hidden).toBe(true);
+    s.overlay.updateHud(state({ squads: squads({ hint: true }) }));
+    const hint = q(TEST_IDS.goHint)!;
+    expect(hint.hidden).toBe(false);
+    expect(hint.textContent).toContain(SQUAD_COPY.firstGo);
+    expect(hint.querySelector('[aria-hidden="true"]')).not.toBeNull();
+    s.overlay.updateHud(state({ squads: squads({ hint: false }) }));
+    expect(q(TEST_IDS.goHint)!.hidden).toBe(true);
+  });
+  it('gives the new buttons 56px targets and 20px text, and stills the finger under reduced motion', () => {
+    const css = readFileSync('src/styles/ui.css', 'utf8');
+    expect(css).toMatch(/\.tc-helper-back/);
+    expect(css).toMatch(/\[data-motion='reduced'\] \.tc-go-finger/);
+    const block = css.slice(css.indexOf('.tc-helper,\n.tc-dash-spot'));
+    expect(block).toMatch(/min-height:\s*56px/);
+    expect(block).toMatch(/font-size:\s*20px/);
+  });
+  it('writes the helper line in plain words for each kind', () => {
+    expect(SQUAD_COPY.hearLine('launcher', 'Cannon Crew')).toContain('Cannon Crew');
+    expect(SQUAD_COPY.hearLine('dasher', 'Tank Button')).toContain('Tank Button');
+    expect(SQUAD_COPY.hearLine('launcher', 'x')).not.toBe(SQUAD_COPY.hearLine('dasher', 'x'));
+  });
+});
+
+describe('flag off pins', () => {
+  it('ships with Squads off and no new control shows without squad state', () => {
+    expect(SQUADS.enabled).toBe(false);
+    show({});
+    expect(document.querySelector('.tc-squad-bar')!.hasAttribute('hidden')).toBe(true);
+    expect(q(TEST_IDS.turnBanner)!.textContent).toBe('ALEX, YOUR TURN! (SHOT 1 OF 2)');
   });
 });

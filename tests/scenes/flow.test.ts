@@ -118,6 +118,12 @@ describe('buildMatchSetup', () => {
     const setup = buildMatchSetup(players, 5, DEFAULT_EFFECTS);
     expect(setup.effects).toBe(DEFAULT_EFFECTS);
   });
+  it('adds the squads switch only when it is given', () => {
+    expect(buildMatchSetup(players, 5, undefined, {})).not.toHaveProperty('squads');
+    expect(buildMatchSetup(players, 5, undefined, { squads: true }).squads).toBe(true);
+    const m = createMatch(buildMatchSetup(players, 5, undefined, { squads: true }));
+    expect(m.snapshot().squads).toBeDefined();
+  });
   it('builds something createMatch accepts', () => {
     const m = createMatch(buildMatchSetup(players, 42));
     expect(m.snapshot().turn.team).toBe('PAST');
