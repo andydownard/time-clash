@@ -21,7 +21,8 @@ import {
   type Team,
   type Topic,
 } from '../game/types';
-import { clearMyData, loadPractice } from '../storage/storage';
+import { clearMyData, loadPractice, loadSetupPicks } from '../storage/storage';
+import type { SetupPick } from '../storage/types';
 import { skyline } from './art';
 import { COMPUTER_TEAM, createPracticeSetup } from './computerPlayer';
 import { LOCAL_IDS } from './constants';
@@ -38,6 +39,13 @@ const START_PICK = { grade: 2 as Grade, subject: 'both' as Subject };
 const SUBJECTS: readonly Subject[] = ['reading', 'math', 'both'];
 
 type TeamState = { name: string; grade: Grade; subject: Subject; topic?: Topic };
+
+/** Just the part Setup remembers between visits. */
+const pickOf = (t: TeamState): SetupPick => ({
+  grade: t.grade,
+  subject: t.subject,
+  ...(t.topic ? { topic: t.topic } : {}),
+});
 
 export function showSetup(ctx: UiCtx, initial: Players | null): Promise<Players>;
 export function showSetup(
@@ -62,6 +70,12 @@ export function showSetup(
     FUTURE: { name: DEFAULT_NAMES.FUTURE, ...START_PICK },
   });
   const state = defaults();
+  // Last time's grade, subject and Focus. Names are not kept here.
+  const remembered = loadSetupPicks(ctx.storage);
+  for (const team of TEAMS) {
+    const pick = remembered[team];
+    if (pick) state[team] = { ...state[team], ...pick };
+  }
   if (initial) {
     // The Computer player is not a name to type back in. Its side starts fresh.
     for (const p of initial) {
@@ -447,6 +461,10 @@ export function showSetup(
       if (result.ok) {
         ctx.sfx('click');
         if (practice) ctx.storage.set('timeclash.practice', practice.choice());
+        ctx.storage.set('timeclash.setupPicks', {
+          PAST: pickOf(state.PAST),
+          FUTURE: pickOf(state.FUTURE),
+        });
         close();
         resolve(alone ? withComputer(result.players, COMPUTER_TEAM) : result.players);
         return;
