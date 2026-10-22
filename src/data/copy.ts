@@ -423,6 +423,9 @@ export const VICTORY = {
     `Wipeout! The ${home.toLowerCase()} turned into bouncy toy blocks.`,
   brainStats: 'Brain stats',
   brainStatsValue: (right: number, total: number): string => `${right} right out of ${total}`,
+  /** The Scrap a side earned this match. Zero is a plain "0 Scrap", never a blank. */
+  scrapLabel: 'Scrap earned',
+  scrapValue: (n: number): string => `${n} Scrap`,
   awardsHeading: 'Awards',
   awards: {
     quickestBrain: 'Quickest Brain',
