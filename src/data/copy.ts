@@ -189,8 +189,14 @@ export const SETUP = {
   subjectHelper: 'Both mixes reading and math.',
   /** Optional math focus (a parent picks it). Off at first. */
   topicLabel: 'Focus',
-  topicChips: { multiplication: 'Focus: Multiplication' } as Record<string, string>,
-  topicHelper: 'Math questions are all multiplication.',
+  topicChips: {
+    multiplication: 'Focus: Multiplication',
+    division: 'Focus: Division',
+  } as Record<string, string>,
+  topicHelpers: {
+    multiplication: 'Math questions are all multiplication.',
+    division: 'Math questions are all division.',
+  } as Record<string, string>,
   start: "Let's clash!",
   matchHelper: 'Questions will match your grade.',
   namesStay: 'Names stay on this device. Nothing is sent anywhere.',

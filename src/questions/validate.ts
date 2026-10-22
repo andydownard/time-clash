@@ -13,6 +13,7 @@ import {
   sub,
   type Rational,
 } from './mathEval';
+import type { Topic } from '../game/types';
 import type { QuestionKind, RecomputeMathAnswer, ValidateQuestion } from './types';
 
 export const KINDS: readonly QuestionKind[] = [
@@ -78,6 +79,16 @@ function recomputeValue(prompt: string): Rational | null {
     return rhs ? div(rhs, coef) : null;
   }
 
+  // N cookies are shared equally by M kids. How many cookies does each kid get?   (sharing, K to 2)
+  const shared =
+    /^(\d+) (\w+) are shared equally by (\d+) \w+\. How many \2 does each \w+ get\?$/.exec(prompt);
+  if (shared) return div(fromInt(Number(shared[1])), fromInt(Number(shared[3])));
+  // N cookies are put in groups of M. How many groups are there?
+  const grouped = /^(\d+) (\w+) are put in groups of (\d+)\. How many groups are there\?$/.exec(
+    prompt,
+  );
+  if (grouped) return div(fromInt(Number(grouped[1])), fromInt(Number(grouped[3])));
+
   // N boxes have M things each. How many things in all?   (equal groups, K to 2)
   const groups = /^(\d+) (\w+) have (\d+) (\w+) each\. How many \4 in all\?$/.exec(prompt);
   if (groups) return mul(fromInt(Number(groups[1])), fromInt(Number(groups[3])));
@@ -93,6 +104,13 @@ function recomputeValue(prompt: string): Rational | null {
     if (!n || !m) return null;
     const product = mul(n, m);
     return product ? div(product, fromInt(100)) : null;
+  }
+
+  // What is the remainder when A is divided by B?
+  const rem = /^the remainder when (\d+) is divided by (\d+)$/.exec(inner);
+  if (rem) {
+    const divisor = BigInt(rem[2]!);
+    return divisor === 0n ? null : fromInt(BigInt(rem[1]!) % divisor);
   }
 
   // What is the area of a rectangle with length L and width W?
@@ -144,6 +162,7 @@ function hintLeaks(hint: string, answer: string): boolean {
 
 const TOPIC_PREFIX = 'topic:';
 const MULTIPLIES = /\d\s[x*×]\s[\d(]|\)\s[x*×]\s|\beach\b/;
+const DIVIDES = /\d\s[/÷]\s[\d(]|\)\s[/÷]\s|shared equally|groups of|divided by/;
 
 /** Checks the topic tags: known topic, math only, and a question that really belongs to it. */
 function topicProblems(q: Record<string, unknown>): string[] {
@@ -159,16 +178,25 @@ function topicProblems(q: Record<string, unknown>): string[] {
   }
   const topics = TOPIC_IDS.filter((t) => tags.includes(TOPIC_FOCUS.tags[t]));
   if (topics.length > 0 && q.subject !== 'math') out.push('topic tag is for math, not reading');
-  if (topics.includes('multiplication') && q.subject === 'math') {
-    if (q.kind !== 'numeric') out.push('multiplication topic question must be kind "numeric"');
-    if (
-      tags.includes(MANUAL_TAG) ||
-      (typeof q.prompt === 'string' && recomputeMathAnswer(q.prompt) === null)
-    ) {
-      out.push('multiplication topic question must be checkable by the answer-key recompute');
-    }
-    if (typeof q.prompt === 'string' && !MULTIPLIES.test(q.prompt)) {
-      out.push('multiplication topic question does not multiply (needs "x" or "each")');
+  const shape: Record<Topic, { rule: RegExp; says: string }> = {
+    multiplication: { rule: MULTIPLIES, says: 'multiply (needs "x" or "each")' },
+    division: {
+      rule: DIVIDES,
+      says: 'divide (needs "/", "shared equally", "groups of" or "divided by")',
+    },
+  };
+  if (q.subject === 'math') {
+    for (const topic of topics) {
+      if (q.kind !== 'numeric') out.push(`${topic} topic question must be kind "numeric"`);
+      if (
+        tags.includes(MANUAL_TAG) ||
+        (typeof q.prompt === 'string' && recomputeMathAnswer(q.prompt) === null)
+      ) {
+        out.push(`${topic} topic question must be checkable by the answer-key recompute`);
+      }
+      if (typeof q.prompt === 'string' && !shape[topic].rule.test(q.prompt)) {
+        out.push(`${topic} topic question does not ${shape[topic].says}`);
+      }
     }
   }
   return out;

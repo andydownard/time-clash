@@ -8,7 +8,7 @@ Browser
  ├─ Phaser scenes (draw, animate, play sound)      src/scenes/
  ├─ DOM overlays (modals, banners, captions)        src/ui/
  ├─ Pure game rules (tested)                        src/game/
- ├─ Question bank + picker (tested), topic tags     src/questions/
+ ├─ Question bank + picker (tested), topic tags     src/questions/   (multiplication: Past, division: Future)
  ├─ Sound manager (unlock on tap, mute, volume)     src/audio/
  └─ Storage wrapper (localStorage, try/catch)       src/storage/
 

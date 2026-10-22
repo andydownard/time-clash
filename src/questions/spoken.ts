@@ -6,6 +6,7 @@ import type { Question } from './types';
 const sayMath = (text: string): string =>
   text
     .replace(/(\d+)\/(\d+)/g, '$1 over $2')
+    .replace(/(?<=[\d)])\s\/\s(?=[\d(])/g, ' divided by ')
     .replace(/\^2\b/g, ' squared')
     .replace(/\^3\b/g, ' cubed')
     .replace(/\^\(?(-?\d+)\)?/g, ' to the power of $1')

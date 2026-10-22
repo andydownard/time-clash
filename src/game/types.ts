@@ -23,7 +23,7 @@ export type Grade = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 export type Subject = 'reading' | 'math' | 'both';
 
 /** A math topic a parent can focus a side on at Setup. Off by default. */
-export type Topic = 'multiplication';
+export type Topic = 'multiplication' | 'division';
 
 export type Player = {
   /** Trimmed, 1 to 12 characters. Never leaves the device. */

@@ -252,3 +252,28 @@ describe('ui.css: room for the corner buttons', () => {
     expect(body('.tc-hud-bottom')).toMatch(/flex-wrap:\s*wrap/);
   });
 });
+
+describe('ui.css: iPad landscape audit fixes', () => {
+  const body = (sel: string) => all.find((r) => r.selector === sel)?.body ?? '';
+  it('the Leave dialog body text is at least 20px (--tc-fs-body)', () => {
+    expect(parseInt(vars['--tc-fs-body'] ?? '0', 10)).toBeGreaterThanOrEqual(20);
+    expect(body('.tc-cover-card p')).toMatch(/font-size:\s*var\(--tc-fs-body\)/);
+  });
+
+  it('the page runs edge to edge so safe-area insets apply', () => {
+    expect(read('../../index.html')).toMatch(/viewport-fit=cover/);
+  });
+
+  it('safe-area tokens fall back to 0px on screens without insets', () => {
+    for (const side of ['top', 'right', 'bottom', 'left']) {
+      expect(tokens).toMatch(
+        new RegExp(`--tc-safe-${side}:\\s*env\\(safe-area-inset-${side},\\s*0px\\)`),
+      );
+    }
+  });
+
+  it('bottom padding is max(normal, safe inset), so plain screens are unchanged', () => {
+    const uses = ui.match(/,\s*var\(--tc-safe-bottom\)\)/g) ?? [];
+    expect(uses.length).toBeGreaterThanOrEqual(3);
+  });
+});

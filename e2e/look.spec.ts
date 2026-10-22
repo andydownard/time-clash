@@ -55,6 +55,27 @@ async function fitsOnScreen(page: Page, screen: string, where: string): Promise<
   expect.soft(r.outside, `${where}: buttons not fully inside the window`).toEqual([]);
 }
 
+const IPAD_SIZES = [
+  { w: 1024, h: 768 },
+  { w: 1133, h: 744 },
+  { w: 1280, h: 800 },
+  { w: 1376, h: 1032 },
+];
+
+test('Setup fits every iPad landscape size, Clear my data included', async ({ page }) => {
+  await toSetup(page);
+  for (const { w, h } of IPAD_SIZES) {
+    await page.setViewportSize({ width: w, height: h });
+    await fitsOnScreen(page, 'setup', `Setup ${w}x${h}`);
+    const clear = await page.evaluate(() => {
+      const b = document.querySelector<HTMLElement>('[data-testid="clear-data"]');
+      return b ? b.getBoundingClientRect().bottom : -1;
+    });
+    expect.soft(clear, `Setup ${w}x${h}: Clear my data bottom edge`).toBeGreaterThan(0);
+    expect.soft(clear, `Setup ${w}x${h}: Clear my data clear of the bottom`).toBeLessThanOrEqual(h - 8);
+  }
+});
+
 test('fonts come from this site and are loaded', async ({ page, baseURL }) => {
   const fontUrls: string[] = [];
   page.on('response', (r) => {
@@ -209,6 +230,11 @@ test('every screen keeps the floors, and the screenshots are retaken', async ({
   await floors(page, 'Victory');
   await fitsOnScreen(page, 'victory', 'Victory');
   await shot('victory');
+  // The iPad sizes too (docs/IPAD_AUDIT.md): the mini is the tightest.
+  for (const { w, h } of IPAD_SIZES) {
+    await page.setViewportSize({ width: w, height: h });
+    await fitsOnScreen(page, 'victory', `Victory ${w}x${h}`);
+  }
 });
 
 test('a reading reload keeps the floors', async ({ page, browserName }) => {

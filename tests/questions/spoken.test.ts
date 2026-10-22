@@ -30,6 +30,13 @@ describe('spokenText', () => {
     expect(t).toContain('squared');
     expect(t).toContain('1 over 2');
   });
+  it('says a spaced slash as "divided by", and leaves a fraction as "over"', () => {
+    const t = spokenText(
+      mq({ prompt: 'What is (3/4) / (1/4)?', choices: ['3', '1', '4', '2'], answer: '3' }),
+    );
+    expect(t).toContain('3 over 4) divided by (1 over 4');
+    expect(spokenText(mq({ prompt: 'What is 56 / 7?' }))).toContain('56 divided by 7');
+  });
   it('splits into sentences for captions, none empty', () => {
     const parts = spokenSentences(mq());
     expect(parts.length).toBeGreaterThan(1);
