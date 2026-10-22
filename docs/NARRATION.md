@@ -1,6 +1,6 @@
 # Intro Voice: "How to Play"
 
-A narrator named **Chrono** (a goofy time-traveling announcer) explains the game before the first match. It plays after the player taps "Tap to Play" (browsers block sound until a tap). It runs about 60 seconds. It has captions, a Skip button, a Replay button, and a Mute button. The same lesson is reachable later from the "?" button.
+A narrator named **Chrono** (a goofy time-traveling announcer) explains the game before the first match. It plays after the player taps "Tap to Play" (browsers block sound until a tap). It runs about 45 seconds. It has captions, a Skip button, a Replay button, and a Mute button. The same lesson is reachable later from the "?" button.
 
 ## Rules
 - Start the voice only after a user tap.
@@ -11,32 +11,32 @@ A narrator named **Chrono** (a goofy time-traveling announcer) explains the game
 
 ## Script (5 cards)
 
-**Card 1: Welcome (about 10 seconds)**
-> Welcome to Time Clash! One of you commands a castle from the Past. The other commands a secret base from the Future. Let's learn how to win!
+**Card 1: Welcome (about 8 seconds)**
+> Welcome to Time Clash! One of you commands a castle from the Past. The other commands a secret base from the Future.
 
 Caption cue text: "Welcome to Time Clash!"
 
-**Card 2: Aim (about 12 seconds)**
-> On your turn, aim your launcher. Turn the angle dial to point up or down. Slide the power meter to shoot far or near. Watch the wind. It pushes your shot sideways!
+**Card 2: Aim (about 8 seconds)**
+> Aim with the angle dial. Slide the power meter to shoot far or near. Watch the wind. It pushes your shot sideways!
 
 Card title: "Aim"
 
-**Card 3: Shoot twice (about 10 seconds)**
-> You get two shots each turn. Hit the other base to lower its health. Each base starts with one hundred health. Empty the bar to win!
+**Card 3: Shoot twice (about 6 seconds)**
+> You get two shots each turn. Hit the other base to lower its health. Empty the bar to win!
 
 Card title: "Two Shots"
 
-**Card 4: Reload (about 15 seconds)**
-> After shot two, you reload your launcher. Answer a question to reload it. Reading players find the right word. Math players solve the problem. Answer fast to earn bonus scrap. Don't worry about mistakes. You always get to reload.
+**Card 4: Reload (about 9 seconds, 4 captions)**
+> After shot two, answer a question to reload. Get it right and win a Power Shot! Get it wrong? Shh, nobody saw. You still reload!
 
 Card title: "Reload"
 
-**Card 5: Wipeouts and passing the screen (about 13 seconds)**
-> A blast can bump you. Then you do a silly wipeout! Nobody gets hurt. You just lose a little dignity! Between turns, pass the screen. No peeking at their question. Ready? Let's clash across time!
+**Card 5: Wipeouts and passing the screen (about 11 seconds)**
+> A blast can make you do a silly wipeout! You just lose a little dignity! Between turns, pass the screen. No peeking at their question. Let's clash across time!
 
 Card title: "Wipeouts and Turns"
 
-**Total:** about 60 seconds.
+**Total:** about 42 seconds (a test caps it at 48).
 
 ## Pass screen line (built)
 Each time the pass screen (the cover between turns) opens, Chrono says its own words: "Pass the screen! No peeking at their question!" (`src/ui/passScreen.ts`, built from `PASS_SCREEN.heading` and `PASS_SCREEN.noPeeking`).

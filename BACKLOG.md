@@ -8,7 +8,7 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 - None open.
 
 ## P1
-- The intro runs about 60 seconds. Card 4 (Reload) has 7 captions over 15 seconds and only one joke.
+- Re-render the five intro clips from the shortened docs/NARRATION.md (`scripts/build-voice-db.py`, then `scripts/extract-voice-clips.py`). Captions and timing are already short. The recorded voice stays the old, longer script until then.
 - Caption times are still estimated from sentence length across the real clip length. Measure real sentence times (for example from the TTS output) if a caption looks early or late.
 
 ## P2

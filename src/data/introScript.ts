@@ -1,8 +1,17 @@
 // The five "How to Play" cards. Text is exactly docs/NARRATION.md, split into one
 // caption per sentence. tests/data/introScript.test.ts reads that file and compares.
-// Each durationMs is the real clip length in db/voice.sqlite, rounded to 100 ms. The clips are
-// extracted to public/audio/voice/ by scripts/extract-voice-clips.py.
+// Each durationMs is estimated from the text length (estimateSpeechMs, about 70 ms a character,
+// measured from the first recorded clips). Re-render the clips from docs/NARRATION.md with
+// scripts/build-voice-db.py, then scripts/extract-voice-clips.py, so the voice matches the captions.
 import type { IntroCard, IntroCardId, IntroScript } from './types';
+
+/** Milliseconds of Chrono's voice per character (measured: 66 to 72 across the first five clips). */
+const MS_PER_CHAR = 70;
+
+/** Estimated speech length for a card, rounded to 100 ms. */
+export function estimateSpeechMs(text: string): number {
+  return Math.round((text.length * MS_PER_CHAR) / 100) * 100;
+}
 
 /**
  * Spreads caption start times across the card in proportion to sentence length,
@@ -28,8 +37,8 @@ function card(
   title: string,
   audio: string,
   sentences: readonly string[],
-  durationMs: number,
 ): IntroCard {
+  const durationMs = estimateSpeechMs(sentences.join(' '));
   return {
     id,
     title,
@@ -42,72 +51,38 @@ function card(
 }
 
 export const INTRO_SCRIPT: IntroScript = [
-  card(
-    'welcome',
-    'Welcome',
-    '/audio/voice/intro-01-welcome.m4a',
-    [
-      'Welcome to Time Clash!',
-      'One of you commands a castle from the Past.',
-      'The other commands a secret base from the Future.',
-      "Let's learn how to win!",
-    ],
-    9400,
-  ),
-  card(
-    'aim',
-    'Aim',
-    '/audio/voice/intro-02-aim.m4a',
-    [
-      'On your turn, aim your launcher.',
-      'Turn the angle dial to point up or down.',
-      'Slide the power meter to shoot far or near.',
-      'Watch the wind.',
-      'It pushes your shot sideways!',
-    ],
-    11800,
-  ),
-  card(
-    'two-shots',
-    'Two Shots',
-    '/audio/voice/intro-03-shoot-twice.m4a',
-    [
-      'You get two shots each turn.',
-      'Hit the other base to lower its health.',
-      'Each base starts with one hundred health.',
-      'Empty the bar to win!',
-    ],
-    8900,
-  ),
-  card(
-    'reload',
-    'Reload',
-    '/audio/voice/intro-04-reload.m4a',
-    [
-      'After shot two, you reload your launcher.',
-      'Answer a question to reload it.',
-      'Reading players find the right word.',
-      'Math players solve the problem.',
-      'Answer fast to earn bonus scrap.',
-      "Don't worry about mistakes.",
-      'You always get to reload.',
-    ],
-    15900,
-  ),
+  card('welcome', 'Welcome', '/audio/voice/intro-01-welcome.m4a', [
+    'Welcome to Time Clash!',
+    'One of you commands a castle from the Past.',
+    'The other commands a secret base from the Future.',
+  ]),
+  card('aim', 'Aim', '/audio/voice/intro-02-aim.m4a', [
+    'Aim with the angle dial.',
+    'Slide the power meter to shoot far or near.',
+    'Watch the wind.',
+    'It pushes your shot sideways!',
+  ]),
+  card('two-shots', 'Two Shots', '/audio/voice/intro-03-shoot-twice.m4a', [
+    'You get two shots each turn.',
+    'Hit the other base to lower its health.',
+    'Empty the bar to win!',
+  ]),
+  card('reload', 'Reload', '/audio/voice/intro-04-reload.m4a', [
+    'After shot two, answer a question to reload.',
+    'Get it right and win a Power Shot!',
+    'Get it wrong? Shh, nobody saw.',
+    'You still reload!',
+  ]),
   card(
     'wipeouts',
     'Wipeouts and Turns',
     '/audio/voice/intro-05-wipeouts-and-passing-the-screen.m4a',
     [
-      'A blast can bump you.',
-      'Then you do a silly wipeout!',
-      'Nobody gets hurt.',
+      'A blast can make you do a silly wipeout!',
       'You just lose a little dignity!',
       'Between turns, pass the screen.',
       'No peeking at their question.',
-      'Ready?',
       "Let's clash across time!",
     ],
-    13800,
   ),
 ];
