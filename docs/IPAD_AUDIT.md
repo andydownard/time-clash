@@ -38,4 +38,5 @@ Checked and fine: Tap to Start, Intro cards, Camp, Forge, Build Base, pass scree
 
 1. Done in this PR: portrait (#1). Players now get a clear "Turn your iPad sideways" screen, and a running battle pauses.
 2. Done 2026-10-18: #2, #3, #4, #5, #8. Check the safe-area padding on a real iPad, since WebKit in a desktop browser reports no insets.
+   Pinned 2026-10-21: `e2e/look.spec.ts` checks Setup and Victory fit at 1024x768, 1133x744, 1280x800 and 1376x1032 (Clear my data stays inside the window). `tests/ui/styles.test.ts` pins the 20px Leave text, `viewport-fit=cover`, the 0px safe-area fallbacks and the `max(normal, safe inset)` bottom padding.
 3. Leave #6 (band seam) and #7 (side bars) for the next design pass.

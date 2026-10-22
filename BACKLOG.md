@@ -14,7 +14,6 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 ## P2
 - Reload card: an optional "hide the bonus ring" setting for slow readers.
 - Victory awards: the winner can still hold five awards. Consider a cap if it stings.
-- iPad landscape fixes from docs/IPAD_AUDIT.md: Clear my data is cut off on Setup at 1133x744, the Leave dialog body text is 16px, and the bottom controls have no safe-area margin.
 - Chrome host (? and gear) has no data-motion attribute. Add it if animation is ever added there.
 - Scrap counts and the brain stats line on Victory are still numbers in words. A pre-reader may want dots or stars to count.
 - Wood plank and neon pod card skins, bigger castle and rocket pictures on Setup cards, brighter Tap to Play silhouettes with a visual gag, and bouncing victory blocks are new art (Victory confetti and the fast-answer scrap burst are built; the blocks stay hidden under 820px tall).
