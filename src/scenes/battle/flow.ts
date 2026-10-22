@@ -22,7 +22,14 @@ import type { AmmoId } from '../../game/ammo';
 import { createShuffleBag } from '../../game/bag';
 import { createRng } from '../../game/rng';
 import type { AimInput, MatchController, Rng, Team } from '../../game/types';
-import { GEAR_COPY, HIT_LINES, RELOAD as RELOAD_COPY, RELOAD_QUIPS } from '../../data/copy';
+import {
+  GEAR_COPY,
+  HIT_LINES,
+  RELOAD as RELOAD_COPY,
+  RELOAD_QUIPS,
+  SQUAD_COPY,
+} from '../../data/copy';
+import type { HelperId } from '../../game/crew';
 import { timeCaptions } from '../../data/introScript';
 import {
   effectiveGrade,
@@ -90,6 +97,8 @@ export class BattleFlow {
   private readonly hitBags: Record<'direct' | 'near' | 'miss', { next(): number }>;
   private readonly quipBags: Record<'fast' | 'slow' | 'wrong', { next(): number }>;
   private awaitingFire: (() => void) | null = null;
+  /** Squads S1: the spot a player chose for a dash. It ends the wait like Fire does. */
+  private pendingDash: string | null = null;
   /** The Computer player's own random stream and the time it has spent thinking this turn. */
   private readonly botRng: Rng;
   private thinkingSpentMs = 0;
@@ -202,6 +211,12 @@ export class BattleFlow {
       this.drawPreview(team);
       await fired;
       this.live();
+      const spot = this.pendingDash;
+      this.pendingDash = null;
+      if (spot) {
+        await this.dashGo(team, spot);
+        return;
+      }
     }
     await this.launch(team);
   }
@@ -249,6 +264,30 @@ export class BattleFlow {
     } finally {
       overlay.showThinking?.(null);
     }
+  }
+
+  /** Squads S1: one dash go. The rules apply it now. The scene only says what happened, with a caption. */
+  private async dashGo(team: Team, spot: string): Promise<void> {
+    const { match, view, overlay, audio } = this.deps;
+    view.setAimDragHandler(null);
+    view.showPreview(team, null);
+    const out = match.dash(spot);
+    audio?.playSfx('thud');
+    this.pushStatus(false);
+    const name = SQUAD_COPY.helperName[out.helper] ?? '';
+    const lines = [SQUAD_COPY.rolled(name, Number(out.to.slice(1)) + 1)];
+    if (out.bonk?.kind === 'base') {
+      lines.push(
+        out.dodged ? SQUAD_COPY.bonkDodged : out.blocked ? SQUAD_COPY.bonkBlocked : SQUAD_COPY.bonkBase,
+      );
+    } else if (out.bonk) {
+      lines.push(SQUAD_COPY.bonkHelper);
+    }
+    const text = lines.join(' ');
+    overlay.setCaption(text);
+    await this.deps.wait(IMPACT_BEAT_MS);
+    this.live();
+    overlay.setCaption(null);
   }
 
   /** Fire the shot already aimed in the rules layer, fly it, and apply it. */
@@ -489,6 +528,14 @@ export class BattleFlow {
       onMuteToggle: () => this.deps.onMuteToggle?.(),
       onAmmo: (id) => this.selectAmmo(id),
       onEvasion: () => this.toggleEvasion(),
+      onHelper: (id) => this.pickHelper(id),
+      onDash: (spot) => {
+        const go = this.awaitingFire;
+        if (!go || this.stopped) return;
+        this.pendingDash = spot;
+        this.awaitingFire = null;
+        go();
+      },
     };
   }
 
@@ -529,6 +576,16 @@ export class BattleFlow {
       }
     } catch {
       return; // not ready yet, used up, or the wrong phase; ignore
+    }
+    this.pushStatus(true);
+  }
+
+  private pickHelper(id: string): void {
+    if (!this.awaitingFire || this.stopped) return;
+    try {
+      this.deps.match.selectHelper(id as HelperId);
+    } catch {
+      return; // wrong phase, other side's helper, or squads off; ignore
     }
     this.pushStatus(true);
   }
@@ -591,6 +648,22 @@ export class BattleFlow {
       units: unitsOf(team).map((u) => ({ id: u.id, name: u.name })),
       ...(this.deps.practice ? { computerTeam: this.deps.practice.team } : {}),
       gear: { ammo: s.ammo[team], ammoLeft: s.ammoLeft[team], evasion: s.evasion[team] },
+      ...(s.squads
+        ? {
+            squads: {
+              goesDone: s.turn.shotsFired,
+              helpers: s.squads.crew.helpers
+                .filter((x) => x.team === team)
+                .map((x) => ({
+                  id: x.id,
+                  kind: x.kind,
+                  name: SQUAD_COPY.helperName[x.id] ?? x.id,
+                })),
+              picked: s.squads.picked[team],
+              targets: canFire ? match.helperTargets() : [],
+            },
+          }
+        : {}),
     };
     overlay.updateHud(hud);
     // A stone wall stands only while a barricade guards its base.

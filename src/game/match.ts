@@ -21,6 +21,7 @@ import {
   PHASE1_LAYOUT,
   RNG_SALT,
   SCRAP,
+  SQUADS,
   TEAM_FACING,
   TUMBLE_LINE_COUNT,
 } from './config';
@@ -51,6 +52,15 @@ import {
   wallDamage,
   wallsOf,
 } from './builtBase';
+import {
+  IllegalCommandError,
+  dashTargets,
+  helperId,
+  planDash,
+  startingCrew,
+  type Crew,
+  type HelperId,
+} from './crew';
 import { DEFAULT_EFFECTS } from './loadout';
 import { scoreReload } from './reload';
 import { createShuffleBag } from './bag';
@@ -64,6 +74,7 @@ import type {
   BlastOutcome,
   BlastResult,
   CreateMatch,
+  DashResult,
   Match,
   MatchController,
   MountId,
@@ -119,6 +130,13 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
   const guardUsed = new Set<string>();
   /** What the shell in the air was fired by, for its damage to bricks. */
   let source: ShellSource | null = null;
+
+  // Squads S1: a launcher and a dasher per side. Off with the flag, with character health, or with built bases.
+  const squadsOn = (options.squads ?? SQUADS.enabled) && !characterHealth && !built;
+  let crew: Crew = startingCrew();
+  const requireSquads = (): void => {
+    if (!squadsOn) throw new IllegalCommandError('flag_off');
+  };
 
   let turn = createTurn(firstTeam, 0);
   let wind = windForTurn(seed, 0);
@@ -381,6 +399,15 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       ammo: { ...loaded },
       ammoLeft: { PAST: { ...ammoLeft.PAST }, FUTURE: { ...ammoLeft.FUTURE } },
       evasion: { PAST: evasionView(evasion.PAST), FUTURE: evasionView(evasion.FUTURE) },
+      ...(squadsOn
+        ? {
+            squads: {
+              crew: { helpers: crew.helpers.map((h) => ({ ...h })), picked: { ...crew.picked } },
+              picked: { ...crew.picked },
+              go: Math.min(SQUADS.goesPerTurn, turn.shotsFired + 1) as 1 | 2,
+            },
+          }
+        : {}),
       ...(built
         ? {
             baseInBattle: true,
@@ -465,8 +492,68 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       return flyCurrent(mount).result;
     },
 
+    selectHelper(id: HelperId): void {
+      guard('pick a helper');
+      requireSquads();
+      if (turn.phase !== 'AIMING') throw new IllegalTransitionError(turn.phase, 'SELECT_HELPER');
+      if (!crew.helpers.some((h) => h.id === id && h.team === turn.team)) {
+        throw new IllegalCommandError('not_your_helper');
+      }
+      crew = { ...crew, picked: { ...crew.picked, [turn.team]: id } };
+    },
+
+    helperTargets(): string[] {
+      if (!squadsOn || turn.phase !== 'AIMING') return [];
+      return dashTargets(crew, turn.team);
+    },
+
+    dash(to: string): DashResult {
+      guard('dash');
+      requireSquads();
+      if (turn.phase !== 'AIMING') throw new IllegalTransitionError(turn.phase, 'DASH');
+      const team = turn.team;
+      const target = otherTeam(team);
+      const planned = planDash(crew, team, to, nextBubble);
+      step({ type: 'FIRE' });
+      step({ type: 'SHOT_LANDED' });
+      crew = planned.crew;
+      const { bonk } = planned.outcome;
+      let damage = 0;
+      let blocked = false;
+      let dodged = false;
+      if (bonk?.kind === 'base') {
+        damage = bonk.damage;
+        // Same shields as a shot: a Hoverboard Dodge first, then the force field.
+        if (damage > 0 && dodgesNow(evasion[target])) {
+          evasion = { ...evasion, [target]: spend(evasion[target]) };
+          damage = 0;
+          dodged = true;
+        }
+        if (damage > 0 && shield[target] > 0) {
+          shield[target] -= 1;
+          damage = 0;
+          blocked = true;
+        }
+        baseHp = { ...baseHp, [target]: Math.max(0, baseHp[target] - damage) };
+        const won = winnerOf(baseHp);
+        if (won) {
+          status = 'OVER';
+          winner = won;
+        }
+      }
+      return {
+        ...planned.outcome,
+        damage,
+        ...(blocked ? { blocked: true } : {}),
+        ...(dodged ? { dodged: true } : {}),
+      };
+    },
+
     fire(): ShotResult {
       guard('fire');
+      if (squadsOn && crew.picked[turn.team] !== helperId(turn.team, 'launcher')) {
+        throw new IllegalCommandError('wrong_command');
+      }
       const mountId = built ? selectedMount[turn.team] : null;
       const mount = built && mountId ? mountOf(built[turn.team], mountId) : undefined;
       if (mountId && (!mount || !mount.alive || !mount.canFire)) {
@@ -581,6 +668,10 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
               : Math.min(s.fastestAnswerMs, input.elapsedMs);
         }
       }
+      // The Power Shot is the launcher's. A dasher pick from before does not carry into it.
+      if (squadsOn && turn.phase === 'BONUS_AIMING') {
+        crew = { ...crew, picked: { ...crew.picked, [team]: helperId(team, 'launcher') } };
+      }
       return { ...score, bonus: turn.phase === 'BONUS_AIMING' };
     },
 
@@ -608,6 +699,7 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       effects,
       ammo: { PAST: [...owned.PAST], FUTURE: [...owned.FUTURE] },
       characterHealth,
+      ...(options.squads === undefined ? {} : { squads: options.squads }),
       ...(options.baseInBattle === undefined ? {} : { baseInBattle: options.baseInBattle }),
       ...(options.bases ? { bases: options.bases } : {}),
     }),

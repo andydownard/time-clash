@@ -34,7 +34,7 @@ test('card 1 plays its m4a voice file after the tap, with a real length', async 
   await expect.poll(async () => (await seen()).length).toBeGreaterThan(0);
   expect((await seen())[0]!.src).toMatch(/\/audio\/voice\/intro-01-welcome\.m4a$/);
 
-  // Wait for the browser to decode the file header, then check the length (about 7.7 s clip).
+  // Wait for the browser to decode the file header, then check the length (6.4 s clip).
   const duration = await page.evaluate(
     () =>
       new Promise<number>((resolve) => {
@@ -45,6 +45,6 @@ test('card 1 plays its m4a voice file after the tap, with a real length', async 
         el.addEventListener('error', () => resolve(-1), { once: true });
       }),
   );
-  expect(duration, 'the browser could not decode the m4a').toBeGreaterThan(7);
-  expect(duration).toBeLessThan(9);
+  expect(duration, 'the browser could not decode the m4a').toBeGreaterThan(6);
+  expect(duration).toBeLessThan(7);
 });

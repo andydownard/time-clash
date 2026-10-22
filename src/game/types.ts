@@ -3,6 +3,7 @@
 // See docs/CONTRACTS.md for the reasons behind each choice.
 
 import type { AmmoId } from './ammo';
+import type { Crew, DashOutcome, GroundSpotId, HelperId } from './crew';
 import type { BIOME_IDS, SPOT_IDS } from './config';
 import type { EvasionId, EvasionPhase } from './evasion';
 import type { Placed, ResolvedSpot, SpotRole } from './baseBuilder';
@@ -381,6 +382,12 @@ export type TeamStats = {
 
 /** ARCHITECTURE.md Match, plus what the scenes need. Snapshots are copies. */
 export type Match = {
+  /** Squads S1 only: the helpers, who is picked, and which go is next (1 or 2). Absent when the flag is off. */
+  readonly squads?: {
+    readonly crew: Crew;
+    readonly picked: Record<Team, HelperId>;
+    readonly go: 1 | 2;
+  };
   readonly seed: number;
   readonly players: Players;
   readonly status: MatchStatus;
@@ -454,6 +461,8 @@ export type MatchOptions = {
   baseInBattle?: boolean;
   /** Each team's chosen base (from `chosenBaseFor`). A missing one is the default fixed base. */
   bases?: Partial<Record<Team, ChosenBase>>;
+  /** Squads S1 on or off. Default SQUADS.enabled (off). Ignored with characterHealth or built bases. */
+  squads?: boolean;
 };
 
 export class MatchOverError extends Error {
@@ -515,8 +524,24 @@ export interface MatchController {
   reloadDone(input: ReloadInput): ReloadResult;
   /** NEXT_PLAYER -> PASS_SCREEN for the other team with new wind. */
   pass(): void;
+  /**
+   * Squads S1. Only in AIMING. Picks the active team's launcher or dasher. Free (not a go).
+   * Throws IllegalCommandError (`flag_off`, `not_your_helper`) or IllegalTransitionError.
+   */
+  selectHelper(id: HelperId): void;
+  /** The ground spots the picked dasher may roll to now. Empty for a launcher or with the flag off. */
+  helperTargets(): GroundSpotId[];
+  /**
+   * Squads S1. AIMING -> AIMING (after go 1) or RELOAD (after go 2). The picked dasher rolls to `to`
+   * and bonks what is next to it. Applies base damage and the win rule. Does the work of
+   * fire() and shotLanded() in one call. Throws IllegalCommandError or IllegalTransitionError.
+   */
+  dash(to: GroundSpotId): DashResult;
   /** Options for a rematch: same players, seed + 1, the other team starts. */
   rematchOptions(): MatchOptions;
 }
+
+/** A dash go, after damage. `damage` is what the base really lost (0 if blocked or dodged). */
+export type DashResult = DashOutcome & { damage: number; blocked?: boolean; dodged?: boolean };
 
 export type CreateMatch = (options: MatchOptions) => MatchController;

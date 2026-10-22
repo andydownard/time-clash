@@ -8,7 +8,6 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 - None open.
 
 ## P1
-- Re-render the five intro clips from the shortened docs/NARRATION.md (`scripts/build-voice-db.py`, then `scripts/extract-voice-clips.py`). Captions and timing are already short. The recorded voice stays the old, longer script until then.
 - Caption times are still estimated from sentence length across the real clip length. Measure real sentence times (for example from the TTS output) if a caption looks early or late.
 
 ## P2
@@ -31,8 +30,7 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 
 ## Phase 5: Squads
 Plan only: docs/SQUADS_PLAN.md. Squads starts after the look and feel phase, which is built. Each milestone ships behind `SQUADS.enabled`.
-- P1: S1 Pick a helper. Each side gets a launcher and one dasher. Two taps per go, a "GO 1 OF 2" banner with dots, and reload after go 2.
-- P2: S2 Flyers. Hot Air Balloon and Space Plane drop payloads from sky spots.
+- P1: S1 follow-ups. S1 rules and helper bar are built behind the flag (see docs/SQUADS_PLAN.md "S1 as built"). Still to do: dasher art and ground spot markers on the battlefield, Back and Hear it buttons, first-go hint, an e2e switch, then the "2 goes" doc rewrite when the flag turns on.- P2: S2 Flyers. Hot Air Balloon and Space Plane drop payloads from sky spots.
 - P2: S3 Full crew of 4. Slingshot Squire, Laser Zapper, and Rocket Button, with fairness and no-stalemate tests.
 - P2: Unit tags. Team Past units wear letters A to D on a shield. Team Future units wear numbers 1 to 4. Pick a unit by tapping it or pressing its key.
 - P3: Easy crew option per side at Camp, set by a parent (just the launcher).

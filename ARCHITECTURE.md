@@ -67,6 +67,8 @@ Character health (flag `CHARACTER_HEALTH.enabled`, off): every fighter has 3 hea
 
 Built bases in battle (flag `BASE_IN_BATTLE.enabled`, off, needs character health): a team's built bricks and weapon spots take hits, fall, and fire in the match (`src/game/builtBase.ts`). See `docs/GAME_SPEC.md` "Built bases in battle".
 
+Squads S1 (flag `SQUADS.enabled`, off; `MatchOptions.squads` overrides it; ignored with character health or built bases): each side also has a launcher helper (today's fighter and aim, fired with `fire()`) and one dasher helper, in `src/game/crew.ts`. In AIMING a player calls `selectHelper(id)` (free), then either `fire()` or `dash(spot)`. A dash is one whole go: `dash` runs FIRE and SHOT_LANDED itself, so the turn machine is unchanged and the third go, a skipped reload and the Power Shot all behave as before. The Power Shot is always the launcher's. With the flag off the snapshot has no `squads` and the new calls throw `IllegalCommandError('flag_off')`. See `docs/SQUADS_PLAN.md` "S1 as built".
+
 ## Ammo (rules; wired in through the Battle Plan, see above)
 `src/game/ammo.ts` holds four kinds: standard, confetti explosives, bouncy plasma spheres and heavy iron bowling balls. Standard is free, unlimited and changes nothing (`tests/game/ammo.test.ts` pins that). The other three cost Scrap to unlock (10, 14, 18) and have 3, 3 and 2 uses per match. `simulateShot({ ..., ammo })` applies speed and wind scales and the plasma bounce (once, off the ground only; the result adds `bounced`). `classifyBlast(impact, base, radiusScale)` widens the blast for confetti. `scaleDamage(base, ammo)` scales and rounds damage. An unknown id counts as standard.
 

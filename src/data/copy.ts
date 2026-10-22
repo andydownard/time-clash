@@ -247,11 +247,38 @@ export const windLabel = (wind: number): string => {
     : `Wind: ${'←'.repeat(level)} ${word} (${n})`;
 };
 
+// ---------- Squads S1 (behind SQUADS.enabled) ----------
+/** Words for the helper pick. Short, third-grade, with a caption for every line Chrono says. */
+export const SQUAD_COPY = {
+  pick: 'Pick a helper',
+  where: 'Roll to a spot',
+  noSpots: 'No spot is free. Pick another helper.',
+  helperName: {
+    'PAST-launcher': 'Cannon Crew',
+    'PAST-dasher': 'Chariot Archers',
+    'FUTURE-launcher': 'Rocket Button',
+    'FUTURE-dasher': 'Tank Button',
+  } as Record<string, string>,
+  /** What each helper does, said once under the name. */
+  helperKind: { launcher: 'Fire!', dasher: 'Roll!' } as Record<string, string>,
+  spotLabel: (n: number): string => `Spot ${n}`,
+  spotAria: (n: number): string => `Roll to spot ${n}`,
+  rolled: (name: string, spot: number): string => `${name} rolls to spot ${spot}.`,
+  bonkBase: 'Bonk! The base wobbles.',
+  bonkHelper: 'Bonk! A helper tumbles home.',
+  bonkBlocked: 'Bonk! The force field says no.',
+  bonkDodged: 'Whoosh! The base slid out of the way.',
+} as const;
+
 // ---------- Turn banner and pass screen ----------
 export const turnBanner = (name: string, shot: number | 'POWER'): string =>
   shot === 'POWER'
     ? `${String(name).toUpperCase()}, POWER SHOT!`
     : `${String(name).toUpperCase()}, YOUR TURN! (SHOT ${shot} OF ${TURN.shotsPerTurn})`;
+
+/** The turn strip words when Squads is on: a go, not a shot. */
+export const goTurnBanner = (name: string, go: number): string =>
+  `${String(name).toUpperCase()}, YOUR TURN! (GO ${go} OF ${TURN.shotsPerTurn})`;
 
 export const PASS_SCREEN = {
   heading: 'Pass the screen!',

@@ -1,6 +1,6 @@
 # Intro Voice: "How to Play"
 
-A narrator named **Chrono** (a goofy time-traveling announcer) explains the game before the first match. It plays after the player taps "Tap to Play" (browsers block sound until a tap). It runs about 45 seconds. It has captions, a Skip button, a Replay button, and a Mute button. The same lesson is reachable later from the "?" button.
+A narrator named **Chrono** (a goofy time-traveling announcer) explains the game before the first match. It plays after the player taps "Tap to Play" (browsers block sound until a tap). It runs about 40 seconds. It has captions, a Skip button, a Replay button, and a Mute button. The same lesson is reachable later from the "?" button.
 
 ## Rules
 - Start the voice only after a user tap.
@@ -11,32 +11,32 @@ A narrator named **Chrono** (a goofy time-traveling announcer) explains the game
 
 ## Script (5 cards)
 
-**Card 1: Welcome (about 8 seconds)**
-> Welcome to Time Clash! One of you commands a castle from the Past. The other commands a secret base from the Future.
+**Card 1: Welcome (about 7 seconds)**
+> Welcome to Time Clash! A Past castle fights a secret Future base. Let's learn how to win!
 
 Caption cue text: "Welcome to Time Clash!"
 
 **Card 2: Aim (about 8 seconds)**
-> Aim with the angle dial. Slide the power meter to shoot far or near. Watch the wind. It pushes your shot sideways!
+> Aim your launcher with the angle and power sliders. Watch the wind. It pushes your shot sideways, the rascal!
 
 Card title: "Aim"
 
 **Card 3: Shoot twice (about 6 seconds)**
-> You get two shots each turn. Hit the other base to lower its health. Empty the bar to win!
+> You get two shots each turn. Hit the other base to lower its health. Empty the bar and you win!
 
 Card title: "Two Shots"
 
-**Card 4: Reload (about 9 seconds, 4 captions)**
-> After shot two, answer a question to reload. Get it right and win a Power Shot! Get it wrong? Shh, nobody saw. You still reload!
+**Card 4: Reload (about 9 seconds)**
+> After shot two, answer a question to reload. Answer fast to earn bonus scrap. Mistake? Even Chrono trips. You still reload! Get it right for a Power Shot!
 
 Card title: "Reload"
 
-**Card 5: Wipeouts and passing the screen (about 11 seconds)**
-> A blast can make you do a silly wipeout! You just lose a little dignity! Between turns, pass the screen. No peeking at their question. Let's clash across time!
+**Card 5: Wipeouts and passing the screen (about 10 seconds)**
+> A blast can bump you. Then you do a silly wipeout! You just lose a little dignity! Pass the screen between turns. No peeking! Let's clash across time!
 
 Card title: "Wipeouts and Turns"
 
-**Total:** about 42 seconds (a test caps it at 48).
+**Total:** about 40 seconds. Card 4 has 4 captions. Jokes: the wind rascal, Chrono tripping, and the lost dignity.
 
 ## Pass screen line (built)
 Each time the pass screen (the cover between turns) opens, Chrono says its own words: "Pass the screen! No peeking at their question!" (`src/ui/passScreen.ts`, built from `PASS_SCREEN.heading` and `PASS_SCREEN.noPeeking`).
@@ -51,6 +51,8 @@ Each time the pass screen (the cover between turns) opens, Chrono says its own w
 
 ## How the audio is made
 The clips are generated with the Kokoro text-to-speech model (voice `am_michael`) and stored in `db/voice.sqlite` (see `db/README.md` and `public/audio/CREDITS.md`). The site is static, so `python3 scripts/extract-voice-clips.py` copies the five intro clips into `public/audio/voice/` as `.m4a` files (AAC in an MP4 container). Chromium, WebKit and iPad Safari all play that format. A real family recording can replace any clip later: rebuild the database, run the extract script, and commit the files.
+
+To change only the intro words without touching the 24 wipeout clips, update the five `UPDATE voice_clips` rows (text, audio, duration_ms, bytes, sha256) with the same Kokoro settings (`am_michael`, speed 0.95, `en-us`, 64 kbps AAC), then run the extract script. Keep each card header as `**Card N: Title (about X seconds)**` followed by one `> ` line, because `build-voice-db.py` reads that shape. The app server does not serve intro clips: they ship as static files, so no hash or manifest changes.
 
 If an audio file fails to load, the game falls back to the browser `speechSynthesis` API and still shows captions.
 
