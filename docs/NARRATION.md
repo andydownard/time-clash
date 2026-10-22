@@ -66,6 +66,7 @@ public/audio/voice/intro-05-wipeouts-and-passing-the-screen.m4a
 src/data/introScript.ts                    (card title, caption sentences, audio file, duration)
 ```
 `durationMs` in `introScript.ts` is the real clip length, rounded to 100 ms. A test reads each file's MP4 header and fails if the two drift apart by more than 300 ms.
+Caption start times come from measured pauses in the real clips. `python3 scripts/measure-intro-timings.py` decodes each clip (macOS `afconvert`, no new dependencies) and writes the clip length and its quiet gaps to `src/data/introTimings.json`. `timeCaptions` takes the longest (sentences minus one) gaps as the sentence breaks and starts each caption 100 ms before the voice resumes. If a card has too few gaps, it falls back to the sentence-length estimate. Limits: the gaps are found from silence, not from the words, so a sentence that runs into the next with no pause is not detected, and a long mid-sentence pause could be picked by mistake. Real per-word timing needs Kokoro's own timing output, which needs a re-run of Kokoro (not done). Re-run the script only if a clip changes. `--check` fails if the file is stale. Tests in `tests/data/introScript.test.ts` keep every caption inside its clip, within 300 ms of the header length, and within 1500 ms of the old length-based estimate.
 Splitting by card lets the visuals change exactly when each card starts, and lets Skip jump card by card.
 
 ## Captions data shape

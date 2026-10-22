@@ -203,6 +203,26 @@ describe('settings panel', () => {
     expect(b.textContent).toBe(BUTTONS.motionOn);
     expect(document.querySelector('[data-tc-root]')!.getAttribute('data-motion')).toBe('full');
   });
+  it('the chrome host carries data-motion and follows the Motion setting', () => {
+    const host = (): Element => document.querySelector('[data-tc-chrome]')!;
+    open();
+    expect(host().getAttribute('data-motion')).toBe('full');
+    click(q(CHROME_IDS.motion)!);
+    expect(host().getAttribute('data-motion')).toBe('reduced');
+    click(q(CHROME_IDS.motion)!);
+    expect(host().getAttribute('data-motion')).toBe('full');
+  });
+  it('the chrome host starts reduced when the saved setting says so', () => {
+    t.storage.set('timeclash.settings', {
+      muted: false,
+      volume: 0.5,
+      captions: true,
+      musicOn: true,
+      reducedMotion: 'on',
+    });
+    mount();
+    expect(document.querySelector('[data-tc-chrome]')!.getAttribute('data-motion')).toBe('reduced');
+  });
   it('captions flip, are saved, and hide the caption bar', () => {
     open();
     t.overlay.setCaption('hello');
