@@ -536,5 +536,276 @@
     "answer": "She doesn't have any apples.",
     "hint": "Watch for double no-words and verb matches.",
     "tags": ["grammar"]
+  },
+  {
+    "id": "reading-9-0041",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "vocab",
+    "prompt": "What does \"conserve\" mean? \"We turned off the lights to conserve energy.\"",
+    "choices": ["use up fast", "save and not waste", "make from scratch", "give away"],
+    "answer": "save and not waste",
+    "hint": "Think about turning lights off for a reason.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-9-0042",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "vocab",
+    "prompt": "What does \"humble\" mean? \"Though she won the prize, she stayed humble.\"",
+    "choices": ["not proud or boastful", "very surprised", "a little angry", "quite tired"],
+    "answer": "not proud or boastful",
+    "hint": "Think about how she acted after winning.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-9-0043",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "vocab",
+    "prompt": "What does \"adapt\" mean? \"Polar bears adapt to cold weather with thick fur.\"",
+    "choices": [
+      "run away from",
+      "complain about",
+      "pay no attention to",
+      "change to fit new conditions"
+    ],
+    "answer": "change to fit new conditions",
+    "hint": "The thick fur helps them live in the cold.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-9-0044",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "vocab",
+    "prompt": "What does \"bewildered\" mean? \"The tourist looked bewildered by the many signs.\"",
+    "choices": ["delighted", "bored", "confused", "annoyed"],
+    "answer": "confused",
+    "hint": "Too many signs make it hard to know where to go.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-9-0045",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "vocab",
+    "prompt": "What does \"concise\" mean? \"Keep your answer concise, just a sentence or two.\"",
+    "choices": ["long and detailed", "short and clear", "loud and fast", "slow and careful"],
+    "answer": "short and clear",
+    "hint": "The sentence says just a sentence or two.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-9-0046",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "vocab",
+    "prompt": "What does \"ponder\" mean? \"She sat by the window to ponder her choices.\"",
+    "choices": ["think about carefully", "forget completely", "hurry through", "argue about"],
+    "answer": "think about carefully",
+    "hint": "Sitting quietly by a window is a clue.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-9-0047",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "vocab",
+    "prompt": "What does \"rural\" mean? \"They moved from the city to a rural town with farms.\"",
+    "choices": ["very crowded", "beside the sea", "high on a peak", "in the countryside"],
+    "answer": "in the countryside",
+    "hint": "Look at the word farms.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-9-0048",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "vocab",
+    "prompt": "What does \"vast\" mean? \"From the hilltop we saw a vast field of wheat.\"",
+    "choices": ["very dry", "very old", "very large", "very green"],
+    "answer": "very large",
+    "hint": "Think of a field that goes on and on.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-9-0049",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "passage": "Honeybees dance to share news. When a bee finds good flowers, it moves in a pattern that shows the way. Other bees watch and then fly straight there.",
+    "choices": [
+      "Bees dance because they are happy.",
+      "Bees use dances to tell others where food is.",
+      "Flowers grow best near hives.",
+      "Bees cannot fly very far."
+    ],
+    "answer": "Bees use dances to tell others where food is.",
+    "hint": "Ask what the dance is for.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-9-0050",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "passage": "Lighthouses were built to guide ships. Their bright beams warned sailors about rocky shores. Today ships use satellites, but many lighthouses still shine.",
+    "choices": [
+      "Lighthouses have long helped ships stay safe.",
+      "Satellites are better than lights.",
+      "Sailors never visit rocky shores.",
+      "Lighthouses are built from rock."
+    ],
+    "answer": "Lighthouses have long helped ships stay safe.",
+    "hint": "Find the idea that fits the whole passage.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-9-0051",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "passage": "Tide pools are small homes left by the sea. When the tide goes out, water stays in rocky dips. Crabs, snails, and sea stars live there until the ocean returns.",
+    "choices": [
+      "Crabs are the best swimmers.",
+      "The ocean goes away for good.",
+      "Rocks are always wet.",
+      "Tide pools are small sea homes for many animals."
+    ],
+    "answer": "Tide pools are small sea homes for many animals.",
+    "hint": "Think about who lives in the pools.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-9-0052",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "passage": "Dana lost the school race by one step. She was upset at first. Then she shook hands with the winner and asked for tips on starting faster.",
+    "choices": [
+      "Dana never ran again.",
+      "The winner was unfair.",
+      "Dana turned a close loss into a chance to learn.",
+      "Races are only for fast people."
+    ],
+    "answer": "Dana turned a close loss into a chance to learn.",
+    "hint": "Look at what Dana did after she was upset.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-9-0053",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "passage": "Volcanoes form where hot rock rises through the earth. Over time, layers of cooled rock pile up and build a mountain. Some islands began this way.",
+    "choices": [
+      "All mountains are volcanoes.",
+      "Volcanoes build land as cooled rock piles up.",
+      "Islands float on the sea.",
+      "Hot rock is always underwater."
+    ],
+    "answer": "Volcanoes build land as cooled rock piles up.",
+    "hint": "Ask what the cooled rock does over time.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-9-0054",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "passage": "Bridges come in many shapes. Some arch over a stream, and some hang from long cables. Each shape suits a different kind of space.",
+    "choices": [
+      "Bridges have different shapes to fit different places.",
+      "Cables are the strongest part of a bridge.",
+      "Streams are hard to cross.",
+      "Every bridge looks the same."
+    ],
+    "answer": "Bridges have different shapes to fit different places.",
+    "hint": "Find the idea that covers every sentence.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-9-0055",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "grammar",
+    "prompt": "Choose the correct word: Neither the cat nor the dogs ___ hungry.",
+    "choices": ["was", "is", "be", "were"],
+    "answer": "were",
+    "hint": "Look at the subject closest to the verb.",
+    "tags": ["grammar", "subject-verb-agreement"]
+  },
+  {
+    "id": "reading-9-0056",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "grammar",
+    "prompt": "Choose the correct word: She is the girl ___ won the prize.",
+    "choices": ["whom", "whose", "who", "which"],
+    "answer": "who",
+    "hint": "The missing word is the one doing the winning.",
+    "tags": ["grammar", "pronouns"]
+  },
+  {
+    "id": "reading-9-0057",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "grammar",
+    "prompt": "Which sentence uses a semicolon correctly?",
+    "choices": [
+      "I like tea, my brother likes juice.",
+      "I like tea; my brother likes juice.",
+      "I like tea; because my brother likes juice.",
+      "I like; tea my brother likes juice."
+    ],
+    "answer": "I like tea; my brother likes juice.",
+    "hint": "A semicolon joins two full sentences that are close in meaning.",
+    "tags": ["grammar", "punctuation"]
+  },
+  {
+    "id": "reading-9-0058",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "grammar",
+    "prompt": "Choose the correct word: Between you and ___, the test was easy.",
+    "choices": ["me", "I", "myself", "mine"],
+    "answer": "me",
+    "hint": "Use the form you would use after the word between.",
+    "tags": ["grammar", "pronouns"]
+  },
+  {
+    "id": "reading-9-0059",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "grammar",
+    "prompt": "Which sentence is written in the past tense?",
+    "choices": [
+      "The bus arrives early.",
+      "The bus will arrive early.",
+      "The bus is arriving early.",
+      "The bus arrived early."
+    ],
+    "answer": "The bus arrived early.",
+    "hint": "Look for something that already happened.",
+    "tags": ["grammar", "verb-tense"]
+  },
+  {
+    "id": "reading-9-0060",
+    "subject": "reading",
+    "grade": 9,
+    "kind": "grammar",
+    "prompt": "Choose the correct word: He worked hard, ___ he passed the test.",
+    "choices": ["but", "or", "so", "nor"],
+    "answer": "so",
+    "hint": "The second part happens because of the first.",
+    "tags": ["grammar", "conjunctions"]
   }
 ]

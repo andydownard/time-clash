@@ -540,5 +540,271 @@
     "answer": "beautifully",
     "hint": "This word tells how she sang.",
     "tags": ["grammar"]
+  },
+  {
+    "id": "reading-10-0041",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "vocab",
+    "prompt": "What does \"abrupt\" mean? \"The bus came to an abrupt stop, and the bags slid forward.\"",
+    "choices": ["slow and smooth", "gentle and soft", "sudden and unexpected", "long and tiring"],
+    "answer": "sudden and unexpected",
+    "hint": "The bags slid, so the stop was not gentle.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-10-0042",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "vocab",
+    "prompt": "What does \"fluctuate\" mean? \"Temperatures fluctuate a lot in the spring.\"",
+    "choices": ["stay the same", "rise and fall often", "drop for good", "climb slowly"],
+    "answer": "rise and fall often",
+    "hint": "Think of a number that keeps changing.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-10-0043",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "vocab",
+    "prompt": "What does \"prudent\" mean? \"It is prudent to check the weather before a long hike.\"",
+    "choices": ["wise and careful", "silly and rushed", "costly and rare", "required by law"],
+    "answer": "wise and careful",
+    "hint": "Checking first is a smart move.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-10-0044",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "vocab",
+    "prompt": "What does \"sparse\" mean? \"Grass was sparse on the rocky hill.\"",
+    "choices": ["thick and tall", "bright and fresh", "wet and soft", "thinly spread"],
+    "answer": "thinly spread",
+    "hint": "A rocky hill has only a little here and there.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-10-0045",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "vocab",
+    "prompt": "What does \"vigilant\" mean? \"The vigilant guard watched the gate all night.\"",
+    "choices": ["sleepy", "cheerful", "watchful", "forgetful"],
+    "answer": "watchful",
+    "hint": "He watched the gate all night.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-10-0046",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "vocab",
+    "prompt": "What does \"diminish\" mean? \"Closing the curtains will diminish the glare.\"",
+    "choices": ["make louder", "make smaller", "hide away", "say again"],
+    "answer": "make smaller",
+    "hint": "The curtains block some of the light.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-10-0047",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "vocab",
+    "prompt": "What does \"adjacent\" mean? \"The library is adjacent to the park, so we can walk between them.\"",
+    "choices": ["next to", "far from", "taller than", "older than"],
+    "answer": "next to",
+    "hint": "You can walk between them quickly.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-10-0048",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "vocab",
+    "prompt": "What does \"fertile\" mean? \"Rich, fertile soil helps crops grow.\"",
+    "choices": ["dry and sandy", "full of rocks", "hard and cold", "able to grow plants well"],
+    "answer": "able to grow plants well",
+    "hint": "Think of soil that helps crops grow.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-10-0049",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of the passage?",
+    "passage": "Glaciers are rivers of slow-moving ice. They form where more snow falls than melts. Over many years the snow packs down into thick ice that slides downhill.",
+    "choices": [
+      "Snow only falls on mountains.",
+      "Rivers are made of ice.",
+      "Glaciers form from packed snow and slowly move.",
+      "Ice is warmer than snow."
+    ],
+    "answer": "Glaciers form from packed snow and slowly move.",
+    "hint": "Find the idea that explains how glaciers form.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-10-0050",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of the passage?",
+    "passage": "Many jobs now need people who can work with computers. Schools teach coding so students are ready. Even farmers use computer tools to plan their fields.",
+    "choices": [
+      "Farmers do not like computers.",
+      "Computer skills help in many kinds of work.",
+      "Coding is hard for most students.",
+      "Schools should close."
+    ],
+    "answer": "Computer skills help in many kinds of work.",
+    "hint": "Look at how many kinds of jobs the passage names.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-10-0051",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of the passage?",
+    "passage": "Priya was nervous about her first speech. She practiced in front of the mirror each night. On the day, her voice shook at first, but by the end she was smiling.",
+    "choices": [
+      "Practice helped Priya feel braver about speaking.",
+      "Mirrors make people nervous.",
+      "Priya did not want to speak.",
+      "Speeches are always short."
+    ],
+    "answer": "Practice helped Priya feel braver about speaking.",
+    "hint": "Think about what changed between the first night and the big day.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-10-0052",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of the passage?",
+    "passage": "The printing press changed how people shared ideas. Books that once took months to copy by hand could be made much faster. More people could read, and knowledge spread.",
+    "choices": [
+      "Hand copying was a joy.",
+      "Books were never made before.",
+      "Only kings could read.",
+      "The printing press helped ideas spread faster."
+    ],
+    "answer": "The printing press helped ideas spread faster.",
+    "hint": "Ask what the press made faster.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-10-0053",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of the passage?",
+    "passage": "Wetlands soak up extra rain like a sponge. This helps stop floods in nearby towns. They also clean water and give many animals a home.",
+    "choices": [
+      "Wetlands are always dry.",
+      "Floods are good for animals.",
+      "Wetlands protect towns and help wildlife.",
+      "Sponges live in wetlands."
+    ],
+    "answer": "Wetlands protect towns and help wildlife.",
+    "hint": "Find the idea that covers floods, water, and animals.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-10-0054",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of the passage?",
+    "passage": "A good night of sleep is not the only way to feel rested. Short breaks, a walk outside, and a glass of water can all lift your energy during a busy day.",
+    "choices": [
+      "Sleep is not important at all.",
+      "Small breaks can help you feel more energetic.",
+      "Walking is the only fix for tiredness.",
+      "Busy days are never fun."
+    ],
+    "answer": "Small breaks can help you feel more energetic.",
+    "hint": "Look at what the breaks, the walk, and the water have in common.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-10-0055",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "grammar",
+    "prompt": "Which word completes the sentence? \"Everyone in the choir ___ the song.\"",
+    "choices": ["knows", "know", "knowing", "known"],
+    "answer": "knows",
+    "hint": "Everyone counts as a single person-word.",
+    "tags": ["grammar", "subject-verb-agreement"]
+  },
+  {
+    "id": "reading-10-0056",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "grammar",
+    "prompt": "Which word completes the sentence? \"The box of crayons ___ on the shelf.\"",
+    "choices": ["are", "were", "be", "is"],
+    "answer": "is",
+    "hint": "The box is the subject, not the crayons.",
+    "tags": ["grammar", "subject-verb-agreement"]
+  },
+  {
+    "id": "reading-10-0057",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "grammar",
+    "prompt": "Which word completes the sentence? \"She was nervous, ___ she spoke clearly.\"",
+    "choices": ["because", "unless", "yet", "since"],
+    "answer": "yet",
+    "hint": "The second part is a surprise after the first.",
+    "tags": ["grammar", "conjunctions"]
+  },
+  {
+    "id": "reading-10-0058",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "grammar",
+    "prompt": "Which sentence uses a colon correctly?",
+    "choices": [
+      "You will: need three things a pencil, paper, and a ruler.",
+      "You will need three things: a pencil, paper, and a ruler.",
+      "You will need three things a pencil: paper, and a ruler.",
+      "You will need three: things a pencil, paper, and a ruler."
+    ],
+    "answer": "You will need three things: a pencil, paper, and a ruler.",
+    "hint": "A colon comes after a complete thought and before a list.",
+    "tags": ["grammar", "punctuation"]
+  },
+  {
+    "id": "reading-10-0059",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "grammar",
+    "prompt": "Which sentence has the verb tense right?",
+    "choices": [
+      "Yesterday, I walked to school and met my friend.",
+      "Yesterday, I walk to school and met my friend.",
+      "Yesterday, I walked to school and meet my friend.",
+      "Yesterday, I will walk to school and met my friend."
+    ],
+    "answer": "Yesterday, I walked to school and met my friend.",
+    "hint": "Yesterday means both actions are finished.",
+    "tags": ["grammar", "verb-tense"]
+  },
+  {
+    "id": "reading-10-0060",
+    "subject": "reading",
+    "grade": 10,
+    "kind": "grammar",
+    "prompt": "Which word completes the sentence? \"The coach praised Sam and ___ for working hard.\"",
+    "choices": ["I", "myself", "we", "me"],
+    "answer": "me",
+    "hint": "Try the sentence with only the missing word after praised.",
+    "tags": ["grammar", "pronouns"]
   }
 ]

@@ -535,5 +535,296 @@
     "answer": "The band played until midnight.",
     "hint": "A full sentence tells who did what.",
     "tags": ["sentence-fragments", "original"]
+  },
+  {
+    "id": "reading-11-0041",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "vocab",
+    "prompt": "Read: \"Her story was plausible, so the teacher believed it.\" What does \"plausible\" mean?",
+    "choices": ["silly", "complicated", "very long", "believable"],
+    "answer": "believable",
+    "hint": "The teacher believed it.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-11-0042",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "vocab",
+    "prompt": "Read: \"A judge must be impartial and treat both sides fairly.\" What does \"impartial\" mean?",
+    "choices": [
+      "strict with everyone",
+      "famous for wisdom",
+      "fair, favoring no one",
+      "slow to decide"
+    ],
+    "answer": "fair, favoring no one",
+    "hint": "Look at the words treat both sides fairly.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-11-0043",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "vocab",
+    "prompt": "Read: \"We made tentative plans that we could still change.\" What does \"tentative\" mean?",
+    "choices": ["kept secret", "not yet final", "very costly", "full of detail"],
+    "answer": "not yet final",
+    "hint": "The plans could still change.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-11-0044",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "vocab",
+    "prompt": "Read: \"The bright red kite was conspicuous against the gray sky.\" What does \"conspicuous\" mean?",
+    "choices": ["easy to see", "hard to find", "very old", "very light"],
+    "answer": "easy to see",
+    "hint": "Bright red stands out against gray.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-11-0045",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "vocab",
+    "prompt": "Read: \"The goal in the last minute was pivotal to the win.\" What does \"pivotal\" mean?",
+    "choices": [
+      "mildly useful",
+      "a complete surprise",
+      "against the rules",
+      "very important to the result"
+    ],
+    "answer": "very important to the result",
+    "hint": "One goal decided the game.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-11-0046",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "vocab",
+    "prompt": "Read: \"The crowd broke into spontaneous cheers.\" What does \"spontaneous\" mean?",
+    "choices": [
+      "carefully rehearsed",
+      "quiet and slow",
+      "unplanned and natural",
+      "rare and costly"
+    ],
+    "answer": "unplanned and natural",
+    "hint": "No one told the crowd to cheer.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-11-0047",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "vocab",
+    "prompt": "Read: \"The eloquent speaker moved the audience with her words.\" What does \"eloquent\" mean?",
+    "choices": [
+      "loud and rude",
+      "clear and moving in speech",
+      "shy and nervous",
+      "short and plain"
+    ],
+    "answer": "clear and moving in speech",
+    "hint": "Her words moved the audience.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-11-0048",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "vocab",
+    "prompt": "Read: \"Her lucid explanation made the hard idea easy to follow.\" What does \"lucid\" mean?",
+    "choices": [
+      "clear and easy to follow",
+      "confusing and long",
+      "rushed and quiet",
+      "full of jokes"
+    ],
+    "answer": "clear and easy to follow",
+    "hint": "The hard idea became easy.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-11-0049",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this story?",
+    "passage": "Coral reefs cover only a small part of the ocean floor. Yet they shelter a huge share of sea life. Fish find food and safe hiding places among the coral.",
+    "choices": [
+      "Coral reefs cover most of the ocean.",
+      "Fish prefer open water.",
+      "Coral is a kind of food.",
+      "Coral reefs are small but support a lot of sea life."
+    ],
+    "answer": "Coral reefs are small but support a lot of sea life.",
+    "hint": "Notice the word yet. It joins two ideas.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-11-0050",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this story?",
+    "passage": "Early explorers had to guess how far they had traveled. Then clocks became accurate enough to work at sea. With the right time, sailors could find their position far better.",
+    "choices": [
+      "Explorers never made guesses.",
+      "Clocks were invented for farmers.",
+      "Accurate clocks helped sailors find where they were.",
+      "Sailors dislike the sea."
+    ],
+    "answer": "Accurate clocks helped sailors find where they were.",
+    "hint": "Ask what the clocks made possible.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-11-0051",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this story?",
+    "passage": "Marcus had always disliked reading aloud. When his class started a reading club for younger kids, he agreed to help. After seeing a child laugh at his funny voices, he began to look forward to every session.",
+    "choices": [
+      "Marcus quit the reading club.",
+      "Helping others changed how Marcus felt about reading aloud.",
+      "Younger kids dislike funny voices.",
+      "Reading aloud is always easy."
+    ],
+    "answer": "Helping others changed how Marcus felt about reading aloud.",
+    "hint": "Compare how Marcus felt at the start and at the end.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-11-0052",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this story?",
+    "passage": "Many cities are adding rooftop gardens. The plants keep buildings cooler, soak up rain, and give people a place to rest. Some even grow vegetables for local shops.",
+    "choices": [
+      "Rooftop gardens offer many benefits to cities.",
+      "Vegetables only grow on roofs.",
+      "Buildings are too hot in winter.",
+      "Shops are closing in cities."
+    ],
+    "answer": "Rooftop gardens offer many benefits to cities.",
+    "hint": "The passage lists several good things the gardens do.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-11-0053",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this story?",
+    "passage": "Languages change over time. New words appear, old ones fade, and sounds shift from one generation to the next. A book from long ago can seem hard to read for this reason.",
+    "choices": [
+      "Old books are always boring.",
+      "New words are better than old ones.",
+      "Sounds never change.",
+      "Languages slowly change over time."
+    ],
+    "answer": "Languages slowly change over time.",
+    "hint": "Every sentence gives an example of change.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-11-0054",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this story?",
+    "passage": "Honest feedback can feel uncomfortable. Still, it shows us what to fix. Athletes, writers, and builders all improve faster when someone points out what is not working.",
+    "choices": [
+      "Athletes never need advice.",
+      "Feedback should always be kept secret.",
+      "Honest feedback, though hard to hear, helps people improve.",
+      "Builders are better than writers."
+    ],
+    "answer": "Honest feedback, though hard to hear, helps people improve.",
+    "hint": "Look at what the word still signals.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-11-0055",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "grammar",
+    "prompt": "Pick the word that fits: The results of the survey ___ surprising.",
+    "choices": ["was", "were", "is", "been"],
+    "answer": "were",
+    "hint": "The subject is results, which is plural.",
+    "tags": ["grammar", "subject-verb-agreement"]
+  },
+  {
+    "id": "reading-11-0056",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "grammar",
+    "prompt": "Pick the word that fits: She plays the violin ___ than anyone in the band.",
+    "choices": ["better", "more good", "best", "gooder"],
+    "answer": "better",
+    "hint": "You are comparing her with others.",
+    "tags": ["grammar", "comparisons"]
+  },
+  {
+    "id": "reading-11-0057",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "grammar",
+    "prompt": "Which sentence uses affect and effect correctly?",
+    "choices": [
+      "The weather will effect our plans, and the affect may be a delay.",
+      "The weather will affect our plans, and the affect may be a delay.",
+      "The weather will effect our plans, and the effect may be a delay.",
+      "The weather will affect our plans, and the effect may be a delay."
+    ],
+    "answer": "The weather will affect our plans, and the effect may be a delay.",
+    "hint": "Affect is usually the action. Effect is usually the result.",
+    "tags": ["grammar", "word-choice"]
+  },
+  {
+    "id": "reading-11-0058",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "grammar",
+    "prompt": "Pick the word that fits: If I ___ you, I would ask for help.",
+    "choices": ["was", "am", "were", "be"],
+    "answer": "were",
+    "hint": "Wishing or imagining uses a special form.",
+    "tags": ["grammar", "verb-mood"]
+  },
+  {
+    "id": "reading-11-0059",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "grammar",
+    "prompt": "Which sentence is parallel in form?",
+    "choices": [
+      "She likes hiking, to swim, and biking.",
+      "She likes hiking, swimming, and biking.",
+      "She likes to hike, swimming, and to bike.",
+      "She likes hiking, swim, and biking."
+    ],
+    "answer": "She likes hiking, swimming, and biking.",
+    "hint": "Every item in the list should end the same way.",
+    "tags": ["grammar", "parallel-structure"]
+  },
+  {
+    "id": "reading-11-0060",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "grammar",
+    "prompt": "Pick the word that fits: The prize will go to ___ finishes first.",
+    "choices": ["whoever", "whomever", "whose", "who ever"],
+    "answer": "whoever",
+    "hint": "Ask who does the finishing.",
+    "tags": ["grammar", "pronouns"]
   }
 ]
