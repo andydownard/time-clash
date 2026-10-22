@@ -140,6 +140,7 @@ describe('BootScene', () => {
       captions: false,
       musicOn: true,
       reducedMotion: 'system',
+      hideBonusRing: false,
     });
     launch(BootScene);
     t.overlay.setCaption('hello');

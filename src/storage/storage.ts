@@ -104,6 +104,7 @@ function parseSettings(v: unknown): Settings | null {
     captions: typeof v.captions === 'boolean' ? v.captions : d.captions,
     musicOn: typeof v.musicOn === 'boolean' ? v.musicOn : d.musicOn,
     reducedMotion: rm === 'on' || rm === 'off' || rm === 'system' ? rm : d.reducedMotion,
+    hideBonusRing: typeof v.hideBonusRing === 'boolean' ? v.hideBonusRing : d.hideBonusRing,
   };
 }
 

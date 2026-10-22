@@ -26,6 +26,11 @@ export function toggleMusic(audio: AudioManager, storage: TypedStorage): boolean
   return audio.musicOn;
 }
 
+/** Hides or shows the bonus ring on the reload card. The fast-answer bonus is the same either way. */
+export function setHideBonusRing(storage: TypedStorage, hide: boolean): void {
+  storage.set('timeclash.settings', { ...loadSettings(storage), hideBonusRing: hide });
+}
+
 /** Sets the motion choice. 'on' means reduce motion. It overrides the system setting. */
 export function setReducedMotion(storage: TypedStorage, value: 'on' | 'off'): void {
   storage.set('timeclash.settings', { ...loadSettings(storage), reducedMotion: value });

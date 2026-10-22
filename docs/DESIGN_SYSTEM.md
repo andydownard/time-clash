@@ -70,6 +70,8 @@ All interactive parts are at least 56px tall and wide (`--tc-tap`).
 
 **Celebrations.** Victory drops one burst of confetti (`confetti` in `src/ui/simpleScreens.ts`, `CELEBRATE` in config, palette tokens only, `aria-hidden`, out of the layout, hidden under reduced motion). A fast right answer pops a "+2 scrap" burst on the reload card with the caption "Ka-ching!" and the `bonus` sound (made in code, plays only through the audio manager, so Mute and the tap rule hold). Slow and wrong answers get no burst, and nothing is taken away.
 
+**Bonus ring.** The reload card shows a ring and the line "Bonus scrap if you answer fast. No rush!" (`.tc-timer`). Settings has a "Bonus ring: shown / hidden" button (56px or more, text in words) for slow readers. When hidden, the ring and its line are not drawn at all, so a screen reader hears no timer either. Nothing else changes: the same question, the same fast-answer clock (`fastWindowMs`), the same bonus Scrap, and a slow answer still loses nothing. The choice is `hideBonusRing` in `timeclash.settings`, and Clear my data resets it.
+
 **Chrono's lines.** On the reload card, Chrono's quip shows his face and "Chrono:" before the line. On Victory, Chrono's line fits the match: close, one side landed nothing, or a plain good match (`src/ui/victoryMood.ts`, `VICTORY_CHRONO`). "My dignity needs a rematch" belongs to the losing fighter's bubble on the canvas, never to Chrono.
 
 **Progress bar.** Track `--tc-bar-track`, 3px edge in `--tc-bar-edge`, fill `--tc-bar-fill`, height `--tc-bar-h` (26px). The label above it shows the percent as a number ("64%"), so the fill is never the only signal. Label text is `--tc-on-future` at `--tc-fs-lead`.

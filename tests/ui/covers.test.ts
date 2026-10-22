@@ -463,6 +463,58 @@ describe('reload modal', () => {
     expect(RELOAD_COPY.timerLabel).toBe('Bonus scrap if you answer fast. No rush!');
   });
 
+  describe('Hide the bonus ring', () => {
+    beforeEach(() => {
+      s = setup({ settings: { hideBonusRing: true } });
+    });
+
+    it('draws no ring and no bonus-timer words, so a screen reader hears no timer', () => {
+      void open();
+      expect(q('reload-timer')).toBeNull();
+      expect(q(TEST_IDS.reloadModal)!.querySelector('.tc-timer, .tc-timer-ring')).toBeNull();
+      expect(q(TEST_IDS.reloadModal)!.textContent).not.toContain(RELOAD_COPY.timerLabel);
+      expect(q(TEST_IDS.reloadModal)!.querySelector('[role="timer"]')).toBeNull();
+    });
+
+    it('still shows the whole question, the answers and Hear it', () => {
+      void open();
+      expect(qa('.tc-choice').length).toBe(UI.choicesPerQuestion);
+      expect(q(TEST_IDS.reloadSpeak)).not.toBeNull();
+      expect(q('reload-prompt')!.textContent).not.toBe('');
+    });
+
+    it('a fast right answer still earns the bonus', async () => {
+      let t = 1000;
+      const p = open(mathQ, { now: () => t });
+      t = 1000 + 1000;
+      click(q(TEST_IDS.reloadChoice(1)));
+      expect(q('reload-feedback')!.textContent).toContain(RELOAD_COPY.fastBonus);
+      s.clock.advance(RELOAD.gotItDelayMs + 10);
+      click(q(TEST_IDS.reloadNext));
+      const r = await p;
+      expect(r.correct).toBe(true);
+      expect(r.elapsedMs).toBeLessThan(fastWindowMs(mathQ.kind, mathQ.grade));
+    });
+
+    it('a slow right answer loses nothing and is never marked wrong', async () => {
+      let t = 1000;
+      const p = open(mathQ, { now: () => t });
+      t = 1000 + fastWindowMs(mathQ.kind, mathQ.grade) + 60_000;
+      click(q(TEST_IDS.reloadChoice(1)));
+      expect(q('reload-feedback')!.textContent).toContain(RELOAD_COPY.slowCorrect);
+      expect(q('reload-feedback')!.textContent).not.toContain(RELOAD_COPY.fastBonus);
+      s.clock.advance(RELOAD.gotItDelayMs + 10);
+      click(q(TEST_IDS.reloadNext));
+      expect((await p).correct).toBe(true);
+    });
+  });
+
+  it('shows the ring when the setting is off (the default)', () => {
+    s = setup({ settings: { hideBonusRing: false } });
+    void open();
+    expect(q('reload-timer')).not.toBeNull();
+  });
+
   it('puts Hint in its own row as a small secondary button, set apart from the answers', () => {
     void open(mathQ);
     const hint = q(TEST_IDS.reloadHint)!;

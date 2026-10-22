@@ -94,6 +94,23 @@ test('Settings: Clear my data asks first, then forgets the players', async ({ pa
   expect(saved).toEqual([]);
 });
 
+test('Settings: Bonus ring button is big, saves, and Clear my data resets it', async ({ page }) => {
+  await page.goto('/');
+  await id(page, 'settings-button').click();
+  const ring = id(page, 'settings-bonus-ring');
+  await expect(ring).toHaveText('Bonus ring: shown');
+  const box = await ring.boundingBox();
+  expect(box!.height).toBeGreaterThanOrEqual(56);
+  await ring.click();
+  await expect(ring).toHaveText('Bonus ring: hidden');
+  await page.reload();
+  await id(page, 'settings-button').click();
+  await expect(id(page, 'settings-bonus-ring')).toHaveText('Bonus ring: hidden');
+  await id(page, 'settings-clear').click();
+  await id(page, 'settings-clear-yes').click();
+  await expect(id(page, 'settings-bonus-ring')).toHaveText('Bonus ring: shown');
+});
+
 test('the mute choice sticks across a reload', async ({ page }) => {
   await page.goto('/');
   await id(page, 'mute-toggle').click();
