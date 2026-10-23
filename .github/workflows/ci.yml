@@ -1,8 +1,15 @@
 name: CI
+# Actions minutes are limited, so the default run is small: lint, types, unit tests and the build, plus
+# one Chromium browser job on a pull request. The full browser matrix (WebKit and every iPad size)
+# runs only when someone starts it by hand (Actions tab, "Run workflow"). Run `npm run e2e` locally
+# before a merge that touches layout, and start the full matrix before a release.
 on:
   pull_request:
+    paths-ignore: ['**.md', 'docs/**']
   push:
     branches: [main]
+    paths-ignore: ['**.md', 'docs/**']
+  workflow_dispatch:
 # A new push to a pull request cancels the older run, so no minutes are spent on stale code.
 # Runs on main are never cancelled.
 concurrency:
@@ -11,6 +18,7 @@ concurrency:
 jobs:
   check:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     env:
       GITHUB_SHA: ${{ github.sha }}
     steps:
@@ -27,17 +35,18 @@ jobs:
       - run: npm run build
       - run: npm run check:dist
       - run: npm audit --omit=dev
-  # One job per browser, screen size and shard, so the slow browser tests run side by side.
-  # WebKit is about twice as slow as Chromium, so each WebKit size is split into two halves. A pull
-  # request runs everything. After the merge, main runs one Chromium job (the pull request already
-  # passed the rest on the same code), which saves about half of the Actions minutes.
+  # A pull request runs one Chromium job. The full matrix runs only from "Run workflow". Nothing runs
+  # e2e on main, because the pull request already passed the same code. A job that hangs stops at the
+  # time limit, so it cannot burn minutes.
   e2e:
     name: e2e (${{ matrix.project }} ${{ matrix.shard }})
+    if: github.event_name != 'push'
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
-        include: ${{ fromJSON(github.event_name == 'pull_request' && '[{"project":"chromium-1280x800","shard":"1/1"},{"project":"chromium-1024x768","shard":"1/1"},{"project":"chromium-768x1024","shard":"1/1"},{"project":"webkit-1280x800","shard":"1/2"},{"project":"webkit-1280x800","shard":"2/2"},{"project":"webkit-1024x768","shard":"1/2"},{"project":"webkit-1024x768","shard":"2/2"},{"project":"webkit-768x1024","shard":"1/2"},{"project":"webkit-768x1024","shard":"2/2"}]' || '[{"project":"chromium-1280x800","shard":"1/1"}]') }}
+        include: ${{ fromJSON(github.event_name == 'workflow_dispatch' && '[{"project":"chromium-1280x800","shard":"1/1"},{"project":"chromium-1024x768","shard":"1/1"},{"project":"chromium-768x1024","shard":"1/1"},{"project":"webkit-1280x800","shard":"1/2"},{"project":"webkit-1280x800","shard":"2/2"},{"project":"webkit-1024x768","shard":"1/2"},{"project":"webkit-1024x768","shard":"2/2"},{"project":"webkit-768x1024","shard":"1/2"},{"project":"webkit-768x1024","shard":"2/2"}]' || '[{"project":"chromium-1280x800","shard":"1/1"}]') }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
