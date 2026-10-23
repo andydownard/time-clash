@@ -197,6 +197,10 @@ Bot against bot (row wins): easy 30.9% vs medium, 20.6% vs hard; medium 67.5% vs
 
 ## Character health (rules built, flag off)
 
+### Match length (parent setting)
+
+Setup has a Match length choice: Short, Normal, Long. Normal is the default and is exactly the balance below (base health 100, or 3 health per fighter). Short halves full health (base 50, fighters 2). Long is one and a half times (base 150, fighters 5, rounded to whole numbers, never below 1). A direct hit still does 25 base damage (1 fighter health, 2 for a Power Shot), so Short ends in 2 direct hits and Long in 6, against 4 at Normal. It does not change the 2-shots-then-reload turn, the reload question, timing or Scrap. It is saved on the device and "Clear my data" resets it. Numbers: `MATCH_LENGTH` in `src/game/config.ts`.
+
 Owner decision (2026-10-20): "Every character has three health. It REPLACES base health." The rules are pure, in `src/game/damage.ts` and `src/game/match.ts`, with numbers in `CHARACTER_HEALTH` in `src/game/config.ts`. The flag is `CHARACTER_HEALTH.enabled = false`. It stays off until the Battle scene and the HUD draw health pips and play the awkward fall. With it off the game is exactly as before. A match reads it as the default of `MatchOptions.characterHealth`; tests pass the option and never change the constant.
 
 What changes with the flag on:

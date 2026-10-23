@@ -20,6 +20,7 @@ import {
   spotWeaponById,
   type BasesState,
 } from '../game/baseBuilder';
+import { isMatchLength, normalizeMatchLength, type MatchLength } from '../game/matchLength';
 import { FORGE, WEAPONS, type WeaponId } from '../game/weapons';
 import { UPGRADES, UPGRADE_MAX_LEVEL, type UpgradeId } from '../game/upgrades';
 import { CALIBRATION, type CalibrationState, type Levels } from '../questions/calibration';
@@ -334,6 +335,11 @@ export function loadPractice(storage: TypedStorage): PracticeChoice | null {
   return storage.get('timeclash.practice');
 }
 
+/** The saved match length. Normal when nothing (or junk) is saved. Never throws. */
+export function loadMatchLength(storage: TypedStorage): MatchLength {
+  return normalizeMatchLength(storage.get('timeclash.matchLength'));
+}
+
 /** Each key has a shape guard. It returns the clean value, or null if the shape is wrong. */
 const GUARDS: { [K in StorageKey]: (v: unknown) => StorageSchema[K] | null } = {
   'timeclash.players': parsePlayers,
@@ -346,6 +352,7 @@ const GUARDS: { [K in StorageKey]: (v: unknown) => StorageSchema[K] | null } = {
   'timeclash.practice': parsePractice,
   'timeclash.bases': parseBases,
   'timeclash.setupPicks': parseSetupPicks,
+  'timeclash.matchLength': (v) => (isMatchLength(v) ? v : null),
 };
 
 function defaultBacking(): BackingStore | null {

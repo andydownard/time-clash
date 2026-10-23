@@ -8,6 +8,7 @@ import type { BIOME_IDS, SPOT_IDS } from './config';
 import type { EvasionId, EvasionPhase } from './evasion';
 import type { Placed, ResolvedSpot, SpotRole } from './baseBuilder';
 import type { MatchEffects } from './loadout';
+import type { MatchLength } from './matchLength';
 import type { UnitId } from './units';
 
 // ---------- Basics ----------
@@ -463,6 +464,8 @@ export type MatchOptions = {
   bases?: Partial<Record<Team, ChosenBase>>;
   /** Squads S1 on or off. Default SQUADS.enabled (off). Ignored with characterHealth or built bases. */
   squads?: boolean;
+  /** Short, Normal or Long. Scales full health only. Default and unknown values: Normal. */
+  matchLength?: MatchLength;
 };
 
 export class MatchOverError extends Error {

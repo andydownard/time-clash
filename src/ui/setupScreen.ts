@@ -11,7 +11,15 @@ import {
   gradeLabel,
 } from '../data/copy';
 import { COMPUTER } from '../data/computerCopy';
-import { DEFAULT_NAMES, GRADE, NAME, PRACTICE_BOT, TOPIC_FOCUS } from '../game/config';
+import {
+  DEFAULT_NAMES,
+  GRADE,
+  MATCH_LENGTH,
+  NAME,
+  PRACTICE_BOT,
+  TOPIC_FOCUS,
+} from '../game/config';
+import { normalizeMatchLength, type MatchLength } from '../game/matchLength';
 import { withComputer } from '../game/practice';
 import {
   TEAMS,
@@ -21,7 +29,7 @@ import {
   type Team,
   type Topic,
 } from '../game/types';
-import { clearMyData, loadPractice, loadSetupPicks } from '../storage/storage';
+import { clearMyData, loadMatchLength, loadPractice, loadSetupPicks } from '../storage/storage';
 import type { SetupPick } from '../storage/types';
 import { skyline } from './art';
 import { COMPUTER_TEAM, createPracticeSetup } from './computerPlayer';
@@ -91,7 +99,7 @@ export function showSetup(
 
   /** A group of radio-style chips with arrow-key movement. */
   function chipGroup<T extends string | number>(
-    team: Team,
+    team: Team | null,
     label: string,
     values: readonly T[],
     current: () => T,
@@ -136,7 +144,7 @@ export function showSetup(
       {
         class: 'tc-chips',
         role: 'radiogroup',
-        'aria-label': `${TEAM_NAMES[team]} ${label}`,
+        'aria-label': team ? `${TEAM_NAMES[team]} ${label}` : label,
         'aria-describedby': describedBy,
       },
       ...chips,
@@ -149,6 +157,34 @@ export function showSetup(
   const practice = options?.computer
     ? createPracticeSetup(ctx, loadPractice(ctx.storage), () => painters.forEach((p) => p()))
     : null;
+
+  // How long the match runs. Normal unless a parent changed it. It sits on the button row, so Setup stays one screen.
+  let matchLength: MatchLength = loadMatchLength(ctx.storage);
+  const lengthGroup = chipGroup<MatchLength>(
+    null,
+    SETUP.matchLengthLabel,
+    MATCH_LENGTH.ids,
+    () => matchLength,
+    (v) => (matchLength = normalizeMatchLength(v)),
+    (v) =>
+      h(doc, 'button', {
+        type: 'button',
+        class: 'tc-chip',
+        role: 'radio',
+        'data-testid': TEST_IDS.setupMatchLength(v),
+        text: SETUP.matchLengthChips[v],
+      }),
+    'tc-length-help',
+  );
+  painters.push(lengthGroup.paint);
+  const lengthRow = h(
+    doc,
+    'div',
+    { class: 'tc-length', 'data-testid': TEST_IDS.setupMatchLengthRow },
+    h(doc, 'span', { class: 'tc-label', 'aria-hidden': 'true', text: SETUP.matchLengthLabel }),
+    lengthGroup.el,
+    h(doc, 'p', { class: 'tc-sr-only', id: 'tc-length-help', text: SETUP.matchLengthHelper }),
+  );
 
   const cards = TEAMS.map((team) => {
     const lower = team.toLowerCase();
@@ -364,6 +400,7 @@ export function showSetup(
     clearMyData(ctx.storage);
     Object.assign(state, defaults());
     practice?.reset();
+    matchLength = loadMatchLength(ctx.storage);
     for (const t of TEAMS) {
       (inputs[t] as HTMLInputElement).value = state[t].name;
       errorEls[t]!.textContent = '';
@@ -406,7 +443,14 @@ export function showSetup(
     ),
     readBack,
     h(doc, 'p', { class: 'tc-sr-only', text: SETUP.matchHelper }),
-    h(doc, 'div', { class: 'tc-row' }, ...(backBtn ? [backBtn] : []), nextBtn),
+    h(
+      doc,
+      'div',
+      { class: 'tc-row tc-row-start' },
+      ...(backBtn ? [backBtn] : []),
+      lengthRow,
+      nextBtn,
+    ),
     h(
       doc,
       'div',
@@ -461,6 +505,7 @@ export function showSetup(
       if (result.ok) {
         ctx.sfx('click');
         if (practice) ctx.storage.set('timeclash.practice', practice.choice());
+        ctx.storage.set('timeclash.matchLength', matchLength);
         ctx.storage.set('timeclash.setupPicks', {
           PAST: pickOf(state.PAST),
           FUTURE: pickOf(state.FUTURE),
