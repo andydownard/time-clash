@@ -4,1104 +4,1544 @@
     "subject": "reading",
     "grade": 11,
     "kind": "vocab",
-    "prompt": "Read: \"The baker was meticulous. She measured every cup of flour with great care.\" What does \"meticulous\" mean?",
-    "choices": ["very careful", "very loud", "quite sleepy", "a bit lazy"],
-    "answer": "very careful",
-    "hint": "Look at how she measured the flour.",
-    "tags": ["vocab-in-context", "original"]
+    "prompt": "\"The mayor's equivocal answer left us unsure whether she had agreed.\" What does \"equivocal\" mean?",
+    "choices": [
+      "firmly in favor of the plan",
+      "written in an angry tone",
+      "open to more than one meaning",
+      "recorded with great care"
+    ],
+    "answer": "open to more than one meaning",
+    "hint": "Her listeners could not pin down her position.",
+    "tags": [
+      "vocab-in-context",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0002",
     "subject": "reading",
     "grade": 11,
     "kind": "vocab",
-    "prompt": "Read: \"The soap bubble was ephemeral. It popped a moment after it formed.\" What does \"ephemeral\" mean?",
-    "choices": ["lasting a long time", "lasting a short time", "very heavy", "full of color"],
-    "answer": "lasting a short time",
-    "hint": "Think about how fast the bubble popped.",
-    "tags": ["vocab-in-context", "original"]
+    "prompt": "\"The pernicious rumor slowly eroded the team's trust.\" What does \"pernicious\" mean?",
+    "choices": [
+      "amusing but quite harmless",
+      "harmful in a slow, hidden way",
+      "easy to prove false at once",
+      "admired by most of the town"
+    ],
+    "answer": "harmful in a slow, hidden way",
+    "hint": "Think about what slow erosion does to trust.",
+    "tags": [
+      "vocab-in-context",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0003",
     "subject": "reading",
     "grade": 11,
     "kind": "vocab",
-    "prompt": "Read: \"Phones are ubiquitous. You can see them in every room, shop, and park.\" What does \"ubiquitous\" mean?",
-    "choices": ["hard to find", "brand new", "found everywhere", "very noisy"],
-    "answer": "found everywhere",
-    "hint": "The clue is every room, shop, and park.",
-    "tags": ["vocab-in-context", "original"]
+    "prompt": "\"Her laconic reply, just one word, ended the debate.\" What does \"laconic\" mean?",
+    "choices": [
+      "using very few words",
+      "loud and full of anger",
+      "long and filled with detail",
+      "slow and rather unsure"
+    ],
+    "answer": "using very few words",
+    "hint": "Count the words in her reply.",
+    "tags": [
+      "vocab-in-context",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0004",
     "subject": "reading",
     "grade": 11,
     "kind": "vocab",
-    "prompt": "Read: \"Mia gave a candid answer. She told her friend exactly what she thought.\" What does \"candid\" mean?",
-    "choices": ["silly and loud", "shy and quiet", "sweet and sticky", "honest and open"],
-    "answer": "honest and open",
-    "hint": "She told what she really thought.",
-    "tags": ["vocab-in-context", "original"]
+    "prompt": "\"Despite the rainy forecast, Omar stayed sanguine about the picnic.\" What does \"sanguine\" mean?",
+    "choices": [
+      "secretly worried",
+      "strongly opposed",
+      "mildly confused",
+      "cheerfully hopeful"
+    ],
+    "answer": "cheerfully hopeful",
+    "hint": "The word despite signals that his mood did not follow the forecast.",
+    "tags": [
+      "vocab-in-context",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0005",
     "subject": "reading",
     "grade": 11,
     "kind": "vocab",
-    "prompt": "Read: \"Leo is frugal. He saves his coins and spends them only on things he needs.\" What does \"frugal\" mean?",
-    "choices": ["careful with money", "full of fun", "slow to learn", "good at sports"],
-    "answer": "careful with money",
-    "hint": "Think about how he treats his coins.",
-    "tags": ["vocab-in-context", "original"]
+    "prompt": "\"The obsequious clerk bowed again and again and praised every word the customer said.\" What does \"obsequious\" mean?",
+    "choices": [
+      "quietly suspicious of others",
+      "openly rude to customers",
+      "overly eager to please",
+      "properly trained for the job"
+    ],
+    "answer": "overly eager to please",
+    "hint": "Notice the bowing and the nonstop praise.",
+    "tags": [
+      "vocab-in-context",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0006",
     "subject": "reading",
     "grade": 11,
     "kind": "vocab",
-    "prompt": "Read: \"Sam was reluctant to jump in the cold pool. He stood at the edge for a long time.\" What does \"reluctant\" mean?",
-    "choices": ["eager", "unwilling", "proud", "sleepy"],
-    "answer": "unwilling",
-    "hint": "He stood at the edge and waited.",
-    "tags": ["vocab-in-context", "original"]
+    "prompt": "\"He gave the report a perfunctory glance, then handed it back unread.\" What does \"perfunctory\" mean?",
+    "choices": [
+      "slow, thorough, and complete",
+      "done quickly with little care",
+      "hostile and rather sudden",
+      "generous, warm, and friendly"
+    ],
+    "answer": "done quickly with little care",
+    "hint": "He did not even read it.",
+    "tags": [
+      "vocab-in-context",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0007",
     "subject": "reading",
     "grade": 11,
     "kind": "vocab",
-    "prompt": "Read: \"Typewriters are mostly obsolete. Most people now use computers.\" What does \"obsolete\" mean?",
-    "choices": ["very new", "easy to fix", "no longer used", "extra loud"],
-    "answer": "no longer used",
-    "hint": "Most people use something else now.",
-    "tags": ["vocab-in-context", "original"]
+    "prompt": "\"After winning, the magnanimous champion praised her rival's skill.\" What does \"magnanimous\" mean?",
+    "choices": [
+      "generous toward others",
+      "boastful about herself",
+      "jealous of rivals",
+      "nervous in public"
+    ],
+    "answer": "generous toward others",
+    "hint": "Notice how she treats a rival after the win.",
+    "tags": [
+      "vocab-in-context",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0008",
     "subject": "reading",
     "grade": 11,
     "kind": "vocab",
-    "prompt": "Read: \"Ana is gregarious. She loves parties and talks to everyone she meets.\" What does \"gregarious\" mean?",
-    "choices": ["quiet and shy", "tall and thin", "grumpy and rude", "friendly and social"],
-    "answer": "friendly and social",
-    "hint": "She loves to be with people.",
-    "tags": ["vocab-in-context", "original"]
+    "prompt": "\"The recalcitrant mule refused every command and would not leave the barn.\" What does \"recalcitrant\" mean?",
+    "choices": [
+      "gently and quickly obedient",
+      "extremely hungry for its food",
+      "rather clumsy on its feet",
+      "stubbornly resisting control"
+    ],
+    "answer": "stubbornly resisting control",
+    "hint": "Think about an animal that refuses every command.",
+    "tags": [
+      "vocab-in-context",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0009",
     "subject": "reading",
     "grade": 11,
     "kind": "vocab",
-    "prompt": "Read: \"The tenacious puppy kept pulling the rope. It would not let go.\" What does \"tenacious\" mean?",
-    "choices": ["refusing to give up", "fast asleep", "very gentle", "a bit clumsy"],
-    "answer": "refusing to give up",
-    "hint": "The puppy would not let go.",
-    "tags": ["vocab-in-context", "original"]
+    "prompt": "\"New drainage pipes should ameliorate the flooding on Mill Street.\" What does \"ameliorate\" mean?",
+    "choices": [
+      "cause an abrupt, large change",
+      "hide from public view",
+      "make a bad condition better",
+      "measure again with great care"
+    ],
+    "answer": "make a bad condition better",
+    "hint": "Pipes are added to help with a problem.",
+    "tags": [
+      "vocab-in-context",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0010",
     "subject": "reading",
     "grade": 11,
     "kind": "vocab",
-    "prompt": "Read: \"The speech was verbose. It used a hundred words where ten would do.\" What does \"verbose\" mean?",
-    "choices": ["very short", "using too many words", "very funny", "hard to hear"],
-    "answer": "using too many words",
-    "hint": "Compare a hundred words to ten.",
-    "tags": ["vocab-in-context", "original"]
+    "prompt": "\"The capricious weather swung from sun to hail within an hour.\" What does \"capricious\" mean?",
+    "choices": [
+      "steady and dependable all day",
+      "changing suddenly for no reason",
+      "cold and damp from dawn on",
+      "mild and pleasant for hours"
+    ],
+    "answer": "changing suddenly for no reason",
+    "hint": "The weather did not follow any pattern.",
+    "tags": [
+      "vocab-in-context",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0011",
     "subject": "reading",
     "grade": 11,
     "kind": "vocab",
-    "prompt": "Read: \"The coach was lenient. When players came late, she only said, \"Be on time next game.\"\" What does \"lenient\" mean?",
-    "choices": ["very strict", "very young", "not strict", "often angry"],
-    "answer": "not strict",
-    "hint": "She did not give a big punishment.",
-    "tags": ["vocab-in-context", "original"]
+    "prompt": "\"The truculent customer glared and argued over every item on the bill.\" What does \"truculent\" mean?",
+    "choices": [
+      "eager to quarrel",
+      "shy and silent",
+      "puzzled and slow",
+      "grateful and polite"
+    ],
+    "answer": "eager to quarrel",
+    "hint": "Picture someone who glares and argues over everything.",
+    "tags": [
+      "vocab-in-context",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0012",
     "subject": "reading",
     "grade": 11,
     "kind": "vocab",
-    "prompt": "Read: \"Dev took a pragmatic view. He picked the plan that would really work, not the fanciest one.\" What does \"pragmatic\" mean?",
-    "choices": ["dreamy", "fearful", "careless", "practical"],
-    "answer": "practical",
-    "hint": "He cared about what really works.",
-    "tags": ["vocab-in-context", "original"]
+    "prompt": "\"A fastidious editor, she rechecked each comma and spelling twice.\" What does \"fastidious\" mean?",
+    "choices": [
+      "easily bored by tiny details",
+      "quick to forgive every error",
+      "fond of showy, long words",
+      "very particular about details"
+    ],
+    "answer": "very particular about details",
+    "hint": "Rechecking every comma shows a certain kind of care.",
+    "tags": [
+      "vocab-in-context",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0013",
     "subject": "reading",
     "grade": 11,
     "kind": "vocab",
-    "prompt": "Read: \"The mouse found a meager meal. It was just two crumbs.\" What does \"meager\" mean?",
-    "choices": ["very small in amount", "huge and tasty", "spicy and hot", "cold and wet"],
-    "answer": "very small in amount",
-    "hint": "Two crumbs is not much.",
-    "tags": ["vocab-in-context", "original"]
+    "prompt": "\"The monk's austere room held only a narrow bed and a lamp.\" What does \"austere\" mean?",
+    "choices": [
+      "bright and crowded with things",
+      "grand and richly decorated",
+      "plain and without comfort",
+      "warm and welcoming to guests"
+    ],
+    "answer": "plain and without comfort",
+    "hint": "Look at how little the room contains.",
+    "tags": [
+      "vocab-in-context",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0014",
     "subject": "reading",
     "grade": 11,
     "kind": "vocab",
-    "prompt": "Read: \"The benevolent king gave warm coats to every child in the town.\" What does \"benevolent\" mean?",
-    "choices": ["silly and loud", "kind and giving", "selfish", "tired and slow"],
-    "answer": "kind and giving",
-    "hint": "Think about why he gave coats.",
-    "tags": ["vocab-in-context", "original"]
+    "prompt": "\"Her esoteric hobby, restoring antique clock gears, interested only a few experts.\" What does \"esoteric\" mean?",
+    "choices": [
+      "dangerous for most to practice",
+      "known to only a small group",
+      "costly for anyone to begin",
+      "popular with young children"
+    ],
+    "answer": "known to only a small group",
+    "hint": "Only a few experts cared about it.",
+    "tags": [
+      "vocab-in-context",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0015",
     "subject": "reading",
     "grade": 11,
     "kind": "vocab",
-    "prompt": "Read: \"Washing the same dishes each day felt mundane to Rosa.\" What does \"mundane\" mean?",
-    "choices": ["thrilling", "magical", "ordinary and dull", "dangerous"],
-    "answer": "ordinary and dull",
-    "hint": "Doing the same task each day feels this way.",
-    "tags": ["vocab-in-context", "original"]
+    "prompt": "\"The ostensible reason for the delay was weather, though the true cause was a missing part.\" What does \"ostensible\" mean?",
+    "choices": [
+      "stated, but perhaps not true",
+      "proven by the town records",
+      "known to no one at all",
+      "important above all other things"
+    ],
+    "answer": "stated, but perhaps not true",
+    "hint": "The sentence contrasts it with the true cause.",
+    "tags": [
+      "vocab-in-context",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0016",
     "subject": "reading",
     "grade": 11,
     "kind": "vocab",
-    "prompt": "Read: \"The inventor leaned in to scrutinize the tiny gear.\" What does \"scrutinize\" mean?",
-    "choices": ["toss away", "paint over", "ignore", "examine closely"],
-    "answer": "examine closely",
-    "hint": "She leaned in to look.",
-    "tags": ["vocab-in-context", "original"]
+    "prompt": "The Latin root \"bene\" means \"well.\" What does \"benefaction\" most likely mean?",
+    "choices": [
+      "a formal written complaint",
+      "a long and tiring journey",
+      "a promise made in writing",
+      "a kind gift or good deed"
+    ],
+    "answer": "a kind gift or good deed",
+    "hint": "Combine the idea of well with the idea of doing.",
+    "tags": [
+      "vocab-in-context",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0017",
     "subject": "reading",
     "grade": 11,
     "kind": "mainidea",
-    "prompt": "What is the main idea of this story?",
-    "passage": "Bees visit flowers to drink sweet nectar. As they travel, pollen sticks to their legs. They carry it to the next flower, and this helps plants make seeds.",
+    "prompt": "Which statement best expresses the central claim of the passage?",
+    "passage": "Linguists have long observed that no dialect is more logical than another. A dialect gains prestige not from its grammar but from the social standing of those who speak it. When a region's wealthiest families settle on one way of talking, that speech is soon labeled correct, and every other variety is labeled sloppy. Yet the so-called sloppy forms often follow rules as consistent as the favored ones. Double negatives, for instance, were standard in earlier English and remain so in several other languages. What changed was not the logic of the construction but the status of its users.",
     "choices": [
-      "Bees help plants make seeds.",
-      "Bees make honey in winter.",
-      "Flowers grow only in spring.",
-      "Bees have tiny legs."
+      "Wealthy families have always spoken the most logical English.",
+      "Double negatives are the clearest speech in any language.",
+      "A dialect's prestige comes from the status of its speakers, not its logic.",
+      "Languages with strict rules are valued over flexible ones."
     ],
-    "answer": "Bees help plants make seeds.",
-    "hint": "Ask what the bees do for the plants.",
-    "tags": ["main-idea", "original"]
+    "answer": "A dialect's prestige comes from the status of its speakers, not its logic.",
+    "hint": "Look at what the author says changed over time.",
+    "tags": [
+      "comprehension",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0018",
     "subject": "reading",
     "grade": 11,
     "kind": "mainidea",
-    "prompt": "What is the main idea of this story?",
-    "passage": "Sleep gives the body time to rest. During sleep, the brain sorts what you learned that day. People who sleep well often think more clearly.",
+    "prompt": "What is the author's main purpose in this passage?",
+    "passage": "A translator faces a quiet dilemma with every sentence. Stay close to the original words, and the result may sound stiff and foreign. Move toward natural phrasing, and some of the original author's flavor slips away. The best translators rarely choose one side for a whole book. Instead, they decide line by line, asking what the author wanted a reader to feel at that moment. A joke may need entirely new words, while a solemn passage may deserve a faithful, even awkward, rendering.",
     "choices": [
-      "Brains work only at night.",
-      "Good sleep helps the body and mind.",
-      "People should learn in bed.",
-      "Sleep takes up a lot of time."
+      "To argue that stiff translations are always the better choice.",
+      "To show that translation balances faithfulness against natural sound.",
+      "To warn readers that jokes can never be translated at all.",
+      "To praise one gifted translator above all of the others."
     ],
-    "answer": "Good sleep helps the body and mind.",
-    "hint": "Look for the idea that all three sentences share.",
-    "tags": ["main-idea", "original"]
+    "answer": "To show that translation balances faithfulness against natural sound.",
+    "hint": "Notice that the best translators decide line by line.",
+    "tags": [
+      "comprehension",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0019",
     "subject": "reading",
     "grade": 11,
     "kind": "mainidea",
-    "prompt": "What is the main idea of this story?",
-    "passage": "A library lends books for free. Many also offer computers, quiet rooms, and story hours. A library card is all you need to start.",
+    "prompt": "Which phrase best describes the narrator's tone toward Marguerite?",
+    "passage": "Marguerite had corrected every misplaced apostrophe in the neighborhood. She carried a small red pen on her walks, and the grocery store's hand-lettered sign, Banana's Fresh, stood no chance. Neighbors learned to wave from a distance. They grumble, yet none would trade her for a quieter street. Still, when the new library sign went up with a flawless colon, Marguerite stood before it for several minutes, as pleased as a gardener admiring the first tomato of summer.",
     "choices": [
-      "Libraries are always quiet.",
-      "Story hours are for babies.",
-      "Libraries offer many free things.",
-      "Computers are better than books."
+      "affectionately amused",
+      "bitterly and openly critical",
+      "coldly and flatly neutral",
+      "anxiously and urgently alarmed"
     ],
-    "answer": "Libraries offer many free things.",
-    "hint": "What do all the sentences say about the library?",
-    "tags": ["main-idea", "original"]
+    "answer": "affectionately amused",
+    "hint": "Consider the gardener comparison at the end.",
+    "tags": [
+      "comprehension",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0020",
     "subject": "reading",
     "grade": 11,
     "kind": "mainidea",
-    "prompt": "What is the main idea of this story?",
-    "passage": "Trees in a city give cool shade on hot days. Their leaves clean the air. Birds also build nests in them.",
+    "prompt": "The comparison of grammar to a river bed suggests that grammar",
+    "passage": "A language, like a river, is never the same water twice. Words drift in from distant tributaries, settle for a time, and then wash on downstream. Grammar is the bed that guides the current, but even a stone bed wears away over the centuries. Anyone who wants to describe a language must paint a moving picture, not take a snapshot. Purists who try to dam the flow find that speakers simply carve new channels around them.",
     "choices": [
-      "Birds like hot days.",
-      "Leaves are green.",
-      "Cities have no parks.",
-      "City trees help people and animals."
+      "stays exactly fixed for all time",
+      "matters more than the words do",
+      "flows faster than vocabulary does",
+      "guides language but slowly changes"
     ],
-    "answer": "City trees help people and animals.",
-    "hint": "Think about who gains from the trees.",
-    "tags": ["main-idea", "original"]
+    "answer": "guides language but slowly changes",
+    "hint": "Reread what happens to the bed over centuries.",
+    "tags": [
+      "comprehension",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0021",
     "subject": "reading",
     "grade": 11,
     "kind": "mainidea",
-    "prompt": "What is the main idea of this story?",
-    "passage": "Food scraps can become rich soil. Worms and tiny living things break the scraps down. Gardeners then spread this soil on their plants.",
+    "prompt": "As used in the passage, \"registers\" most nearly means",
+    "passage": "Every profession develops its own jargon, a shorthand that saves time among insiders. A surgeon can say a single word where a layperson would need a paragraph. Doctors, lawyers, and engineers all face this tradeoff each day. But that same shorthand can build a wall around a field, leaving outsiders confused and sometimes excluded. The most respected experts are those who can shift between registers, using precise terms with colleagues and plain talk with everyone else.",
     "choices": [
-      "Food scraps can be turned into soil for gardens.",
-      "Worms eat all garden plants.",
-      "Gardeners grow food scraps.",
-      "Soil is always rich."
+      "official lists of society members",
+      "degrees of loudness in a large room",
+      "speech styles matched to an audience",
+      "written records of earlier events"
     ],
-    "answer": "Food scraps can be turned into soil for gardens.",
-    "hint": "Follow what happens to the scraps.",
-    "tags": ["main-idea", "original"]
+    "answer": "speech styles matched to an audience",
+    "hint": "Look at who hears each kind of talk.",
+    "tags": [
+      "comprehension",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0022",
     "subject": "reading",
     "grade": 11,
     "kind": "mainidea",
-    "prompt": "What is the main idea of this story?",
-    "passage": "At first, Nia could not ride her bike without falling. She practiced each day for a week. Soon she rode all the way to the park.",
+    "prompt": "The author contrasts cultures mainly to show that",
+    "passage": "Silence is often called the absence of communication, but anyone who has waited for an answer knows better. A pause before a reply can signal doubt, respect, or disagreement. In some cultures, a long pause shows that a speaker has taken a question seriously. In others, the same pause feels like a rebuke. Translators of speech must therefore carry meaning across not only words but also the empty spaces between them.",
     "choices": [
-      "Bikes are hard to ride.",
-      "Practice helps people get better.",
-      "Parks are far from home.",
-      "Falling is fun."
+      "pauses are considered rude in every place",
+      "one silence can be read in different ways",
+      "words always matter more than silence",
+      "translators ought to avoid all long pauses"
     ],
-    "answer": "Practice helps people get better.",
-    "hint": "What changed from the start to the end?",
-    "tags": ["main-idea", "original"]
+    "answer": "one silence can be read in different ways",
+    "hint": "Look at what happens to the same pause in different places.",
+    "tags": [
+      "comprehension",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0023",
     "subject": "reading",
     "grade": 11,
     "kind": "mainidea",
-    "prompt": "What is the main idea of this story?",
-    "passage": "The moon pulls on the ocean. This pull makes the water rise and fall twice a day. We call these changes tides.",
+    "prompt": "The comparison to painters suggests that word choice is",
+    "passage": "Words carry a charge beyond their dictionary meanings. A shop owner may call a small room cozy, while a tenant calls it cramped. The facts are identical; the feeling is not. A cheerful forecaster may promise a brisk morning while a grumbling commuter dreads a freezing one. Skilled writers choose among such near-synonyms the way painters choose among shades of one color, knowing that a slight shift can change how a reader judges the whole scene.",
     "choices": [
-      "The ocean is very deep.",
-      "Water falls from the sky.",
-      "The moon causes ocean tides.",
-      "The moon is bright at night."
+      "a matter of fine, deliberate shading",
+      "mostly decoration with no effect",
+      "a matter of dictionary accuracy only",
+      "a risky habit best avoided"
     ],
-    "answer": "The moon causes ocean tides.",
-    "hint": "What makes the water rise and fall?",
-    "tags": ["main-idea", "original"]
+    "answer": "a matter of fine, deliberate shading",
+    "hint": "Think about how a painter treats shades of one color.",
+    "tags": [
+      "comprehension",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0024",
     "subject": "reading",
     "grade": 11,
     "kind": "mainidea",
-    "prompt": "What is the main idea of this story?",
-    "passage": "One ant cannot carry a big crumb. But many ants can lift it together. They work as a team to bring food home.",
+    "prompt": "What can be inferred about the reporters' view of the report?",
+    "passage": "When the committee's report finally appeared, it ran to two hundred pages and used the word perhaps on nearly every one. Its only firm conclusion was that further study would be needed. It did not say who should carry that study out, or when. The chairman called the document thorough. The reporters who tried to summarize it called it something else, though never in print.",
     "choices": [
-      "Ants love crumbs.",
-      "One ant is very strong.",
-      "Ants live in homes.",
-      "Ants work together to move food."
+      "They thought it admirably clear and direct.",
+      "They believed the chairman wrote it alone.",
+      "They were forbidden to read any of it.",
+      "They found it too vague to summarize usefully."
     ],
-    "answer": "Ants work together to move food.",
-    "hint": "Look at what the ants do as a team.",
-    "tags": ["main-idea", "original"]
+    "answer": "They found it too vague to summarize usefully.",
+    "hint": "Think about why their opinion stayed out of print.",
+    "tags": [
+      "comprehension",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0025",
     "subject": "reading",
     "grade": 11,
     "kind": "mainidea",
-    "prompt": "What is the main idea of this story?",
-    "passage": "Long ago, sailors used stars to find their way at sea. One star in the north always stays in the same spot. It showed them which way to go.",
+    "prompt": "How does the author handle the objection in the first sentence?",
+    "passage": "Some argue that choosing jurors by lottery is unfair, since a random group might lack expertise. Yet expertise is exactly what a court tries to keep out of the jury box, because a juror who has already formed an opinion cannot judge with a fresh mind. A random sample of neighbors, balanced by chance, brings many experiences to the table. Fairness here does not mean the best possible knowledge; it means no one's voice is ruled out in advance. A court that remembers this can invite every neighbor to serve without fear.",
     "choices": [
-      "Sailors used stars to find their way.",
-      "Stars are very far away.",
-      "Ships were slow long ago.",
-      "The sea is very big."
+      "By conceding the point and dropping the argument",
+      "By ignoring it and changing the topic entirely",
+      "By redefining what fairness requires in this setting",
+      "By attacking the character of the person who raised it"
     ],
-    "answer": "Sailors used stars to find their way.",
-    "hint": "What did the sailors use the stars for?",
-    "tags": ["main-idea", "original"]
+    "answer": "By redefining what fairness requires in this setting",
+    "hint": "Look at what the last sentence says fairness does not mean.",
+    "tags": [
+      "comprehension",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0026",
     "subject": "reading",
     "grade": 11,
     "kind": "mainidea",
-    "prompt": "What is the main idea of this story?",
-    "passage": "Old paper can be turned into new paper. First it is mixed with water to make a soft pulp. Then the pulp is pressed flat and dried.",
+    "prompt": "What does the cut-and-choose rule illustrate about fair systems?",
+    "passage": "An old puzzle asks how two people can divide a cake so that neither envies the other. The classic answer is simple: one person cuts, and the other chooses. The cutter, fearing the chooser will take the bigger piece, cuts as evenly as possible. Nothing in the rule requires trust or a referee; it works because each person's self-interest guards the other's. Designers of public systems often seek this quality, a rule that produces fairness even when no one is feeling generous.",
     "choices": [
-      "Water is soft.",
-      "Old paper can be made into new paper.",
-      "Paper is always white.",
-      "Pulp is hard to dry."
+      "Fair outcomes always require a trusted referee.",
+      "Good rules can make fairness grow from self-interest.",
+      "People are naturally generous when they share.",
+      "Larger pieces should always go to the chooser."
     ],
-    "answer": "Old paper can be made into new paper.",
-    "hint": "Think about the steps from old to new.",
-    "tags": ["main-idea", "original"]
+    "answer": "Good rules can make fairness grow from self-interest.",
+    "hint": "Notice why the cutter cuts evenly.",
+    "tags": [
+      "comprehension",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0027",
     "subject": "reading",
     "grade": 11,
     "kind": "mainidea",
-    "prompt": "What is the main idea of this story?",
-    "passage": "A cactus lives where rain is rare. Its thick stem stores water for dry days. Its spines give shade and keep animals away.",
+    "prompt": "Which rhetorical strategy does her opening mainly use?",
+    "passage": "The speaker opened by telling the crowd that she had grown up on the same street where the new clinic would be built. She then described the long waits she and her neighbors had faced when visiting the distant hospital. Only after this did she turn to the cost figures and the engineers' reports. Listeners later said that by the time she reached the numbers, they already trusted her. In the end, the clinic plan passed with little argument.",
     "choices": [
-      "Cactus spines are sharp.",
-      "Rain is bad for plants.",
-      "A cactus has ways to live in dry places.",
-      "Animals like to eat cactus."
+      "earning trust by sharing her local roots",
+      "frightening the crowd with a warning",
+      "quoting an official report in full",
+      "insulting those who disagree openly"
     ],
-    "answer": "A cactus has ways to live in dry places.",
-    "hint": "Each sentence tells how it handles dry land.",
-    "tags": ["main-idea", "original"]
+    "answer": "earning trust by sharing her local roots",
+    "hint": "Think about why shared history makes a speaker credible.",
+    "tags": [
+      "comprehension",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0028",
     "subject": "reading",
     "grade": 11,
     "kind": "mainidea",
-    "prompt": "What is the main idea of this story?",
-    "passage": "When Omar saw a new student eating alone, he sat down beside her. They talked about games and laughed. By the end of lunch, she had a new friend.",
+    "prompt": "Which flaw weakens Mr. Hale's argument?",
+    "passage": "Mr. Hale argued that the town should not extend the evening bus route because last year's budget plan, written by the same committee, wasted money on a fountain. A neighbor pointed out that the fountain had nothing to do with whether the new hours would help working families. The committee, she said, might have erred once and still be right now. Mr. Hale had judged the proposal by who wrote it, not by what it said.",
     "choices": [
-      "Lunch is the best part of school.",
-      "Games are more fun than books.",
-      "New students are always shy.",
-      "A small act of kindness can make a friend."
+      "He relies on numbers that are far too exact for the topic.",
+      "He cites an expert who has no real training in the area.",
+      "He wrongly assumes the fountain was cheap to build.",
+      "He attacks the committee's past error, not the proposal."
     ],
-    "answer": "A small act of kindness can make a friend.",
-    "hint": "What did Omar do, and what came of it?",
-    "tags": ["main-idea", "original"]
+    "answer": "He attacks the committee's past error, not the proposal.",
+    "hint": "Does his reason concern the bus route?",
+    "tags": [
+      "comprehension",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0029",
     "subject": "reading",
     "grade": 11,
     "kind": "grammar",
-    "prompt": "Pick the word that fits: One of the boys ___ ready.",
-    "choices": ["is", "are", "were", "been"],
-    "answer": "is",
-    "hint": "The subject is one. It is a single person.",
-    "tags": ["subject-verb-agreement", "original"]
+    "prompt": "Which sentence keeps its list parallel?",
+    "choices": [
+      "She wants to study law, traveling widely, and writing a book.",
+      "She wants studying law, to travel widely, and to write a book.",
+      "She wants to study law, to travel widely, and to write a book.",
+      "She wants to study law, to travel widely, and a book to write."
+    ],
+    "answer": "She wants to study law, to travel widely, and to write a book.",
+    "hint": "Each item in the list should have the same form.",
+    "tags": [
+      "grammar-usage",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0030",
     "subject": "reading",
     "grade": 11,
     "kind": "grammar",
-    "prompt": "Which sentence uses the right they-re word?",
+    "prompt": "Which sentence places its opening phrase correctly?",
     "choices": [
-      "Their going to the park.",
-      "They're going to the park.",
-      "There going to the park.",
-      "Theyre going to the park."
+      "Reading in the library, time slipped away from Nora.",
+      "Reading in the library, Nora lost track of time.",
+      "Reading in the library, the hours disappeared for Nora.",
+      "Reading in the library, a loud bell startled the afternoon."
     ],
-    "answer": "They're going to the park.",
-    "hint": "The word should mean they are.",
-    "tags": ["homophones", "original"]
+    "answer": "Reading in the library, Nora lost track of time.",
+    "hint": "Who is doing the reading?",
+    "tags": [
+      "grammar-usage",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0031",
     "subject": "reading",
     "grade": 11,
     "kind": "grammar",
-    "prompt": "Pick the word that fits: The dog wagged ___ tail.",
-    "choices": ["it's", "its'", "its", "it"],
-    "answer": "its",
-    "hint": "You need the word that shows the tail belongs to the dog.",
-    "tags": ["possessives", "original"]
+    "prompt": "Pick the word that fits: If the report ___ longer, the board would not finish it.",
+    "choices": [
+      "were",
+      "was",
+      "is",
+      "been"
+    ],
+    "answer": "were",
+    "hint": "The sentence imagines something that is not true.",
+    "tags": [
+      "grammar-usage",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0032",
     "subject": "reading",
     "grade": 11,
     "kind": "grammar",
-    "prompt": "Pick the word that fits: Mom gave the map to Jo and ___.",
-    "choices": ["I", "myself", "mine", "me"],
-    "answer": "me",
-    "hint": "Try it without Jo. Mom gave the map to ___.",
-    "tags": ["pronouns", "original"]
+    "prompt": "Which sentence has a clear pronoun reference?",
+    "choices": [
+      "Ana told Mia that she had won the prize at the fair.",
+      "The coach told the player he needed a rest today.",
+      "In the report, they say that the lake is clean.",
+      "After Ana lent Mia the book, Mia returned it the next day."
+    ],
+    "answer": "After Ana lent Mia the book, Mia returned it the next day.",
+    "hint": "Check who or what each pronoun points to.",
+    "tags": [
+      "grammar-usage",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0033",
     "subject": "reading",
     "grade": 11,
     "kind": "grammar",
-    "prompt": "Pick the word that fits: Each of the cats ___ a bell.",
-    "choices": ["has", "have", "are having", "having"],
-    "answer": "has",
-    "hint": "Each means one at a time.",
-    "tags": ["subject-verb-agreement", "original"]
+    "prompt": "Which sentence uses a semicolon correctly?",
+    "choices": [
+      "The storm passed quickly; and the streets were dry by noon.",
+      "The storm; passed quickly, the streets were dry by noon.",
+      "The storm passed quickly; the streets were dry by noon.",
+      "Although the storm passed; the streets were dry by noon."
+    ],
+    "answer": "The storm passed quickly; the streets were dry by noon.",
+    "hint": "A semicolon joins two complete thoughts.",
+    "tags": [
+      "grammar-usage",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0034",
     "subject": "reading",
     "grade": 11,
     "kind": "grammar",
-    "prompt": "Which sentence uses commas the right way?",
+    "prompt": "Which sentence uses a colon correctly?",
     "choices": [
-      "We packed apples pears, and grapes.",
-      "We packed apples, pears, and grapes.",
-      "We packed, apples pears and grapes.",
-      "We, packed apples, pears and grapes."
+      "She had: one goal to finish the race.",
+      "She had one goal: to finish the race.",
+      "She wanted to: finish the race and rest.",
+      "Her goals were, to finish: the race."
     ],
-    "answer": "We packed apples, pears, and grapes.",
-    "hint": "Commas go between the things in a list.",
-    "tags": ["commas", "original"]
+    "answer": "She had one goal: to finish the race.",
+    "hint": "A colon follows a complete statement.",
+    "tags": [
+      "grammar-usage",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0035",
     "subject": "reading",
     "grade": 11,
     "kind": "grammar",
-    "prompt": "Pick the word that fits: I would have gone if I ___ known.",
-    "choices": ["have", "would", "had", "has"],
-    "answer": "had",
-    "hint": "The sentence talks about the past.",
-    "tags": ["verb-tense", "original"]
+    "prompt": "Which fixes this comma splice? \"The bridge was closed, we took the ferry.\"",
+    "choices": [
+      "The bridge was closed, so we took the ferry.",
+      "The bridge was closed we took the ferry.",
+      "The bridge, was closed, we took the ferry.",
+      "The bridge was closed, we, took the ferry."
+    ],
+    "answer": "The bridge was closed, so we took the ferry.",
+    "hint": "Two full sentences need more than a comma.",
+    "tags": [
+      "grammar-usage",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0036",
     "subject": "reading",
     "grade": 11,
     "kind": "grammar",
-    "prompt": "Which word is the verb in this sentence? The tall robot waved quickly.",
-    "choices": ["tall", "robot", "quickly", "waved"],
-    "answer": "waved",
-    "hint": "Find the action word.",
-    "tags": ["parts-of-speech", "original"]
+    "prompt": "Pick the word that fits: The scientist ___ the committee praised won the prize.",
+    "choices": [
+      "who",
+      "which",
+      "whose",
+      "whom"
+    ],
+    "answer": "whom",
+    "hint": "Is the missing word the object of the verb praised?",
+    "tags": [
+      "grammar-usage",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0037",
     "subject": "reading",
     "grade": 11,
     "kind": "grammar",
-    "prompt": "Pick the word that fits: We have ___ apples than we did.",
-    "choices": ["fewer", "less", "lesser", "least"],
-    "answer": "fewer",
-    "hint": "You can count apples one by one.",
-    "tags": ["word-choice", "original"]
+    "prompt": "Which sentence says the same thing in the fewest words?",
+    "choices": [
+      "The team got together and met in order to plan out the event.",
+      "The team met together for the purpose of planning the event.",
+      "The team met to plan the event.",
+      "The team came together in a meeting to plan the event."
+    ],
+    "answer": "The team met to plan the event.",
+    "hint": "Look for repeated ideas that add nothing.",
+    "tags": [
+      "grammar-usage",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0038",
     "subject": "reading",
     "grade": 11,
     "kind": "grammar",
-    "prompt": "Which sentence asks who owns the coat?",
+    "prompt": "Pick the best transition: The trail was steep; ___, the view was worth every step.",
     "choices": [
-      "Who's coat is this?",
-      "Whose coat is this?",
-      "Whos coat is this?",
-      "Whose' coat is this?"
+      "therefore",
+      "nevertheless",
+      "similarly",
+      "for example"
     ],
-    "answer": "Whose coat is this?",
-    "hint": "You want the word that asks who owns it.",
-    "tags": ["homophones", "original"]
+    "answer": "nevertheless",
+    "hint": "The second clause pushes against the first.",
+    "tags": [
+      "grammar-usage",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0039",
     "subject": "reading",
     "grade": 11,
     "kind": "grammar",
-    "prompt": "Which sentence compares the right way?",
+    "prompt": "Which sentence keeps its verb tense consistent?",
     "choices": [
-      "She speaks more clearer than her brother.",
-      "She speaks most clearly than her brother.",
-      "She speaks more clearly than her brother.",
-      "She speaks clearlier than her brother."
+      "She opened the door, glanced inside, and stepped back.",
+      "She opened the door, glances inside, and stepped back.",
+      "She opens the door, glanced inside, and steps back.",
+      "She opened the door, glancing inside, and steps back."
     ],
-    "answer": "She speaks more clearly than her brother.",
-    "hint": "Pick the one with a single comparing word.",
-    "tags": ["comparisons", "original"]
+    "answer": "She opened the door, glanced inside, and stepped back.",
+    "hint": "All the actions happen at the same time.",
+    "tags": [
+      "grammar-usage",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0040",
     "subject": "reading",
     "grade": 11,
     "kind": "grammar",
-    "prompt": "Which one is a full sentence, not a piece of one?",
+    "prompt": "Which sentence makes a logical comparison?",
     "choices": [
-      "Because the band played.",
-      "Playing until midnight.",
-      "After the long show.",
-      "The band played until midnight."
+      "The climate of Austin is warmer than Boston.",
+      "Austin has a climate that is warmer than Boston.",
+      "Warmer climate is in Austin than Boston is.",
+      "The climate of Austin is warmer than that of Boston."
     ],
-    "answer": "The band played until midnight.",
-    "hint": "A full sentence tells who did what.",
-    "tags": ["sentence-fragments", "original"]
+    "answer": "The climate of Austin is warmer than that of Boston.",
+    "hint": "Compare a climate with a climate, not a climate with a city.",
+    "tags": [
+      "grammar-usage",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0041",
     "subject": "reading",
     "grade": 11,
     "kind": "vocab",
-    "prompt": "What does \"exuberant\" mean? \"The exuberant puppy raced around the yard, wagging its whole body.\"",
-    "choices": ["weak and tired", "full of lively joy", "gloomy and slow", "quiet and shy"],
-    "answer": "full of lively joy",
-    "hint": "Look at how the puppy moves.",
-    "tags": ["vocab"]
+    "prompt": "\"The insidious fog crept in unnoticed until the road had vanished.\" What does \"insidious\" mean?",
+    "choices": [
+      "bright, pretty, and cheerful",
+      "sudden, loud, and startling",
+      "spreading in a sly, unseen way",
+      "easy to see far in advance"
+    ],
+    "answer": "spreading in a sly, unseen way",
+    "hint": "The fog arrived before anyone noticed it.",
+    "tags": [
+      "vocab-in-context",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0042",
     "subject": "reading",
     "grade": 11,
     "kind": "vocab",
-    "prompt": "What does \"tentative\" mean? \"Their plans for the trip were tentative, so nothing was booked yet.\"",
-    "choices": ["not yet final", "already complete", "very expensive", "loudly argued"],
-    "answer": "not yet final",
-    "hint": "Nothing was booked.",
-    "tags": ["vocab"]
+    "prompt": "\"A second witness came forward to corroborate the first one's account.\" What does \"corroborate\" mean?",
+    "choices": [
+      "gently correct a small slip",
+      "confirm with added evidence",
+      "lawfully forbid the matter",
+      "carefully forget the details"
+    ],
+    "answer": "confirm with added evidence",
+    "hint": "A second witness agrees with the first.",
+    "tags": [
+      "vocab-in-context",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0043",
     "subject": "reading",
     "grade": 11,
     "kind": "vocab",
-    "prompt": "What does \"substantiate\" mean? \"She brought photos to substantiate her story.\"",
-    "choices": ["make shorter", "back up with evidence", "change the ending", "hide from view"],
-    "answer": "back up with evidence",
-    "hint": "Why would someone bring photos along?",
-    "tags": ["vocab"]
+    "prompt": "\"Pressed for a plain answer, the official began to prevaricate.\" What does \"prevaricate\" mean?",
+    "choices": [
+      "avoid the truth with evasive talk",
+      "speak at a very great speed",
+      "apologize with deep feeling",
+      "repeat the question out loud"
+    ],
+    "answer": "avoid the truth with evasive talk",
+    "hint": "Think about what a person does who is pressed but does not want to answer.",
+    "tags": [
+      "vocab-in-context",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0044",
     "subject": "reading",
     "grade": 11,
     "kind": "vocab",
-    "prompt": "What does \"diminish\" mean? \"The storm began to diminish, and soon the sky was clear.\"",
-    "choices": ["change color", "grow stronger", "grow smaller", "move closer"],
-    "answer": "grow smaller",
-    "hint": "The sky became clear afterward.",
-    "tags": ["vocab"]
+    "prompt": "\"Her laudable effort to clean the park earned the town's thanks.\" What does \"laudable\" mean?",
+    "choices": [
+      "worthy of doubt",
+      "likely to fade",
+      "unusually costly",
+      "worthy of praise"
+    ],
+    "answer": "worthy of praise",
+    "hint": "The town responded with thanks.",
+    "tags": [
+      "vocab-in-context",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0045",
     "subject": "reading",
     "grade": 11,
     "kind": "vocab",
-    "prompt": "What does \"versatile\" mean? \"A versatile jacket can be worn in rain, wind, or sun.\"",
-    "choices": ["useful in only one way", "hard to clean", "hard to carry", "useful in many ways"],
-    "answer": "useful in many ways",
-    "hint": "Rain, wind, and sun are all covered.",
-    "tags": ["vocab"]
+    "prompt": "\"The painting's enigmatic smile left viewers guessing at her thoughts.\" What does \"enigmatic\" mean?",
+    "choices": [
+      "wide, cheerful, and welcoming",
+      "faded and cracked with age",
+      "mysterious and hard to explain",
+      "plainly and deeply sad"
+    ],
+    "answer": "mysterious and hard to explain",
+    "hint": "Viewers could only guess.",
+    "tags": [
+      "vocab-in-context",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0046",
     "subject": "reading",
     "grade": 11,
     "kind": "vocab",
-    "prompt": "What does \"contemplate\" mean? \"He sat by the lake to contemplate his next move in the chess game.\"",
-    "choices": ["argue about", "think about deeply", "hurry through", "forget completely"],
-    "answer": "think about deeply",
-    "hint": "He sat quietly to do it.",
-    "tags": ["vocab"]
+    "prompt": "\"New records should vindicate the engineer by showing her design was sound.\" What does \"vindicate\" mean?",
+    "choices": [
+      "pay with a large cash reward",
+      "clear of blame by proving right",
+      "summon before a court of law",
+      "ask politely to resign"
+    ],
+    "answer": "clear of blame by proving right",
+    "hint": "The records show her design was sound.",
+    "tags": [
+      "vocab-in-context",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0047",
     "subject": "reading",
     "grade": 11,
     "kind": "vocab",
-    "prompt": "What does \"inhabit\" mean? \"Many kinds of birds inhabit the wetlands near our town.\"",
-    "choices": ["feed on", "leave behind", "live in", "fly over"],
-    "answer": "live in",
-    "hint": "Think about where the birds make their home.",
-    "tags": ["vocab"]
+    "prompt": "The root \"spec\" means \"to look.\" What does \"introspection\" most likely mean?",
+    "choices": [
+      "looking into one's own thoughts",
+      "looking out for signs of danger",
+      "looking back over long history",
+      "looking after someone's home"
+    ],
+    "answer": "looking into one's own thoughts",
+    "hint": "The prefix points inward.",
+    "tags": [
+      "vocab-in-context",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0048",
     "subject": "reading",
     "grade": 11,
     "kind": "mainidea",
-    "prompt": "What is the main idea of this passage?",
-    "passage": "Before clocks were common, towns used bells to mark the hours. The sound traveled across fields and rooftops, so workers far from town knew when to stop for lunch. Today, we check phones instead of listening for bells.",
+    "prompt": "What drawback of town meetings does the passage develop?",
+    "passage": "In a traditional town meeting, every resident may speak and vote on the budget in person. The system is direct and open, and few citizens feel unheard. Yet only those with free evenings and a ride to the hall tend to attend. Over time the room fills with the same retirees and the same committed volunteers, while the working parents most affected by school budgets stay home. Direct democracy, it turns out, can quietly favor the people with the most leisure.",
     "choices": [
-      "Bells once helped people keep track of time.",
-      "Workers never ate lunch.",
-      "Bells are louder than phones.",
-      "Towns were built near fields."
+      "Residents are not allowed to speak freely there.",
+      "The budget is kept hidden from the public eye.",
+      "Too many working parents end up running the meeting.",
+      "Those with free time attend most, skewing who is heard."
     ],
-    "answer": "Bells once helped people keep track of time.",
-    "hint": "Ask what the bells were used for.",
-    "tags": ["mainidea"]
+    "answer": "Those with free time attend most, skewing who is heard.",
+    "hint": "Look at who actually fills the room.",
+    "tags": [
+      "comprehension",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0049",
     "subject": "reading",
     "grade": 11,
     "kind": "mainidea",
-    "prompt": "Why is staying calm important for a diver?",
-    "passage": "Pearl divers hold their breath for a minute or more. They train their lungs for years, and they learn to stay calm underwater. Staying calm saves oxygen.",
+    "prompt": "What is the purpose of the row watered with plain water?",
+    "passage": "A gardener swears that her homemade tea makes tomato plants grow taller. To test the claim, a neighbor waters one row with the tea and leaves a second row on plain water. Both rows get the same sun, soil, and seed. At season's end the tea row is taller by a hand's width. The neighbor is careful, though: one season is not enough to rule out chance, so she plans to repeat the trial next year.",
     "choices": [
-      "It saves oxygen.",
-      "It helps find bigger pearls.",
-      "It makes the water warmer.",
-      "It lets the diver sing."
+      "It uses up the gardener's extra seed.",
+      "It makes the soil richer for the tea row.",
+      "It shows what would happen without the tea.",
+      "It proves that the tea is harmful."
     ],
-    "answer": "It saves oxygen.",
-    "hint": "Read the last short sentence.",
-    "tags": ["mainidea"]
+    "answer": "It shows what would happen without the tea.",
+    "hint": "Think about what the tea row is being compared against.",
+    "tags": [
+      "comprehension",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0050",
     "subject": "reading",
     "grade": 11,
     "kind": "mainidea",
-    "prompt": "What is the planner's goal?",
-    "passage": "A city planner studies how people move through a town. She decides where to put parks, bike lanes, and bus stops. Her goal is to make the town easy and pleasant for everyone to use.",
+    "prompt": "What does the lemonade example illustrate?",
+    "passage": "Beach shops sell more cold lemonade in the weeks when sunburns are most common. A careless reader might conclude that lemonade causes sunburn. A careful reader asks whether some third factor, such as hot, bright weather, drives both. Statisticians call such a hidden driver a confounder. This habit of seeking a hidden common cause is among the most valuable tools in science, because two things that rise together are not necessarily linked as cause and effect.",
     "choices": [
-      "To make the town easy and pleasant to use.",
-      "To count the people in town.",
-      "To build the tallest buildings.",
-      "To close all the roads."
+      "Cold drinks are good for the skin in summer.",
+      "Two trends can rise together without a causal link.",
+      "Shops should lower the cost of lemonade in July.",
+      "Hot weather always harms the crops nearby."
     ],
-    "answer": "To make the town easy and pleasant to use.",
-    "hint": "Find the sentence that begins with \"Her goal.\"",
-    "tags": ["mainidea"]
+    "answer": "Two trends can rise together without a causal link.",
+    "hint": "Look for what the author says about a third factor.",
+    "tags": [
+      "comprehension",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0051",
     "subject": "reading",
     "grade": 11,
     "kind": "mainidea",
-    "prompt": "Which lesson fits this story best?",
-    "passage": "Mina missed the last word in the spelling bee by one letter. She felt upset at first. Then she read the word again, wrote it ten times, and cheered for the winner. The next year, she tried again.",
+    "prompt": "Why does the author consider the friend's claim unscientific?",
+    "passage": "A friend insists that his lucky socks help his team win. When the team wins, the socks get the credit. When the team loses, he explains that the socks were not washed properly, or that the other side wore lucky socks too. No result could ever change his mind. A scientist would say that a claim which can explain every possible outcome has explained nothing, because it risks nothing.",
     "choices": [
-      "Spelling is not worth practice.",
-      "Winners never cheer for others.",
-      "Give up after one mistake.",
-      "Keep trying after a setback."
+      "No result could ever count against it.",
+      "It was never written down for review.",
+      "The socks were too worn to be tested.",
+      "The team won much too often to judge."
     ],
-    "answer": "Keep trying after a setback.",
-    "hint": "Notice what Mina did the next year.",
-    "tags": ["mainidea"]
+    "answer": "No result could ever count against it.",
+    "hint": "Notice what happens to the claim after a loss.",
+    "tags": [
+      "comprehension",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0052",
     "subject": "reading",
     "grade": 11,
     "kind": "mainidea",
-    "prompt": "How do toads move?",
-    "passage": "Frogs and toads look alike, but they have differences. Frogs have smooth, moist skin and long legs for leaping. Toads have dry, bumpy skin and shorter legs, so they hop or walk.",
+    "prompt": "The author's attitude toward the correction is best described as",
+    "passage": "When a laboratory announced a surprising effect, other teams rushed to repeat the work. Several failed to reproduce the result. The original team did not protest; it examined its methods, found a flaw in one instrument, and published a correction. Within a month, the corrected figures were being cited by the same teams that had doubted the first report. Many observers regarded this episode not as an embarrassment but as science working exactly as designed.",
     "choices": [
-      "They swim all day.",
-      "They glide on wings.",
-      "They only leap far.",
-      "They hop or walk."
+      "scornful of the first team",
+      "indifferent to the outcome",
+      "alarmed by the failures",
+      "admiring of a self-correcting process"
     ],
-    "answer": "They hop or walk.",
-    "hint": "Look at their legs.",
-    "tags": ["mainidea"]
+    "answer": "admiring of a self-correcting process",
+    "hint": "Look at how observers regarded the episode.",
+    "tags": [
+      "comprehension",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0053",
     "subject": "reading",
     "grade": 11,
     "kind": "mainidea",
-    "prompt": "What is one limit of wind turbines?",
-    "passage": "Wind turbines turn the power of moving air into electricity. They make no smoke, and the wind is free. Still, they work only when the wind blows, so many places use other sources too.",
+    "prompt": "As used in the passage, \"anomaly\" most nearly means",
+    "passage": "In the nineteenth century, astronomers noticed that the orbit of the planet Uranus did not match predictions. This anomaly could have been dismissed as a measurement error. Instead, two mathematicians independently suggested that an unseen planet was tugging on Uranus, and they calculated where to look. Within a single night of searching, observers found Neptune close to the predicted spot. The discovery was celebrated as a triumph of reasoning over simple observation.",
     "choices": [
-      "They cannot make electricity.",
-      "They work only when the wind blows.",
-      "They make a lot of smoke.",
-      "They cost money for fuel."
+      "a record kept by an observatory",
+      "a tool for measuring distances",
+      "a result that differs from the forecast",
+      "a rule that was later proven right"
     ],
-    "answer": "They work only when the wind blows.",
-    "hint": "Look for the word \"Still.\"",
-    "tags": ["mainidea"]
+    "answer": "a result that differs from the forecast",
+    "hint": "The orbit did not match what had been predicted.",
+    "tags": [
+      "comprehension",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0054",
     "subject": "reading",
     "grade": 11,
     "kind": "mainidea",
-    "prompt": "Why did many people gather around televisions?",
-    "passage": "Many years ago, people watched astronauts walk on the moon. Millions gathered around televisions to see the pictures. Many say it was a moment that made the world feel small and close.",
+    "prompt": "What is the teacher's main criticism?",
+    "passage": "A student wanted to learn whether her town supports longer school days. She phoned one hundred households between noon and two o'clock on weekdays and reported that most callers favored the change. Her teacher praised the effort but asked who had answered the phone. Parents at work, students at school, and night-shift workers asleep were all missing from her sample. A smaller group of carefully chosen respondents, the teacher said, would have told her more than a large group of convenient ones.",
     "choices": [
-      "To see astronauts walk on the moon.",
-      "To hear a concert.",
-      "To learn the weather.",
-      "To watch a race."
+      "The survey was far too short to be useful.",
+      "The callers did not fairly represent the town.",
+      "The student asked rude and leading questions.",
+      "The phone calls cost too much to repeat."
     ],
-    "answer": "To see astronauts walk on the moon.",
-    "hint": "Read the first sentence.",
-    "tags": ["mainidea"]
+    "answer": "The callers did not fairly represent the town.",
+    "hint": "Think about who could not pick up the phone.",
+    "tags": [
+      "comprehension",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0055",
     "subject": "reading",
     "grade": 11,
     "kind": "grammar",
-    "prompt": "Pick the word that fits: The group of students ___ leaving now.",
-    "choices": ["is", "were", "be", "are"],
-    "answer": "is",
-    "hint": "Treat the group as one single thing.",
-    "tags": ["grammar"]
+    "prompt": "Which turns this into active voice? \"The window was broken by the ball.\"",
+    "choices": [
+      "The ball broke the window.",
+      "The window broke the ball.",
+      "The window had been broken by the ball earlier.",
+      "The broken window was the ball's."
+    ],
+    "answer": "The ball broke the window.",
+    "hint": "Put the doer of the action first.",
+    "tags": [
+      "grammar-usage",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0056",
     "subject": "reading",
     "grade": 11,
     "kind": "grammar",
-    "prompt": "Which sentence uses \"who\" or \"whom\" correctly?",
+    "prompt": "Which sentence punctuates dialogue correctly?",
     "choices": [
-      "To who did you give the note?",
-      "Who did you give the note to whom?",
-      "To whom did you give the note?",
-      "Whom gave you the note?"
+      "\"I am ready\" she said \"if you are.\"",
+      "\"I am ready,\" she said \"if you are\".",
+      "\"I am ready, she said, if you are.\"",
+      "\"I am ready,\" she said, \"if you are.\""
     ],
-    "answer": "To whom did you give the note?",
-    "hint": "Try \"to him\" and \"to he.\" Which sounds right?",
-    "tags": ["grammar"]
+    "answer": "\"I am ready,\" she said, \"if you are.\"",
+    "hint": "Commas set off the speaker tag, and quotation marks hold the spoken words.",
+    "tags": [
+      "grammar-usage",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0057",
     "subject": "reading",
     "grade": 11,
     "kind": "grammar",
-    "prompt": "Pick the word that fits: The cat jumped ___ the fence and landed in the garden.",
-    "choices": ["over", "beneath", "among", "between"],
-    "answer": "over",
-    "hint": "It went up and across.",
-    "tags": ["grammar"]
+    "prompt": "Pick the word that fits: From the clues, we can ___ that the river had flooded.",
+    "choices": [
+      "imply",
+      "inflict",
+      "infer",
+      "intend"
+    ],
+    "answer": "infer",
+    "hint": "The reader draws a conclusion from evidence.",
+    "tags": [
+      "grammar-usage",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0058",
     "subject": "reading",
     "grade": 11,
     "kind": "grammar",
-    "prompt": "Which sentence keeps the list parallel?",
+    "prompt": "Pick the word that fits: The map ___ on the table all morning.",
     "choices": [
-      "She likes swimming, hiking, and to read.",
-      "She likes to swim, hiking, and read.",
-      "She likes swimming, hiking, and reading.",
-      "She likes swimming, to hike, and reading."
+      "laid",
+      "lay",
+      "lied",
+      "layed"
     ],
-    "answer": "She likes swimming, hiking, and reading.",
-    "hint": "Make all the items in the list look alike.",
-    "tags": ["grammar"]
+    "answer": "lay",
+    "hint": "The map was resting, not being placed by someone.",
+    "tags": [
+      "grammar-usage",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0059",
     "subject": "reading",
     "grade": 11,
     "kind": "grammar",
-    "prompt": "Which sentence uses a colon correctly?",
+    "prompt": "Which sentence uses a correlative pair correctly?",
     "choices": [
-      "Pack these items: a tent, a map, and a lamp.",
-      "Pack these items a tent: a map, and a lamp.",
-      "Pack these: items a tent, a map, and a lamp.",
-      "Pack: these items a tent, a map, and a lamp."
+      "She is both a gifted writer and a patient teacher.",
+      "She is both a gifted writer and teaches patiently.",
+      "She is both a gifted writer or a patient teacher.",
+      "She is both gifted writer, and patient teaching."
     ],
-    "answer": "Pack these items: a tent, a map, and a lamp.",
-    "hint": "A colon follows a full lead-in and starts the list.",
-    "tags": ["grammar"]
+    "answer": "She is both a gifted writer and a patient teacher.",
+    "hint": "Both is paired with one particular word.",
+    "tags": [
+      "grammar-usage",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0060",
     "subject": "reading",
     "grade": 11,
     "kind": "grammar",
-    "prompt": "Which word means almost the same as \"begin\"?",
-    "choices": ["start", "finish", "hide", "pause"],
-    "answer": "start",
-    "hint": "Think of a race. What happens at the sound of the horn?",
-    "tags": ["grammar"]
+    "prompt": "Which best combines these? \"The ship sailed. It crossed the bay. It carried grain.\"",
+    "choices": [
+      "The ship sailed it crossed the bay carrying grain.",
+      "Sailing the ship, the bay crossed with grain.",
+      "The ship sailed, and it crossed, and it carried the bay.",
+      "The ship, carrying grain, sailed across the bay."
+    ],
+    "answer": "The ship, carrying grain, sailed across the bay.",
+    "hint": "Keep the meaning and make one smooth sentence.",
+    "tags": [
+      "grammar-usage",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0061",
     "subject": "reading",
     "grade": 11,
     "kind": "vocab",
-    "prompt": "Read: \"Her story was plausible, so the teacher believed it.\" What does \"plausible\" mean?",
-    "choices": ["silly", "complicated", "very long", "believable"],
-    "answer": "believable",
-    "hint": "The teacher believed it.",
-    "tags": ["vocab"]
+    "prompt": "\"She approached the stage with trepidation, her hands trembling.\" What does \"trepidation\" mean?",
+    "choices": [
+      "calm and quiet confidence",
+      "great and open delight",
+      "fearful uneasiness",
+      "mild, passing boredom"
+    ],
+    "answer": "fearful uneasiness",
+    "hint": "Her trembling hands are a clue.",
+    "tags": [
+      "vocab-in-context",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0062",
     "subject": "reading",
     "grade": 11,
     "kind": "vocab",
-    "prompt": "Read: \"A judge must be impartial and treat both sides fairly.\" What does \"impartial\" mean?",
+    "prompt": "\"A wristwatch in a film about ancient Rome would be an anachronism.\" What does \"anachronism\" mean?",
     "choices": [
-      "strict with everyone",
-      "famous for wisdom",
-      "fair, favoring no one",
-      "slow to decide"
+      "a costly prop made of gold",
+      "something set in the wrong era",
+      "a famous actor in a small role",
+      "a hidden message in a scene"
     ],
-    "answer": "fair, favoring no one",
-    "hint": "Look at the words treat both sides fairly.",
-    "tags": ["vocab"]
+    "answer": "something set in the wrong era",
+    "hint": "Ancient Rome had no wristwatches.",
+    "tags": [
+      "vocab-in-context",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0063",
     "subject": "reading",
     "grade": 11,
     "kind": "vocab",
-    "prompt": "Read: \"Ana felt ambivalent about moving. She was excited to see a new city, but sad to leave her friends.\" What does \"ambivalent\" mean?",
-    "choices": ["having mixed feelings", "completely sure", "bored and tired", "angry and loud"],
-    "answer": "having mixed feelings",
-    "hint": "She felt excited and sad at the same time.",
-    "tags": ["vocab"]
+    "prompt": "\"The cousins had disparate tastes: one loved quiet books, the other loud games.\" What does \"disparate\" mean?",
+    "choices": [
+      "basically different",
+      "closely matched",
+      "slowly changing",
+      "secretly shared"
+    ],
+    "answer": "basically different",
+    "hint": "The colon introduces an example of their differences.",
+    "tags": [
+      "vocab-in-context",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0064",
     "subject": "reading",
     "grade": 11,
     "kind": "vocab",
-    "prompt": "Read: \"The bright red kite was conspicuous against the gray sky.\" What does \"conspicuous\" mean?",
-    "choices": ["easy to see", "hard to find", "very old", "very light"],
-    "answer": "easy to see",
-    "hint": "Bright red stands out against gray.",
-    "tags": ["vocab"]
+    "prompt": "\"The king surrounded himself with sycophants who agreed with everything he said.\" What does \"sycophant\" mean?",
+    "choices": [
+      "a trusted and honest adviser",
+      "a harsh and open critic",
+      "a traveling teller of tales",
+      "a flatterer who seeks favor"
+    ],
+    "answer": "a flatterer who seeks favor",
+    "hint": "They agreed with everything the king said.",
+    "tags": [
+      "vocab-in-context",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0065",
     "subject": "reading",
     "grade": 11,
     "kind": "vocab",
-    "prompt": "Read: \"The goal in the last minute was pivotal to the win.\" What does \"pivotal\" mean?",
+    "prompt": "\"The lawyer's cogent argument convinced the entire panel.\" What does \"cogent\" mean?",
     "choices": [
-      "mildly useful",
-      "a complete surprise",
-      "against the rules",
-      "very important to the result"
+      "long, rambling, and confusing",
+      "loud and full of emotion",
+      "clear, logical, and convincing",
+      "old and well known to all"
     ],
-    "answer": "very important to the result",
-    "hint": "One goal decided the game.",
-    "tags": ["vocab"]
+    "answer": "clear, logical, and convincing",
+    "hint": "It convinced everyone on the panel.",
+    "tags": [
+      "vocab-in-context",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0066",
     "subject": "reading",
     "grade": 11,
     "kind": "vocab",
-    "prompt": "Read: \"The crowd broke into spontaneous cheers.\" What does \"spontaneous\" mean?",
+    "prompt": "Which word casts a firm refusal to change course in the most positive light?",
     "choices": [
-      "carefully rehearsed",
-      "quiet and slow",
-      "unplanned and natural",
-      "rare and costly"
+      "obstinate",
+      "resolute",
+      "mulish",
+      "intransigent"
     ],
-    "answer": "unplanned and natural",
-    "hint": "No one told the crowd to cheer.",
-    "tags": ["vocab"]
+    "answer": "resolute",
+    "hint": "Think of a word a coach might use to praise a determined player.",
+    "tags": [
+      "vocab-in-context",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0067",
     "subject": "reading",
     "grade": 11,
     "kind": "vocab",
-    "prompt": "Read: \"The eloquent speaker moved the audience with her words.\" What does \"eloquent\" mean?",
+    "prompt": "\"The ineffable beauty of the canyon left every visitor without words.\" What does \"ineffable\" mean?",
     "choices": [
-      "loud and rude",
-      "clear and moving in speech",
-      "shy and nervous",
-      "short and plain"
+      "too great to be put into words",
+      "easy to describe in a line",
+      "common and quite ordinary",
+      "slightly overrated by guides"
     ],
-    "answer": "clear and moving in speech",
-    "hint": "Her words moved the audience.",
-    "tags": ["vocab"]
+    "answer": "too great to be put into words",
+    "hint": "The visitors had no words.",
+    "tags": [
+      "vocab-in-context",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0068",
     "subject": "reading",
     "grade": 11,
     "kind": "vocab",
-    "prompt": "Read: \"Her lucid explanation made the hard idea easy to follow.\" What does \"lucid\" mean?",
+    "prompt": "\"The referee's egregious error was obvious to everyone watching.\" What does \"egregious\" mean?",
     "choices": [
-      "clear and easy to follow",
-      "confusing and long",
-      "rushed and quiet",
-      "full of jokes"
+      "barely noticeable",
+      "entirely honest",
+      "quite understandable",
+      "outstandingly bad"
     ],
-    "answer": "clear and easy to follow",
-    "hint": "The hard idea became easy.",
-    "tags": ["vocab"]
+    "answer": "outstandingly bad",
+    "hint": "Everyone in the crowd could see it.",
+    "tags": [
+      "vocab-in-context",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0069",
     "subject": "reading",
     "grade": 11,
     "kind": "mainidea",
-    "prompt": "What is the main idea of this story?",
-    "passage": "Coral reefs cover only a small part of the ocean floor. Yet they shelter a huge share of sea life. Fish find food and safe hiding places among the coral.",
+    "prompt": "What does the final sentence suggest?",
+    "passage": "Long before compasses reached the Pacific, navigators from the islands of Polynesia crossed thousands of miles of open ocean. They memorized the rising and setting points of stars, read the shapes of swells, and watched the flight paths of birds at dawn and dusk. Knowledge passed from teacher to student through chants and patterns, not written charts. A navigator's mind was therefore both map and instrument. Such memory required years of apprenticeship and a calm nerve.",
     "choices": [
-      "Coral reefs cover most of the ocean.",
-      "Fish prefer open water.",
-      "Coral is a kind of food.",
-      "Coral reefs are small but support a lot of sea life."
+      "Navigators carried compasses hidden in their clothes.",
+      "Charts were drawn only by the most senior teachers.",
+      "Navigators kept in memory what others kept on charts.",
+      "Birds were taught to draw maps for the sailors."
     ],
-    "answer": "Coral reefs are small but support a lot of sea life.",
-    "hint": "Notice the word yet. It joins two ideas.",
-    "tags": ["mainidea"]
+    "answer": "Navigators kept in memory what others kept on charts.",
+    "hint": "Reread how the knowledge was passed along.",
+    "tags": [
+      "comprehension",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0070",
     "subject": "reading",
     "grade": 11,
     "kind": "mainidea",
-    "prompt": "What is the main idea of this story?",
-    "passage": "Early explorers had to guess how far they had traveled. Then clocks became accurate enough to work at sea. With the right time, sailors could find their position far better.",
+    "prompt": "What does \"witness and storyteller\" suggest about the memoir?",
+    "passage": "In the fourteenth century, a young scholar from Morocco set out on a pilgrimage and did not return home for nearly thirty years. He traveled by caravan, ship, and foot across Africa and Asia, recording the customs of each court and market he visited. His account is valuable to historians, though they note that he sometimes described places he knew only by hearsay. A traveler's memoir, in other words, is both witness and storyteller. Modern readers can enjoy the stories while checking the facts against other sources.",
     "choices": [
-      "Explorers never made guesses.",
-      "Clocks were invented for farmers.",
-      "Accurate clocks helped sailors find where they were.",
-      "Sailors dislike the sea."
+      "It was written entirely from the author's imagination.",
+      "It mixes firsthand witness with less reliable retelling.",
+      "It was meant only to entertain young children.",
+      "It contains no information of value to historians."
     ],
-    "answer": "Accurate clocks helped sailors find where they were.",
-    "hint": "Ask what the clocks made possible.",
-    "tags": ["mainidea"]
+    "answer": "It mixes firsthand witness with less reliable retelling.",
+    "hint": "Think about places he knew only by hearsay.",
+    "tags": [
+      "comprehension",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0071",
     "subject": "reading",
     "grade": 11,
     "kind": "mainidea",
-    "prompt": "What is the main idea of this story?",
-    "passage": "Marcus had always disliked reading aloud. When his class started a reading club for younger kids, he agreed to help. After seeing a child laugh at his funny voices, he began to look forward to every session.",
+    "prompt": "What does the passage imply about ideas on the road?",
+    "passage": "Few merchants on the ancient Silk Road traveled its entire length. Goods passed from hand to hand, each trader earning a little as silk, spices, and glass moved from oasis to oasis. Ideas traveled the same way. A story told at one bazaar was changed a little at the next, until a tale from Persia reappeared in China so altered that its first tellers would hardly have known it. Such change is a reminder that no market trades in goods alone.",
     "choices": [
-      "Marcus quit the reading club.",
-      "Helping others changed how Marcus felt about reading aloud.",
-      "Younger kids dislike funny voices.",
-      "Reading aloud is always easy."
+      "They changed as they were passed along.",
+      "They stayed exactly the same everywhere.",
+      "They were forbidden by merchants.",
+      "They traveled faster than goods."
     ],
-    "answer": "Helping others changed how Marcus felt about reading aloud.",
-    "hint": "Compare how Marcus felt at the start and at the end.",
-    "tags": ["mainidea"]
+    "answer": "They changed as they were passed along.",
+    "hint": "Think about what the author says happened to a story at each bazaar.",
+    "tags": [
+      "comprehension",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0072",
     "subject": "reading",
     "grade": 11,
     "kind": "mainidea",
-    "prompt": "What is the main idea of this story?",
-    "passage": "Many cities are adding rooftop gardens. The plants keep buildings cooler, soak up rain, and give people a place to rest. Some even grow vegetables for local shops.",
+    "prompt": "Which detail best supports the claim that east-west position was harder to find?",
+    "passage": "For centuries, sailors could find their north-south position by measuring the sun's height at noon. East-west position was far harder, because it required knowing the exact time at a home port. Pendulum clocks failed on pitching decks, and errors sent many ships far off course. The solution was a sturdy watch whose springs kept steady time through storms and temperature changes. Its inventor, a carpenter turned clockmaker, spent decades convincing skeptical officials that a watch could outperform the stars.",
     "choices": [
-      "Rooftop gardens offer many benefits to cities.",
-      "Vegetables only grow on roofs.",
-      "Buildings are too hot in winter.",
-      "Shops are closing in cities."
+      "The sun reaches its highest point at noon.",
+      "A carpenter turned clockmaker built the watch.",
+      "Skeptical officials trusted the stars instead.",
+      "It required knowing the exact time at a home port."
     ],
-    "answer": "Rooftop gardens offer many benefits to cities.",
-    "hint": "The passage lists several good things the gardens do.",
-    "tags": ["mainidea"]
+    "answer": "It required knowing the exact time at a home port.",
+    "hint": "Find the sentence that explains why it was far harder.",
+    "tags": [
+      "comprehension",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0073",
     "subject": "reading",
     "grade": 11,
     "kind": "mainidea",
-    "prompt": "What is the main idea of this story?",
-    "passage": "Languages change over time. New words appear, old ones fade, and sounds shift from one generation to the next. A book from long ago can seem hard to read for this reason.",
+    "prompt": "What does the discussion of the word \"discovered\" show?",
+    "passage": "For generations, textbooks said that explorers discovered new lands. The word hides a point of view. Those lands were already home to people who knew their coasts and rivers and often guided the newcomers who arrived. A more accurate phrase might be reached, or first recorded in writing. The change is small, but it shows how a single verb can decide whose experience counts.",
     "choices": [
-      "Old books are always boring.",
-      "New words are better than old ones.",
-      "Sounds never change.",
-      "Languages slowly change over time."
+      "Textbooks of that era never contained errors.",
+      "Explorers of that era refused local guides.",
+      "A word can reveal whose view an account adopts.",
+      "Verbs matter far less than nouns in history."
     ],
-    "answer": "Languages slowly change over time.",
-    "hint": "Every sentence gives an example of change.",
-    "tags": ["mainidea"]
+    "answer": "A word can reveal whose view an account adopts.",
+    "hint": "Ask whose experience the old word leaves out.",
+    "tags": [
+      "comprehension",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0074",
     "subject": "reading",
     "grade": 11,
     "kind": "mainidea",
-    "prompt": "What is the main idea of this story?",
-    "passage": "Honest feedback can feel uncomfortable. Still, it shows us what to fix. Athletes, writers, and builders all improve faster when someone points out what is not working.",
+    "prompt": "The author praises the later mapmakers' restraint for",
+    "passage": "Early mapmakers disliked blank space. Where their knowledge ended, they drew decorative whales, ships, and compass roses, partly to please patrons and partly to hide their ignorance. Later, as surveyors gathered measurements, mapmakers began to leave unexplored regions empty. This restraint was a mark of progress: an honest blank, they came to see, says more than a confident guess. Modern atlases still follow this honest habit, shading uncertain regions rather than inventing detail.",
     "choices": [
-      "Athletes never need advice.",
-      "Feedback should always be kept secret.",
-      "Honest feedback, though hard to hear, helps people improve.",
-      "Builders are better than writers."
+      "drawing larger decorations on the maps",
+      "admitting what they did not yet know",
+      "pleasing their wealthy patrons",
+      "hiding their survey instruments"
     ],
-    "answer": "Honest feedback, though hard to hear, helps people improve.",
-    "hint": "Look at what the word still signals.",
-    "tags": ["mainidea"]
+    "answer": "admitting what they did not yet know",
+    "hint": "Look at what an honest blank says.",
+    "tags": [
+      "comprehension",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0075",
     "subject": "reading",
     "grade": 11,
     "kind": "grammar",
-    "prompt": "Pick the word that fits: The results of the survey ___ surprising.",
-    "choices": ["was", "were", "is", "been"],
-    "answer": "were",
-    "hint": "The subject is results, which is plural.",
-    "tags": ["grammar", "subject-verb-agreement"]
+    "prompt": "Pick the word that fits: Beside the old barn ___ two sturdy oaks.",
+    "choices": [
+      "stand",
+      "stands",
+      "is standing",
+      "has stood"
+    ],
+    "answer": "stand",
+    "hint": "Find the real subject, which comes after the verb.",
+    "tags": [
+      "grammar-usage",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0076",
     "subject": "reading",
     "grade": 11,
     "kind": "grammar",
-    "prompt": "Pick the word that fits: She plays the violin ___ than anyone in the band.",
-    "choices": ["better", "more good", "best", "gooder"],
-    "answer": "better",
-    "hint": "You are comparing her with others.",
-    "tags": ["grammar", "comparisons"]
+    "prompt": "Which sentence sets off the extra information correctly?",
+    "choices": [
+      "The mayor who grew up here, opened the fair.",
+      "The mayor, who grew up here opened the fair.",
+      "The, mayor who grew up here opened the fair.",
+      "The mayor, who grew up here, opened the fair."
+    ],
+    "answer": "The mayor, who grew up here, opened the fair.",
+    "hint": "Extra information needs a comma on both sides.",
+    "tags": [
+      "grammar-usage",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0077",
     "subject": "reading",
     "grade": 11,
     "kind": "grammar",
-    "prompt": "Which sentence uses affect and effect correctly?",
+    "prompt": "Which sentence is clear about what the modifier describes?",
     "choices": [
-      "The weather will effect our plans, and the affect may be a delay.",
-      "The weather will affect our plans, and the affect may be a delay.",
-      "The weather will effect our plans, and the effect may be a delay.",
-      "The weather will affect our plans, and the effect may be a delay."
+      "The dog belongs to my neighbor that barked all night.",
+      "My neighbor's dog belongs, barking all night, to him.",
+      "The dog that barked all night belongs to my neighbor.",
+      "Barking all night, my neighbor owns the dog."
     ],
-    "answer": "The weather will affect our plans, and the effect may be a delay.",
-    "hint": "Affect is usually the action. Effect is usually the result.",
-    "tags": ["grammar", "word-choice"]
+    "answer": "The dog that barked all night belongs to my neighbor.",
+    "hint": "Keep the describing words next to the thing described.",
+    "tags": [
+      "grammar-usage",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0078",
     "subject": "reading",
     "grade": 11,
     "kind": "grammar",
-    "prompt": "Pick the word that fits: If I ___ you, I would ask for help.",
-    "choices": ["was", "am", "were", "be"],
-    "answer": "were",
-    "hint": "Wishing or imagining uses a special form.",
-    "tags": ["grammar", "verb-mood"]
+    "prompt": "Pick the word that fits: Had the committee ___ earlier, the delay would have been avoided.",
+    "choices": [
+      "act",
+      "acted",
+      "acts",
+      "acting"
+    ],
+    "answer": "acted",
+    "hint": "The clause looks back at something that did not happen.",
+    "tags": [
+      "grammar-usage",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0079",
     "subject": "reading",
     "grade": 11,
     "kind": "grammar",
-    "prompt": "Which sentence is parallel in form?",
+    "prompt": "Pick the word that fits: The scholar, ___ work spans three decades, will speak tonight.",
     "choices": [
-      "She likes hiking, to swim, and biking.",
-      "She likes hiking, swimming, and biking.",
-      "She likes to hike, swimming, and to bike.",
-      "She likes hiking, swim, and biking."
+      "whose",
+      "who",
+      "whom",
+      "which"
     ],
-    "answer": "She likes hiking, swimming, and biking.",
-    "hint": "Every item in the list should end the same way.",
-    "tags": ["grammar", "parallel-structure"]
+    "answer": "whose",
+    "hint": "The work belongs to the scholar.",
+    "tags": [
+      "grammar-usage",
+      "original"
+    ]
   },
   {
     "id": "reading-11-0080",
     "subject": "reading",
     "grade": 11,
     "kind": "grammar",
-    "prompt": "Pick the word that fits: The prize will go to ___ finishes first.",
-    "choices": ["whoever", "whomever", "whose", "who ever"],
-    "answer": "whoever",
-    "hint": "Ask who does the finishing.",
-    "tags": ["grammar", "pronouns"]
+    "prompt": "Which sentence compares parallel items?",
+    "choices": [
+      "Painting a mural takes more patience than to write a poem.",
+      "Painting a mural takes more patience than a poem.",
+      "Painting a mural takes more patience than poems.",
+      "Painting a mural takes more patience than writing a poem."
+    ],
+    "answer": "Painting a mural takes more patience than writing a poem.",
+    "hint": "Compare an activity with an activity.",
+    "tags": [
+      "grammar-usage",
+      "original"
+    ]
   }
 ]
