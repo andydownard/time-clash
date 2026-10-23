@@ -349,7 +349,7 @@
     "choices": ["25", "6", "12", "9"],
     "answer": "9",
     "hint": "Find how many groups of 5 are in the goats.",
-    "tags": ["ratios", "manual"]
+    "tags": ["ratios"]
   },
   {
     "id": "math-7-0033",
@@ -371,7 +371,7 @@
     "choices": ["25", "115", "105", "125"],
     "answer": "115",
     "hint": "Take the known angle away from a straight line.",
-    "tags": ["geometry", "manual"]
+    "tags": ["geometry"]
   },
   {
     "id": "math-7-0035",
@@ -382,7 +382,7 @@
     "choices": ["4.5", "81", "18", "28"],
     "answer": "18",
     "hint": "The diameter goes all the way across the circle.",
-    "tags": ["geometry", "manual"]
+    "tags": ["geometry"]
   },
   {
     "id": "math-7-0036",
@@ -393,7 +393,7 @@
     "choices": ["8.5", "36", "15", "9"],
     "answer": "9",
     "hint": "Add them all up. Then share equally among 4.",
-    "tags": ["statistics", "manual"]
+    "tags": ["statistics"]
   },
   {
     "id": "math-7-0037",
@@ -404,7 +404,7 @@
     "choices": ["30", "60", "16", "32"],
     "answer": "30",
     "hint": "A triangle is half of a rectangle.",
-    "tags": ["geometry", "manual"]
+    "tags": ["geometry"]
   },
   {
     "id": "math-7-0038",
@@ -437,7 +437,7 @@
     "choices": ["12", "16", "20", "15"],
     "answer": "15",
     "hint": "Find the cost of 1 pen first.",
-    "tags": ["ratios", "manual"]
+    "tags": ["ratios"]
   },
   {
     "id": "math-7-0041",
@@ -459,7 +459,7 @@
     "choices": ["28", "36", "252", "33"],
     "answer": "36",
     "hint": "Find the cost of one sandwich first.",
-    "tags": ["proportional-relationships", "manual"]
+    "tags": ["proportional-relationships"]
   },
   {
     "id": "math-7-0043",
@@ -668,7 +668,7 @@
     "choices": ["31.4", "78.5", "314", "15.7"],
     "answer": "31.4",
     "hint": "Circumference is pi times the diameter.",
-    "tags": ["circumference", "manual"]
+    "tags": ["circumference"]
   },
   {
     "id": "math-7-0062",
@@ -679,7 +679,7 @@
     "choices": ["31.4", "78.5", "15.7", "157"],
     "answer": "78.5",
     "hint": "Area is pi times the radius times the radius.",
-    "tags": ["area-of-a-circle", "manual"]
+    "tags": ["area-of-a-circle"]
   },
   {
     "id": "math-7-0063",
@@ -690,7 +690,7 @@
     "choices": ["62.8", "31.4", "314", "100"],
     "answer": "314",
     "hint": "Area is pi times the radius times the radius.",
-    "tags": ["area-of-a-circle", "manual"]
+    "tags": ["area-of-a-circle"]
   },
   {
     "id": "math-7-0064",
@@ -701,7 +701,7 @@
     "choices": ["28.26", "9.42", "9", "18.84"],
     "answer": "18.84",
     "hint": "Circumference is 2 times pi times the radius.",
-    "tags": ["circumference", "manual"]
+    "tags": ["circumference"]
   },
   {
     "id": "math-7-0065",
@@ -712,7 +712,7 @@
     "choices": ["113.04", "452.16", "37.68", "75.36"],
     "answer": "113.04",
     "hint": "The radius is half of the diameter. Then use pi times radius squared.",
-    "tags": ["area-of-a-circle", "manual"]
+    "tags": ["area-of-a-circle"]
   },
   {
     "id": "math-7-0066",
