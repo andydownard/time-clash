@@ -19,6 +19,7 @@ npm run typecheck
 npm run build        # builds to dist/
 npm run check:dist   # fails if the build still holds the e2e test hook
 npm run e2e          # browser tests (Chromium and WebKit)
+UPDATE_SCREENSHOTS=1 npm run e2e   # same, and also retakes docs/screenshots (normal runs leave them alone)
 npm run check:questions
 ```
 

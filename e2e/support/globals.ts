@@ -20,5 +20,7 @@ declare global {
     __silent?: SilentState;
     /** Added to performance.now(), so a test can make an answer "slow" without waiting. */
     __skew?: number;
+    /** performance.now() (page clock) when the reload card last appeared. */
+    __modalAt?: number;
   }
 }

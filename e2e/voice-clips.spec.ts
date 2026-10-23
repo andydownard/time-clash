@@ -120,14 +120,33 @@ test('a missing clip (404) falls back quietly and is not asked for twice', async
   browserName,
 }) => {
   haveClips = false;
+  // Count the clip elements that report an error, so the test waits for the browser's answer
+  // instead of sleeping. The listener only counts. The game's own handler runs in the same event.
+  await page.addInitScript(() => {
+    const w = window as unknown as { __clipErrors: number };
+    w.__clipErrors = 0;
+    const Real = window.Audio;
+    window.Audio = function (src?: string) {
+      const el = new Real(src);
+      el.addEventListener('error', () => {
+        w.__clipErrors++;
+      });
+      return el;
+    } as unknown as typeof Audio;
+  });
   await toReloadQuestion(page);
   const settle = () =>
     page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
   await tid(page, 'reload-speak').click();
   await expect.poll(() => clipRequests().length, { timeout: 10_000 }).toBeGreaterThan(0);
-  // The game gives up on a clip at once on an error, or after CLIP_START_TIMEOUT_MS (1.5 s) if the
-  // browser reports nothing. Wait past that, then the miss is remembered.
-  await page.waitForTimeout(2_500);
+  // The game gives up on a clip at once on an error (and after CLIP_START_TIMEOUT_MS if the browser
+  // reports nothing). Chromium reports the 404, so wait for that report. Safari reports it late, and
+  // only the "card still works" check below is promised there.
+  if (browserName === 'chromium') {
+    await expect
+      .poll(() => page.evaluate(() => (window as unknown as { __clipErrors: number }).__clipErrors))
+      .toBeGreaterThan(0);
+  }
   await settle();
   // A browser may probe a few times for the one clip. Asking again must add nothing.
   const afterFirst = clipRequests().length;

@@ -1,5 +1,6 @@
 // The look and feel: self-hosted fonts, floors on every screen (56px targets, 20px text,
 // no sideways scroll), and the docs/screenshots set. Screens are walked in play order.
+// Screenshots are retaken only with UPDATE_SCREENSHOTS=1 (see e2e/support/shots.ts).
 import type { Page } from '@playwright/test';
 import { expect, test } from './fixtures';
 import { smallTargets, smallText } from './support/audit';
@@ -122,7 +123,7 @@ test('the page links no outside style, script or font', async ({ page }) => {
   expect(outside).toEqual([]);
 });
 
-test('every screen keeps the floors, and the screenshots are retaken', async ({
+test('every screen keeps the floors (UPDATE_SCREENSHOTS=1 also retakes the screenshots)', async ({
   page,
   browserName,
 }) => {

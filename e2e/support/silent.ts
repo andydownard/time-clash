@@ -3,7 +3,7 @@
 // make no sound. The app still thinks it is playing, so its code paths are the real ones.
 // Chromium also runs with --mute-audio (playwright.config.ts) as a second layer.
 // Also adds window.__skew: a test can add to performance.now() to make an answer slow
-// without waiting (no arbitrary sleeps).
+// without waiting (no arbitrary sleeps). window.__modalAt is when the reload card appeared.
 import type { Page } from '@playwright/test';
 import './globals';
 
@@ -128,6 +128,16 @@ export function installSilentStubs(): void {
 
   const realNow = w.performance.now.bind(w.performance);
   w.performance.now = () => realNow() + (w.__skew ?? 0);
+
+  // Remember when the reload card appeared, on the page clock. A "fast" answer is measured from
+  // that moment, and a busy machine can take seconds between the card showing and the test's tap.
+  // answerReload(page, 'right-fast') uses this to answer fast on the page clock, not the wall clock.
+  let lastModal: Element | null = null;
+  new MutationObserver(() => {
+    const modal = document.querySelector('[data-testid="reload-modal"]');
+    if (modal && modal !== lastModal) w.__modalAt = w.performance.now();
+    lastModal = modal;
+  }).observe(document, { childList: true, subtree: true });
 }
 
 export async function installSilent(page: Page): Promise<void> {

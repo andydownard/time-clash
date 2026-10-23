@@ -75,6 +75,8 @@ test('Change players opens Setup with the saved players, then returns to the Cam
 
 test('the keyboard starts the match from the Camp', async ({ page }) => {
   await toCamp(page);
+  // The Camp focuses "Time to Clash!" a moment after it shows. Enter goes nowhere until it does.
+  await expect(tid(page, 'camp-start')).toBeFocused();
   await page.keyboard.press('Enter');
   // The Battle Plan opens with Lock it in! focused, so a second Enter starts the match.
   await expect(tid(page, 'plan-go')).toBeFocused();
