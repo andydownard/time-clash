@@ -14,8 +14,8 @@ import {
   q,
   qa,
   setup,
-  sightQ,
   vocabQ,
+  wordQ,
 } from './helpers';
 
 // Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
@@ -318,76 +318,35 @@ describe('reload modal', () => {
     expect(q(TEST_IDS.reloadModal)!.getAttribute('data-layout')).toBe('math');
   });
 
-  it('uses the big sight-word layout for K to 3 reading, with a speak button', () => {
-    const said: string[] = [];
-    void open(sightQ, { speak: (w: string) => said.push(w) });
+  it('uses the big reading layout for K to 3 reading', () => {
+    void open(wordQ);
     expect(q(TEST_IDS.reloadModal)!.getAttribute('data-layout')).toBe('reading-young');
-    click(q(TEST_IDS.reloadSpeak));
-    expect(said).toEqual(['because']);
   });
 
+  // The owner removed read-aloud for questions on 2026-10-23: every grade reads its own question.
   it.each([
     ['math', mathQ],
     ['fraction math', fractionQ],
-    ['sight word', sightQ],
+    ['word choice', wordQ],
     ['vocab', vocabQ],
     ['main idea', mainIdeaQ],
-  ])(
-    'every question has a Hear it button (%s), at least 56px tall, with a word label',
-    (_n, qn) => {
-      const said: string[] = [];
-      void open(qn, { speak: (t: string) => said.push(t) });
-      const b = q<HTMLButtonElement>(TEST_IDS.reloadSpeak)!;
-      expect(b).not.toBeNull();
-      expect(b.textContent).toContain(RELOAD_COPY.speak);
-      expect(b.classList.contains('tc-btn')).toBe(true);
-      click(b);
-      expect(said).toHaveLength(1);
-      expect(said[0]!.length).toBeGreaterThan(0);
-    },
-  );
-
-  it('Hear it reads the whole question for a non-sight-word item, not only the word', () => {
-    const said: string[] = [];
-    void open(mainIdeaQ, { speak: (t: string) => said.push(t) });
-    click(q(TEST_IDS.reloadSpeak));
-    expect(said[0]).toContain('The catapult was old.');
-    expect(said[0]).toContain('What is the main idea?');
+  ])('has no speaker control and never speaks the question text (%s)', (_n, qn) => {
+    void open(qn);
+    const el = q(TEST_IDS.reloadModal)!;
+    expect(el.querySelector('.tc-speak-btn, [data-testid="reload-speak"]')).toBeNull();
+    expect(el.textContent).not.toContain('Hear it');
+    expect(qa('button').every((b) => !/hear|listen|speak/i.test(b.textContent ?? ''))).toBe(true);
+    expect(s.harness.speech.spoken).toEqual([]);
+    expect(el.querySelector('#tc-reload-prompt')!.textContent!.length).toBeGreaterThan(0);
+    expect(qa('.tc-choice')).toHaveLength(UI.choicesPerQuestion);
   });
 
-  it('a speak button with no speak handler does nothing and does not throw', () => {
-    void open(sightQ);
-    expect(() => click(q(TEST_IDS.reloadSpeak))).not.toThrow();
-  });
-
-  it('a speak handler that throws does not break the question', () => {
-    void open(mathQ, {
-      speak: () => {
-        throw new Error('no voice');
-      },
-    });
-    expect(() => click(q(TEST_IDS.reloadSpeak))).not.toThrow();
-    expect(q(TEST_IDS.reloadModal)).not.toBeNull();
-  });
-
-  describe('with sound off', () => {
-    it('a sight word item shows the target word, so a muted device can still answer', () => {
-      s = setup({ settings: { muted: true } });
-      void open(sightQ);
-      const prompt = q('reload-prompt')!.textContent!;
-      expect(prompt).toBe(RELOAD_COPY.matchWord('because'));
-    });
-    it('and goes back to the hear-the-word prompt when sound comes on', () => {
-      s = setup({ settings: { muted: true } });
-      void open(sightQ);
-      click(q('cover-mute'));
-      expect(q('reload-prompt')!.textContent).toBe(sightQ.prompt);
-    });
-    it('does not change the prompt of other questions', () => {
-      s = setup({ settings: { muted: true } });
-      void open(vocabQ);
-      expect(q('reload-prompt')!.textContent).toBe(vocabQ.prompt);
-    });
+  it('shows the same prompt with sound on or off (no listen-only wording)', () => {
+    s = setup({ settings: { muted: true } });
+    void open(wordQ);
+    expect(q('reload-prompt')!.textContent).toBe(wordQ.prompt);
+    click(q('cover-mute'));
+    expect(q('reload-prompt')!.textContent).toBe(wordQ.prompt);
   });
 
   it('has a Sound on/off button on the question cover that mutes and unmutes', () => {
@@ -413,16 +372,6 @@ describe('reload modal', () => {
     s.clock.advance(RELOAD.rightAnswerBeatMs);
     await p;
     expect(q(TEST_IDS.captionBar)!.hidden).toBe(true);
-  });
-
-  it('stops any speech when the question closes', async () => {
-    let stopped = 0;
-    s.audio.stopSpeech = () => void stopped++;
-    const p = open(mathQ);
-    click(q(TEST_IDS.reloadChoice(1)));
-    s.clock.advance(RELOAD.rightAnswerBeatMs);
-    await p;
-    expect(stopped).toBeGreaterThan(0);
   });
 
   it('shows the passage for a main idea question', () => {
@@ -476,10 +425,9 @@ describe('reload modal', () => {
       expect(q(TEST_IDS.reloadModal)!.querySelector('[role="timer"]')).toBeNull();
     });
 
-    it('still shows the whole question, the answers and Hear it', () => {
+    it('still shows the whole question and the answers', () => {
       void open();
       expect(qa('.tc-choice').length).toBe(UI.choicesPerQuestion);
-      expect(q(TEST_IDS.reloadSpeak)).not.toBeNull();
       expect(q('reload-prompt')!.textContent).not.toBe('');
     });
 

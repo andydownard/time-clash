@@ -5,7 +5,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { INTRO, LOADING, PASS_SCREEN, RELOAD, SETUP, TEAM_NAMES, VICTORY_CHRONO } from '../../src/data/copy';
 import { INTRO_SCRIPT } from '../../src/data/introScript';
 import { TEST_IDS } from '../../src/ui/types';
-import { click, fractionQ, flush, mainIdeaQ, mathQ, q, qa, setup, sightQ } from './helpers';
+import { click, fractionQ, flush, mainIdeaQ, mathQ, q, qa, setup, wordQ } from './helpers';
 
 // Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
 vi.setConfig({ testTimeout: 120_000 });
@@ -220,14 +220,11 @@ describe('Reload look', () => {
     expect(group.querySelectorAll('button.tc-choice')).toHaveLength(4);
   });
 
-  it('the speaker button sits beside the prompt and its icon is decorative', () => {
-    void open(sightQ);
+  it('the prompt sits in its own row with no speaker button', () => {
+    void open(wordQ);
     const row = q(TEST_IDS.reloadModal)!.querySelector('.tc-prompt-row')!;
     expect(row.contains(q('reload-prompt'))).toBe(true);
-    const speak = q(TEST_IDS.reloadSpeak)!;
-    expect(row.contains(speak)).toBe(true);
-    expect(speak.querySelector('[aria-hidden="true"]')!.textContent).toContain(RELOAD.speakIcon);
-    expect(speak.textContent).toContain(RELOAD.speak);
+    expect(row.querySelector('button')).toBeNull();
   });
 
   it('a story question is flagged so the story and the question sit side by side', () => {

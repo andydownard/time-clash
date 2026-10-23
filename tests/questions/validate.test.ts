@@ -8,7 +8,7 @@ const has = (list: string[], text: string): boolean => list.some((p) => p.includ
 
 describe('validateQuestion: good questions', () => {
   it('accepts a good math question', () => expect(problems(mq())).toEqual([]));
-  it('accepts a good sight word question', () => expect(problems(rq())).toEqual([]));
+  it('accepts a good word-choice question', () => expect(problems(rq())).toEqual([]));
   it('accepts 3 choices', () => expect(problems(mq({ choices: ['54', '56', '58'] }))).toEqual([]));
   it('accepts a vocab question', () =>
     expect(
@@ -17,7 +17,6 @@ describe('validateQuestion: good questions', () => {
           id: 'reading-6-0001',
           grade: 6,
           kind: 'vocab',
-          audioWord: undefined,
           prompt: 'The huge dog was enormous. What does enormous mean?',
           choices: ['very big', 'very small', 'very loud', 'very old'],
           answer: 'very big',
@@ -32,7 +31,6 @@ describe('validateQuestion: good questions', () => {
           id: 'reading-5-0001',
           grade: 5,
           kind: 'mainidea',
-          audioWord: undefined,
           passage: 'Bees make honey. They fly from flower to flower. Honey is stored in the hive.',
           prompt: 'What is the main idea?',
           choices: ['Bees make honey', 'Flowers are red', 'Hives are cold', 'Bears are big'],
@@ -216,25 +214,22 @@ describe('validateQuestion: id, grade, subject, kind', () => {
       ),
     ).toEqual([]);
   });
-  it('sightword needs audioWord', () => {
-    expect(has(problems(rq({ audioWord: undefined })), 'audioWord')).toBe(true);
-  });
-  it('sightword needs non-blank audioWord', () => {
-    expect(has(problems(rq({ audioWord: ' ' })), 'audioWord')).toBe(true);
-  });
   it('mainidea needs passage', () => {
     expect(
       has(
-        problems(rq({ id: 'reading-5-0001', grade: 5, kind: 'mainidea', audioWord: undefined })),
+        problems(rq({ id: 'reading-5-0001', grade: 5, kind: 'mainidea' })),
         'passage',
       ),
     ).toBe(true);
   });
   it('reading kinds are not allowed on math', () => {
-    expect(has(problems(mq({ kind: 'sightword', audioWord: 'x' })), 'kind')).toBe(true);
+    expect(has(problems(mq({ kind: 'vocab' })), 'kind')).toBe(true);
+  });
+  it('the old sightword kind is gone', () => {
+    expect(has(problems(rq({ kind: 'sightword' as never })), 'kind')).toBe(true);
   });
   it('numeric kind is not allowed on reading', () => {
-    expect(has(problems(rq({ kind: 'numeric', audioWord: undefined })), 'kind')).toBe(true);
+    expect(has(problems(rq({ kind: 'numeric' })), 'kind')).toBe(true);
   });
 });
 
@@ -271,7 +266,6 @@ describe('validateQuestion: banned words', () => {
       id: 'reading-5-0001',
       grade: 5,
       kind: 'mainidea',
-      audioWord: undefined,
       passage: 'The pirate shouted: kill the sail!',
     });
     expect(has(problems(q), 'banned')).toBe(true);

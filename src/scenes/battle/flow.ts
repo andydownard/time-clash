@@ -409,18 +409,6 @@ export class BattleFlow {
           name: match.snapshot().players[team === 'PAST' ? 1 : 0].name,
         },
         quip: (kind) => RELOAD_QUIPS[kind][this.quipBags[kind].next()] ?? null,
-        speak: (text, sentences) => {
-          const durationMs = Math.max(1500, text.split(/\s+/).length * 450);
-          audio?.speak(
-            {
-              id: 'read-question',
-              text,
-              captions: timeCaptions(sentences.length > 0 ? sentences : [text], durationMs),
-              durationMs,
-            },
-            { onCaption: (t) => overlay.setCaption(t) },
-          );
-        },
       });
       this.live();
       this.levels = withRecord(

@@ -3,7 +3,6 @@
 import { PASS_SCREEN, RELOAD as COPY, TEAM_NAMES, UI_EXTRA } from '../data/copy';
 import { RELOAD, UI } from '../game/config';
 import { fastWindowMs } from '../game/reload';
-import { spokenSentences, spokenText } from '../questions/spoken';
 import { chronoFace } from './art';
 import type { UiCtx } from './ctx';
 import { h, renderMath, toMathSymbols } from './dom';
@@ -36,22 +35,11 @@ export function showReloadModal(ctx: UiCtx, options: ReloadModalOptions): Promis
       class: 'tc-prompt',
       'data-testid': LOCAL_IDS.reloadPrompt,
     });
-    const paintPrompt = (): void => {
-      // With sound off, a sight word item cannot be heard, so it shows the word to match.
-      if (question.kind === 'sightword' && question.audioWord && ctx.settings().muted) {
-        prompt.replaceChildren(doc.createTextNode(COPY.matchWord(question.audioWord)));
-        prompt.removeAttribute('role');
-        prompt.removeAttribute('aria-label');
-        return;
-      }
-      prompt.replaceChildren(...renderMath(doc, question.prompt));
-      if (hasMath(promptNodes)) {
-        prompt.setAttribute('role', 'math');
-        prompt.setAttribute('aria-label', toMathSymbols(question.prompt));
-      }
-    };
-    paintPrompt();
-    const offSettings = ctx.onSettings(paintPrompt);
+    prompt.replaceChildren(...promptNodes);
+    if (hasMath(promptNodes)) {
+      prompt.setAttribute('role', 'math');
+      prompt.setAttribute('aria-label', toMathSymbols(question.prompt));
+    }
 
     // ---- choices ----
     const choiceButtons = question.choices.slice(0, UI.choicesPerQuestion).map((text, i) => {
@@ -68,7 +56,7 @@ export function showReloadModal(ctx: UiCtx, options: ReloadModalOptions): Promis
       return b;
     });
 
-    // ---- feedback, hint, speak ----
+    // ---- feedback and hint ----
     const feedback = h(doc, 'div', {
       class: 'tc-feedback',
       'data-testid': LOCAL_IDS.reloadFeedback,
@@ -101,23 +89,6 @@ export function showReloadModal(ctx: UiCtx, options: ReloadModalOptions): Promis
       });
       hintRow = h(doc, 'div', { class: 'tc-hint-row' }, hintButton);
     }
-    // Hear it: every question can be read aloud. The captions are the words already on screen.
-    const speakButton = h(doc, 'button', {
-      type: 'button',
-      class: 'tc-btn tc-btn-future tc-speak-btn',
-      'data-testid': TEST_IDS.reloadSpeak,
-    });
-    speakButton.append(
-      h(doc, 'span', { 'aria-hidden': 'true', text: `${COPY.speakIcon} ` }),
-      COPY.speak,
-    );
-    speakButton.addEventListener('click', () => {
-      try {
-        options.speak?.(spokenText(question), spokenSentences(question));
-      } catch {
-        /* no sound is not a problem; everything is on screen */
-      }
-    });
     const mute = createCoverMute(ctx);
 
     const fastMs = fastWindowMs(question.kind, question.grade);
@@ -206,7 +177,7 @@ export function showReloadModal(ctx: UiCtx, options: ReloadModalOptions): Promis
               text: question.passage,
             })
           : null,
-        h(doc, 'div', { class: 'tc-prompt-row' }, prompt, speakButton),
+        h(doc, 'div', { class: 'tc-prompt-row' }, prompt),
         h(
           doc,
           'div',
@@ -244,14 +215,8 @@ export function showReloadModal(ctx: UiCtx, options: ReloadModalOptions): Promis
     let answered = false;
 
     const finish = (answer: ReloadAnswer): void => {
-      offSettings();
       mute.dispose();
-      // Nothing keeps talking, and no caption is left behind, once the card is gone.
-      try {
-        ctx.audio?.stopSpeech();
-      } catch {
-        /* nothing to stop */
-      }
+      // No caption is left behind once the card is gone.
       ctx.setCaption(null);
       close();
       resolve(answer);

@@ -164,24 +164,24 @@ describe('BattleFlow: the reload teaches', () => {
     });
   });
 
-  it('Hear it speaks with a caption for every sentence, shown through the overlay', async () => {
+  it('gives the question card no speak handler and never speaks the question', async () => {
     const miss = findAim(SEED, 0, 'PAST', 'miss');
     const w = makeWorld({ seed: SEED, script: [miss, miss] });
-    const spoken: Array<{ line: { text: string; captions: unknown[] }; shown: unknown }> = [];
+    const spoken: string[] = [];
     w.deps.audio = {
       playSfx: () => {},
-      speak: (line: { text: string; captions: unknown[] }, options?: { onCaption?: unknown }) => {
-        spoken.push({ line, shown: options?.onCaption });
+      speak: (line: { text: string }) => {
+        spoken.push(line.text);
         return { done: Promise.resolve('ended'), source: 'silent', stop: () => {} };
       },
     } as unknown as typeof w.deps.audio;
     void w.flow.run();
     await settle();
-    const speak = w.modalOptions[0]!.speak as (t: string, s: string[]) => void;
-    speak('One two. Three four.', ['One two.', 'Three four.']);
-    expect(spoken).toHaveLength(1);
-    expect(spoken[0]!.line.captions).toHaveLength(2);
-    expect(typeof spoken[0]!.shown).toBe('function');
+    expect('speak' in w.modalOptions[0]!).toBe(false);
+    const q = w.modalQuestions[0]!;
+    for (const line of spoken) {
+      expect(line).not.toContain(q.prompt);
+    }
   });
 
   it('if the question card breaks, the turn still ends with exactly one reload and no scrap', async () => {

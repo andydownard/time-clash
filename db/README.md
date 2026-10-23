@@ -11,11 +11,11 @@
 
 ## Question and wipeout clips by text hash (`voice-k4.sqlite`, later volumes)
 
-`voice-k4.sqlite` holds a spoken clip for every reload question in grades K to 4 (math and reading) and every wipeout line. It uses only the table `voice_clip_index` (`migrations/0002_voice_clip_text_ids.sql`). The older `voice.sqlite` and its five intro files are untouched. The app server (`voice-server/`) opens every `db/voice-*.sqlite` read-only and serves the clips at `/v1/clips/:id`, and the game plays them (`src/audio/clipPlayer.ts`). See `docs/APP_SERVER.md`.
+`voice-k4.sqlite` holds a spoken clip for every wipeout line, and for every reload question in grades K to 4 (math and reading) as built before 2026-10-23. The game no longer speaks question text, so the question clips are unused and the manifest (`scripts/voice-manifest.ts`) now lists wipeout lines only. It uses only the table `voice_clip_index` (`migrations/0002_voice_clip_text_ids.sql`). The older `voice.sqlite` and its five intro files are untouched. Like `voice.sqlite`, the site does not read it yet. A server and a game-side player will.
 
 **The contract.**
 - `id` is `t:` plus 16 lowercase hex digits: FNV-1a 64-bit of the UTF-8 bytes of the text after collapsing whitespace (`text.split(/\s+/).filter(Boolean).join(' ')`). Offset basis `0xcbf29ce484222325`, prime `0x100000001b3`, modulo 2^64. TypeScript: `src/audio/clipId.ts`. Python: `clip_id()` in `scripts/build-voice-index.py`. Both check the same four test vectors (`"" -> t:cbf29ce484222325`).
-- `text` is exactly what the game passes to `speak()` (from `spokenText()` in `src/questions/spoken.ts`, or a line from `tumblePool()`). The id hashes that original text, and it is also the caption.
+- `text` is exactly what the game passes to `speak()` (a line from `tumblePool()`; `spokenText()` and `src/questions/spoken.ts` were removed). The id hashes that original text, and it is also the caption.
 - The voice does not read that text raw. `toSpoken()` (`src/audio/toSpoken.ts`) rewrites symbols for the ear: `x` becomes "times", `+` "plus", `-` between numbers "minus", `=` "equals", `%` "percent", `^` "to the power of", `___` "blank", and so on. `text_sha256` is the sha256 of that spoken form, so changing `toSpoken` rebuilds the affected clips.
 - Audio: mono AAC in MP4, 48 kbps, mime `audio/mp4`. Voice: Kokoro `am_michael`, speed 0.95, `en-us`. `kind` is `bark`, `question`, `passage` or `intro` (reading passages are spoken inside the question, so there are no `passage` rows today).
 

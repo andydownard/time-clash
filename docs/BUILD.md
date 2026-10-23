@@ -98,7 +98,7 @@ Camp, the Battle Plan, and biomes arrived in Phase 2. In Phase 1 the Future base
   "tags": ["pre-algebra", "linear-equations"]
 }
 ```
-- Reading K to 3: sight words and simple sentences (use the public Dolch and Fry lists). `kind: "sightword"` with `audioWord` text for the speak button.
+- Reading K to 3: printed words and simple sentences (use the public Dolch and Fry lists), always answerable by reading. (The `sightword` kind and its speak button were removed on 2026-10-23.)
 - Reading 4 to 12: vocabulary in context, main idea, and grammar. Write original questions only.
 - Math K to 12: counting, add and subtract, times tables, fractions, ratios, pre-algebra, algebra, geometry, trig basics.
 - At least 40 questions per grade per subject before launch. The bank is past that: 2,439 questions, with 100 to 110 math and 70 to 90 reading per grade (`npm run check:questions` prints the count per file). The picker still falls back to the nearest grade if a grade is ever empty.

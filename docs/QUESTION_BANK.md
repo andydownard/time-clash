@@ -11,13 +11,13 @@ Examples: `math-0.json`, `math-5.json`, `reading-12.json`. The bank holds 2,439 
 Each question follows `src/questions/types.ts`.
 
 - `id`: `<subject>-<grade>-<nnnn>`, for example `math-5-0042`. Four digits. Unique in the whole bank. The subject and grade must match the file.
-- `subject`, `grade`, `kind`: kind is `numeric`, `choice`, `sightword`, `vocab`, `mainidea`, or `grammar`. `numeric` is math only. The other reading kinds are reading only.
-- `prompt`: plain text a child reads. No two prompts in one file may match (same prompt, same passage, same audioWord).
+- `subject`, `grade`, `kind`: kind is `numeric`, `choice`, `vocab`, `mainidea`, or `grammar`. `numeric` is math only. The other reading kinds are reading only.
+- `prompt`: plain text a child reads. No two prompts in one file may match (same prompt, same passage).
 - `choices`: 3 or 4 different non-blank strings. Use 4 unless there is a good reason.
 - `answer`: must equal one choice exactly.
 - `hint`: required. Short and kind. It must not contain the answer as a whole word or number (the checker looks).
 - `tags`: array of strings. Add `"manual"` to a math question whose prompt is not one of the patterns below.
-- `audioWord`: required for `sightword`.
+- Every question must be answerable by reading. No question may depend on hearing a word (no "Tap the word you hear"), and the game does not read questions aloud. The owner removed the `sightword` kind, `audioWord`, and read-aloud on 2026-10-23 (`tests/questions/readOnly.test.ts`).
 - `passage`: required for `mainidea`.
 
 ## Math prompts the checker recomputes
