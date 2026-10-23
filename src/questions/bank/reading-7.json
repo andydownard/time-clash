@@ -4,558 +4,593 @@
     "subject": "reading",
     "grade": 7,
     "kind": "vocab",
-    "prompt": "Read: \"Mia was reluctant to jump into the cold lake.\" What does reluctant mean?",
-    "choices": ["not eager", "excited", "sleepy", "proud"],
-    "answer": "not eager",
-    "hint": "Think about someone who stands at the edge and waits.",
-    "tags": ["context-clues"]
+    "prompt": "What does \"indispensable\" mean in this sentence? A reliable compass was indispensable to the explorers crossing the open sea.",
+    "choices": ["easy to replace", "absolutely necessary", "pleasant to hold", "hard to read"],
+    "answer": "absolutely necessary",
+    "hint": "Without a compass, the explorers could lose their way.",
+    "tags": ["vocab", "context"]
   },
   {
     "id": "reading-7-0002",
     "subject": "reading",
     "grade": 7,
     "kind": "vocab",
-    "prompt": "Read: \"The chef was meticulous. She measured every spice with care.\" What does meticulous mean?",
-    "choices": [
-      "always in a hurry",
-      "very careful about small details",
-      "bad at cooking",
-      "fond of loud music"
-    ],
-    "answer": "very careful about small details",
-    "hint": "Look at how she measured the spice.",
-    "tags": ["context-clues"]
+    "prompt": "What does \"relentless\" mean in this sentence? The relentless swimmer refused to quit, even when the current pushed her back.",
+    "choices": ["easily distracted", "quietly shy", "never giving up", "quick to anger"],
+    "answer": "never giving up",
+    "hint": "She refused to quit.",
+    "tags": ["vocab", "context"]
   },
   {
     "id": "reading-7-0003",
     "subject": "reading",
     "grade": 7,
     "kind": "vocab",
-    "prompt": "Read: \"The desert was barren. Not one plant grew there.\" What does barren mean?",
-    "choices": ["full of water", "covered in snow", "empty of plants", "busy with people"],
-    "answer": "empty of plants",
-    "hint": "The next sentence tells you what is missing.",
-    "tags": ["context-clues"]
+    "prompt": "What does \"deteriorate\" mean in this sentence? Without repairs, the wooden pier will deteriorate in the salty air.",
+    "choices": ["grow stronger", "become popular", "move away", "slowly break down"],
+    "answer": "slowly break down",
+    "hint": "Salt air is hard on wood over time.",
+    "tags": ["vocab", "context"]
   },
   {
     "id": "reading-7-0004",
     "subject": "reading",
     "grade": 7,
     "kind": "vocab",
-    "prompt": "Read: \"Leo's answer was concise. It took only one short line.\" What does concise mean?",
-    "choices": ["long and slow", "wrong", "silly", "short and clear"],
-    "answer": "short and clear",
-    "hint": "Think about how many words he used.",
-    "tags": ["context-clues"]
+    "prompt": "What does \"subtle\" mean in this sentence? There was a subtle change in the sky, so faint that only the sailor noticed it.",
+    "choices": [
+      "delicate and hard to notice",
+      "loud and dramatic",
+      "sudden and violent",
+      "bright and colorful"
+    ],
+    "answer": "delicate and hard to notice",
+    "hint": "Only one person noticed it.",
+    "tags": ["vocab", "context"]
   },
   {
     "id": "reading-7-0005",
     "subject": "reading",
     "grade": 7,
     "kind": "vocab",
-    "prompt": "Read: \"The rabbit was cautious and looked both ways before it crossed.\" What does cautious mean?",
-    "choices": ["careful to avoid trouble", "very loud", "very hungry", "easy to fool"],
-    "answer": "careful to avoid trouble",
-    "hint": "The rabbit looked both ways first.",
-    "tags": ["context-clues"]
+    "prompt": "What does \"judicious\" mean in this sentence? It was judicious to check the forecast before launching the canoe.",
+    "choices": ["bold and reckless", "wise and careful", "dull and slow", "rude and loud"],
+    "answer": "wise and careful",
+    "hint": "Checking first is a smart habit.",
+    "tags": ["vocab", "context"]
   },
   {
     "id": "reading-7-0006",
     "subject": "reading",
     "grade": 7,
     "kind": "vocab",
-    "prompt": "Which word is the best synonym for ancient?",
-    "choices": ["very new", "very old", "very big", "very fast"],
-    "answer": "very old",
-    "hint": "Think of castles and old ruins.",
-    "tags": ["synonym"]
+    "prompt": "What does \"cryptic\" mean in this sentence? The sign was cryptic, so the hikers could not tell which trail to follow.",
+    "choices": [
+      "painted in bright colors",
+      "very old",
+      "puzzling and hard to understand",
+      "written in another language"
+    ],
+    "answer": "puzzling and hard to understand",
+    "hint": "The hikers could not tell which way to go.",
+    "tags": ["vocab", "context"]
   },
   {
     "id": "reading-7-0007",
     "subject": "reading",
     "grade": 7,
     "kind": "vocab",
-    "prompt": "Which word is the opposite of generous?",
-    "choices": ["kind", "giving", "selfish", "friendly"],
-    "answer": "selfish",
-    "hint": "A generous person shares. The opposite keeps everything.",
-    "tags": ["antonym"]
+    "prompt": "What does \"flamboyant\" mean in this sentence? The flamboyant trophy case, glittering with lights, was meant to impress every visitor.",
+    "choices": [
+      "simple and plain",
+      "small and hidden",
+      "old and dusty",
+      "showy and attention-grabbing"
+    ],
+    "answer": "showy and attention-grabbing",
+    "hint": "It glittered to impress visitors.",
+    "tags": ["vocab", "context"]
   },
   {
     "id": "reading-7-0008",
     "subject": "reading",
     "grade": 7,
     "kind": "vocab",
-    "prompt": "Read: \"The storm was brief. It was over in a minute.\" What does brief mean?",
-    "choices": ["very strong", "very cold", "hard to see", "lasting a short time"],
-    "answer": "lasting a short time",
-    "hint": "The next sentence says how long it lasted.",
-    "tags": ["context-clues"]
+    "prompt": "What does \"realistic\" mean in this sentence? A realistic engineer, she chose the simple design that would actually work.",
+    "choices": [
+      "practical about what can be done",
+      "dreamy and unrealistic",
+      "careless and rushed",
+      "secretive and shy"
+    ],
+    "answer": "practical about what can be done",
+    "hint": "She chose what would actually work.",
+    "tags": ["vocab", "context"]
   },
   {
     "id": "reading-7-0009",
     "subject": "reading",
     "grade": 7,
     "kind": "vocab",
-    "prompt": "The prefix \"un-\" means \"not.\" What does the word unfair mean?",
-    "choices": ["not fair", "very fair", "fair again", "before fair"],
-    "answer": "not fair",
-    "hint": "Add the meaning of the prefix to the base word.",
-    "tags": ["prefix"]
+    "prompt": "What does \"exemplary\" mean in this sentence? The team's exemplary play, full of fairness and kindness, earned the referee's praise.",
+    "choices": [
+      "below average",
+      "worthy of being a model for others",
+      "strange and new",
+      "rare and costly"
+    ],
+    "answer": "worthy of being a model for others",
+    "hint": "It earned praise.",
+    "tags": ["vocab", "context"]
   },
   {
     "id": "reading-7-0010",
     "subject": "reading",
     "grade": 7,
     "kind": "vocab",
-    "prompt": "The prefix \"re-\" means \"again.\" What does the word rewrite mean?",
-    "choices": ["write less", "write again", "never write", "write before"],
-    "answer": "write again",
-    "hint": "Think about doing the job one more time.",
-    "tags": ["prefix"]
+    "prompt": "What does \"alleviate\" mean in this sentence? Sandbags can alleviate flood damage by slowing the rising water.",
+    "choices": [
+      "cause more of",
+      "predict the date of",
+      "lessen the harm of",
+      "measure the depth of"
+    ],
+    "answer": "lessen the harm of",
+    "hint": "Slowing the water helps in what way?",
+    "tags": ["vocab", "context"]
   },
   {
     "id": "reading-7-0011",
     "subject": "reading",
     "grade": 7,
     "kind": "vocab",
-    "prompt": "The suffix \"-less\" means \"without.\" What does the word fearless mean?",
-    "choices": ["full of fear", "a little fear", "without fear", "fear again"],
-    "answer": "without fear",
-    "hint": "Look at the ending and what it means.",
-    "tags": ["suffix"]
+    "prompt": "What does \"appraise\" mean in this sentence? Judges appraise every gem before the exhibit opens.",
+    "choices": ["quickly ignore", "carry away", "admire loudly", "examine and judge the value of"],
+    "answer": "examine and judge the value of",
+    "hint": "Judges check things carefully.",
+    "tags": ["vocab", "context"]
   },
   {
     "id": "reading-7-0012",
     "subject": "reading",
     "grade": 7,
     "kind": "vocab",
-    "prompt": "Read: \"The old map was fragile, so Sam held it gently.\" What does fragile mean?",
-    "choices": ["very heavy", "very bright", "full of color", "easy to break or tear"],
-    "answer": "easy to break or tear",
-    "hint": "Why would Sam hold it gently?",
-    "tags": ["context-clues"]
+    "prompt": "What does \"pinnacle\" mean in this sentence? Reaching the summit was the pinnacle of the climbers' season.",
+    "choices": ["the highest point", "the earliest step", "a sad ending", "a quiet moment"],
+    "answer": "the highest point",
+    "hint": "A summit is the top.",
+    "tags": ["vocab", "context"]
   },
   {
     "id": "reading-7-0013",
     "subject": "reading",
     "grade": 7,
     "kind": "vocab",
-    "prompt": "Read: \"Ana was thrilled. She jumped and cheered all afternoon.\" What does thrilled mean?",
-    "choices": ["very happy and excited", "tired and slow", "puzzled", "worried"],
-    "answer": "very happy and excited",
-    "hint": "Think about jumping and cheering.",
-    "tags": ["context-clues"]
+    "prompt": "What does \"arduous\" mean in this sentence? The arduous climb up the steep trail left everyone breathless.",
+    "choices": ["short and easy", "difficult and tiring", "quiet and calm", "bright and colorful"],
+    "answer": "difficult and tiring",
+    "hint": "Everyone was breathless.",
+    "tags": ["vocab", "context"]
   },
   {
     "id": "reading-7-0014",
     "subject": "reading",
     "grade": 7,
     "kind": "vocab",
-    "prompt": "Read: \"The path was treacherous, with loose rocks and a slippery slope.\" What does treacherous mean?",
-    "choices": ["easy to follow", "unsafe to walk on", "short and flat", "pretty and green"],
-    "answer": "unsafe to walk on",
-    "hint": "Loose rocks and slippery ground are clues.",
-    "tags": ["context-clues"]
+    "prompt": "What does \"persuasive\" mean in this sentence? The mayor gave a persuasive speech that convinced the whole crowd.",
+    "choices": ["long and boring", "quiet and hurried", "good at changing minds", "rude and rough"],
+    "answer": "good at changing minds",
+    "hint": "The crowd was convinced.",
+    "tags": ["vocab", "context"]
   },
   {
     "id": "reading-7-0015",
     "subject": "reading",
     "grade": 7,
     "kind": "mainidea",
-    "prompt": "Read the passage. What is the main idea?",
+    "prompt": "Why does a hurricane weaken over land?",
     "choices": [
-      "Bees like to drink nectar.",
-      "Flowers come in many colors.",
-      "Bees help plants grow seeds and fruit.",
-      "Bees live in large hives."
+      "Earth stops spinning beneath it.",
+      "Satellites disturb its path.",
+      "Cooler air stops rushing in below.",
+      "It loses the warm ocean water that feeds it."
     ],
-    "answer": "Bees help plants grow seeds and fruit.",
-    "hint": "Ask what the whole passage is mostly about.",
-    "tags": ["main-idea"],
-    "passage": "Bees visit flowers to drink sweet nectar. As they move from flower to flower, pollen sticks to their legs. The pollen then rubs off on other flowers. This helps new seeds and fruit grow."
+    "answer": "It loses the warm ocean water that feeds it.",
+    "hint": "Look for what the storm needs to keep going.",
+    "tags": ["mainidea", "cause"],
+    "passage": "A hurricane begins over warm ocean water, which supplies the heat and moisture that feed it. As warm air rises, cooler air rushes in below, and the spinning of Earth twists the whole system into a giant spiral. Once a hurricane moves over land or cold water, it loses its fuel and slowly weakens. Meteorologists track these storms by satellite so coastal towns have days to prepare."
   },
   {
     "id": "reading-7-0016",
     "subject": "reading",
     "grade": 7,
     "kind": "mainidea",
-    "prompt": "Read the passage. What is the main idea?",
+    "prompt": "What does the phrase \"though many details are still being studied\" signal?",
     "choices": [
-      "Everyone should wake up early.",
-      "Meals are the best part of the day.",
-      "Stress is hard to avoid.",
-      "A daily routine can help you feel calm and get things done."
+      "Scientists do not yet fully understand how the pouch works.",
+      "Seahorses cannot be studied.",
+      "The pouch is not real.",
+      "The eggs are always lost."
     ],
-    "answer": "A daily routine can help you feel calm and get things done.",
-    "hint": "Look for the idea that every sentence supports.",
-    "tags": ["main-idea"],
-    "passage": "Many people keep a daily routine. They wake up at the same time and eat meals at set times. A steady routine can help you feel calm. It also helps you finish tasks without stress."
+    "answer": "Scientists do not yet fully understand how the pouch works.",
+    "hint": "Think about what it means when details are still being studied.",
+    "tags": ["mainidea", "author-s-purpose"],
+    "passage": "Seahorses are unusual fish in several ways. They swim upright, propelled by a tiny fin on their backs that beats dozens of times each second. Instead of the female, the male carries the eggs in a special pouch until the young are ready to hatch. Scientists believe the pouch protects the eggs and supplies them with oxygen, though many details are still being studied."
   },
   {
     "id": "reading-7-0017",
     "subject": "reading",
     "grade": 7,
     "kind": "mainidea",
-    "prompt": "Read the passage. What is the main idea?",
+    "prompt": "According to the passage, what happened once books were easier to make?",
     "choices": [
-      "Footprints on the Moon last a long time because it has no wind.",
-      "The Moon is made of rock.",
-      "People like to walk on the Moon.",
-      "Wind is strong on Earth."
+      "Scribes began to copy books faster.",
+      "More people learned to read, and ideas spread faster.",
+      "Workshops stopped making books.",
+      "Metal letters were thrown away after one use."
     ],
-    "answer": "Footprints on the Moon last a long time because it has no wind.",
-    "hint": "Think about why the prints stay.",
-    "tags": ["main-idea"],
-    "passage": "The Moon has no air or wind. Because of this, footprints left there stay for a very long time. Nothing blows them away. Some prints may last for millions of years."
+    "answer": "More people learned to read, and ideas spread faster.",
+    "hint": "Read the last sentence.",
+    "tags": ["mainidea", "cause"],
+    "passage": "Before the fifteenth century, every book in Europe was copied by hand, a slow job that could take a scribe many months. Johannes Gutenberg developed a press that used movable metal letters, which could be arranged, inked, and reused. Suddenly one workshop could produce many copies of the same book in days. As books became easier to afford, more people learned to read, and ideas traveled faster than ever."
   },
   {
     "id": "reading-7-0018",
     "subject": "reading",
     "grade": 7,
     "kind": "mainidea",
-    "prompt": "Read the passage. What is the main idea?",
+    "prompt": "What is the central idea of this passage?",
     "choices": [
-      "Libraries are always quiet.",
-      "Libraries offer many things besides books.",
-      "Children love story time.",
-      "Books are hard to find."
+      "The third touch is the only important one.",
+      "Nets are hard to build.",
+      "Volleyball success depends on teammates each doing a part.",
+      "Rallies always last a long time."
     ],
-    "answer": "Libraries offer many things besides books.",
-    "hint": "The passage lists several things. What do they show together?",
-    "tags": ["main-idea"],
-    "passage": "A library is more than a place for books. You can borrow music, join a club, or use a computer. Many libraries also host story time for young children. There is something for almost everyone."
+    "answer": "Volleyball success depends on teammates each doing a part.",
+    "hint": "Think about why one mistimed touch ruins the rally.",
+    "tags": ["mainidea", "main-idea"],
+    "passage": "In volleyball, a team gets only three touches to send the ball back over the net. The first player passes it up, the second sets it near the net, and the third drives it down on the other side. If any one of the three mistimes a touch, the whole rally can collapse. Coaches often say the sport teaches that no single player can succeed alone."
   },
   {
     "id": "reading-7-0019",
     "subject": "reading",
     "grade": 7,
     "kind": "mainidea",
-    "prompt": "Read the passage. What is the main idea?",
+    "prompt": "What does the description \"Alarmed, she slammed the jar shut\" most clearly show?",
     "choices": [
-      "Sea turtles eat only plants.",
-      "Sand is warm in summer.",
-      "Sea turtles make long trips to lay eggs where they were born.",
-      "Turtles are slow on land."
+      "She wanted to share the troubles.",
+      "She planned to open it again soon.",
+      "She felt proud of her choice.",
+      "She regretted opening the jar."
     ],
-    "answer": "Sea turtles make long trips to lay eggs where they were born.",
-    "hint": "Follow the turtle's trip from start to end.",
-    "tags": ["main-idea"],
-    "passage": "Sea turtles travel thousands of miles in their lives. They swim from feeding grounds to the beach where they were born. There they lay their eggs in the sand. Then they swim back out to sea."
+    "answer": "She regretted opening the jar.",
+    "hint": "Think about why someone would slam a lid.",
+    "tags": ["mainidea", "inference"],
+    "passage": "In an old Greek story, Pandora was given a sealed jar and told never to open it. Curiosity nagged at her until she lifted the lid, and out flew all the troubles of the world. Alarmed, she slammed the jar shut, but one small thing remained inside: hope. Storytellers have long used the tale to explain why people face hardship, and why hope stays with them anyway."
   },
   {
     "id": "reading-7-0020",
     "subject": "reading",
     "grade": 7,
     "kind": "mainidea",
-    "prompt": "Read the passage. What is the main idea?",
+    "prompt": "How does the author use the details about the many tests?",
     "choices": [
-      "Students have too much homework.",
-      "Beds should be soft.",
-      "Dreams are always strange.",
-      "Sleep is important for learning and growing."
+      "to show that invention often takes determination through failure",
+      "to prove that Edison worked alone",
+      "to explain how electricity is made",
+      "to criticize inventors who give up"
     ],
-    "answer": "Sleep is important for learning and growing.",
-    "hint": "Which sentence says why sleep matters?",
-    "tags": ["main-idea"],
-    "passage": "Good sleep helps your body and mind. When you rest, your brain sorts what you learned that day. Your body also grows and mends itself. That is why students need plenty of sleep."
+    "answer": "to show that invention often takes determination through failure",
+    "hint": "Ask what the thousands of tests say about how Edison worked.",
+    "tags": ["mainidea", "author-s-purpose"],
+    "passage": "Thomas Edison is famous for the light bulb, but he and his team tested thousands of materials before finding a filament that could glow for many hours without burning up. Each failure taught them something about heat and electricity. Edison later said that he had not failed, but had found thousands of ways that would not work."
   },
   {
     "id": "reading-7-0021",
     "subject": "reading",
     "grade": 7,
     "kind": "mainidea",
-    "prompt": "Read the passage. What is the main idea?",
+    "prompt": "What does the detail about former recipients returning as volunteers suggest?",
     "choices": [
-      "Sailors used stars to find their way at sea.",
-      "Ships were very small long ago.",
-      "Stars are far from Earth.",
-      "Cloudy nights are cold."
+      "The pantry is short of food.",
+      "The pantry creates a cycle of neighbors helping neighbors.",
+      "Volunteers are paid for their time.",
+      "The grocery store needs more customers."
     ],
-    "answer": "Sailors used stars to find their way at sea.",
-    "hint": "What did sailors do with the stars?",
-    "tags": ["main-idea"],
-    "passage": "Long ago, sailors used the stars to find their way. They knew certain stars always showed north. By checking the sky each night, they could steer the ship. Clear skies made the trip much easier."
+    "answer": "The pantry creates a cycle of neighbors helping neighbors.",
+    "hint": "Think about who gives and who receives over time.",
+    "tags": ["mainidea", "inference"],
+    "passage": "Every Thursday, volunteers at the Maple Street food pantry sort donated cans, weigh produce, and pack boxes for nearby families. A grocery store often supplies bread that is close to its sell-by date but still fresh, so nothing goes to waste. Teenagers earn service hours, retirees share cooking tips, and neighbors who once received boxes sometimes return as volunteers."
   },
   {
     "id": "reading-7-0022",
     "subject": "reading",
     "grade": 7,
     "kind": "mainidea",
-    "prompt": "Read the passage. What is the main idea?",
+    "prompt": "Which detail explains how a cuttlefish changes color?",
     "choices": [
-      "Worms are the best pets.",
-      "Compost turns scraps into soil that helps gardens.",
-      "Apples grow in autumn.",
-      "Gardens need a lot of water."
+      "It hides under the sand.",
+      "It swims away very quickly.",
+      "Tiny pigment sacs expand or shrink.",
+      "It startles predators."
     ],
-    "answer": "Compost turns scraps into soil that helps gardens.",
-    "hint": "Think about what a compost pile makes.",
-    "tags": ["main-idea"],
-    "passage": "A compost pile turns scraps into rich soil. Apple cores, leaves, and eggshells slowly break down. Tiny worms and bugs help with the work. Gardeners then spread the soil on their plants."
+    "answer": "Tiny pigment sacs expand or shrink.",
+    "hint": "Look at the second sentence.",
+    "tags": ["mainidea", "detail"],
+    "passage": "A cuttlefish can change the color and pattern of its skin in less than a second. Tiny sacs filled with pigment expand or shrink under the animal's control, while layers beneath them reflect light in shimmering ways. The cuttlefish uses this skill to blend in with the sand, to startle predators, and to signal other cuttlefish."
   },
   {
     "id": "reading-7-0023",
     "subject": "reading",
     "grade": 7,
     "kind": "mainidea",
-    "prompt": "Read the passage. What is the main idea?",
+    "prompt": "In this passage, the word \"steers\" shows that the jet stream",
     "choices": [
-      "Zara does not like the band.",
-      "Songs are always easy.",
-      "Practice helped Zara get better at music.",
-      "Zara has a new school."
+      "slows down airplanes",
+      "makes every storm stronger",
+      "drives cars on land",
+      "guides the direction storms travel"
     ],
-    "answer": "Practice helped Zara get better at music.",
-    "hint": "Look at what changed after a month.",
-    "tags": ["main-idea"],
-    "passage": "Zara joined the school band but could not play well at first. She practiced twenty minutes each day. After a month, her songs sounded smooth. Her hard work paid off."
+    "answer": "guides the direction storms travel",
+    "hint": "Think about what a person does when steering a boat.",
+    "tags": ["mainidea", "vocabulary-in-context"],
+    "passage": "High above the ground, a fast river of air called the jet stream flows from west to east. It steers storms across the continent and can speed up airplanes that travel in the same direction. When the jet stream dips south, cold air spills with it, and a region may suddenly feel like winter. Forecasters watch its path closely because small shifts can change the weather for millions of people."
   },
   {
     "id": "reading-7-0024",
     "subject": "reading",
     "grade": 7,
     "kind": "mainidea",
-    "prompt": "Read the passage. What is the main idea?",
+    "prompt": "The author most likely included the detail about the wind tunnel to",
     "choices": [
-      "Mountains are cold at the top.",
-      "Rock is heavy to carry.",
-      "People live near peaks.",
-      "Volcanoes build mountains as melted rock cools in layers."
+      "show that careful testing led to their success",
+      "prove that wind tunnels are dangerous",
+      "explain how engines are built",
+      "suggest that luck was the key to flight"
     ],
-    "answer": "Volcanoes build mountains as melted rock cools in layers.",
-    "hint": "The passage explains how something is made.",
-    "tags": ["main-idea"],
-    "passage": "Volcanoes form when hot melted rock pushes up through the ground. The rock cools and hardens into layers. Over many years, the layers build a tall mountain. This is how many famous peaks were made."
+    "answer": "show that careful testing led to their success",
+    "hint": "Look at the final sentence.",
+    "tags": ["mainidea", "author-s-purpose"],
+    "passage": "Before the Wright brothers ever left the ground, they built a small wind tunnel from a wooden box and tested dozens of tiny wing shapes. Their measurements showed that the published tables used by earlier flyers were wrong. By trusting their own data instead of old charts, they designed wings that truly produced lift. Their patient testing, more than luck, made the first powered flight possible."
   },
   {
     "id": "reading-7-0025",
     "subject": "reading",
     "grade": 7,
     "kind": "mainidea",
-    "prompt": "Read the passage. What is the main idea?",
+    "prompt": "Why do coaches spend so much practice time on baton handoffs?",
     "choices": [
-      "A helmet must fit well to keep your head safe.",
-      "Bikes are faster than cars.",
-      "Straps come in many colors.",
-      "Falling is fun."
+      "Batons are easy to drop on purpose.",
+      "Smooth exchanges save time as much as raw speed does.",
+      "Relay runners are slower than other runners.",
+      "The final event is always the longest."
     ],
-    "answer": "A helmet must fit well to keep your head safe.",
-    "hint": "What does the passage say about fit?",
-    "tags": ["main-idea"],
-    "passage": "Bike helmets protect your head if you fall. They work best when they fit snugly and sit level. A loose helmet can slide and fail to help. Always check the strap before you ride."
+    "answer": "Smooth exchanges save time as much as raw speed does.",
+    "hint": "Read the second sentence.",
+    "tags": ["mainidea", "cause"],
+    "passage": "At a track meet, the relay is often the final and most exciting event. Four runners each carry a baton for one lap, and the team's time depends on smooth handoffs as much as speed. A runner who starts moving before the incoming teammate arrives can take the baton at full speed rather than from a standstill. Coaches spend entire practices on this single skill."
   },
   {
     "id": "reading-7-0026",
     "subject": "reading",
     "grade": 7,
     "kind": "mainidea",
-    "prompt": "Read the passage. What is the main idea?",
+    "prompt": "What is the effect of the exaggerated details in these stories?",
     "choices": [
-      "Owls sleep all day long.",
-      "Owls have body parts that help them hunt at night.",
-      "Feathers are very soft.",
-      "Mice are hard to catch."
+      "They teach listeners to dig lakes.",
+      "They prove the hero was real.",
+      "They make the stories funny and the hero seem amazingly strong.",
+      "They make the stories sound sad."
     ],
-    "answer": "Owls have body parts that help them hunt at night.",
-    "hint": "Each sentence names one body part and its job.",
-    "tags": ["main-idea"],
-    "passage": "Owls hunt at night. Their big eyes see well in the dark. Soft feathers let them fly without a sound. Their ears can find tiny noises on the ground."
+    "answer": "They make the stories funny and the hero seem amazingly strong.",
+    "hint": "Think about what the last two sentences say about the fun.",
+    "tags": ["mainidea", "tone"],
+    "passage": "Tall tales from the American frontier describe heroes who are far larger than life. In one story, the giant lumberjack Paul Bunyan digs the Great Lakes so his blue ox will have a place to drink. In another, he combs the tangles out of a forest with a pine tree. Listeners knew the stories were not true. The fun was in how outrageous each one could become."
   },
   {
     "id": "reading-7-0027",
     "subject": "reading",
     "grade": 7,
     "kind": "mainidea",
-    "prompt": "Read the passage. What is the main idea?",
+    "prompt": "Why are phytoplankton described as the \"base\" of ocean food chains?",
     "choices": [
-      "Pictures look best in color.",
-      "Pockets are too small.",
-      "Phones have changed a lot since they were first made.",
-      "Music is loud."
+      "They sink to the bottom of the sea.",
+      "They are the largest plants in the ocean.",
+      "They grow only near the shore.",
+      "Nearly all other ocean animals depend on them for food, directly or indirectly."
     ],
-    "answer": "Phones have changed a lot since they were first made.",
-    "hint": "Compare the start and the end of the passage.",
-    "tags": ["main-idea"],
-    "passage": "The first telephones were large and hard to use. Today a phone fits in your pocket. It can take pictures and play music too. Phones have changed a great deal over time."
+    "answer": "Nearly all other ocean animals depend on them for food, directly or indirectly.",
+    "hint": "Think about what a base holds up.",
+    "tags": ["mainidea", "text-structure"],
+    "passage": "Tiny drifting plants called phytoplankton form the base of most ocean food chains. Like plants on land, they use sunlight to make food and release oxygen as a result. Small animals feed on them, larger fish feed on those animals, and seals and seabirds feed on the fish. Scientists estimate that these microscopic plants supply much of the oxygen we breathe."
   },
   {
     "id": "reading-7-0028",
     "subject": "reading",
     "grade": 7,
     "kind": "grammar",
-    "prompt": "Which sentence is written correctly?",
+    "prompt": "Which group of words is a run-on sentence?",
     "choices": [
-      "There dog ran across the yard.",
-      "They're dog ran across the yard.",
-      "Thier dog ran across the yard.",
-      "Their dog ran across the yard."
+      "The storm passed the sun came out.",
+      "The storm passed, and the sun came out.",
+      "After the storm passed, the sun came out.",
+      "The storm passed."
     ],
-    "answer": "Their dog ran across the yard.",
-    "hint": "Pick the word that shows who owns the dog.",
-    "tags": ["their-there"]
+    "answer": "The storm passed the sun came out.",
+    "hint": "Two complete thoughts are stuck together with nothing between them.",
+    "tags": ["grammar", "sentences"]
   },
   {
     "id": "reading-7-0029",
     "subject": "reading",
     "grade": 7,
     "kind": "grammar",
-    "prompt": "Which word completes the sentence? \"The team lost ____ first game.\"",
-    "choices": ["its", "it's", "its'", "it is"],
-    "answer": "its",
-    "hint": "Pick the word that shows belonging, with no apostrophe.",
-    "tags": ["its-it's"]
+    "prompt": "Which sentence is punctuated correctly?",
+    "choices": [
+      "The coach blew the whistle and, the players ran to center court.",
+      "The coach blew the whistle, and the players ran to center court.",
+      "The coach blew the whistle; and the players ran to center court.",
+      "The coach, blew the whistle and the players ran to center court."
+    ],
+    "answer": "The coach blew the whistle, and the players ran to center court.",
+    "hint": "When a joining word links two complete thoughts, a comma comes before it.",
+    "tags": ["grammar", "punctuation"]
   },
   {
     "id": "reading-7-0030",
     "subject": "reading",
     "grade": 7,
     "kind": "grammar",
-    "prompt": "Which sentence has the correct verb?",
+    "prompt": "Which sentence keeps the same verb tense?",
     "choices": [
-      "The girls was happy.",
-      "The girls were happy.",
-      "The girls is happy.",
-      "The girls be happy."
+      "While the crew hauled the nets, a gull lands on the rail and stole a fish.",
+      "While the crew hauls the nets, a gull landed on the rail and steals a fish.",
+      "While the crew hauled the nets, a gull landed on the rail and stole a fish.",
+      "While the crew hauled the nets, a gull lands on the rail and steals a fish."
     ],
-    "answer": "The girls were happy.",
-    "hint": "Plural people need a plural helper word.",
-    "tags": ["subject-verb"]
+    "answer": "While the crew hauled the nets, a gull landed on the rail and stole a fish.",
+    "hint": "All the actions happened in the past.",
+    "tags": ["grammar", "verb-tense"]
   },
   {
     "id": "reading-7-0031",
     "subject": "reading",
     "grade": 7,
     "kind": "grammar",
-    "prompt": "Which sentence uses a comma correctly?",
-    "choices": [
-      "After, lunch we played outside.",
-      "After lunch we, played outside.",
-      "After lunch, we played outside.",
-      "After lunch we played, outside."
-    ],
-    "answer": "After lunch, we played outside.",
-    "hint": "A comma goes after the opening phrase.",
-    "tags": ["commas"]
+    "prompt": "Pick the pronoun that agrees with its noun. The sailors left ___ gear on the dock.",
+    "choices": ["its", "hers", "my", "their"],
+    "answer": "their",
+    "hint": "The noun sailors is plural.",
+    "tags": ["grammar", "pronouns"]
   },
   {
     "id": "reading-7-0032",
     "subject": "reading",
     "grade": 7,
     "kind": "grammar",
-    "prompt": "Which word is an adverb in this sentence? \"The snail moved slowly.\"",
-    "choices": ["snail", "moved", "The", "slowly"],
-    "answer": "slowly",
-    "hint": "It tells how the snail moved.",
-    "tags": ["parts-of-speech"]
+    "prompt": "Which sentence uses the plural form correctly?",
+    "choices": [
+      "Several dolphins played near the boat.",
+      "Several dolphin's played near the boat.",
+      "Several dolphins' played near the boat.",
+      "Several dolphins's played near the boat."
+    ],
+    "answer": "Several dolphins played near the boat.",
+    "hint": "The word names more than one dolphin. Nothing belongs to them here.",
+    "tags": ["grammar", "punctuation"]
   },
   {
     "id": "reading-7-0033",
     "subject": "reading",
     "grade": 7,
     "kind": "grammar",
-    "prompt": "Which word is the past tense of \"swim\"?",
-    "choices": ["swam", "swimmed", "swum", "swims"],
-    "answer": "swam",
-    "hint": "Think of what you say about yesterday: Yesterday I ____.",
-    "tags": ["verb-tense"]
+    "prompt": "What does the idiom \"break the ice\" mean in this sentence? The captain told a joke to break the ice.",
+    "choices": [
+      "crack a frozen pond",
+      "relax a tense or awkward mood",
+      "cool a drink",
+      "stop the game"
+    ],
+    "answer": "relax a tense or awkward mood",
+    "hint": "Think about why someone tells a joke to strangers.",
+    "tags": ["grammar", "figurative-language"]
   },
   {
     "id": "reading-7-0034",
     "subject": "reading",
     "grade": 7,
     "kind": "grammar",
-    "prompt": "Which sentence uses the apostrophe correctly?",
+    "prompt": "\"The old engine coughed and sputtered before it finally woke up.\" What effect does this language create?",
     "choices": [
-      "The students book's are on the desk.",
-      "The students' books are on the desk.",
-      "The student's' books are on the desk.",
-      "The students books' are on the desk."
+      "It shows the engine is brand new.",
+      "It proves the engine can talk.",
+      "It makes the engine seem alive and struggling to start.",
+      "It explains how engines are built."
     ],
-    "answer": "The students' books are on the desk.",
-    "hint": "The books belong to more than one student.",
-    "tags": ["apostrophes"]
+    "answer": "It makes the engine seem alive and struggling to start.",
+    "hint": "Coughing and waking up are things people do.",
+    "tags": ["grammar", "figurative-language"]
   },
   {
     "id": "reading-7-0035",
     "subject": "reading",
     "grade": 7,
     "kind": "grammar",
-    "prompt": "Which word completes the sentence? \"Ben ran faster than ____.\"",
-    "choices": ["my", "myself", "I", "mine"],
-    "answer": "I",
-    "hint": "Finish the thought: faster than I ran.",
-    "tags": ["pronouns"]
+    "prompt": "Which word has the most negative connotation? The coach described the player's confidence as ___.",
+    "choices": ["assured", "steady", "calm", "cocky"],
+    "answer": "cocky",
+    "hint": "Which word sounds like criticism instead of praise?",
+    "tags": ["grammar", "connotation"]
   },
   {
     "id": "reading-7-0036",
     "subject": "reading",
     "grade": 7,
     "kind": "grammar",
-    "prompt": "Which sentence is a complete sentence?",
+    "prompt": "The root \"vert\" means turn. What does it mean to \"convert\" something?",
     "choices": [
-      "Above the hill and the trees.",
-      "Flying high in the sky.",
-      "When the kite flew away.",
-      "The kite flew high above the hill."
+      "to turn it into something else",
+      "to hide it carefully",
+      "to count it twice",
+      "to carry it away"
     ],
-    "answer": "The kite flew high above the hill.",
-    "hint": "A complete sentence has a doer and an action.",
-    "tags": ["sentences"]
+    "answer": "to turn it into something else",
+    "hint": "Con- means with, and vert means turn.",
+    "tags": ["grammar", "word-parts"]
   },
   {
     "id": "reading-7-0037",
     "subject": "reading",
     "grade": 7,
     "kind": "grammar",
-    "prompt": "Which word is a noun in this sentence? \"The brave knight rode home.\"",
-    "choices": ["knight", "brave", "rode", "The"],
-    "answer": "knight",
-    "hint": "A noun names a person, place, or thing.",
-    "tags": ["parts-of-speech"]
+    "prompt": "Which group of words is a dependent clause?",
+    "choices": ["The bell rang.", "when the bell rang", "Ring the bell!", "The bell rang loudly."],
+    "answer": "when the bell rang",
+    "hint": "It has a subject and a verb, but it cannot stand alone.",
+    "tags": ["grammar", "sentences"]
   },
   {
     "id": "reading-7-0038",
     "subject": "reading",
     "grade": 7,
     "kind": "grammar",
-    "prompt": "Which sentence uses the right word?",
-    "choices": [
-      "I want too go to.",
-      "I want to go too.",
-      "I want two go too.",
-      "I want to go two."
-    ],
-    "answer": "I want to go too.",
-    "hint": "One of these words means also.",
-    "tags": ["homophones"]
+    "prompt": "Pick the verb that completes the sentence. The captain and the crew ___ ready to sail.",
+    "choices": ["is", "was", "are", "be"],
+    "answer": "are",
+    "hint": "Two subjects joined by and act as a plural subject.",
+    "tags": ["grammar", "verb-agreement"]
   },
   {
     "id": "reading-7-0039",
     "subject": "reading",
     "grade": 7,
     "kind": "grammar",
-    "prompt": "Which word is spelled correctly?",
-    "choices": ["seperate", "separete", "separate", "seperete"],
-    "answer": "separate",
-    "hint": "There is an a in the middle: sep-a-rate.",
-    "tags": ["spelling"]
+    "prompt": "The prefix \"anti-\" means against. What does antifreeze do?",
+    "choices": [
+      "helps water freeze faster",
+      "makes liquids sweet",
+      "turns ice into steam",
+      "works against freezing"
+    ],
+    "answer": "works against freezing",
+    "hint": "Put the meaning of the prefix in front of the word freeze.",
+    "tags": ["grammar", "word-parts"]
   },
   {
     "id": "reading-7-0040",
     "subject": "reading",
     "grade": 7,
     "kind": "grammar",
-    "prompt": "Which sentence has correct capital letters?",
+    "prompt": "Which sentence uses \"principal\" and \"principle\" correctly?",
     "choices": [
-      "my aunt visited Texas in July.",
-      "My Aunt visited texas in july.",
-      "My aunt visited texas in July.",
-      "My aunt visited Texas in July."
+      "The principal praised the team for following the principle of fair play.",
+      "The principle praised the team for following the principal of fair play.",
+      "The principal praised the team for following the principal of fair play.",
+      "The principle praised the team for following the principle of fair play."
     ],
-    "answer": "My aunt visited Texas in July.",
-    "hint": "Names of places and months need capitals.",
-    "tags": ["capitals"]
+    "answer": "The principal praised the team for following the principle of fair play.",
+    "hint": "One word names a school leader. The other names a rule or belief.",
+    "tags": ["grammar", "grammar"]
   },
   {
     "id": "reading-7-0041",
@@ -943,11 +978,16 @@
     "subject": "reading",
     "grade": 7,
     "kind": "vocab",
-    "prompt": "Read the sentence: \"The sturdy bridge held the weight of ten wagons.\" What does \"sturdy\" mean?",
-    "choices": ["weak and wobbly", "strong and solid", "old and gray", "narrow and long"],
-    "answer": "strong and solid",
-    "hint": "It held ten wagons without breaking.",
-    "tags": ["vocab", "vocabulary"]
+    "prompt": "The Latin root \"spect\" means to look. What does \"spectator\" mean?",
+    "choices": [
+      "a person who builds",
+      "a person who watches",
+      "a person who sings",
+      "a person who sells"
+    ],
+    "answer": "a person who watches",
+    "hint": "Spect means to look.",
+    "tags": ["vocab", "word-parts"]
   },
   {
     "id": "reading-7-0066",
@@ -965,15 +1005,15 @@
     "subject": "reading",
     "grade": 7,
     "kind": "grammar",
-    "prompt": "A friend tells you, \"Don't spill the beans about the surprise party.\" What does the idiom mean?",
+    "prompt": "The coach said her team had \"turned the tables\" on its rival. What does the idiom mean?",
     "choices": [
-      "Do not drop the food.",
-      "Do not cook dinner.",
-      "Do not reveal the secret.",
-      "Do not invite anyone."
+      "moved the furniture",
+      "set a new dinner",
+      "quit the game",
+      "reversed the situation"
     ],
-    "answer": "Do not reveal the secret.",
-    "hint": "This phrase is not about food at all.",
+    "answer": "reversed the situation",
+    "hint": "The phrase does not talk about real furniture.",
     "tags": ["grammar", "figurative-language"]
   },
   {
@@ -1106,11 +1146,16 @@
     "subject": "reading",
     "grade": 7,
     "kind": "vocab",
-    "prompt": "Read: \"The quiz was a piece of cake.\" What does the idiom mean?",
-    "choices": ["It was very easy.", "It was long.", "It was about food.", "It was a surprise."],
-    "answer": "It was very easy.",
-    "hint": "An idiom does not mean its exact words.",
-    "tags": ["vocab", "context"]
+    "prompt": "The prefix \"contra-\" means against, and the root \"dict\" means say. What does \"contradict\" mean?",
+    "choices": [
+      "repeat what someone said",
+      "say a word very softly",
+      "say the opposite of what someone said",
+      "write down a speech"
+    ],
+    "answer": "say the opposite of what someone said",
+    "hint": "Contra means against, and dict means say.",
+    "tags": ["vocab", "word-parts"]
   },
   {
     "id": "reading-7-0079",
@@ -1203,96 +1248,91 @@
     "subject": "reading",
     "grade": 7,
     "kind": "mainidea",
-    "prompt": "What is the best description of Lina?",
+    "prompt": "Which sentence best states the central idea?",
     "choices": [
-      "bossy and impatient",
-      "creative and supportive",
-      "shy and nervous",
-      "careless and rushed"
+      "Windstorms always damage old buildings.",
+      "A community worked together to replace a stage it needed.",
+      "Students prefer pancakes to concerts.",
+      "Engineers volunteer more than other workers."
     ],
-    "answer": "creative and supportive",
-    "hint": "Look at how she helped with the problem.",
-    "tags": ["inference"],
-    "passage": "The night before the science fair, Theo's volcano model cracked down the middle. He wanted to throw it away. His older sister, Lina, stared at the crack and then at the clock. \"Wait,\" she said. \"Real volcanoes have cracks. Let's make this one erupt from the crack.\" Theo grinned, packed the gap with clay, and mixed the baking soda and vinegar. In the morning, the lava poured from the side of the mountain, and the judges leaned in closer than they had for any other project."
+    "answer": "A community worked together to replace a stage it needed.",
+    "hint": "Think about who helped and what they built.",
+    "tags": ["mainidea", "main-idea"],
+    "passage": "When the roof of the old bandshell collapsed in a windstorm, summer concerts in Cedar Park seemed over. Students petitioned the council, and a local engineer volunteered to draw plans. Together they raised money with a pancake breakfast, a car wash, and a talent show. Eight months later the new stage opened, and the first group to play on it was the school band, performing as loudly as it could."
   },
   {
     "id": "reading-7-0086",
     "subject": "reading",
     "grade": 7,
     "kind": "mainidea",
-    "prompt": "Which lesson does this story teach?",
+    "prompt": "What does the detail about the school band suggest?",
     "choices": [
-      "A problem can become a chance to be creative.",
-      "Never work with your sister.",
-      "Models should never be moved.",
-      "Judges like clay best."
+      "The band was lost in the windstorm.",
+      "The council disliked the music.",
+      "The town celebrated the opening of the stage.",
+      "The stage was too small for a band."
     ],
-    "answer": "A problem can become a chance to be creative.",
-    "hint": "Think about what changed after the crack.",
-    "tags": ["theme"],
-    "passage": "The night before the science fair, Theo's volcano model cracked down the middle. He wanted to throw it away. His older sister, Lina, stared at the crack and then at the clock. \"Wait,\" she said. \"Real volcanoes have cracks. Let's make this one erupt from the crack.\" Theo grinned, packed the gap with clay, and mixed the baking soda and vinegar. In the morning, the lava poured from the side of the mountain, and the judges leaned in closer than they had for any other project."
+    "answer": "The town celebrated the opening of the stage.",
+    "hint": "Think about why a band would play first on a new stage.",
+    "tags": ["mainidea", "inference"],
+    "passage": "When the roof of the old bandshell collapsed in a windstorm, summer concerts in Cedar Park seemed over. Students petitioned the council, and a local engineer volunteered to draw plans. Together they raised money with a pancake breakfast, a car wash, and a talent show. Eight months later the new stage opened, and the first group to play on it was the school band, performing as loudly as it could."
   },
   {
     "id": "reading-7-0087",
     "subject": "reading",
     "grade": 7,
     "kind": "mainidea",
-    "prompt": "Why did the judges lean in closer?",
-    "choices": [
-      "The model was the biggest.",
-      "Theo gave a long speech.",
-      "The room was too dark.",
-      "The lava came out in a surprising way."
-    ],
-    "answer": "The lava came out in a surprising way.",
-    "hint": "Look at what happened in the morning.",
-    "tags": ["cause"],
-    "passage": "The night before the science fair, Theo's volcano model cracked down the middle. He wanted to throw it away. His older sister, Lina, stared at the crack and then at the clock. \"Wait,\" she said. \"Real volcanoes have cracks. Let's make this one erupt from the crack.\" Theo grinned, packed the gap with clay, and mixed the baking soda and vinegar. In the morning, the lava poured from the side of the mountain, and the judges leaned in closer than they had for any other project."
+    "prompt": "In the passage, the word \"petitioned\" most nearly means",
+    "choices": ["loudly laughed at", "quietly followed", "carefully measured", "formally asked"],
+    "answer": "formally asked",
+    "hint": "The students wanted the council to do something.",
+    "tags": ["mainidea", "vocabulary-in-context"],
+    "passage": "When the roof of the old bandshell collapsed in a windstorm, summer concerts in Cedar Park seemed over. Students petitioned the council, and a local engineer volunteered to draw plans. Together they raised money with a pancake breakfast, a car wash, and a talent show. Eight months later the new stage opened, and the first group to play on it was the school band, performing as loudly as it could."
   },
   {
     "id": "reading-7-0088",
     "subject": "reading",
     "grade": 7,
     "kind": "mainidea",
-    "prompt": "What is the main idea of this passage?",
+    "prompt": "Which idea is most strongly supported by the passage?",
     "choices": [
-      "Cities once had no sun.",
-      "Clocks need a flat plate.",
-      "Sundials use shadows to show the time.",
-      "Night is the best time to read."
+      "Selkie tales reflect how coastal people felt about the sea and its seals.",
+      "Seals are really people in disguise.",
+      "Fishermen are the heroes of every tale.",
+      "Scottish seals are larger than Irish seals."
     ],
-    "answer": "Sundials use shadows to show the time.",
-    "hint": "Ask what the whole passage is mostly about.",
-    "tags": ["mainidea"],
-    "passage": "Long before cities had clocks, people told time by watching the sun. A sundial uses a flat plate and a raised piece called a gnomon. As the sun moves across the sky, the gnomon's shadow moves across the plate. Marks on the plate show the hour. Sundials are simple and need no power, but they stop working on cloudy days and at night."
+    "answer": "Selkie tales reflect how coastal people felt about the sea and its seals.",
+    "hint": "Read the last two sentences.",
+    "tags": ["mainidea", "main-idea"],
+    "passage": "Along the rocky coasts of Scotland and Ireland, storytellers speak of selkies, seals that shed their skins on moonlit beaches and walk as people. In many tales a fisherman hides a selkie's skin so she cannot return to the sea, and she grows lonely until she finds it and swims away. Folklorists note that the stories may have grown from the long bond between coastal families and the seals that shared their waters. The tales reflect both love for the sea and respect for its wildness."
   },
   {
     "id": "reading-7-0089",
     "subject": "reading",
     "grade": 7,
     "kind": "mainidea",
-    "prompt": "What is the raised piece of a sundial called?",
-    "choices": ["a plate", "a gnomon", "a shadow", "an hour mark"],
-    "answer": "a gnomon",
-    "hint": "Find the new word in the passage.",
-    "tags": ["detail"],
-    "passage": "Long before cities had clocks, people told time by watching the sun. A sundial uses a flat plate and a raised piece called a gnomon. As the sun moves across the sky, the gnomon's shadow moves across the plate. Marks on the plate show the hour. Sundials are simple and need no power, but they stop working on cloudy days and at night."
+    "prompt": "In the passage, the word \"bond\" most nearly means",
+    "choices": ["a written promise", "a close connection", "a heavy rope", "a sudden change"],
+    "answer": "a close connection",
+    "hint": "The passage says families and seals shared the same waters for a long time.",
+    "tags": ["mainidea", "vocabulary-in-context"],
+    "passage": "Along the rocky coasts of Scotland and Ireland, storytellers speak of selkies, seals that shed their skins on moonlit beaches and walk as people. In many tales a fisherman hides a selkie's skin so she cannot return to the sea, and she grows lonely until she finds it and swims away. Folklorists note that the stories may have grown from the long bond between coastal families and the seals that shared their waters. The tales reflect both love for the sea and respect for its wildness."
   },
   {
     "id": "reading-7-0090",
     "subject": "reading",
     "grade": 7,
     "kind": "mainidea",
-    "prompt": "Why would a sundial be a poor choice on a rainy day?",
+    "prompt": "In many tales, why does the selkie grow lonely?",
     "choices": [
-      "It needs sunlight to make a shadow.",
-      "It needs electric power.",
-      "Its plate would rust away.",
-      "Its marks would fade."
+      "She cannot find any seals.",
+      "She is afraid of the beach.",
+      "She is kept from returning to the sea.",
+      "She misses the moonlight."
     ],
-    "answer": "It needs sunlight to make a shadow.",
-    "hint": "Think about what makes the shadow.",
-    "tags": ["inference"],
-    "passage": "Long before cities had clocks, people told time by watching the sun. A sundial uses a flat plate and a raised piece called a gnomon. As the sun moves across the sky, the gnomon's shadow moves across the plate. Marks on the plate show the hour. Sundials are simple and need no power, but they stop working on cloudy days and at night."
+    "answer": "She is kept from returning to the sea.",
+    "hint": "Think about what the fisherman did with her skin.",
+    "tags": ["mainidea", "detail"],
+    "passage": "Along the rocky coasts of Scotland and Ireland, storytellers speak of selkies, seals that shed their skins on moonlit beaches and walk as people. In many tales a fisherman hides a selkie's skin so she cannot return to the sea, and she grows lonely until she finds it and swims away. Folklorists note that the stories may have grown from the long bond between coastal families and the seals that shared their waters. The tales reflect both love for the sea and respect for its wildness."
   }
 ]

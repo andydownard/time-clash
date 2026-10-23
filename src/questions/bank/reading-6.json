@@ -4,10 +4,10 @@
     "subject": "reading",
     "grade": 6,
     "kind": "vocab",
-    "prompt": "Read the sentence. What does the word mean? The map was so vague that we could not find the park.",
-    "choices": ["not clear", "very big", "brand new", "full of color"],
-    "answer": "not clear",
-    "hint": "Think about why they could not find the park.",
+    "prompt": "What does \"elude\" mean in this sentence? The clever fox managed to elude the hounds by wading through the stream.",
+    "choices": ["follow closely", "escape from", "call out to", "warm up"],
+    "answer": "escape from",
+    "hint": "Think about what the fox wanted to happen to the chase.",
     "tags": ["vocab", "context"]
   },
   {
@@ -15,10 +15,10 @@
     "subject": "reading",
     "grade": 6,
     "kind": "vocab",
-    "prompt": "Read the sentence. What does the word mean? Mia was reluctant to jump in the cold pool.",
-    "choices": ["very happy", "not eager", "in a hurry", "able"],
-    "answer": "not eager",
-    "hint": "She is not sure she wants to jump.",
+    "prompt": "What does \"placid\" mean in this sentence? After the storm passed, the harbor became placid, and the boats barely moved.",
+    "choices": ["crowded and noisy", "dark and cold", "calm and peaceful", "deep and wide"],
+    "answer": "calm and peaceful",
+    "hint": "The boats barely moved.",
     "tags": ["vocab", "context"]
   },
   {
@@ -26,10 +26,10 @@
     "subject": "reading",
     "grade": 6,
     "kind": "vocab",
-    "prompt": "Read the sentence. What does the word mean? The tiny kitten was fragile, so we held it gently.",
-    "choices": ["very loud", "fast", "easy to hurt", "sleepy"],
-    "answer": "easy to hurt",
-    "hint": "That is why we were gentle.",
+    "prompt": "What does \"brittle\" mean in this sentence? The dry seaweed was brittle and snapped into pieces when Nora bent it.",
+    "choices": ["slippery", "sticky", "very heavy", "easily broken"],
+    "answer": "easily broken",
+    "hint": "Think about what happened when she bent it.",
     "tags": ["vocab", "context"]
   },
   {
@@ -37,10 +37,10 @@
     "subject": "reading",
     "grade": 6,
     "kind": "vocab",
-    "prompt": "Read the sentence. What does the word mean? Our class will gather leaves for the art project.",
-    "choices": ["throw away", "paint", "count out", "bring together"],
-    "answer": "bring together",
-    "hint": "You pick them up and put them in one place.",
+    "prompt": "What does \"hamper\" mean in this sentence? Heavy snow can hamper the ferry's schedule.",
+    "choices": ["slow down or get in the way of", "make better", "predict", "celebrate"],
+    "answer": "slow down or get in the way of",
+    "hint": "Snow makes it hard to travel on time.",
     "tags": ["vocab", "context"]
   },
   {
@@ -48,10 +48,10 @@
     "subject": "reading",
     "grade": 6,
     "kind": "vocab",
-    "prompt": "Read the sentence. What does the word mean? The rabbit was swift and left the fox far behind.",
-    "choices": ["very fast", "very tired", "very small", "very quiet"],
-    "answer": "very fast",
-    "hint": "It got far ahead of the fox.",
+    "prompt": "What does \"trivial\" mean in this sentence? Whether we used a blue marker or a black one was trivial, so we chose quickly.",
+    "choices": ["very costly", "of little importance", "hard to forget", "dangerous"],
+    "answer": "of little importance",
+    "hint": "They chose quickly because the choice did not matter much.",
     "tags": ["vocab", "context"]
   },
   {
@@ -59,10 +59,15 @@
     "subject": "reading",
     "grade": 6,
     "kind": "vocab",
-    "prompt": "Read the sentence. What does the word mean? Sam was weary after the long hike, so he sat down.",
-    "choices": ["very hungry", "very tired", "full of joy", "a bit lost"],
-    "answer": "very tired",
-    "hint": "Why would someone sit down after a long hike?",
+    "prompt": "What does \"adjoining\" mean in this sentence? The bakery and the bike shop are adjoining, so the two share a wall.",
+    "choices": [
+      "far from each other",
+      "older than each other",
+      "next to each other",
+      "larger than each other"
+    ],
+    "answer": "next to each other",
+    "hint": "They share a wall.",
     "tags": ["vocab", "context"]
   },
   {
@@ -70,10 +75,15 @@
     "subject": "reading",
     "grade": 6,
     "kind": "vocab",
-    "prompt": "Read the sentence. What does the word mean? The chef used an abundant amount of cheese, and the pizza was covered.",
-    "choices": ["very little", "very old", "more than enough", "hard to find"],
-    "answer": "more than enough",
-    "hint": "The pizza was covered.",
+    "prompt": "What does \"formidable\" mean in this sentence? The mountain looked formidable, so the climbers checked their gear twice.",
+    "choices": [
+      "friendly and warm",
+      "small and plain",
+      "quiet and calm",
+      "hard to face and impressive"
+    ],
+    "answer": "hard to face and impressive",
+    "hint": "Careful climbers check twice when a climb looks tough.",
     "tags": ["vocab", "context"]
   },
   {
@@ -81,10 +91,15 @@
     "subject": "reading",
     "grade": 6,
     "kind": "vocab",
-    "prompt": "Read the sentence. What does the word mean? Ana was cautious as she crossed the icy bridge.",
-    "choices": ["silly", "angry", "shy", "careful"],
-    "answer": "careful",
-    "hint": "Ice is slippery, so she moved with care.",
+    "prompt": "What does \"sprawling\" mean in this sentence? The sprawling farm stretched over hills and across two valleys.",
+    "choices": [
+      "spread out over a wide area",
+      "crowded into one corner",
+      "hidden from view",
+      "newly built"
+    ],
+    "answer": "spread out over a wide area",
+    "hint": "It stretched over hills and valleys.",
     "tags": ["vocab", "context"]
   },
   {
@@ -92,10 +107,10 @@
     "subject": "reading",
     "grade": 6,
     "kind": "vocab",
-    "prompt": "Read the sentence. What does the word mean? The twins are identical, so no one can tell them apart.",
-    "choices": ["exactly alike", "very different", "far away", "quite old"],
-    "answer": "exactly alike",
-    "hint": "No one can tell them apart.",
+    "prompt": "What does \"observant\" mean in this sentence? An observant lifeguard scanned the water for swimmers who needed help.",
+    "choices": ["easily bored", "quick to notice things", "very strong", "well rested"],
+    "answer": "quick to notice things",
+    "hint": "Scanning the water takes close attention.",
     "tags": ["vocab", "context"]
   },
   {
@@ -103,10 +118,10 @@
     "subject": "reading",
     "grade": 6,
     "kind": "vocab",
-    "prompt": "Read the sentence. What does the word mean? The old house was vacant. No one lived there.",
-    "choices": ["crowded", "empty", "pretty", "noisy"],
-    "answer": "empty",
-    "hint": "The next sentence tells you the meaning.",
+    "prompt": "What does \"turbulent\" mean in this sentence? The turbulent river tossed the raft from side to side.",
+    "choices": ["slow and clear", "shallow and warm", "rough and unsteady", "frozen solid"],
+    "answer": "rough and unsteady",
+    "hint": "Think about what a raft does on a wild river.",
     "tags": ["vocab", "context"]
   },
   {
@@ -114,10 +129,10 @@
     "subject": "reading",
     "grade": 6,
     "kind": "vocab",
-    "prompt": "Read the sentence. What does the word mean? Leo felt triumphant when his kite flew higher than all the others.",
-    "choices": ["worried", "bored", "proud of winning", "confused"],
-    "answer": "proud of winning",
-    "hint": "His kite did better than all the rest.",
+    "prompt": "What does \"ravenous\" mean in this sentence? The ravenous campers finished the whole pot of stew in minutes.",
+    "choices": ["slightly sleepy", "very cold", "quite proud", "extremely hungry"],
+    "answer": "extremely hungry",
+    "hint": "People eat fast when they feel this way.",
     "tags": ["vocab", "context"]
   },
   {
@@ -125,10 +140,10 @@
     "subject": "reading",
     "grade": 6,
     "kind": "vocab",
-    "prompt": "Read the sentence. What does the word mean? The soup was bland, so Dad added salt and pepper.",
-    "choices": ["too spicy", "too hot", "very sweet", "with little flavor"],
-    "answer": "with little flavor",
-    "hint": "Why add salt and pepper?",
+    "prompt": "What does \"mull\" mean in this sentence? Ravi paused to mull over the riddle before he gave his answer.",
+    "choices": ["think about carefully", "laugh at", "write down", "forget"],
+    "answer": "think about carefully",
+    "hint": "He paused before answering.",
     "tags": ["vocab", "context"]
   },
   {
@@ -136,10 +151,15 @@
     "subject": "reading",
     "grade": 6,
     "kind": "vocab",
-    "prompt": "Read the sentence. What does the word mean? The two teams had to cooperate to move the huge log.",
-    "choices": ["work together", "race each other", "take turns napping", "argue"],
-    "answer": "work together",
-    "hint": "The log was huge, so they needed each other.",
+    "prompt": "What does \"antiquated\" mean in this sentence? Cassette players became antiquated once people began streaming their music.",
+    "choices": [
+      "newly invented",
+      "old-fashioned and no longer used",
+      "easy to repair",
+      "very loud"
+    ],
+    "answer": "old-fashioned and no longer used",
+    "hint": "Streaming replaced them.",
     "tags": ["vocab", "context"]
   },
   {
@@ -147,10 +167,10 @@
     "subject": "reading",
     "grade": 6,
     "kind": "vocab",
-    "prompt": "Read the sentence. What does the word mean? A tiny crack in the glass was barely visible.",
-    "choices": ["able to be heard", "able to be seen", "able to be eaten", "able to be lifted"],
-    "answer": "able to be seen",
-    "hint": "Think about what your eyes can do.",
+    "prompt": "What does \"colossal\" mean in this sentence? A colossal wave rolled toward the shore and towered over the dock.",
+    "choices": ["gentle", "foamy", "enormous", "late"],
+    "answer": "enormous",
+    "hint": "It towered over the dock.",
     "tags": ["vocab", "context"]
   },
   {
@@ -158,374 +178,404 @@
     "subject": "reading",
     "grade": 6,
     "kind": "mainidea",
-    "prompt": "Read the story. What is it mostly about?",
+    "prompt": "What is the main idea of this passage?",
     "choices": [
-      "Bees make loud noises.",
-      "Flowers are all red.",
-      "Bees help plants grow.",
-      "Fruit is sweet."
+      "Salty water is harmful to most trees.",
+      "Tropical coasts have no waves.",
+      "Young fish eat the roots of trees.",
+      "Mangrove forests shelter sea life and protect the shore."
     ],
-    "answer": "Bees help plants grow.",
-    "hint": "Look at what the pollen helps do.",
-    "tags": ["mainidea", "science"],
-    "passage": "Bees visit flowers to drink sweet nectar. As they move from flower to flower, pollen sticks to their legs. The pollen helps new flowers and fruit grow."
+    "answer": "Mangrove forests shelter sea life and protect the shore.",
+    "hint": "Think about what the roots do for both animals and land.",
+    "tags": ["mainidea", "main-idea"],
+    "passage": "Mangrove trees grow with their roots standing in salty water along tropical coasts. Their tangled roots shelter young fish, trap mud, and shield the shore from strong waves. Because so many animals and so much land depend on them, scientists call mangrove forests some of the most valuable coastal habitats. When mangroves are cleared, the fish nurseries and the shoreline protection both disappear."
   },
   {
     "id": "reading-6-0016",
     "subject": "reading",
     "grade": 6,
     "kind": "mainidea",
-    "prompt": "Read the story. What is it mostly about?",
+    "prompt": "According to the passage, what causes lightning?",
     "choices": [
-      "Rosa lost her coins.",
-      "Rosa read a funny book.",
-      "Rosa has a big family.",
-      "Rosa got ready for a pet."
+      "Electric charge built up in clouds is suddenly released.",
+      "Warm air feels thick before storms.",
+      "Thunder snaps the air apart.",
+      "Towering clouds grow taller and taller."
     ],
-    "answer": "Rosa got ready for a pet.",
-    "hint": "What was Rosa doing the whole time?",
-    "tags": ["mainidea", "story"],
-    "passage": "Rosa wanted a pet, so she made a plan. She read books about dogs and saved coins in a jar. After two months, she was ready to ask her parents."
+    "answer": "Electric charge built up in clouds is suddenly released.",
+    "hint": "Look for what the flash releases.",
+    "tags": ["mainidea", "detail"],
+    "passage": "Before a thunderstorm, the air often feels thick and warm. Towering clouds build higher as warm, damp air rises. Inside them, ice and water droplets crash together and build up an electric charge. The sudden flash we call lightning releases that charge, and the thunder that follows is the sound of air snapping apart."
   },
   {
     "id": "reading-6-0017",
     "subject": "reading",
     "grade": 6,
     "kind": "mainidea",
-    "prompt": "Read the story. What is it mostly about?",
+    "prompt": "Why did the author most likely begin with the sentence about buttons?",
     "choices": [
-      "The sun is important to Earth.",
-      "Plants are green.",
-      "Nights are long.",
-      "Planets are round."
+      "to praise the beauty of buttons",
+      "to show the problem the zipper later solved",
+      "to describe boots in great detail",
+      "to show that engineers dislike buttons"
     ],
-    "answer": "The sun is important to Earth.",
-    "hint": "Every sentence tells why the sun matters.",
-    "tags": ["mainidea", "science"],
-    "passage": "The sun gives us light and heat. Plants use sunlight to make food. Without the sun, our planet would be dark and very cold."
+    "answer": "to show the problem the zipper later solved",
+    "hint": "Think about what the zipper replaced.",
+    "tags": ["mainidea", "author-s-purpose"],
+    "passage": "Before the zipper, people fastened boots with long rows of tiny buttons that took many minutes to close. An engineer named Gideon Sundback improved earlier designs by arranging small metal teeth so they locked together when a slider moved over them. Soon the invention was used on boots, bags, and jackets. Today most of us fasten something with a zipper every day without a thought."
   },
   {
     "id": "reading-6-0018",
     "subject": "reading",
     "grade": 6,
     "kind": "mainidea",
-    "prompt": "Read the story. What is it mostly about?",
+    "prompt": "What is the main idea of this passage?",
     "choices": [
-      "Corn is hard to grow.",
-      "A class garden is growing at school.",
-      "Carrots are orange.",
-      "Teachers like to water."
+      "Kickball is the most popular sport in the country.",
+      "Oranges are the best snack at halftime.",
+      "A community can build a league by sharing time and supplies.",
+      "Teachers make the best coaches."
     ],
-    "answer": "A class garden is growing at school.",
-    "hint": "Think about the place and what is happening there.",
-    "tags": ["mainidea", "story"],
-    "passage": "Our school garden has grown a lot this year. Each class has a row of its own. We planted beans, carrots, and corn, and we water them every day."
+    "answer": "A community can build a league by sharing time and supplies.",
+    "hint": "Ask what everyone in the passage contributed.",
+    "tags": ["mainidea", "main-idea"],
+    "passage": "The Riverside Youth Kickball League started with one borrowed field and a bag of mismatched balls. Neighbors donated cones, a retired teacher volunteered as coach, and a local bakery handed out orange slices at halftime. By the third season, more than a hundred children had signed up."
   },
   {
     "id": "reading-6-0019",
     "subject": "reading",
     "grade": 6,
     "kind": "mainidea",
-    "prompt": "Read the story. What is it mostly about?",
+    "prompt": "Which theme does this myth teach?",
     "choices": [
-      "Maps are always old.",
-      "North is a cold place.",
-      "Maps have parts that help us.",
-      "Pictures are hard to draw."
+      "Gold is very hard to find.",
+      "Gods enjoy granting wishes.",
+      "Kings should avoid cooking.",
+      "Greed can cost you the things that matter most."
     ],
-    "answer": "Maps have parts that help us.",
-    "hint": "The passage names parts of a map and what they do.",
-    "tags": ["mainidea", "social"],
-    "passage": "Maps show us where places are. A map key explains the little pictures on the map. A compass rose shows which way is north."
+    "answer": "Greed can cost you the things that matter most.",
+    "hint": "Think about what Midas lost.",
+    "tags": ["mainidea", "theme"],
+    "passage": "In an old Greek myth, a king named Midas wished that everything he touched would turn to gold. At first he was delighted, but soon his food and even his favorite flowers became cold metal. He begged the god who had granted the wish to take it back. Midas learned that greed can cost a person the things that matter most."
   },
   {
     "id": "reading-6-0020",
     "subject": "reading",
     "grade": 6,
     "kind": "mainidea",
-    "prompt": "Read the story. What is it mostly about?",
+    "prompt": "Which detail best supports the idea that jellyfish are successful animals?",
     "choices": [
-      "Ben dislikes pianos.",
-      "Ben forgot his song.",
-      "Ben moved to a new town.",
-      "Practice helped Ben do well."
+      "They have survived for hundreds of millions of years.",
+      "Their bodies are mostly water.",
+      "They have tentacles.",
+      "They drift with the currents."
     ],
-    "answer": "Practice helped Ben do well.",
-    "hint": "What did Ben do before the show, and how did it end?",
-    "tags": ["mainidea", "story"],
-    "passage": "Ben was nervous about his first piano show. He practiced his song every night. On the big day, he played it with a smile, and everyone clapped."
+    "answer": "They have survived for hundreds of millions of years.",
+    "hint": "Success here means lasting a very long time.",
+    "tags": ["mainidea", "detail"],
+    "passage": "A jellyfish has no brain, no heart, and no bones, yet it has survived in the oceans for hundreds of millions of years. Its body is mostly water, which keeps it light enough to drift with the currents. Tiny stinging cells on its tentacles stun small prey that brush against them. Scientists study jellyfish to learn how such a simple body can be so successful."
   },
   {
     "id": "reading-6-0021",
     "subject": "reading",
     "grade": 6,
     "kind": "mainidea",
-    "prompt": "Read the story. What is it mostly about?",
+    "prompt": "What is the central idea of this passage?",
     "choices": [
-      "A frog changes as it grows.",
-      "Tadpoles live on land.",
-      "Frogs lay one egg.",
-      "Water is always cold."
+      "Fingertips are the most sensitive part of the body.",
+      "A teenager created a simple touch code that helped blind readers.",
+      "Books are hard to find in schools.",
+      "Children lose their sight more often than adults."
     ],
-    "answer": "A frog changes as it grows.",
-    "hint": "The passage goes step by step from egg to frog.",
-    "tags": ["mainidea", "science"],
-    "passage": "Frogs begin life as eggs in the water. The eggs hatch into tadpoles with tails. Over time, the tadpoles grow legs and become frogs."
+    "answer": "A teenager created a simple touch code that helped blind readers.",
+    "hint": "Think about what Louis Braille designed and why it mattered.",
+    "tags": ["mainidea", "main-idea"],
+    "passage": "Louis Braille lost his sight as a young child, but he loved books. As a teenager, he improved a complicated system of raised marks by designing a simple code of six dots arranged in two columns. Readers could feel the dots with their fingertips, and each pattern stood for a letter. The code spread to schools around the world and is still used today."
   },
   {
     "id": "reading-6-0022",
     "subject": "reading",
     "grade": 6,
     "kind": "mainidea",
-    "prompt": "Read the story. What is it mostly about?",
+    "prompt": "What does the detail about the ladder suggest?",
     "choices": [
-      "Glass is heavy.",
-      "Recycling helps make less trash.",
-      "Cans are made of paper.",
-      "Trash is smelly."
+      "Players enjoyed climbing more than shooting.",
+      "Peach baskets were hard to find.",
+      "The first version of the game was awkward and was later improved.",
+      "The balcony was unsafe for players."
     ],
-    "answer": "Recycling helps make less trash.",
-    "hint": "Which idea do all the sentences share?",
-    "tags": ["mainidea", "science"],
-    "passage": "Recycling saves things we can use again. Paper, glass, and cans can be turned into new things. When we recycle, we make less trash."
+    "answer": "The first version of the game was awkward and was later improved.",
+    "hint": "Think about why someone cut out the bottom of the basket.",
+    "tags": ["mainidea", "inference"],
+    "passage": "Basketball began in a gym in Massachusetts when a teacher named James Naismith needed an indoor game for restless students during winter. He nailed two peach baskets to the balcony and wrote a short list of rules. Players had to climb a ladder to fetch the ball after every score until someone cut out the bottom of the basket. The game spread quickly across the country."
   },
   {
     "id": "reading-6-0023",
     "subject": "reading",
     "grade": 6,
     "kind": "mainidea",
-    "prompt": "Read the story. What is it mostly about?",
+    "prompt": "What can a reader conclude from this passage?",
     "choices": [
-      "Books are the best.",
-      "Movies are long.",
-      "A library has many things to use.",
-      "Classes are hard."
+      "High pressure always brings rain.",
+      "Sailors dislike using barometers.",
+      "Clouds cause air pressure to change.",
+      "A falling barometer reading can warn of a coming storm."
     ],
-    "answer": "A library has many things to use.",
-    "hint": "The passage lists many things in one place.",
-    "tags": ["mainidea", "social"],
-    "passage": "The library has more than books. You can borrow music, movies, and games. There are also free classes for kids on many days."
+    "answer": "A falling barometer reading can warn of a coming storm.",
+    "hint": "Look for what a quick drop in pressure signals.",
+    "tags": ["mainidea", "inference"],
+    "passage": "Meteorologists use a tool called a barometer to measure air pressure. When the pressure drops quickly, a storm is often on its way, because low pressure lets clouds and rain build. When the pressure rises, the sky usually clears. A sailor who watches the barometer can often prepare for rough weather before the first dark cloud appears."
   },
   {
     "id": "reading-6-0024",
     "subject": "reading",
     "grade": 6,
     "kind": "mainidea",
-    "prompt": "Read the story. What is it mostly about?",
-    "choices": [
-      "Penguins fly very high.",
-      "Fish are slow.",
-      "Wings are heavy.",
-      "Penguins are good at swimming."
-    ],
-    "answer": "Penguins are good at swimming.",
-    "hint": "What can penguins do well?",
-    "tags": ["mainidea", "science"],
-    "passage": "Penguins cannot fly, but they are great swimmers. They use their strong flippers like wings in the water. They can zoom after fish very fast."
+    "prompt": "Which trait helps Anansi most in this tale?",
+    "choices": ["cleverness", "speed", "size", "wealth"],
+    "answer": "cleverness",
+    "hint": "Look at how he handles the snake, the hornet, and the leopard.",
+    "tags": ["mainidea", "inference"],
+    "passage": "In stories from West Africa, Anansi the spider sets out to win all the stories in the world from the sky god. He outwits a snake, a hornet, and a leopard by using clever plans instead of strength. In the end the sky god hands over the stories, and Anansi shares them with everyone."
   },
   {
     "id": "reading-6-0025",
     "subject": "reading",
     "grade": 6,
     "kind": "mainidea",
-    "prompt": "Read the story. What is it mostly about?",
+    "prompt": "The phrase \"more like theirs than ever\" suggests that",
     "choices": [
-      "Kai and Dev solved a problem with their fort.",
-      "Sheets are soft.",
-      "Kai and Dev dislike forts.",
-      "Clothespins are small."
+      "the library had been sold to a new owner",
+      "people felt a stronger bond with the library because they helped repair it",
+      "residents wanted to move the library",
+      "the library had grown much larger"
     ],
-    "answer": "Kai and Dev solved a problem with their fort.",
-    "hint": "They had a problem. How did they fix it?",
-    "tags": ["mainidea", "story"],
-    "passage": "Kai and Dev wanted to build a fort. They tried sheets, but the sheets kept falling. Then they used clothespins to hold the sheets, and the fort stood up."
+    "answer": "people felt a stronger bond with the library because they helped repair it",
+    "hint": "Think about who did the repairing.",
+    "tags": ["mainidea", "inference"],
+    "passage": "When a flood damaged the town library, residents did not wait for help. Neighbors carried soggy books to freezers to save them, teenagers sorted donations, and a local carpenter rebuilt the shelves for free. Within a season the library reopened, and many people said it felt more like theirs than ever."
   },
   {
     "id": "reading-6-0026",
     "subject": "reading",
     "grade": 6,
     "kind": "mainidea",
-    "prompt": "Read the story. What is it mostly about?",
+    "prompt": "How is this passage mostly organized?",
     "choices": [
-      "Rainbows are very far away.",
-      "Rainbows form from sunlight and rain.",
-      "Raindrops are purple.",
-      "The sun is a rainbow."
+      "It lists events in time order.",
+      "It tells a problem and then its solution.",
+      "It compares two kinds of bridges.",
+      "It tells a story about one engineer."
     ],
-    "answer": "Rainbows form from sunlight and rain.",
-    "hint": "The passage explains how something happens.",
-    "tags": ["mainidea", "science"],
-    "passage": "A rainbow shows up when sunlight passes through raindrops. The light bends and splits into many colors. You often see one when the sun shines after a rain."
+    "answer": "It compares two kinds of bridges.",
+    "hint": "Notice the words by contrast.",
+    "tags": ["mainidea", "text-structure"],
+    "passage": "Engineers who design bridges must plan for wind, weight, and weather. A suspension bridge hangs its road from thick cables that stretch over tall towers. The cables spread the load so no single part carries too much. By contrast, an arch bridge pushes its weight outward and down into solid supports at each end."
   },
   {
     "id": "reading-6-0027",
     "subject": "reading",
     "grade": 6,
     "kind": "mainidea",
-    "prompt": "Read the story. What is it mostly about?",
+    "prompt": "What is the author's main point?",
     "choices": [
-      "Flour is expensive.",
-      "Lily lives far away.",
-      "Lily and Grandpa enjoy baking together.",
-      "Bread is hard to eat."
+      "Runners should sprint at the start of a marathon.",
+      "Drinking water makes runners faster.",
+      "Beginners should avoid long races.",
+      "Smart pacing matters as much as speed in a long race."
     ],
-    "answer": "Lily and Grandpa enjoy baking together.",
-    "hint": "Who is doing what, and how do they feel?",
-    "tags": ["mainidea", "story"],
-    "passage": "Every Saturday, Grandpa and Lily bake bread together. She measures the flour while he mixes the dough. They love the warm smell that fills the kitchen."
+    "answer": "Smart pacing matters as much as speed in a long race.",
+    "hint": "Think about what experienced runners do differently.",
+    "tags": ["mainidea", "main-idea"],
+    "passage": "A marathon runner must plan for more than speed. Experienced runners start at a comfortable pace and save energy for the final miles. They drink small sips of water along the way instead of waiting until they are thirsty. Beginners who sprint at the start often tire long before the finish line."
   },
   {
     "id": "reading-6-0028",
     "subject": "reading",
     "grade": 6,
     "kind": "grammar",
-    "prompt": "Pick the best word to finish the sentence. The dogs ___ in the yard.",
-    "choices": ["plays", "playing", "played so", "play"],
-    "answer": "play",
-    "hint": "More than one dog is doing the action.",
-    "tags": ["grammar", "verb-agreement"]
+    "prompt": "Which sentence keeps the same verb tense from start to finish?",
+    "choices": [
+      "She opened the door, walked inside, and saw the surprise.",
+      "She opened the door, walked inside, and sees the surprise.",
+      "She opens the door, walked inside, and saw the surprise.",
+      "She opened the door, walks inside, and sees the surprise."
+    ],
+    "answer": "She opened the door, walked inside, and saw the surprise.",
+    "hint": "Check that every action happened at the same time.",
+    "tags": ["grammar", "verb-tense"]
   },
   {
     "id": "reading-6-0029",
     "subject": "reading",
     "grade": 6,
     "kind": "grammar",
-    "prompt": "Pick the best word to finish the sentence. My sister ___ a book every week.",
-    "choices": ["reads", "read them", "reading", "readed"],
-    "answer": "reads",
-    "hint": "One person does the action, so the verb ends in s.",
-    "tags": ["grammar", "verb-agreement"]
+    "prompt": "Pick the pronoun that completes the sentence. The coach gave the trophy to Maria and ___.",
+    "choices": ["she", "her", "hers", "herself"],
+    "answer": "her",
+    "hint": "Try the sentence with only the pronoun after the word to.",
+    "tags": ["grammar", "pronouns"]
   },
   {
     "id": "reading-6-0030",
     "subject": "reading",
     "grade": 6,
     "kind": "grammar",
-    "prompt": "Pick the best word to finish the sentence. Yesterday, we ___ to the lake.",
-    "choices": ["go", "went", "going", "goes"],
-    "answer": "went",
-    "hint": "The word Yesterday tells you it already happened.",
-    "tags": ["grammar", "verb-tense"]
+    "prompt": "Which sentence uses a comma correctly?",
+    "choices": [
+      "After, the storm passed the crew repaired the sail.",
+      "After the storm passed the, crew repaired the sail.",
+      "After the storm passed, the crew repaired the sail.",
+      "After the storm passed the crew, repaired the sail."
+    ],
+    "answer": "After the storm passed, the crew repaired the sail.",
+    "hint": "The comma goes where the introduction ends and the main part begins.",
+    "tags": ["grammar", "punctuation"]
   },
   {
     "id": "reading-6-0031",
     "subject": "reading",
     "grade": 6,
     "kind": "grammar",
-    "prompt": "Pick the best word to finish the sentence. Is that ___ coat on the chair?",
-    "choices": ["you're", "yours'", "your", "you"],
-    "answer": "your",
-    "hint": "It shows that the coat belongs to someone.",
-    "tags": ["grammar", "homophones"]
+    "prompt": "Which group of words is a sentence fragment?",
+    "choices": [
+      "The bridge was closed for repairs.",
+      "The workers finished the repairs.",
+      "Cars crossed the bridge again.",
+      "Although the bridge was closed for repairs."
+    ],
+    "answer": "Although the bridge was closed for repairs.",
+    "hint": "Does the first group of words make a complete thought?",
+    "tags": ["grammar", "sentences"]
   },
   {
     "id": "reading-6-0032",
     "subject": "reading",
     "grade": 6,
     "kind": "grammar",
-    "prompt": "Pick the best word to finish the sentence. ___ going to the park after lunch.",
-    "choices": ["Were", "Where", "Wear", "We're"],
-    "answer": "We're",
-    "hint": "It is a short way to say two words.",
-    "tags": ["grammar", "homophones"]
+    "prompt": "Which sentence is a compound sentence?",
+    "choices": [
+      "The tide went out, and the crabs scurried across the sand.",
+      "The crabs scurried across the sand.",
+      "Because the tide went out, the crabs scurried.",
+      "Scurrying across the sand."
+    ],
+    "answer": "The tide went out, and the crabs scurried across the sand.",
+    "hint": "A compound sentence joins two complete thoughts.",
+    "tags": ["grammar", "sentences"]
   },
   {
     "id": "reading-6-0033",
     "subject": "reading",
     "grade": 6,
     "kind": "grammar",
-    "prompt": "Pick the best word to finish the sentence. The cat chased ___ tail.",
-    "choices": ["its", "it's", "its'", "it is"],
-    "answer": "its",
-    "hint": "It shows that the tail belongs to the cat.",
-    "tags": ["grammar", "homophones"]
+    "prompt": "Which sentence is punctuated correctly?",
+    "choices": [
+      "My neighbor a retired pilot, builds model planes.",
+      "My neighbor, a retired pilot, builds model planes.",
+      "My neighbor, a retired pilot builds model planes.",
+      "My, neighbor a retired pilot, builds model planes."
+    ],
+    "answer": "My neighbor, a retired pilot, builds model planes.",
+    "hint": "The extra phrase about the neighbor needs a comma on both sides.",
+    "tags": ["grammar", "punctuation"]
   },
   {
     "id": "reading-6-0034",
     "subject": "reading",
     "grade": 6,
     "kind": "grammar",
-    "prompt": "Which sentence is written the right way?",
+    "prompt": "Which sentence uses the past perfect tense correctly?",
     "choices": [
-      "Me and Tom goes to the zoo.",
-      "Tom and I went to the zoo.",
-      "Tom and me went to the zoo.",
-      "Tom and I goes to the zoo."
+      "By the time the rain began, the crew finishes the roof.",
+      "By the time the rain began, the crew has finish the roof.",
+      "By the time the rain began, the crew had finished the roof.",
+      "By the time the rain began, the crew had finishing the roof."
     ],
-    "answer": "Tom and I went to the zoo.",
-    "hint": "Try the sentence with only I. Does it sound right?",
-    "tags": ["grammar", "pronouns"]
+    "answer": "By the time the rain began, the crew had finished the roof.",
+    "hint": "The roof was finished before the rain started.",
+    "tags": ["grammar", "verb-tense"]
   },
   {
     "id": "reading-6-0035",
     "subject": "reading",
     "grade": 6,
     "kind": "grammar",
-    "prompt": "Pick the best word to finish the sentence. Maya ran ___ than her brother.",
-    "choices": ["more fast", "fastest", "faster", "most fast"],
-    "answer": "faster",
-    "hint": "You are comparing just two people.",
-    "tags": ["grammar", "comparing"]
+    "prompt": "What does the idiom \"under the weather\" mean?",
+    "choices": [
+      "standing in the rain",
+      "feeling very happy",
+      "hiding from a storm",
+      "feeling a little sick"
+    ],
+    "answer": "feeling a little sick",
+    "hint": "The phrase does not talk about real weather.",
+    "tags": ["grammar", "figurative-language"]
   },
   {
     "id": "reading-6-0036",
     "subject": "reading",
     "grade": 6,
     "kind": "grammar",
-    "prompt": "Pick the best word to finish the sentence. This is the ___ cake I have ever tasted.",
-    "choices": ["better", "more good", "goodest", "best"],
-    "answer": "best",
-    "hint": "You are comparing one cake to all the others.",
-    "tags": ["grammar", "comparing"]
+    "prompt": "Which sentence uses personification?",
+    "choices": [
+      "The thunder grumbled its complaints across the valley.",
+      "The thunder was as loud as a drum.",
+      "The thunder began just after noon.",
+      "The thunder shook the whole planet."
+    ],
+    "answer": "The thunder grumbled its complaints across the valley.",
+    "hint": "Which sentence gives a human action to thunder?",
+    "tags": ["grammar", "figurative-language"]
   },
   {
     "id": "reading-6-0037",
     "subject": "reading",
     "grade": 6,
     "kind": "grammar",
-    "prompt": "Pick the best word to finish the sentence. There are ___ many apples in the bowl to carry.",
-    "choices": ["too", "to", "two", "tu"],
-    "answer": "too",
-    "hint": "It means more than is needed.",
-    "tags": ["grammar", "homophones"]
+    "prompt": "Which sentence is an example of hyperbole?",
+    "choices": [
+      "The line for the slide was as long as a snake.",
+      "The line for the slide stretched to the moon and back.",
+      "The line for the slide was a snake.",
+      "The line for the slide had many kids in it."
+    ],
+    "answer": "The line for the slide stretched to the moon and back.",
+    "hint": "Hyperbole is a huge exaggeration.",
+    "tags": ["grammar", "figurative-language"]
   },
   {
     "id": "reading-6-0038",
     "subject": "reading",
     "grade": 6,
     "kind": "grammar",
-    "prompt": "Which word is a noun?",
-    "choices": ["quickly", "garden", "bright", "jumped"],
-    "answer": "garden",
-    "hint": "A noun names a person, place, or thing.",
-    "tags": ["grammar", "parts-of-speech"]
+    "prompt": "Which word has the most positive connotation? The mayor called the crowd's chant ___.",
+    "choices": ["rowdy", "noisy", "enthusiastic", "unruly"],
+    "answer": "enthusiastic",
+    "hint": "Which word would a mayor use to praise a crowd?",
+    "tags": ["grammar", "connotation"]
   },
   {
     "id": "reading-6-0039",
     "subject": "reading",
     "grade": 6,
     "kind": "grammar",
-    "prompt": "Which sentence has the right end mark?",
-    "choices": [
-      "Can we go outside now.",
-      "Can we go outside now!.",
-      "Can we go outside now?",
-      "Can we go outside now,"
-    ],
-    "answer": "Can we go outside now?",
-    "hint": "The sentence asks something.",
-    "tags": ["grammar", "punctuation"]
+    "prompt": "The root \"tract\" means pull. What does a tractor do?",
+    "choices": ["floats on water", "cuts hair", "writes letters", "pulls heavy loads"],
+    "answer": "pulls heavy loads",
+    "hint": "Tract means pull.",
+    "tags": ["grammar", "word-parts"]
   },
   {
     "id": "reading-6-0040",
     "subject": "reading",
     "grade": 6,
     "kind": "grammar",
-    "prompt": "Which word is a verb in this sentence? The bird sang a sweet song.",
-    "choices": ["bird", "sweet", "song", "sang"],
-    "answer": "sang",
-    "hint": "A verb tells what someone does.",
-    "tags": ["grammar", "parts-of-speech"]
+    "prompt": "Pick the verb that completes the sentence. The box of old maps ___ on the shelf.",
+    "choices": ["sits", "sit", "are sitting", "have sat"],
+    "answer": "sits",
+    "hint": "Find the main noun. Ignore the words that come after of.",
+    "tags": ["grammar", "verb-agreement"]
   },
   {
     "id": "reading-6-0041",
@@ -891,32 +941,37 @@
     "subject": "reading",
     "grade": 6,
     "kind": "vocab",
-    "prompt": "Read the sentence: \"The knight ate a meager supper of dry bread and one pea.\" What does \"meager\" mean?",
-    "choices": ["plentiful", "tiny and not enough", "tasty", "hot"],
-    "answer": "tiny and not enough",
-    "hint": "Dry bread and one pea is not much food.",
-    "tags": ["vocab", "vocabulary"]
+    "prompt": "What does \"ingenious\" mean in this sentence? The ingenious inventor built a pump from a bicycle wheel and a garden hose.",
+    "choices": ["old and worn", "loud and messy", "lazy and careless", "clever and original"],
+    "answer": "clever and original",
+    "hint": "She made something useful from simple parts.",
+    "tags": ["vocab", "context"]
   },
   {
     "id": "reading-6-0064",
     "subject": "reading",
     "grade": 6,
     "kind": "vocab",
-    "prompt": "Read the sentence: \"The king threw a lavish feast with ten kinds of pie and a fountain of juice.\" What does \"lavish\" mean?",
-    "choices": ["plain and small", "rich and fancy", "late", "rushed"],
-    "answer": "rich and fancy",
-    "hint": "Ten kinds of pie and a juice fountain is a big treat.",
-    "tags": ["vocab", "vocabulary"]
+    "prompt": "What does \"monotonous\" mean in this sentence? The monotonous hum of the engine made the passengers drowsy.",
+    "choices": [
+      "dull and unchanging",
+      "sharp and sudden",
+      "bright and cheerful",
+      "rare and costly"
+    ],
+    "answer": "dull and unchanging",
+    "hint": "A sound that never changes can make you sleepy.",
+    "tags": ["vocab", "context"]
   },
   {
     "id": "reading-6-0065",
     "subject": "reading",
     "grade": 6,
     "kind": "vocab",
-    "prompt": "The prefix \"mis-\" means \"wrongly.\" What does \"misread\" mean?",
-    "choices": ["read wrongly", "read twice", "read slowly", "read quickly"],
-    "answer": "read wrongly",
-    "hint": "Put the meaning of the prefix in front of the word read.",
+    "prompt": "The prefix \"inter-\" means between. What does \"international\" most likely mean?",
+    "choices": ["inside one nation", "between nations", "against a nation", "above every nation"],
+    "answer": "between nations",
+    "hint": "Put the meaning of the prefix in front of the word national.",
     "tags": ["vocab", "word-parts"]
   },
   {
@@ -924,15 +979,10 @@
     "subject": "reading",
     "grade": 6,
     "kind": "grammar",
-    "prompt": "\"The robot was as slow as a snail in syrup.\" What type of figurative language is this, and what does it show?",
-    "choices": [
-      "a metaphor showing the robot was sticky",
-      "a simile showing the robot was very slow",
-      "a simile showing the robot was tiny",
-      "a hyperbole showing the robot was fast"
-    ],
-    "answer": "a simile showing the robot was very slow",
-    "hint": "Look for the word as. It compares two things.",
+    "prompt": "\"The waves were silver coins scattered across the bay.\" This sentence is an example of",
+    "choices": ["a simile", "an idiom", "a metaphor", "personification"],
+    "answer": "a metaphor",
+    "hint": "It says waves were coins without using the word like or as.",
     "tags": ["grammar", "figurative-language"]
   },
   {
@@ -940,15 +990,15 @@
     "subject": "reading",
     "grade": 6,
     "kind": "grammar",
-    "prompt": "\"My backpack weighs a ton!\" What does this exaggeration tell you?",
+    "prompt": "\"We were all in the same boat during the long storm.\" What does the idiom mean?",
     "choices": [
-      "The backpack really weighs two thousand pounds.",
-      "The backpack is empty.",
-      "The backpack is very heavy.",
-      "The speaker is a scale."
+      "We were all sailing together.",
+      "We all owned one boat.",
+      "We all felt seasick.",
+      "We all faced the same situation."
     ],
-    "answer": "The backpack is very heavy.",
-    "hint": "Is the speaker telling the exact weight, or making a point?",
+    "answer": "We all faced the same situation.",
+    "hint": "The words do not talk about real boats.",
     "tags": ["grammar", "figurative-language"]
   },
   {
@@ -956,53 +1006,63 @@
     "subject": "reading",
     "grade": 6,
     "kind": "grammar",
-    "prompt": "\"The wind whispered through the castle halls.\" This is an example of",
-    "choices": ["a simile", "a fact", "a metaphor", "personification"],
-    "answer": "personification",
-    "hint": "Can wind really whisper? Think about who is doing the action.",
-    "tags": ["grammar", "figurative-language"]
+    "prompt": "Which sentence uses the correct pronoun?",
+    "choices": [
+      "Jo and she built the model rocket.",
+      "Her and Jo built the model rocket.",
+      "Jo and her built the model rocket.",
+      "Jo and herself built the model rocket."
+    ],
+    "answer": "Jo and she built the model rocket.",
+    "hint": "Take Jo out. Would you say she built or her built?",
+    "tags": ["grammar", "pronouns"]
   },
   {
     "id": "reading-6-0069",
     "subject": "reading",
     "grade": 6,
     "kind": "grammar",
-    "prompt": "Which sentence uses the correct pronoun?",
+    "prompt": "Which line of dialogue is punctuated correctly?",
     "choices": [
-      "Maya and I rode our hoverboards to the castle.",
-      "Maya and me rode our hoverboards to the castle.",
-      "Me and Maya rode our hoverboards to the castle.",
-      "Maya and myself rode our hoverboards to the castle."
+      "\"The tide is turning\" said the captain.",
+      "\"The tide is turning,\" said the captain.",
+      "\"The tide is turning.\" said the captain.",
+      "\"The tide is turning\", said the captain."
     ],
-    "answer": "Maya and I rode our hoverboards to the castle.",
-    "hint": "Take the other person out. Would you say I rode or me rode?",
-    "tags": ["grammar", "grammar"]
+    "answer": "\"The tide is turning,\" said the captain.",
+    "hint": "The comma goes inside the quotation marks.",
+    "tags": ["grammar", "punctuation"]
   },
   {
     "id": "reading-6-0070",
     "subject": "reading",
     "grade": 6,
     "kind": "grammar",
-    "prompt": "Which sentence is punctuated correctly?",
+    "prompt": "Which sentence uses \"whose\" correctly?",
     "choices": [
-      "We packed shields banners and snacks for the trip.",
-      "We packed shields, banners, and snacks for the trip.",
-      "We packed, shields, banners and snacks, for the trip.",
-      "We packed shields, banners, and snacks, for the trip."
+      "Who's scarf is on the bench?",
+      "Whos scarf is on the bench?",
+      "Whose scarf is on the bench?",
+      "Whose' scarf is on the bench?"
     ],
-    "answer": "We packed shields, banners, and snacks for the trip.",
-    "hint": "Items in a list are separated by commas.",
-    "tags": ["grammar", "punctuation"]
+    "answer": "Whose scarf is on the bench?",
+    "hint": "You are asking who owns the scarf.",
+    "tags": ["grammar", "grammar"]
   },
   {
     "id": "reading-6-0071",
     "subject": "reading",
     "grade": 6,
     "kind": "vocab",
-    "prompt": "Read the sentence. What does \"solitary\" mean? A solitary heron stood on the edge of the pond.",
-    "choices": ["very tall", "very quiet", "alone", "very old"],
-    "answer": "alone",
-    "hint": "Only one bird is there.",
+    "prompt": "What does \"apprehensive\" mean in this sentence? The explorer felt apprehensive as the cave grew darker.",
+    "choices": [
+      "proud of the climb",
+      "ready for a nap",
+      "curious about nothing",
+      "anxious about what might happen"
+    ],
+    "answer": "anxious about what might happen",
+    "hint": "Darkness can make a person uneasy.",
     "tags": ["vocab", "context"]
   },
   {
@@ -1010,10 +1070,15 @@
     "subject": "reading",
     "grade": 6,
     "kind": "vocab",
-    "prompt": "Read the sentence. What does \"obstacle\" mean? A fallen branch was an obstacle on the trail.",
-    "choices": ["a path to follow", "something in the way", "a place to rest", "a kind of tree"],
-    "answer": "something in the way",
-    "hint": "Hikers must go around it.",
+    "prompt": "What does \"constructive\" mean in this sentence? The coach's feedback was constructive, so the team knew exactly how to improve.",
+    "choices": [
+      "helpful and meant to improve things",
+      "harsh and unfair",
+      "short and quiet",
+      "confusing and late"
+    ],
+    "answer": "helpful and meant to improve things",
+    "hint": "The team knew how to improve.",
     "tags": ["vocab", "context"]
   },
   {
@@ -1021,10 +1086,10 @@
     "subject": "reading",
     "grade": 6,
     "kind": "vocab",
-    "prompt": "Read the sentence. What does \"diligent\" mean? The diligent student finished every page of homework.",
-    "choices": ["hard-working", "lazy", "forgetful", "noisy"],
-    "answer": "hard-working",
-    "hint": "Finishing every page takes effort.",
+    "prompt": "What does \"enduring\" mean in this sentence? Her friendship with Tess was enduring, lasting through moves, storms, and years apart.",
+    "choices": ["short-lived", "long-lasting", "noisy", "newly formed"],
+    "answer": "long-lasting",
+    "hint": "It lasted through years apart.",
     "tags": ["vocab", "context"]
   },
   {
@@ -1032,10 +1097,10 @@
     "subject": "reading",
     "grade": 6,
     "kind": "vocab",
-    "prompt": "Read the sentence. What does \"modest\" mean? Though she won three medals, Kira stayed modest about it.",
-    "choices": ["very angry", "always late", "proud to show off", "not bragging"],
-    "answer": "not bragging",
-    "hint": "She did not make a big deal of it.",
+    "prompt": "What does \"conceal\" mean in this sentence? Lila tried to conceal her party plans from her brother.",
+    "choices": ["announce", "print", "hide", "repair"],
+    "answer": "hide",
+    "hint": "It was meant to be a surprise.",
     "tags": ["vocab", "context"]
   },
   {
@@ -1043,10 +1108,10 @@
     "subject": "reading",
     "grade": 6,
     "kind": "vocab",
-    "prompt": "Read the sentence. What does \"inspect\" mean? The mechanic will inspect the bike before the race.",
-    "choices": ["paint over", "carry away", "look at closely", "ride fast"],
-    "answer": "look at closely",
-    "hint": "A mechanic checks for problems.",
+    "prompt": "What does \"discern\" mean in this sentence? The bright glare made it hard to discern the shape of the dock.",
+    "choices": ["paint", "build", "order", "see clearly"],
+    "answer": "see clearly",
+    "hint": "Glare makes shapes hard to make out.",
     "tags": ["vocab", "context"]
   },
   {
@@ -1054,10 +1119,10 @@
     "subject": "reading",
     "grade": 6,
     "kind": "vocab",
-    "prompt": "Read the sentence. What does \"commotion\" mean? A commotion broke out when the lights went out.",
-    "choices": ["sudden silence", "noisy excitement", "a slow walk", "a bright flash"],
-    "answer": "noisy excitement",
-    "hint": "People gasped and called out.",
+    "prompt": "What does \"reticent\" mean in this sentence? Unlike her talkative brother, Tess was reticent and rarely spoke.",
+    "choices": ["quiet and reserved", "loud and cheerful", "angry and rude", "quick and clever"],
+    "answer": "quiet and reserved",
+    "hint": "The word unlike tells you she is the opposite of her brother.",
     "tags": ["vocab", "context"]
   },
   {
@@ -1065,15 +1130,10 @@
     "subject": "reading",
     "grade": 6,
     "kind": "vocab",
-    "prompt": "The word \"fair\" has many meanings. Which one fits? The judge was fair and listened to both teams.",
-    "choices": [
-      "treating all sides the same",
-      "a place with rides",
-      "light in color",
-      "pretty good"
-    ],
-    "answer": "treating all sides the same",
-    "hint": "The judge did not pick favorites.",
+    "prompt": "Which meaning of \"current\" fits? A strong current pulled the kayak downstream.",
+    "choices": ["up to date", "a flow of water", "a type of tool", "a sudden stop"],
+    "answer": "a flow of water",
+    "hint": "The kayak was pulled downstream.",
     "tags": ["vocab", "context"]
   },
   {
@@ -1081,188 +1141,193 @@
     "subject": "reading",
     "grade": 6,
     "kind": "vocab",
-    "prompt": "The root \"tele\" means far. What does a telescope help you do?",
-    "choices": [
-      "hear soft music",
-      "write long letters",
-      "grow tall plants",
-      "see things that are far away"
-    ],
-    "answer": "see things that are far away",
-    "hint": "Think about the root meaning.",
-    "tags": ["vocab", "context"]
+    "prompt": "The root \"hydr\" means water. What does \"dehydrated\" mean?",
+    "choices": ["filled with air", "covered in sand", "without enough water", "full of light"],
+    "answer": "without enough water",
+    "hint": "The prefix de- means remove, and hydr means water.",
+    "tags": ["vocab", "word-parts"]
   },
   {
     "id": "reading-6-0079",
     "subject": "reading",
     "grade": 6,
     "kind": "grammar",
-    "prompt": "Which group of words is a complete sentence?",
+    "prompt": "Which sentence is a complex sentence?",
     "choices": [
-      "Because the rain stopped.",
-      "Running down the hill.",
-      "The class cleaned the park.",
-      "After the long game."
+      "The wind shifted, and the sailboat changed course.",
+      "The sailboat changed course.",
+      "Shifting winds and strong waves.",
+      "Because the wind shifted, the sailboat changed course."
     ],
-    "answer": "The class cleaned the park.",
-    "hint": "A sentence needs a doer and an action.",
-    "tags": ["grammar"]
+    "answer": "Because the wind shifted, the sailboat changed course.",
+    "hint": "A complex sentence has a main clause and a clause that cannot stand alone.",
+    "tags": ["grammar", "sentences"]
   },
   {
     "id": "reading-6-0080",
     "subject": "reading",
     "grade": 6,
     "kind": "grammar",
-    "prompt": "Choose the correct word: \"Each of the students ___ a pencil.\"",
-    "choices": ["have", "has", "having", "are having"],
-    "answer": "has",
-    "hint": "Each means one at a time.",
-    "tags": ["grammar"]
+    "prompt": "Pick the word that shows contrast. The pitch was fast, ___ the batter swung perfectly.",
+    "choices": ["but", "so", "because", "or"],
+    "answer": "but",
+    "hint": "A fast pitch is hard to hit, so the second part is a surprise.",
+    "tags": ["grammar", "grammar"]
   },
   {
     "id": "reading-6-0081",
     "subject": "reading",
     "grade": 6,
     "kind": "grammar",
-    "prompt": "Which sentence uses \"then\" and \"than\" correctly?",
+    "prompt": "Which sentence uses \"lose\" and \"loose\" correctly?",
     "choices": [
-      "First we ate, and then we left.",
-      "She is taller then her brother.",
-      "I like cats more then dogs.",
-      "He ran faster then I did."
+      "Tighten the lose strap so you do not loose your bag.",
+      "Tighten the loose strap so you do not lose your bag.",
+      "Tighten the loose strap so you do not loose your bag.",
+      "Tighten the lose strap so you do not lose your bag."
     ],
-    "answer": "First we ate, and then we left.",
-    "hint": "Then tells about time. Than compares.",
-    "tags": ["grammar"]
+    "answer": "Tighten the loose strap so you do not lose your bag.",
+    "hint": "One word means not tight. The other means to misplace something.",
+    "tags": ["grammar", "grammar"]
   },
   {
     "id": "reading-6-0082",
     "subject": "reading",
     "grade": 6,
     "kind": "grammar",
-    "prompt": "What is the subject of this sentence? \"The tired hikers rested by the lake.\"",
-    "choices": ["rested", "by the lake", "lake", "The tired hikers"],
-    "answer": "The tired hikers",
-    "hint": "Who did the resting?",
-    "tags": ["grammar"]
+    "prompt": "What is the complete predicate in this sentence? \"The young sailors untied the ropes at dawn.\"",
+    "choices": ["The young sailors", "untied", "untied the ropes at dawn", "ropes at dawn"],
+    "answer": "untied the ropes at dawn",
+    "hint": "The predicate tells what the subject did.",
+    "tags": ["grammar", "grammar"]
   },
   {
     "id": "reading-6-0083",
     "subject": "reading",
     "grade": 6,
     "kind": "grammar",
-    "prompt": "Which sentence uses a metaphor?",
+    "prompt": "Which sentence has an unclear pronoun?",
     "choices": [
-      "The classroom was as loud as a zoo.",
-      "The classroom was very loud.",
-      "The classroom was a zoo at noon.",
-      "The classroom had many students."
+      "Mia told Zoe, \"You won the race.\"",
+      "Mia told Zoe about the race.",
+      "Mia won the race, and she smiled.",
+      "Mia told Zoe that she had won the race."
     ],
-    "answer": "The classroom was a zoo at noon.",
-    "hint": "A metaphor says one thing is another.",
-    "tags": ["grammar"]
+    "answer": "Mia told Zoe that she had won the race.",
+    "hint": "Who does the word she point to?",
+    "tags": ["grammar", "pronouns"]
   },
   {
     "id": "reading-6-0084",
     "subject": "reading",
     "grade": 6,
     "kind": "grammar",
-    "prompt": "Which pair shows words with opposite meanings?",
-    "choices": ["big and large", "hot and cold", "quick and fast", "calm and peaceful"],
-    "answer": "hot and cold",
-    "hint": "Look for a pair that does not match.",
-    "tags": ["grammar"]
+    "prompt": "Which sentence uses \"accept\" and \"except\" correctly?",
+    "choices": [
+      "Every team will accept the invitation except the visitors.",
+      "Every team will except the invitation accept the visitors.",
+      "Every team will accept the invitation accept the visitors.",
+      "Every team will except the invitation except the visitors."
+    ],
+    "answer": "Every team will accept the invitation except the visitors.",
+    "hint": "One word means to take. The other means other than.",
+    "tags": ["grammar", "grammar"]
   },
   {
     "id": "reading-6-0085",
     "subject": "reading",
     "grade": 6,
     "kind": "mainidea",
-    "prompt": "What is the main message of this passage?",
+    "prompt": "What is the best statement of the theme?",
     "choices": [
-      "Family recipes hold memories as well as food.",
-      "Soup is better than bread.",
-      "Notebooks belong in kitchens.",
-      "Maya wants to open a bakery."
+      "Blizzards are strongest at night.",
+      "Steady, careful work can matter more than people realize.",
+      "Towers should be built taller.",
+      "Travelers should avoid mountain passes."
     ],
-    "answer": "Family recipes hold memories as well as food.",
-    "hint": "Think about what Maya realized.",
-    "tags": ["theme"],
-    "passage": "Maya's grandmother kept a worn leather notebook in her kitchen drawer. When Maya finally asked about it, her grandmother smiled and opened it. Each page held a recipe, along with a small note about who had first cooked it. \"This soup was my mother's,\" she said. \"This bread belonged to your aunt.\" Maya realized the notebook held more than food. It held the story of her family."
+    "answer": "Steady, careful work can matter more than people realize.",
+    "hint": "Think about why the keeper never treated her work as small.",
+    "tags": ["mainidea", "theme"],
+    "passage": "A mountain village told a story about a bell that never failed to ring. Each evening the keeper climbed the tower, oiled the rope, and rang the bell until its voice rolled down the valley. During one fierce blizzard, travelers lost on the high pass followed the steady sound down to the village. The villagers said the bell rang truest because the keeper never once treated her work as small."
   },
   {
     "id": "reading-6-0086",
     "subject": "reading",
     "grade": 6,
     "kind": "mainidea",
-    "prompt": "What did each page of the notebook hold?",
+    "prompt": "How did the travelers find their way during the blizzard?",
     "choices": [
-      "a drawing of the kitchen",
-      "a list of shopping needs",
-      "a photo of the family",
-      "a recipe and a note about its cook"
+      "They followed the keeper's lantern.",
+      "They followed a river down the valley.",
+      "They followed the sound of the bell.",
+      "They waited until the snow stopped."
     ],
-    "answer": "a recipe and a note about its cook",
-    "hint": "Find the sentence that starts with Each page.",
-    "tags": ["detail"],
-    "passage": "Maya's grandmother kept a worn leather notebook in her kitchen drawer. When Maya finally asked about it, her grandmother smiled and opened it. Each page held a recipe, along with a small note about who had first cooked it. \"This soup was my mother's,\" she said. \"This bread belonged to your aunt.\" Maya realized the notebook held more than food. It held the story of her family."
+    "answer": "They followed the sound of the bell.",
+    "hint": "Read the sentence that begins with During one fierce blizzard.",
+    "tags": ["mainidea", "detail"],
+    "passage": "A mountain village told a story about a bell that never failed to ring. Each evening the keeper climbed the tower, oiled the rope, and rang the bell until its voice rolled down the valley. During one fierce blizzard, travelers lost on the high pass followed the steady sound down to the village. The villagers said the bell rang truest because the keeper never once treated her work as small."
   },
   {
     "id": "reading-6-0087",
     "subject": "reading",
     "grade": 6,
     "kind": "mainidea",
-    "prompt": "What does \"worn\" mean in the passage?",
-    "choices": ["brand new", "torn in half", "used and rubbed by age", "shiny and clean"],
-    "answer": "used and rubbed by age",
-    "hint": "Think of a notebook kept for many years.",
-    "tags": ["vocab"],
-    "passage": "Maya's grandmother kept a worn leather notebook in her kitchen drawer. When Maya finally asked about it, her grandmother smiled and opened it. Each page held a recipe, along with a small note about who had first cooked it. \"This soup was my mother's,\" she said. \"This bread belonged to your aunt.\" Maya realized the notebook held more than food. It held the story of her family."
+    "prompt": "The phrase \"never once treated her work as small\" suggests that the keeper",
+    "choices": [
+      "wanted a different job",
+      "was tired of climbing stairs",
+      "worked only for praise",
+      "took her job seriously"
+    ],
+    "answer": "took her job seriously",
+    "hint": "Think about how someone feels about work she does not call small.",
+    "tags": ["mainidea", "inference"],
+    "passage": "A mountain village told a story about a bell that never failed to ring. Each evening the keeper climbed the tower, oiled the rope, and rang the bell until its voice rolled down the valley. During one fierce blizzard, travelers lost on the high pass followed the steady sound down to the village. The villagers said the bell rang truest because the keeper never once treated her work as small."
   },
   {
     "id": "reading-6-0088",
     "subject": "reading",
     "grade": 6,
     "kind": "mainidea",
-    "prompt": "What is the main idea of this passage?",
+    "prompt": "Which sentence best states the central idea?",
     "choices": [
-      "Sea otters sleep all day.",
-      "Sea otters have clever ways to eat and stay warm.",
-      "Rocks are the best tools.",
-      "Kelp is a kind of shell."
+      "Looking closely at nature led to a useful invention.",
+      "Dogs often collect burrs in the mountains.",
+      "Microscopes cost a great deal.",
+      "Mountains are good places to walk."
     ],
-    "answer": "Sea otters have clever ways to eat and stay warm.",
-    "hint": "Ask what the whole passage is mostly about.",
-    "tags": ["mainidea"],
-    "passage": "Sea otters float on their backs and use rocks as tools. An otter places a rock on its chest and cracks open a shell against it. Their fur is the thickest of any animal, which keeps them warm in cold water because they have little body fat. When they sleep, otters sometimes wrap themselves in kelp so they do not drift apart."
+    "answer": "Looking closely at nature led to a useful invention.",
+    "hint": "Think about how a walk led to the invention.",
+    "tags": ["mainidea", "main-idea"],
+    "passage": "The inventor George de Mestral took a walk in the mountains and came home with burrs clinging to his pants and to his dog. Curious, he studied one under a microscope and saw hundreds of tiny hooks that caught on loops of fabric. He spent years testing materials until he made two strips, one covered with hooks and one with loops, that pressed together and held tight. His invention now closes shoes, bags, and even space suits."
   },
   {
     "id": "reading-6-0089",
     "subject": "reading",
     "grade": 6,
     "kind": "mainidea",
-    "prompt": "What does an otter use to crack open a shell?",
-    "choices": ["a rock on its chest", "its sharp claws", "a piece of kelp", "the ocean floor"],
-    "answer": "a rock on its chest",
-    "hint": "Find the sentence about tools.",
-    "tags": ["detail"],
-    "passage": "Sea otters float on their backs and use rocks as tools. An otter places a rock on its chest and cracks open a shell against it. Their fur is the thickest of any animal, which keeps them warm in cold water because they have little body fat. When they sleep, otters sometimes wrap themselves in kelp so they do not drift apart."
+    "prompt": "Why did de Mestral study a burr under a microscope?",
+    "choices": [
+      "He wanted to sell burrs to shoemakers.",
+      "He was curious about why it stuck so well.",
+      "His dog was sick.",
+      "He was building a microscope."
+    ],
+    "answer": "He was curious about why it stuck so well.",
+    "hint": "Look for the word that describes how he felt.",
+    "tags": ["mainidea", "detail"],
+    "passage": "The inventor George de Mestral took a walk in the mountains and came home with burrs clinging to his pants and to his dog. Curious, he studied one under a microscope and saw hundreds of tiny hooks that caught on loops of fabric. He spent years testing materials until he made two strips, one covered with hooks and one with loops, that pressed together and held tight. His invention now closes shoes, bags, and even space suits."
   },
   {
     "id": "reading-6-0090",
     "subject": "reading",
     "grade": 6,
     "kind": "mainidea",
-    "prompt": "Why do sea otters need such thick fur?",
-    "choices": [
-      "They like to look fluffy.",
-      "It helps them crack shells.",
-      "It keeps them from drifting.",
-      "They have little body fat to keep them warm."
-    ],
-    "answer": "They have little body fat to keep them warm.",
-    "hint": "Look for the reason after the word because.",
-    "tags": ["cause"],
-    "passage": "Sea otters float on their backs and use rocks as tools. An otter places a rock on its chest and cracks open a shell against it. Their fur is the thickest of any animal, which keeps them warm in cold water because they have little body fat. When they sleep, otters sometimes wrap themselves in kelp so they do not drift apart."
+    "prompt": "In the passage, the word \"clinging\" most nearly means",
+    "choices": ["falling off", "growing slowly", "holding on tightly", "drying out"],
+    "answer": "holding on tightly",
+    "hint": "Burrs stick to fabric and fur.",
+    "tags": ["mainidea", "vocabulary-in-context"],
+    "passage": "The inventor George de Mestral took a walk in the mountains and came home with burrs clinging to his pants and to his dog. Curious, he studied one under a microscope and saw hundreds of tiny hooks that caught on loops of fabric. He spent years testing materials until he made two strips, one covered with hooks and one with loops, that pressed together and held tight. His invention now closes shoes, bags, and even space suits."
   }
 ]

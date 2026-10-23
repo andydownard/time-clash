@@ -4,543 +4,588 @@
     "subject": "reading",
     "grade": 8,
     "kind": "vocab",
-    "prompt": "The tired hiker was reluctant to climb the last hill. What does reluctant mean?",
-    "choices": ["unwilling", "eager", "quick", "careful"],
-    "answer": "unwilling",
-    "hint": "Think about a person who does not want to do something.",
-    "tags": ["vocab-in-context", "context-clues"]
+    "prompt": "What does \"prevalent\" mean in this sentence? Seagulls are prevalent along the harbor, perched on every rail and roof.",
+    "choices": ["rarely seen", "widespread and common", "easily frightened", "unusually quiet"],
+    "answer": "widespread and common",
+    "hint": "They sit on every rail and roof.",
+    "tags": ["vocab", "context"]
   },
   {
     "id": "reading-8-0002",
     "subject": "reading",
     "grade": 8,
     "kind": "mainidea",
-    "prompt": "What is the main idea of this passage about honey bees?",
-    "passage": "Honey bees work together in a hive. Some bees gather nectar, some clean, and some guard the door. Every bee has a job that helps the group.",
+    "prompt": "Which statement best expresses the central idea of the passage?",
     "choices": [
-      "Honey bees only make honey in winter.",
-      "Honey bees share jobs to help their hive.",
-      "Guard bees are bigger than other bees.",
-      "Bees like flowers more than anything."
+      "Anglerfish are the most common animals in the deep ocean.",
+      "Squid cannot survive in lighted water.",
+      "Deep-sea animals use their own light for several survival purposes.",
+      "Sunlight reaches the bottom of the ocean."
     ],
-    "answer": "Honey bees share jobs to help their hive.",
-    "hint": "Ask what all the sentences are about.",
-    "tags": ["main-idea"]
+    "answer": "Deep-sea animals use their own light for several survival purposes.",
+    "hint": "Ask what the examples have in common.",
+    "tags": ["mainidea", "main-idea"],
+    "passage": "Far below the reach of sunlight, many deep-sea animals produce their own light through a process called bioluminescence. Anglerfish dangle glowing lures to attract prey, while some squid release clouds of glowing fluid to confuse predators. Because the deep ocean is dark, light acts like a language: it can signal a mate, lure a meal, or warn a rival. Scientists who study these creatures often find that a single glowing trait serves several purposes at once."
   },
   {
     "id": "reading-8-0003",
     "subject": "reading",
     "grade": 8,
     "kind": "grammar",
-    "prompt": "Which sentence is written correctly?",
+    "prompt": "Which sentence has a misplaced modifier?",
     "choices": [
-      "Her and me walked to the park.",
-      "Me and her walked to the park.",
-      "She and I walked to the park.",
-      "Her and I walked to the park."
+      "She served sandwiches on paper plates to the children.",
+      "She served the children sandwiches on paper plates.",
+      "On paper plates, she served sandwiches to the children.",
+      "She served sandwiches to the children on paper plates."
     ],
-    "answer": "She and I walked to the park.",
-    "hint": "Try each name alone with the verb.",
-    "tags": ["grammar", "pronouns"]
+    "answer": "She served sandwiches to the children on paper plates.",
+    "hint": "Check which phrase sits beside the wrong noun.",
+    "tags": ["grammar", "modifiers"]
   },
   {
     "id": "reading-8-0004",
     "subject": "reading",
     "grade": 8,
     "kind": "vocab",
-    "prompt": "The baker's generous gift fed the whole town. What does generous mean?",
-    "choices": ["keeping quiet", "very small", "hard to find", "giving freely"],
-    "answer": "giving freely",
-    "hint": "A generous person shares a lot.",
-    "tags": ["vocab-in-context", "context-clues"]
+    "prompt": "What does \"fleeting\" mean in this sentence? The sand sculpture was fleeting; the first high tide washed it away.",
+    "choices": [
+      "lasting a very short time",
+      "carefully planned",
+      "extremely detailed",
+      "admired by many"
+    ],
+    "answer": "lasting a very short time",
+    "hint": "The tide washed it away.",
+    "tags": ["vocab", "context"]
   },
   {
     "id": "reading-8-0005",
     "subject": "reading",
     "grade": 8,
     "kind": "mainidea",
-    "prompt": "What is the main idea of this passage about sleep?",
-    "passage": "Sleep helps the brain store what you learned. Students who sleep well often remember more. That is why rest matters before a test.",
+    "prompt": "According to the passage, why might fishing fleets catch fewer fish during this pattern?",
     "choices": [
-      "Good sleep helps you remember what you learn.",
-      "Tests are harder at night.",
-      "Brains stop working during sleep.",
-      "Students should study all night."
+      "Wind patterns stop completely.",
+      "The warm water carries fewer nutrients.",
+      "Farmers use the ocean for irrigation.",
+      "Meteorologists close the fishing areas."
     ],
-    "answer": "Good sleep helps you remember what you learn.",
-    "hint": "Ask what the sentences say about rest.",
-    "tags": ["main-idea"]
+    "answer": "The warm water carries fewer nutrients.",
+    "hint": "Look for the word because.",
+    "tags": ["mainidea", "cause"],
+    "passage": "Every few years, ocean waters in the tropical Pacific grow unusually warm, a pattern known as El Nino. The extra heat shifts wind patterns across the globe, bringing heavy rain to some regions and drought to others. Fishing fleets off South America may find fewer fish, because the warm water holds fewer nutrients. Meteorologists monitor ocean temperatures closely so they can warn farmers and fishers months ahead."
   },
   {
     "id": "reading-8-0006",
     "subject": "reading",
     "grade": 8,
     "kind": "grammar",
-    "prompt": "Pick the word that fits: The team packed ___ bags before the trip.",
-    "choices": ["there", "their", "they're", "thier"],
-    "answer": "their",
-    "hint": "The bags belong to the team.",
-    "tags": ["grammar", "homophones"]
+    "prompt": "Pick the verb phrase that completes the sentence. Our town ___ the harbor race for many years, and it still does.",
+    "choices": ["hosted", "will host", "has hosted", "is hosted"],
+    "answer": "has hosted",
+    "hint": "The action started in the past and continues now.",
+    "tags": ["grammar", "verb-tense"]
   },
   {
     "id": "reading-8-0007",
     "subject": "reading",
     "grade": 8,
     "kind": "vocab",
-    "prompt": "The path was so narrow that we walked in single file. What does narrow mean?",
-    "choices": ["very long", "slippery", "not wide", "steep"],
-    "answer": "not wide",
-    "hint": "Why did everyone walk in a line?",
-    "tags": ["vocab-in-context", "context-clues"]
+    "prompt": "What does \"imminent\" mean in this sentence? With dark clouds overhead and thunder rolling, the storm was imminent.",
+    "choices": ["long past", "unlikely", "harmless", "about to happen"],
+    "answer": "about to happen",
+    "hint": "Thunder was already rolling.",
+    "tags": ["vocab", "context"]
   },
   {
     "id": "reading-8-0008",
     "subject": "reading",
     "grade": 8,
     "kind": "mainidea",
-    "prompt": "What is the main idea of this passage about rivers?",
-    "passage": "A river can carve a deep canyon over many years. Moving water slowly wears away rock and soil. Over time, even hard stone changes shape.",
+    "prompt": "What does the sequence of events suggest about new inventions?",
     "choices": [
-      "Canyons are always dry.",
-      "Rivers only flow in spring.",
-      "Stone is softer than soil.",
-      "Moving water can slowly change the land."
+      "Useful ideas are sometimes doubted before people accept them.",
+      "Streetcars were the first vehicles with wipers.",
+      "Inventors should avoid companies.",
+      "Drivers dislike sleet more than rain."
     ],
-    "answer": "Moving water can slowly change the land.",
-    "hint": "Look for the idea that every sentence shares.",
-    "tags": ["main-idea"]
+    "answer": "Useful ideas are sometimes doubted before people accept them.",
+    "hint": "Compare what companies said first with what happened later.",
+    "tags": ["mainidea", "inference"],
+    "passage": "In the early twentieth century, a woman named Mary Anderson noticed a streetcar driver wiping sleet from the windshield by hand. She sketched a swinging arm with a rubber blade that could be operated by a lever inside the car. Companies first rejected the idea, claiming it would distract drivers. Within a few years, however, wipers became standard equipment, and no one questioned their value."
   },
   {
     "id": "reading-8-0009",
     "subject": "reading",
     "grade": 8,
     "kind": "grammar",
-    "prompt": "Pick the word that fits: The dog wagged ___ tail.",
-    "choices": ["its", "it's", "its'", "their"],
-    "answer": "its",
-    "hint": "It shows that the tail belongs to the dog.",
-    "tags": ["grammar", "apostrophes"]
+    "prompt": "Which sentence contains a participial phrase?",
+    "choices": [
+      "The hikers rested by the creek.",
+      "Exhausted from the climb, the hikers rested by the creek.",
+      "The hikers rested, and they ate lunch.",
+      "After the hikers rested."
+    ],
+    "answer": "Exhausted from the climb, the hikers rested by the creek.",
+    "hint": "Look for a phrase that begins with a describing word made from a verb.",
+    "tags": ["grammar", "phrases"]
   },
   {
     "id": "reading-8-0010",
     "subject": "reading",
     "grade": 8,
     "kind": "vocab",
-    "prompt": "She gave a brief speech, and everyone clapped. What does brief mean?",
-    "choices": ["loud", "short", "funny", "boring"],
-    "answer": "short",
-    "hint": "Think of the opposite of long.",
-    "tags": ["vocab-in-context", "context-clues"]
+    "prompt": "What does \"volatile\" mean in this sentence? Weather on the mountain is volatile, shifting from sunshine to hail within an hour.",
+    "choices": [
+      "reliably calm",
+      "easy to forecast",
+      "likely to change suddenly",
+      "pleasantly mild"
+    ],
+    "answer": "likely to change suddenly",
+    "hint": "It can shift within an hour.",
+    "tags": ["vocab", "context"]
   },
   {
     "id": "reading-8-0011",
     "subject": "reading",
     "grade": 8,
     "kind": "mainidea",
-    "prompt": "What is the main idea of this passage about libraries?",
-    "passage": "Many libraries now offer more than books. You can borrow games, tools, and even telescopes. Some also host free classes.",
+    "prompt": "The word \"temporary\" appears in quotation marks to show that",
     "choices": [
-      "Libraries no longer have any books.",
-      "Free classes are only for adults.",
-      "Libraries offer many things besides books.",
-      "Telescopes are made in libraries."
+      "the word is borrowed from another language",
+      "the repairs were never finished",
+      "the street run is held only once",
+      "the solution lasted far longer than anyone expected"
     ],
-    "answer": "Libraries offer many things besides books.",
-    "hint": "Read the first sentence again.",
-    "tags": ["main-idea"]
+    "answer": "the solution lasted far longer than anyone expected",
+    "hint": "Read the last sentence.",
+    "tags": ["mainidea", "tone"],
+    "passage": "When a small town closed its only track for repairs, the youth running club seemed finished. Instead, parents marked laps along a quiet street, a hardware store lent cones and stopwatches, and neighbors turned on porch lights so evening practices could continue. Attendance grew, because families who had never visited the track walked over to watch. The \"temporary\" solution became a tradition, and the town now hosts a street run each summer."
   },
   {
     "id": "reading-8-0012",
     "subject": "reading",
     "grade": 8,
     "kind": "grammar",
-    "prompt": "Which word is a verb in this sentence? The students quickly solved the puzzle.",
-    "choices": ["students", "quickly", "puzzle", "solved"],
-    "answer": "solved",
-    "hint": "A verb shows action.",
-    "tags": ["grammar", "parts-of-speech"]
+    "prompt": "In the sentence \"The coach told the captain that she needed rest,\" what is the problem?",
+    "choices": [
+      "The pronoun \"she\" could refer to either person.",
+      "The sentence has no verb.",
+      "The word coach should be capitalized.",
+      "The sentence is missing an end mark."
+    ],
+    "answer": "The pronoun \"she\" could refer to either person.",
+    "hint": "Two people are named before the pronoun.",
+    "tags": ["grammar", "pronouns"]
   },
   {
     "id": "reading-8-0013",
     "subject": "reading",
     "grade": 8,
     "kind": "vocab",
-    "prompt": "The old map was fragile, so we held it gently. What does fragile mean?",
-    "choices": ["easy to break", "very heavy", "brightly colored", "hard to read"],
-    "answer": "easy to break",
-    "hint": "Why would you hold it gently?",
-    "tags": ["vocab-in-context", "context-clues"]
+    "prompt": "What does \"pervasive\" mean in this sentence? The pervasive smell of fresh bread spread through every room of the bakery.",
+    "choices": ["faint and brief", "spreading throughout", "unpleasant", "hidden"],
+    "answer": "spreading throughout",
+    "hint": "It reached every room.",
+    "tags": ["vocab", "context"]
   },
   {
     "id": "reading-8-0014",
     "subject": "reading",
     "grade": 8,
     "kind": "mainidea",
-    "prompt": "What is the main idea of this passage about recycling?",
-    "passage": "Sorting trash takes only a few seconds. Paper, glass, and cans can be made into new things. Small habits like this keep waste out of landfills.",
+    "prompt": "What does the myth most clearly reveal about ancient Greek farmers?",
     "choices": [
-      "Glass is the best thing to recycle.",
-      "Small habits like sorting trash can reduce waste.",
-      "Landfills are the biggest places in town.",
-      "Sorting trash takes a whole day."
+      "They believed gods lived in their barns.",
+      "They avoided farming in the spring.",
+      "They told stories to explain the natural cycles they depended on.",
+      "They preferred winter to summer."
     ],
-    "answer": "Small habits like sorting trash can reduce waste.",
-    "hint": "The last sentence sums it up.",
-    "tags": ["main-idea"]
+    "answer": "They told stories to explain the natural cycles they depended on.",
+    "hint": "Read the last sentence.",
+    "tags": ["mainidea", "inference"],
+    "passage": "Ancient Greeks explained the changing seasons with the myth of Persephone, daughter of the goddess of the harvest. When Persephone spent part of each year in the underworld, her mother grieved, and nothing would grow. When her daughter returned, the fields turned green again. The myth shows how closely farmers linked their survival to the cycles of nature, and how they used stories to make sense of those cycles."
   },
   {
     "id": "reading-8-0015",
     "subject": "reading",
     "grade": 8,
     "kind": "grammar",
-    "prompt": "Pick the word that fits: Each of the boys ___ on time.",
-    "choices": ["were", "are", "was", "be"],
-    "answer": "was",
-    "hint": "Each means one at a time.",
-    "tags": ["grammar", "agreement"]
+    "prompt": "Which sentence punctuates a nonessential clause correctly?",
+    "choices": [
+      "The harbor which was built long ago, protects the town.",
+      "The harbor, which was built long ago protects the town.",
+      "The harbor which, was built long ago protects the town.",
+      "The harbor, which was built long ago, protects the town."
+    ],
+    "answer": "The harbor, which was built long ago, protects the town.",
+    "hint": "The extra information needs commas on both sides.",
+    "tags": ["grammar", "punctuation"]
   },
   {
     "id": "reading-8-0016",
     "subject": "reading",
     "grade": 8,
     "kind": "vocab",
-    "prompt": "Maya was curious about the strange box, so she looked closer. What does curious mean?",
-    "choices": ["afraid", "sleepy", "angry", "eager to learn"],
-    "answer": "eager to learn",
-    "hint": "A curious cat peeks into boxes.",
-    "tags": ["vocab-in-context", "context-clues"]
+    "prompt": "What does \"inherent\" mean in this sentence? Some risk is inherent in any experiment, because no scientist can remove all uncertainty.",
+    "choices": [
+      "a natural, built-in part",
+      "an unusual extra",
+      "a recent result",
+      "a harmful accident"
+    ],
+    "answer": "a natural, built-in part",
+    "hint": "No scientist can remove it.",
+    "tags": ["vocab", "context"]
   },
   {
     "id": "reading-8-0017",
     "subject": "reading",
     "grade": 8,
     "kind": "mainidea",
-    "prompt": "What is the main idea of this passage about a young musician?",
-    "passage": "Nina struggled with the violin at first. She practiced for ten minutes each day. After a few months, she played her first song.",
+    "prompt": "Which sentence best summarizes the passage?",
     "choices": [
-      "Steady practice helps you improve.",
-      "The violin is the easiest instrument.",
-      "Nina quit after a few months.",
-      "Songs should be ten minutes long."
+      "Dunes are the same as beaches.",
+      "Sand dunes protect coastlines, so restoring them benefits communities.",
+      "Grass is the most useful material for builders.",
+      "Floods happen only in neighborhoods near the sea."
     ],
-    "answer": "Steady practice helps you improve.",
-    "hint": "Look at what changed from the start to the end.",
-    "tags": ["main-idea"]
+    "answer": "Sand dunes protect coastlines, so restoring them benefits communities.",
+    "hint": "A summary covers the whole passage, not one detail.",
+    "tags": ["mainidea", "main-idea"],
+    "passage": "Sand dunes may look like piles of loose sand, but they work as natural shields. Beach grasses anchor the sand with deep roots and trap blowing grains, which gradually builds each dune higher. During storms, a healthy dune can block the surge of seawater that would otherwise flood neighborhoods. Despite these benefits, many dunes were flattened to make room for buildings, and communities are now working to restore them."
   },
   {
     "id": "reading-8-0018",
     "subject": "reading",
     "grade": 8,
     "kind": "grammar",
-    "prompt": "Which sentence has the right punctuation?",
-    "choices": [
-      "After lunch we, played outside.",
-      "After lunch, we played outside.",
-      "After, lunch we played outside.",
-      "After lunch we played, outside."
-    ],
-    "answer": "After lunch, we played outside.",
-    "hint": "A comma goes after the opening phrase.",
-    "tags": ["grammar", "commas"]
+    "prompt": "Pick the correct verb. Yesterday the sailors ___ their ropes on the deck.",
+    "choices": ["lay", "lain", "laid", "layed"],
+    "answer": "laid",
+    "hint": "The word Yesterday tells you the action is finished.",
+    "tags": ["grammar", "verb-tense"]
   },
   {
     "id": "reading-8-0019",
     "subject": "reading",
     "grade": 8,
     "kind": "vocab",
-    "prompt": "The soup was bland, so Leo added some spice. What does bland mean?",
-    "choices": ["too hot", "very sweet", "lacking flavor", "cold"],
-    "answer": "lacking flavor",
-    "hint": "Why would Leo add spice?",
-    "tags": ["vocab-in-context", "context-clues"]
+    "prompt": "What does \"oscillate\" mean in this sentence? The buoy seemed to oscillate, swinging back and forth with the swells.",
+    "choices": ["stay frozen", "disappear", "double in size", "move back and forth"],
+    "answer": "move back and forth",
+    "hint": "It swung with the swells.",
+    "tags": ["vocab", "context"]
   },
   {
     "id": "reading-8-0020",
     "subject": "reading",
     "grade": 8,
     "kind": "mainidea",
-    "prompt": "What is the main idea of this passage about octopuses?",
-    "passage": "An octopus has no bones, so it can squeeze through tiny gaps. It can slip out of a jar with a loose lid. This soft body helps it hide and explore.",
+    "prompt": "Which conclusion is best supported by the passage?",
     "choices": [
-      "Octopuses cannot leave jars.",
-      "Bones make animals strong swimmers.",
-      "Octopuses live only in jars.",
-      "An octopus's soft body lets it fit into small spaces."
+      "Fog is likely to form where warm, moist air meets a cold surface.",
+      "Fog forms only at night.",
+      "Sunlight makes fog thicker.",
+      "Fog is a cloud that stays high in the sky."
     ],
-    "answer": "An octopus's soft body lets it fit into small spaces.",
-    "hint": "Ask what the soft body helps it do.",
-    "tags": ["main-idea"]
+    "answer": "Fog is likely to form where warm, moist air meets a cold surface.",
+    "hint": "Look at the sentence about coasts.",
+    "tags": ["mainidea", "inference"],
+    "passage": "Fog is simply a cloud that touches the ground. It forms when air near the surface cools until it can no longer hold its moisture, so water vapor condenses into droplets so small that they hang in the air. Along coasts, warm, damp air drifting over cold ocean water is a common recipe. Sunlight usually burns fog away by warming the air and letting the droplets evaporate."
   },
   {
     "id": "reading-8-0021",
     "subject": "reading",
     "grade": 8,
     "kind": "grammar",
-    "prompt": "Which sentence uses a comma in a list correctly?",
+    "prompt": "Which sentence uses a gerund as its subject?",
     "choices": [
-      "We packed apples, bread, and cheese.",
-      "We packed, apples bread and cheese.",
-      "We packed apples bread, and, cheese.",
-      "We, packed apples, bread and cheese."
+      "We swam in the lake.",
+      "Swimming in the lake is relaxing.",
+      "The swimmers are relaxing.",
+      "Swim to the dock!"
     ],
-    "answer": "We packed apples, bread, and cheese.",
-    "hint": "Commas go between the items.",
-    "tags": ["grammar", "commas"]
+    "answer": "Swimming in the lake is relaxing.",
+    "hint": "A gerund is a verb form ending in -ing that acts as a noun.",
+    "tags": ["grammar", "phrases"]
   },
   {
     "id": "reading-8-0022",
     "subject": "reading",
     "grade": 8,
     "kind": "vocab",
-    "prompt": "The ancient oak tree has stood in the park for centuries. What does ancient mean?",
-    "choices": ["very green", "very old", "newly planted", "hollow"],
-    "answer": "very old",
-    "hint": "Centuries is a clue.",
-    "tags": ["vocab-in-context", "context-clues"]
+    "prompt": "What does \"advocate\" mean in this sentence? She became an advocate for clean beaches, speaking at meetings and organizing cleanups.",
+    "choices": [
+      "a person who opposes change",
+      "a visitor who stays briefly",
+      "a person who publicly supports a cause",
+      "a rival in a contest"
+    ],
+    "answer": "a person who publicly supports a cause",
+    "hint": "She spoke at meetings and organized cleanups.",
+    "tags": ["vocab", "context"]
   },
   {
     "id": "reading-8-0023",
     "subject": "reading",
     "grade": 8,
     "kind": "mainidea",
-    "prompt": "What is the main idea of this passage about sailors and stars?",
-    "passage": "Long ago, sailors used the stars to find their way. They learned which star stayed in the same spot each night. This helped them know which way was north.",
+    "prompt": "How do the legend and the historical record differ?",
     "choices": [
-      "Stars move faster than ships.",
-      "Sailors only traveled at night.",
-      "Sailors used stars to find direction.",
-      "North is the brightest star."
+      "The legend says he sold trees, and records say he gave them away.",
+      "The legend places him in cities, and records place him at sea.",
+      "The legend and the records agree on every detail.",
+      "The legend shows a generous wanderer, while records show a careful businessman."
     ],
-    "answer": "Sailors used stars to find direction.",
-    "hint": "Think about why sailors watched the sky.",
-    "tags": ["main-idea"]
+    "answer": "The legend shows a generous wanderer, while records show a careful businessman.",
+    "hint": "Look for the word however.",
+    "tags": ["mainidea", "text-structure"],
+    "passage": "Johnny Appleseed, whose real name was John Chapman, planted apple orchards across the frontier. Legends picture him barefoot, wearing a cooking pot as a hat. Historians, however, have found that the real Chapman was a shrewd businessman who sold young trees to settlers, who were required to plant orchards to claim their land. The legend preserves a kernel of truth but adds a layer of charm."
   },
   {
     "id": "reading-8-0024",
     "subject": "reading",
     "grade": 8,
     "kind": "grammar",
-    "prompt": "Pick the word that fits: Maya runs faster ___ her brother.",
-    "choices": ["then", "that", "thin", "than"],
-    "answer": "than",
-    "hint": "Use this word to compare two people.",
-    "tags": ["grammar", "homophones"]
+    "prompt": "Which sentence contains an adverb clause?",
+    "choices": [
+      "Although it was raining, the parade continued.",
+      "The parade, which was long, continued.",
+      "The parade continued.",
+      "The parade continued down Main Street."
+    ],
+    "answer": "Although it was raining, the parade continued.",
+    "hint": "An adverb clause tells when, why, or under what condition.",
+    "tags": ["grammar", "clauses"]
   },
   {
     "id": "reading-8-0025",
     "subject": "reading",
     "grade": 8,
     "kind": "vocab",
-    "prompt": "He was weary after the long trip and went to bed early. What does weary mean?",
-    "choices": ["tired", "excited", "hungry", "lost"],
-    "answer": "tired",
-    "hint": "Why did he go to bed early?",
-    "tags": ["vocab-in-context", "context-clues"]
+    "prompt": "What does \"tangible\" mean in this sentence? The new library was a tangible reward for the town: a building people could walk into.",
+    "choices": ["imaginary", "able to be touched or seen as real", "temporary", "secret"],
+    "answer": "able to be touched or seen as real",
+    "hint": "It was a building people could walk into.",
+    "tags": ["vocab", "context"]
   },
   {
     "id": "reading-8-0026",
     "subject": "reading",
     "grade": 8,
     "kind": "mainidea",
-    "prompt": "What is the main idea of this passage about a school garden?",
-    "passage": "A school garden gives students a place to learn outdoors. They plant seeds, measure growth, and taste fresh vegetables. Many say it is their favorite class.",
+    "prompt": "Which comparison best explains how the damper works?",
     "choices": [
-      "Vegetables grow best in classrooms.",
-      "A school garden is a fun way to learn outdoors.",
-      "Students dislike measuring plants.",
-      "Seeds are hard to find."
+      "It is like a flag waving in the wind.",
+      "It is like a lamp turning on at dusk.",
+      "It is like a person leaning the opposite way to keep balance on a moving bus.",
+      "It is like a ladder reaching the roof."
     ],
-    "answer": "A school garden is a fun way to learn outdoors.",
-    "hint": "Look for what the whole passage describes.",
-    "tags": ["main-idea"]
+    "answer": "It is like a person leaning the opposite way to keep balance on a moving bus.",
+    "hint": "The weight moves against the building.",
+    "tags": ["mainidea", "inference"],
+    "passage": "In tall skyscrapers, strong winds can make the upper floors sway enough to make people uneasy. Engineers address this by hanging a huge weight, called a tuned mass damper, near the top of the building. When the tower moves one way, the heavy weight swings the other, canceling much of the motion. Without such devices, many modern towers would need thicker, heavier frames."
   },
   {
     "id": "reading-8-0027",
     "subject": "reading",
     "grade": 8,
     "kind": "grammar",
-    "prompt": "Which sentence is a complete sentence?",
-    "choices": [
-      "Because the bell rang.",
-      "Ringing the bell loudly.",
-      "The bell rang loudly.",
-      "When the bell rang loudly."
-    ],
-    "answer": "The bell rang loudly.",
-    "hint": "A complete sentence tells who did what.",
-    "tags": ["grammar", "sentences"]
+    "prompt": "\"The silence was deafening.\" This phrase is an example of",
+    "choices": ["a simile", "alliteration", "onomatopoeia", "an oxymoron"],
+    "answer": "an oxymoron",
+    "hint": "The word deafening describes a loud sound, yet silence has no sound.",
+    "tags": ["grammar", "figurative-language"]
   },
   {
     "id": "reading-8-0028",
     "subject": "reading",
     "grade": 8,
     "kind": "vocab",
-    "prompt": "The twins are identical, so it is hard to tell them apart. What does identical mean?",
-    "choices": ["very different", "much older", "far apart", "exactly alike"],
-    "answer": "exactly alike",
-    "hint": "Hard to tell apart is a clue.",
-    "tags": ["vocab-in-context", "context-clues"]
+    "prompt": "What does \"coherent\" mean in this sentence? Her coherent explanation made the difficult experiment easy to follow.",
+    "choices": ["clear and logically connected", "confusing", "lengthy", "secretive"],
+    "answer": "clear and logically connected",
+    "hint": "The experiment became easy to follow.",
+    "tags": ["vocab", "context"]
   },
   {
     "id": "reading-8-0029",
     "subject": "reading",
     "grade": 8,
     "kind": "mainidea",
-    "prompt": "What is the main idea of this passage about kites?",
-    "passage": "Kites need wind to rise, but too much wind can tear them. The best days for flying are breezy but calm. Check the weather before you head to the park.",
+    "prompt": "Which claim does the author's evidence support?",
     "choices": [
-      "Choose a breezy, calm day for kite flying.",
-      "Kites fly best in storms.",
-      "Parks ban all kites.",
-      "Weather reports are always wrong."
+      "Talent has no effect on success.",
+      "Thoughtful practice matters more than natural talent.",
+      "Casual play is the best way to improve.",
+      "Researchers disagree about practice."
     ],
-    "answer": "Choose a breezy, calm day for kite flying.",
-    "hint": "Which advice does the passage give?",
-    "tags": ["main-idea"]
+    "answer": "Thoughtful practice matters more than natural talent.",
+    "hint": "Read the final sentence.",
+    "tags": ["mainidea", "claim-and-evidence"],
+    "passage": "Many people think elite athletes are simply born with unusual talent, but researchers who study expertise describe a different picture. They find that top performers typically engage in deliberate practice: focused sessions aimed at specific weaknesses, with immediate feedback. An hour of such practice can be worth more than several hours of casual play. Talent may give a small edge, but sustained, thoughtful effort usually decides who reaches the top."
   },
   {
     "id": "reading-8-0030",
     "subject": "reading",
     "grade": 8,
     "kind": "grammar",
-    "prompt": "Which word is spelled correctly?",
-    "choices": ["neccessary", "necessary", "necesary", "necessery"],
-    "answer": "necessary",
-    "hint": "Say it slowly, one part at a time.",
-    "tags": ["grammar", "spelling"]
+    "prompt": "Calling a very strong swimmer \"a real Poseidon\" is an example of",
+    "choices": ["a simile", "alliteration", "an allusion", "onomatopoeia"],
+    "answer": "an allusion",
+    "hint": "It refers to a well-known figure from myths.",
+    "tags": ["grammar", "figurative-language"]
   },
   {
     "id": "reading-8-0031",
     "subject": "reading",
     "grade": 8,
     "kind": "vocab",
-    "prompt": "The detective's explanation was logical, and it made sense. What does logical mean?",
-    "choices": ["full of jokes", "very long", "clear and sensible", "hard to hear"],
-    "answer": "clear and sensible",
-    "hint": "Look at the end of the sentence.",
-    "tags": ["vocab-in-context", "context-clues"]
+    "prompt": "What does \"obscure\" mean in this sentence? The obscure trail was hidden by ferns, and few hikers had ever found it.",
+    "choices": ["famous", "wide and smooth", "paved", "not well known"],
+    "answer": "not well known",
+    "hint": "Few hikers had found it.",
+    "tags": ["vocab", "context"]
   },
   {
     "id": "reading-8-0032",
     "subject": "reading",
     "grade": 8,
     "kind": "mainidea",
-    "prompt": "What is the main idea of this passage about soccer?",
-    "passage": "On the soccer field, no one player can do everything. Passing the ball helps the team reach the goal. Players who share the ball win more games.",
+    "prompt": "What does the passage suggest about the bucket brigade's influence?",
     "choices": [
-      "Soccer is played only in parks.",
-      "The fastest player should keep the ball.",
-      "Goals are easy to score.",
-      "Teams do better when players work together."
+      "It showed towns that organized, shared efforts protect communities.",
+      "It proved that wells are unsafe.",
+      "It taught towns to avoid fires.",
+      "It convinced neighbors to stay indoors."
     ],
-    "answer": "Teams do better when players work together.",
-    "hint": "Look at what passing and sharing have in common.",
-    "tags": ["main-idea"]
+    "answer": "It showed towns that organized, shared efforts protect communities.",
+    "hint": "Read the last two sentences.",
+    "tags": ["mainidea", "inference"],
+    "passage": "In colonial towns, a fire often meant that every resident joined a bucket brigade: two lines of neighbors passing leather buckets from a well to the blaze and empty buckets back. The system was slow and tiring, yet it worked because everyone took part. The experience convinced many towns to pool money for the first organized fire companies. Today's fire departments grew from that early lesson that safety is a shared responsibility."
   },
   {
     "id": "reading-8-0033",
     "subject": "reading",
     "grade": 8,
     "kind": "grammar",
-    "prompt": "Which sentence uses the past tense correctly?",
+    "prompt": "Which sentence is a comma splice?",
     "choices": [
-      "Yesterday, we swam in the lake.",
-      "Yesterday, we swimmed in the lake.",
-      "Yesterday, we swum in the lake.",
-      "Yesterday, we swim in the lake."
+      "The wind picked up, and the boats headed for shore.",
+      "The wind picked up, the boats headed for shore.",
+      "The wind picked up; the boats headed for shore.",
+      "When the wind picked up, the boats headed for shore."
     ],
-    "answer": "Yesterday, we swam in the lake.",
-    "hint": "Yesterday tells you the action is over.",
-    "tags": ["grammar", "verb-tense"]
+    "answer": "The wind picked up, the boats headed for shore.",
+    "hint": "Two complete thoughts are joined by only a comma.",
+    "tags": ["grammar", "sentences"]
   },
   {
     "id": "reading-8-0034",
     "subject": "reading",
     "grade": 8,
     "kind": "vocab",
-    "prompt": "We must conserve water during the dry summer. What does conserve mean?",
-    "choices": ["waste", "save", "hide", "sell"],
-    "answer": "save",
-    "hint": "Dry summers mean we need to be careful.",
-    "tags": ["vocab-in-context", "context-clues"]
+    "prompt": "What does \"replicate\" mean in this sentence? Scientists must be able to replicate an experiment to trust its results.",
+    "choices": ["hide", "rename", "repeat or copy exactly", "predict"],
+    "answer": "repeat or copy exactly",
+    "hint": "Trust comes from getting the same result again.",
+    "tags": ["vocab", "context"]
   },
   {
     "id": "reading-8-0035",
     "subject": "reading",
     "grade": 8,
     "kind": "mainidea",
-    "prompt": "What is the main idea of this passage about cactus plants?",
-    "passage": "Cactus plants live where rain is rare. They store water in thick stems. Their spines also give shade and keep thirsty animals away.",
+    "prompt": "What does the example about urchins illustrate?",
     "choices": [
-      "Cactus spines are used for drinking.",
-      "Rain falls every day in the desert.",
-      "Cactus plants have features that help them live in dry places.",
-      "Thin stems store the most water."
+      "Urchins are the most helpful animals in the sea.",
+      "Kelp grows only where urchins live.",
+      "Fish prefer barren seafloor.",
+      "A change in one species can affect an entire ecosystem."
     ],
-    "answer": "Cactus plants have features that help them live in dry places.",
-    "hint": "Think about why each feature is useful.",
-    "tags": ["main-idea"]
+    "answer": "A change in one species can affect an entire ecosystem.",
+    "hint": "Read the last sentence.",
+    "tags": ["mainidea", "main-idea"],
+    "passage": "Giant kelp can grow as much as two feet in a single day, forming underwater forests that sway with the current. Fish, snails, and urchins all find shelter among the fronds. When urchin numbers explode, they can eat the kelp down to its base, leaving barren seafloor. This chain of cause and effect shows why removing one species from an ecosystem can upset many others."
   },
   {
     "id": "reading-8-0036",
     "subject": "reading",
     "grade": 8,
     "kind": "grammar",
-    "prompt": "Pick the word that fits: The books on the shelf ___ mine.",
-    "choices": ["is", "am", "be", "are"],
-    "answer": "are",
-    "hint": "The subject is books. That is more than one.",
-    "tags": ["grammar", "agreement"]
+    "prompt": "Which sentence uses \"whom\" correctly?",
+    "choices": [
+      "To whom did you give the map?",
+      "To who did you give the map?",
+      "Whom gave the map to you?",
+      "Whom is giving the map?"
+    ],
+    "answer": "To whom did you give the map?",
+    "hint": "Whom follows a word like to and receives the action.",
+    "tags": ["grammar", "pronouns"]
   },
   {
     "id": "reading-8-0037",
     "subject": "reading",
     "grade": 8,
     "kind": "vocab",
-    "prompt": "The kitten was agile and jumped from shelf to shelf. What does agile mean?",
-    "choices": ["quick and graceful", "sleepy and slow", "loud and angry", "small and gray"],
-    "answer": "quick and graceful",
-    "hint": "Think about how cats jump.",
-    "tags": ["vocab-in-context", "context-clues"]
+    "prompt": "What does \"ardent\" mean in this sentence? An ardent supporter of the school team, he attended every game.",
+    "choices": ["casual and distant", "passionate and devoted", "uncertain", "puzzled"],
+    "answer": "passionate and devoted",
+    "hint": "He attended every game.",
+    "tags": ["vocab", "context"]
   },
   {
     "id": "reading-8-0038",
     "subject": "reading",
     "grade": 8,
     "kind": "mainidea",
-    "prompt": "What is the main idea of this passage about the moon?",
-    "passage": "The moon looks different from night to night. It does not change shape, though. We just see different amounts of its sunlit side as it travels around Earth.",
+    "prompt": "What is the purpose of the comparison to a test score?",
     "choices": [
-      "The moon grows and shrinks each week.",
-      "The moon seems to change because we see different parts of its lit side.",
-      "The moon makes its own light.",
-      "Earth blocks the moon every night."
+      "to explain how tests are graded",
+      "to argue that weather is unimportant",
+      "to show that one event does not reveal a long-term pattern",
+      "to prove that climate changes weekly"
     ],
-    "answer": "The moon seems to change because we see different parts of its lit side.",
-    "hint": "Read the second sentence closely.",
-    "tags": ["main-idea"]
+    "answer": "to show that one event does not reveal a long-term pattern",
+    "hint": "Think about what a single score cannot tell you.",
+    "tags": ["mainidea", "author-s-purpose"],
+    "passage": "Weather and climate are often confused, but they describe different spans of time. Weather is what the atmosphere is doing right now: sunshine this afternoon, a shower tonight. Climate is the pattern of weather in a region over many years. A single cold week does not change a region's climate, just as one high test score does not define a student's ability."
   },
   {
     "id": "reading-8-0039",
     "subject": "reading",
     "grade": 8,
     "kind": "grammar",
-    "prompt": "Which word is an adjective in this sentence? The tiny frog hopped away.",
-    "choices": ["frog", "hopped", "tiny", "away"],
-    "answer": "tiny",
-    "hint": "It tells what kind of frog.",
-    "tags": ["grammar", "parts-of-speech"]
+    "prompt": "Which sentence contains an infinitive phrase?",
+    "choices": [
+      "She trained daily in the cold.",
+      "She won the regatta.",
+      "The trained sailors won the regatta.",
+      "She trained daily to win the regatta."
+    ],
+    "answer": "She trained daily to win the regatta.",
+    "hint": "An infinitive is the word to plus a verb.",
+    "tags": ["grammar", "phrases"]
   },
   {
     "id": "reading-8-0040",
     "subject": "reading",
     "grade": 8,
     "kind": "vocab",
-    "prompt": "The judge was impartial and did not take sides. What does impartial mean?",
-    "choices": ["angry", "late", "funny", "fair"],
-    "answer": "fair",
-    "hint": "Not taking sides is a clue.",
-    "tags": ["vocab-in-context", "context-clues"]
+    "prompt": "What does \"comprehensive\" mean in this sentence? The museum offers a comprehensive guide covering every exhibit in the building.",
+    "choices": [
+      "complete, including everything",
+      "short and simple",
+      "out of date",
+      "hard to read"
+    ],
+    "answer": "complete, including everything",
+    "hint": "It covers every exhibit.",
+    "tags": ["vocab", "context"]
   },
   {
     "id": "reading-8-0041",
