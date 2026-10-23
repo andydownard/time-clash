@@ -112,15 +112,15 @@
     "subject": "reading",
     "grade": 9,
     "kind": "vocab",
-    "prompt": "What does \"laconic\" mean? \"The laconic guide answered every question in two or three words.\"",
+    "prompt": "What does \"eloquent\" mean? \"The eloquent speaker moved the crowd with graceful, powerful words.\"",
     "choices": [
-      "rude and angry",
-      "using very few words",
-      "long-winded",
-      "cheerful and loud"
+      "afraid to speak aloud",
+      "slow to finish a talk",
+      "rude to the crowd",
+      "skilled at speaking well"
     ],
-    "answer": "using very few words",
-    "hint": "Count the words in the guide's answers.",
+    "answer": "skilled at speaking well",
+    "hint": "Think of words that move a crowd.",
     "tags": [
       "vocab"
     ]
@@ -130,15 +130,15 @@
     "subject": "reading",
     "grade": 9,
     "kind": "vocab",
-    "prompt": "What does \"enigmatic\" mean? \"The painting's enigmatic smile left viewers guessing at its meaning.\"",
+    "prompt": "What does \"audacious\" mean? \"The audacious climber tried a route no one else dared to attempt.\"",
     "choices": [
-      "cheerful and bright",
-      "simple and plain",
-      "mysterious and puzzling",
-      "faded and old"
+      "slow and careful",
+      "tired and weak",
+      "bold and daring",
+      "proud of others"
     ],
-    "answer": "mysterious and puzzling",
-    "hint": "Viewers could not figure it out.",
+    "answer": "bold and daring",
+    "hint": "Others did not dare the route.",
     "tags": [
       "vocab"
     ]
@@ -148,15 +148,15 @@
     "subject": "reading",
     "grade": 9,
     "kind": "vocab",
-    "prompt": "What does \"alleviate\" mean? \"A cool cloth can alleviate the sting of a sunburn.\"",
+    "prompt": "What does \"mundane\" mean? \"After weeks of travel, she longed for the mundane routine of home.\"",
     "choices": [
-      "cause or increase",
-      "ease or lessen",
-      "hide or cover",
-      "measure or record"
+      "thrilling and risky",
+      "strange and foreign",
+      "ordinary and everyday",
+      "rich and fancy"
     ],
-    "answer": "ease or lessen",
-    "hint": "Think about what a cool cloth does for pain.",
+    "answer": "ordinary and everyday",
+    "hint": "Think of daily life at home.",
     "tags": [
       "vocab"
     ]
@@ -166,15 +166,15 @@
     "subject": "reading",
     "grade": 9,
     "kind": "vocab",
-    "prompt": "What does \"tangible\" mean? \"The team wanted tangible proof, such as a photo, not just a rumor.\"",
+    "prompt": "What does \"tenacious\" mean? \"The tenacious terrier would not let go of its toy, however hard we tugged.\"",
     "choices": [
-      "secret and delicate",
-      "unlikely to last",
-      "hard to explain",
-      "real enough to touch or see"
+      "holding on firmly",
+      "easily distracted",
+      "gentle and calm",
+      "small and quick"
     ],
-    "answer": "real enough to touch or see",
-    "hint": "A photo is something you can hold up.",
+    "answer": "holding on firmly",
+    "hint": "It would not let go.",
     "tags": [
       "vocab"
     ]
@@ -238,15 +238,15 @@
     "subject": "reading",
     "grade": 9,
     "kind": "vocab",
-    "prompt": "The Latin root \"bene\" means \"good.\" A benefactor is most likely a person who...",
+    "prompt": "The Latin root \"port\" means \"carry.\" A porter is most likely a person who...",
     "choices": [
-      "finds fault with others",
-      "travels far from others",
-      "does good for others",
-      "keeps secrets from others"
+      "sings in a choir",
+      "carries bags for others",
+      "repairs old shoes",
+      "counts coins"
     ],
-    "answer": "does good for others",
-    "hint": "Pair \"good\" with the word for someone who acts.",
+    "answer": "carries bags for others",
+    "hint": "Pair \"carry\" with the word for someone who acts.",
     "tags": [
       "vocab",
       "roots"
@@ -751,15 +751,15 @@
     "subject": "reading",
     "grade": 9,
     "kind": "vocab",
-    "prompt": "What does \"cogent\" mean? \"Her cogent argument was clear, logical, and hard to dispute.\"",
+    "prompt": "What does \"succinct\" mean? \"Her succinct summary covered the whole chapter in three sentences.\"",
     "choices": [
-      "long and rambling",
-      "emotional but weak",
-      "loud and rude",
-      "convincing and well reasoned"
+      "long and detailed",
+      "brief and to the point",
+      "vague and confusing",
+      "dull and flat"
     ],
-    "answer": "convincing and well reasoned",
-    "hint": "Think about an argument that holds together.",
+    "answer": "brief and to the point",
+    "hint": "Count the sentences.",
     "tags": [
       "vocab"
     ]
@@ -769,15 +769,15 @@
     "subject": "reading",
     "grade": 9,
     "kind": "vocab",
-    "prompt": "What does \"capricious\" mean? \"The capricious breeze changed direction every few seconds.\"",
+    "prompt": "What does \"pensive\" mean? \"The pensive boy sat by the window, deep in thought.\"",
     "choices": [
-      "changing without warning",
-      "faint and distant",
-      "cool and damp",
-      "steady and strong"
+      "full of energy",
+      "easily frightened",
+      "quick to laugh",
+      "quietly thinking"
     ],
-    "answer": "changing without warning",
-    "hint": "The breeze would not stay on one course.",
+    "answer": "quietly thinking",
+    "hint": "He sat still by the window.",
     "tags": [
       "vocab"
     ]
@@ -841,15 +841,15 @@
     "subject": "reading",
     "grade": 9,
     "kind": "vocab",
-    "prompt": "What does \"austere\" mean? \"The monastery's austere rooms held only a bed and a candle.\"",
+    "prompt": "What does \"gregarious\" mean? \"The gregarious host chatted with every guest at the party.\"",
     "choices": [
-      "warm and cozy",
-      "grand and colorful",
-      "plain and strict",
-      "crowded and noisy"
+      "fond of company",
+      "tired of talking",
+      "quick to leave",
+      "careful with money"
     ],
-    "answer": "plain and strict",
-    "hint": "Look at how little the rooms contained.",
+    "answer": "fond of company",
+    "hint": "Notice that he talked with everyone.",
     "tags": [
       "vocab"
     ]
@@ -1214,15 +1214,15 @@
     "subject": "reading",
     "grade": 9,
     "kind": "vocab",
-    "prompt": "What does \"fastidious\" mean? \"The fastidious curator wiped every frame and straightened every label.\"",
+    "prompt": "What does \"aloof\" mean? \"The aloof new student ate alone and rarely joined the talk.\"",
     "choices": [
-      "careless and rushed",
-      "generous with praise",
-      "very picky about details",
-      "easily bored"
+      "warm and chatty",
+      "distant and reserved",
+      "curious about all",
+      "nervous about tests"
     ],
-    "answer": "very picky about details",
-    "hint": "Think about someone who fusses over tiny things.",
+    "answer": "distant and reserved",
+    "hint": "He kept apart from everyone.",
     "tags": [
       "vocab"
     ]

@@ -890,15 +890,15 @@
     "subject": "reading",
     "grade": 11,
     "kind": "vocab",
-    "prompt": "The root \"spec\" means \"to look.\" What does \"introspection\" most likely mean?",
+    "prompt": "The root \"gen\" means \"birth.\" What does \"genesis\" most likely mean?",
     "choices": [
-      "looking into one's own thoughts",
-      "looking out for signs of danger",
-      "looking back over long history",
-      "looking after someone's home"
+      "a final ending",
+      "a hidden danger",
+      "a beginning or origin",
+      "a sudden change"
     ],
-    "answer": "looking into one's own thoughts",
-    "hint": "The prefix points inward.",
+    "answer": "a beginning or origin",
+    "hint": "Birth is where something starts.",
     "tags": [
       "vocab-in-context",
       "original"

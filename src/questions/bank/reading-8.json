@@ -136,15 +136,15 @@
     "subject": "reading",
     "grade": 8,
     "kind": "vocab",
-    "prompt": "What does \"volatile\" mean in this sentence? Weather on the mountain is volatile, shifting from sunshine to hail within an hour.",
+    "prompt": "What does \"inevitable\" mean in this sentence? Rain was inevitable, since dark clouds covered the whole sky.",
     "choices": [
-      "reliably calm",
-      "easy to forecast",
-      "likely to change suddenly",
-      "pleasantly mild"
+      "easy to prevent",
+      "impossible to avoid",
+      "very unlikely",
+      "hard to see"
     ],
-    "answer": "likely to change suddenly",
-    "hint": "It can shift within an hour.",
+    "answer": "impossible to avoid",
+    "hint": "Could anyone stop the rain with that sky?",
     "tags": ["vocab", "context"]
   },
   {
@@ -532,10 +532,10 @@
     "subject": "reading",
     "grade": 8,
     "kind": "vocab",
-    "prompt": "What does \"ardent\" mean in this sentence? An ardent supporter of the school team, he attended every game.",
-    "choices": ["casual and distant", "passionate and devoted", "uncertain", "puzzled"],
-    "answer": "passionate and devoted",
-    "hint": "He attended every game.",
+    "prompt": "What does \"prudent\" mean in this sentence? It was prudent to check the weather before the long hike.",
+    "choices": ["careless and hasty", "rude and loud", "tired and weak", "wise and careful"],
+    "answer": "wise and careful",
+    "hint": "Checking first shows good judgment.",
     "tags": ["vocab", "context"]
   },
   {

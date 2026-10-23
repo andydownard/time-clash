@@ -1108,10 +1108,10 @@
     "subject": "reading",
     "grade": 6,
     "kind": "vocab",
-    "prompt": "What does \"discern\" mean in this sentence? The bright glare made it hard to discern the shape of the dock.",
-    "choices": ["paint", "build", "order", "see clearly"],
-    "answer": "see clearly",
-    "hint": "Glare makes shapes hard to make out.",
+    "prompt": "What does \"diligent\" mean in this sentence? Diligent students finish their homework before dinner every night.",
+    "choices": ["lazy and slow", "loud and silly", "careful and hard-working", "shy and quiet"],
+    "answer": "careful and hard-working",
+    "hint": "Think about students who finish their work every night.",
     "tags": ["vocab", "context"]
   },
   {
@@ -1119,10 +1119,10 @@
     "subject": "reading",
     "grade": 6,
     "kind": "vocab",
-    "prompt": "What does \"reticent\" mean in this sentence? Unlike her talkative brother, Tess was reticent and rarely spoke.",
-    "choices": ["quiet and reserved", "loud and cheerful", "angry and rude", "quick and clever"],
-    "answer": "quiet and reserved",
-    "hint": "The word unlike tells you she is the opposite of her brother.",
+    "prompt": "What does \"serene\" mean in this sentence? The lake was serene at dawn, with no waves and not a sound.",
+    "choices": ["rough and stormy", "calm and peaceful", "dark and cold", "busy and loud"],
+    "answer": "calm and peaceful",
+    "hint": "Look at what the lake is not doing.",
     "tags": ["vocab", "context"]
   },
   {
