@@ -43,12 +43,12 @@ test: `npm test` · lint: `npm run lint` · typecheck: `npm run typecheck` · bu
 2. **Collecting data from children.** Keep all progress in the browser (`localStorage`). No analytics, no third-party scripts, no cookies, no ads, no sign-in. Children's names never leave the device.
 3. **The other player seeing the answer.** The whole board is covered while a reload question is up (`INJECTION`-style leak of hidden state, `SERVER` in Phase 4).
 4. **Wrong or off-level questions.** Every question has a checked answer key and a grade. `npm run check:questions` runs in CI.
-5. **Sound that blasts, cannot be skipped, or autoplays.** Sound starts only after a tap. Every voice line has captions. Skip, Replay, and Mute always work.
+5. **Sound that blasts, cannot be skipped, or autoplays.** Sound starts only after a tap. Every voice line has captions. Skip, Replay, and Mute always work. Question text is never spoken: the owner removed read-aloud and audio questions on 2026-10-23, so every player reads the question, in every grade.
 6. **Hard-to-use controls.** Tap targets under 56px, text under 20px, or color-only cues fail review.
 7. **Silent drift between rules and art.** Game rules live in `src/game/` with no Phaser imports and are unit tested. Phaser only draws and plays sound.
 
 ## Shipping gates (a feature must pass all three)
-- **Gate 1: First five minutes.** A new family starts a match in 60 seconds with no reading help. The intro voice teaches the rest.
+- **Gate 1: First five minutes.** A new family starts a match in 60 seconds. The intro voice (with captions) teaches the rules. The reload questions are read by the player. There is no read-aloud for questions (owner decision, 2026-10-23).
 - **Gate 2: Always fun.** A wrong answer never blocks play. A player always gets to reload. Fast answers earn bonus scrap, slow ones lose nothing.
 - **Gate 3: Learning is the game.** The reload question is the heart of the loop. Do not add features that skip, shrink, or hide it unless Andy approves.
 
@@ -69,7 +69,7 @@ test: `npm test` · lint: `npm run lint` · typecheck: `npm run typecheck` · bu
 - **Config in one place.** Balance numbers live in `src/game/config.ts`. No magic numbers elsewhere.
 - **Audio.** All sound effects and voice are original or CC0. Keep a `public/audio/CREDITS.md` with the source and license of each file.
 - **Art.** All art is original (from the Claude Design handoff or made for this project). No real brand logos or copyrighted characters.
-- **Accessibility.** Keyboard play (arrow keys, Space to fire). Captions on all speech. Reduced-motion support. Contrast 4.5:1 body, 3:1 large UI. No color-only meaning.
+- **Accessibility.** Keyboard play (arrow keys, Space to fire). Captions on all speech (the intro, Chrono and the wipeout lines). Questions have no read-aloud and no listen-only items: every question is answerable by reading. Reduced-motion support. Contrast 4.5:1 body, 3:1 large UI. No color-only meaning.
 
 ## Refactoring constraints
 Allowed: splitting files, extracting shared styles, renaming internals, adding types, adding tests, reorganizing folders.
@@ -78,12 +78,13 @@ Not allowed without Andy:
 - Removing the pass-the-mouse cover or the 2-shots-then-reload turn shape (a right answer earns one Power Shot).
 - Adding network calls, analytics, ads, accounts, or purchases.
 - Making any wipeout, hit, or message scary.
+- Adding back question read-aloud (a Hear it button on the reload card) or any question that can only be answered by hearing. The owner removed both on purpose on 2026-10-23.
 
 ## Pattern detection
 When you find one of these, check the files you touched for every instance:
 1. Question text visible while the other player can see the screen.
 2. Audio that plays before a user tap.
-3. Speech without a caption.
+3. Speech without a caption. Any code that speaks question text (it must not exist).
 4. Missing negative-path tests (illegal turn moves, a third shot, a skipped reload).
 5. Unseeded randomness in game logic.
 6. Phaser imports inside `src/game/`.
@@ -99,18 +100,18 @@ When you find one of these, check the files you touched for every instance:
 | Common good | Works on a shared family computer or school iPad. No account, no install, works offline after first load. |
 | Subsidiarity | Parents and teachers pick the grade and subject. The game never judges the kid. |
 | Solidarity | Younger and older siblings can play fairly together. Different grade levels per side is the core feature. |
-| Preferential option for the vulnerable | A pre-reader, a slow reader, or a child with one free hand can play. Voice, captions, large targets, and keyboard or touch input all work. |
+| Preferential option for the vulnerable | A slow reader or a child with one free hand can play. Captions, large targets, plain words, hints, and keyboard or touch input all work. A pre-reader plays with a helper reading the question, because the owner removed question read-aloud on 2026-10-23 (all grades must read). Picture cues on the HUD and the intro voice still help. |
 
 ## Regressions
 Check this list before coding. If your change touches a listed area, read the existing code first.
 
 | # | What broke | Rule/test that prevents it |
 |---|---|---|
-| 1 | A sight-word item offered homophones (see and sea), so a child who heard the word could be marked wrong. | `src/questions/homophones.ts` rule in `check:questions`. `tests/questions/checkBank.test.ts` homophone cases. |
+| 1 | A sight-word item offered homophones (see and sea), so a child who heard the word could be marked wrong. (Sight-word listening items were removed on 2026-10-23. The rule now guards reading word-choice items.) | `src/questions/homophones.ts` rule in `check:questions`. `tests/questions/checkBank.test.ts` homophone cases. |
 | 2 | `.tc-row { display: flex }` beat the `hidden` attribute, so Setup showed "Yes, clear it" at all times. | Global `[hidden]` rule in `ui.css`. `tests/ui/styles.test.ts`, `e2e/setup.spec.ts` (confirm buttons hidden). |
 | 3 | The ? and gear buttons covered the Team Past card. The HUD had a second ? with the same test id. The turn banner and tumble bubble covered cards and health tags. The aim panel sat on a base. | `e2e/layout.spec.ts` and `e2e/portrait.spec.ts` geometry checks. `tests/ui/hud.test.ts` (no HUD ?). `tests/ui/styles.test.ts` (room tokens). `bubbleAnchor` test in `tests/scenes/battle/geometry.test.ts`. |
 | 4 | One Escape closed Settings and also paused the game. The pause panel did not trap Tab, so Fire stayed reachable. | `tests/scenes/chrome.test.ts`, `tests/scenes/battle/pauseUi.test.ts`. |
-| 5 | The question card focused answer 1 (it looked picked). A wrong answer flashed away in 1.8 s and never showed the hint. Reading questions had no read-aloud. There was no Mute on covers. | `tests/ui/covers.test.ts`, `tests/questions/spoken.test.ts`, `tests/scenes/battle/flow.test.ts`. |
+| 5 | The question card focused answer 1 (it looked picked). A wrong answer flashed away in 1.8 s and never showed the hint. Reading questions had no read-aloud (history: Hear it was added to fix this, then the owner removed read-aloud and audio questions on purpose on 2026-10-23, so do not add it back without Andy). There was no Mute on covers. | `tests/ui/covers.test.ts` (no speaker control, no speech for question text), `tests/questions/readOnly.test.ts` (no sightword or audioWord in the bank), `tests/scenes/battle/flow.test.ts`. |
 | 6 | One 8 s fast limit for every question, so careful readers rarely earned the bonus. | `tests/game/reload.test.ts` (`fastWindowMs`). |
 | 7 | A fast voice dropped the last captions. Sound stayed off after an iPad interruption. Speech was never primed in the tap. | `tests/audio/robustness.test.ts`, `tests/scenes/boot.test.ts`. |
 | 8 | Canvas labels drew under 20 px on iPad sizes. | `tests/scenes/battle/textScale.test.ts`, label check in `e2e/layout.spec.ts` and `e2e/portrait.spec.ts`. |

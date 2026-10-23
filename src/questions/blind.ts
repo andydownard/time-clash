@@ -12,7 +12,6 @@ export type BlindQuestion = {
   prompt: string;
   choices: string[];
   passage?: string;
-  audioWord?: string;
 };
 
 export type Pick = { id: string; choice: string };
@@ -52,7 +51,6 @@ export function exportCell(questions: readonly Question[], cellName: string): Bl
         choices: [...q.choices],
       };
       if (q.passage !== undefined) out.passage = q.passage;
-      if (q.audioWord !== undefined) out.audioWord = q.audioWord;
       return out;
     });
 }

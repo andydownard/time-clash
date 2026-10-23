@@ -1,9 +1,8 @@
 // Spoken clips in a real browser, from the SAME origin as the game. A real app server (the
 // production one, app-server/) runs on an ephemeral port. It serves the real built game
 // (node_modules/.e2e-dist, made by playwright.config.ts with VITE_VOICE=on) and a fixture clip
-// database (one real m4a). The reload "Hear it" button must ask the page's own origin for
-// /v1/clips/<id> with a Range request, and fall back quietly when the clip is missing.
-// This spec starts its own server (not the shared one) so it can watch the requests.
+// database (one real m4a). Question text is not spoken any more, so the reload card must make
+// no clip request at all. This spec starts its own server (not the shared one) so it can watch the requests.
 import { readFileSync } from 'node:fs';
 import type { Server } from 'node:http';
 import type { AddressInfo } from 'node:net';
@@ -77,64 +76,17 @@ async function toReloadQuestion(page: import('@playwright/test').Page) {
   await expect(tid(page, 'reload-modal')).toBeVisible({ timeout: 45_000 });
 }
 
-test("Hear it asks the page's own origin for /v1/clips/<id> with a Range request", async ({
-  page,
-  browserName,
-}) => {
-  // Real audio elements, kept muted so the test makes no sound.
-  await page.addInitScript(() => {
-    const Real = window.Audio;
-    window.Audio = function (src?: string) {
-      const el = new Real(src);
-      el.muted = true;
-      return el;
-    } as unknown as typeof Audio;
-  });
+test('the question card has no Hear it and asks the server for no clip', async ({ page }) => {
   const outside: string[] = [];
   page.on('request', (r) => {
     if (!r.url().startsWith(origin)) outside.push(r.url());
   });
   await toReloadQuestion(page);
-  // The intro never asks for a clip (it has its own files), and nothing yet for the question.
+  // The owner removed read-aloud for questions (2026-10-23): every player reads the question.
+  await expect(tid(page, 'reload-speak')).toHaveCount(0);
+  await expect(tid(page, 'reload-modal').getByRole('button', { name: /hear|listen/i })).toHaveCount(0);
+  await page.waitForTimeout(1_000);
   expect(clipRequests()).toEqual([]);
-
-  await tid(page, 'reload-speak').click();
-  await expect.poll(() => clipRequests().length, { timeout: 10_000 }).toBeGreaterThan(0);
-  expect(clipRequests()[0]!.url).toMatch(/^\/v1\/clips\/t:[0-9a-f]{16}$/);
-  // Media elements ask for bytes by Range (Chromium and Safari on Apple systems do; iPad Safari
-  // insists on it). WebKit on Linux (the CI build, GStreamer) may fetch the whole file with no
-  // Range header, so there we only prove the clip was requested.
-  if (browserName === 'chromium' || process.platform === 'darwin') {
-    expect(
-      clipRequests().some((s) => /^bytes=\d+-\d*$/.test(s.range ?? '')),
-      'a Range request',
-    ).toBe(true);
-  }
-  // Nothing went to any other origin, and the card still works.
   expect(outside.filter((u) => !u.startsWith('data:') && !u.startsWith('blob:'))).toEqual([]);
-  await expect(tid(page, 'reload-modal')).toBeVisible();
-});
-
-test('a missing clip (404) falls back quietly and is not asked for twice', async ({
-  page,
-  browserName,
-}) => {
-  haveClips = false;
-  await toReloadQuestion(page);
-  const settle = () =>
-    page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
-  await tid(page, 'reload-speak').click();
-  await expect.poll(() => clipRequests().length, { timeout: 10_000 }).toBeGreaterThan(0);
-  // The game gives up on a clip at once on an error, or after CLIP_START_TIMEOUT_MS (1.5 s) if the
-  // browser reports nothing. Wait past that, then the miss is remembered.
-  await page.waitForTimeout(2_500);
-  await settle();
-  // A browser may probe a few times for the one clip. Asking again must add nothing.
-  const afterFirst = clipRequests().length;
-  await tid(page, 'reload-speak').click();
-  await settle();
-  // Safari reports a failed media request late, after a short line has already ended, so the
-  // miss is only guaranteed to be remembered in Chromium. In every browser the card must still work.
-  if (browserName === 'chromium') expect(clipRequests().length).toBe(afterFirst);
   await expect(tid(page, 'reload-modal')).toBeVisible();
 });

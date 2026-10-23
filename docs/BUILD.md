@@ -97,7 +97,7 @@ Camp, Deploy, and biomes arrive in Phase 2. In Phase 1 the Future base uses a fi
   "tags": ["pre-algebra", "linear-equations"]
 }
 ```
-- Reading K to 3: sight words and simple sentences (use the public Dolch and Fry lists). `kind: "sightword"` with `audioWord` text for the speak button.
+- Reading K to 3: printed words and simple sentences (use the public Dolch and Fry lists), always answerable by reading. (The `sightword` kind and its speak button were removed on 2026-10-23.)
 - Reading 4 to 12: vocabulary in context, main idea, and grammar. Write original questions only.
 - Math K to 12: counting, add and subtract, times tables, fractions, ratios, pre-algebra, algebra, geometry, trig basics.
 - At least 40 questions per grade per subject before launch. Phase 1 may ship with 15 per grade for grades K, 2, 5, and 8, with a generic fallback to the nearest grade.

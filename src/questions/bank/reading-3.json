@@ -1,53 +1,5 @@
 [
   {
-    "id": "reading-3-0001",
-    "subject": "reading",
-    "grade": 3,
-    "kind": "sightword",
-    "prompt": "Tap the word you hear.",
-    "choices": ["about", "above", "abort", "around"],
-    "answer": "about",
-    "hint": "It starts with the letter a and means near or on the subject of.",
-    "tags": ["dolch"],
-    "audioWord": "about"
-  },
-  {
-    "id": "reading-3-0002",
-    "subject": "reading",
-    "grade": 3,
-    "kind": "sightword",
-    "prompt": "Tap the word you hear.",
-    "choices": ["butter", "better", "batter", "bitter"],
-    "answer": "better",
-    "hint": "It ends with er and means more good.",
-    "tags": ["dolch"],
-    "audioWord": "better"
-  },
-  {
-    "id": "reading-3-0003",
-    "subject": "reading",
-    "grade": 3,
-    "kind": "sightword",
-    "prompt": "Tap the word you hear.",
-    "choices": ["brink", "ring", "bring", "brings"],
-    "answer": "bring",
-    "hint": "You do this when you take something with you to a place.",
-    "tags": ["dolch"],
-    "audioWord": "bring"
-  },
-  {
-    "id": "reading-3-0004",
-    "subject": "reading",
-    "grade": 3,
-    "kind": "sightword",
-    "prompt": "Tap the word you hear.",
-    "choices": ["marry", "cargo", "cherry", "carry"],
-    "answer": "carry",
-    "hint": "It starts with the sound k and you do it with your arms.",
-    "tags": ["dolch"],
-    "audioWord": "carry"
-  },
-  {
     "id": "reading-3-0005",
     "subject": "reading",
     "grade": 3,
@@ -57,54 +9,6 @@
     "answer": "sat",
     "hint": "It tells what the cat did in the past.",
     "tags": ["fill-in"]
-  },
-  {
-    "id": "reading-3-0006",
-    "subject": "reading",
-    "grade": 3,
-    "kind": "sightword",
-    "prompt": "Tap the word you hear.",
-    "choices": ["clear", "clean", "cream", "learn"],
-    "answer": "clean",
-    "hint": "It is the opposite of messy.",
-    "tags": ["dolch"],
-    "audioWord": "clean"
-  },
-  {
-    "id": "reading-3-0007",
-    "subject": "reading",
-    "grade": 3,
-    "kind": "sightword",
-    "prompt": "Tap the word you hear.",
-    "choices": ["dare", "drew", "draw", "raw"],
-    "answer": "draw",
-    "hint": "You do this with a pencil and paper.",
-    "tags": ["dolch"],
-    "audioWord": "draw"
-  },
-  {
-    "id": "reading-3-0008",
-    "subject": "reading",
-    "grade": 3,
-    "kind": "sightword",
-    "prompt": "Tap the word you hear.",
-    "choices": ["drank", "think", "brink", "drink"],
-    "answer": "drink",
-    "hint": "You do this with a cup of water.",
-    "tags": ["dolch"],
-    "audioWord": "drink"
-  },
-  {
-    "id": "reading-3-0009",
-    "subject": "reading",
-    "grade": 3,
-    "kind": "sightword",
-    "prompt": "Tap the word you hear.",
-    "choices": ["eight", "eighty", "eager", "weigh"],
-    "answer": "eight",
-    "hint": "It is a number. It comes after seven.",
-    "tags": ["dolch"],
-    "audioWord": "eight"
   },
   {
     "id": "reading-3-0010",
@@ -118,54 +22,6 @@
     "tags": ["fill-in"]
   },
   {
-    "id": "reading-3-0011",
-    "subject": "reading",
-    "grade": 3,
-    "kind": "sightword",
-    "prompt": "Tap the word you hear.",
-    "choices": ["fur", "fat", "far", "for"],
-    "answer": "far",
-    "hint": "It is the opposite of near.",
-    "tags": ["dolch"],
-    "audioWord": "far"
-  },
-  {
-    "id": "reading-3-0012",
-    "subject": "reading",
-    "grade": 3,
-    "kind": "sightword",
-    "prompt": "Tap the word you hear.",
-    "choices": ["fall", "fell", "pull", "full"],
-    "answer": "full",
-    "hint": "A cup with no room left is this.",
-    "tags": ["dolch"],
-    "audioWord": "full"
-  },
-  {
-    "id": "reading-3-0013",
-    "subject": "reading",
-    "grade": 3,
-    "kind": "sightword",
-    "prompt": "Tap the word you hear.",
-    "choices": ["grow", "glow", "grew", "crow"],
-    "answer": "grow",
-    "hint": "A seed does this and becomes a plant.",
-    "tags": ["dolch"],
-    "audioWord": "grow"
-  },
-  {
-    "id": "reading-3-0014",
-    "subject": "reading",
-    "grade": 3,
-    "kind": "sightword",
-    "prompt": "Tap the word you hear.",
-    "choices": ["held", "hold", "cold", "hole"],
-    "answer": "hold",
-    "hint": "You do this with a hand when you do not let go.",
-    "tags": ["dolch"],
-    "audioWord": "hold"
-  },
-  {
     "id": "reading-3-0015",
     "subject": "reading",
     "grade": 3,
@@ -175,54 +31,6 @@
     "answer": "goes",
     "hint": "It fits with she.",
     "tags": ["fill-in"]
-  },
-  {
-    "id": "reading-3-0016",
-    "subject": "reading",
-    "grade": 3,
-    "kind": "sightword",
-    "prompt": "Tap the word you hear.",
-    "choices": ["hunt", "hurry", "hut", "hurt"],
-    "answer": "hurt",
-    "hint": "It starts with h and means to feel an ouch.",
-    "tags": ["dolch"],
-    "audioWord": "hurt"
-  },
-  {
-    "id": "reading-3-0017",
-    "subject": "reading",
-    "grade": 3,
-    "kind": "sightword",
-    "prompt": "Tap the word you hear.",
-    "choices": ["keep", "peek", "deep", "kept"],
-    "answer": "keep",
-    "hint": "It means to hold on to something and not give it away.",
-    "tags": ["dolch"],
-    "audioWord": "keep"
-  },
-  {
-    "id": "reading-3-0018",
-    "subject": "reading",
-    "grade": 3,
-    "kind": "sightword",
-    "prompt": "Tap the word you hear.",
-    "choices": ["laughs", "laugh", "lunch", "loud"],
-    "answer": "laugh",
-    "hint": "It has gh in the middle. It sounds like laff.",
-    "tags": ["dolch"],
-    "audioWord": "laugh"
-  },
-  {
-    "id": "reading-3-0019",
-    "subject": "reading",
-    "grade": 3,
-    "kind": "sightword",
-    "prompt": "Tap the word you hear.",
-    "choices": ["night", "right", "light", "might"],
-    "answer": "light",
-    "hint": "A lamp gives off this.",
-    "tags": ["dolch"],
-    "audioWord": "light"
   },
   {
     "id": "reading-3-0020",
@@ -236,54 +44,6 @@
     "tags": ["fill-in"]
   },
   {
-    "id": "reading-3-0021",
-    "subject": "reading",
-    "grade": 3,
-    "kind": "sightword",
-    "prompt": "Tap the word you hear.",
-    "choices": ["myself", "herself", "yourself", "mystery"],
-    "answer": "myself",
-    "hint": "It means me and nobody else.",
-    "tags": ["dolch"],
-    "audioWord": "myself"
-  },
-  {
-    "id": "reading-3-0022",
-    "subject": "reading",
-    "grade": 3,
-    "kind": "sightword",
-    "prompt": "Tap the word you hear.",
-    "choices": ["ever", "never", "every", "nevers"],
-    "answer": "never",
-    "hint": "It means not at any time.",
-    "tags": ["dolch"],
-    "audioWord": "never"
-  },
-  {
-    "id": "reading-3-0023",
-    "subject": "reading",
-    "grade": 3,
-    "kind": "sightword",
-    "prompt": "Tap the word you hear.",
-    "choices": ["once", "own", "only", "lonely"],
-    "answer": "only",
-    "hint": "It means just one and no more.",
-    "tags": ["dolch"],
-    "audioWord": "only"
-  },
-  {
-    "id": "reading-3-0024",
-    "subject": "reading",
-    "grade": 3,
-    "kind": "sightword",
-    "prompt": "Tap the word you hear.",
-    "choices": ["pack", "pink", "kick", "pick"],
-    "answer": "pick",
-    "hint": "You do this to choose a flower or a toy.",
-    "tags": ["dolch"],
-    "audioWord": "pick"
-  },
-  {
     "id": "reading-3-0025",
     "subject": "reading",
     "grade": 3,
@@ -295,54 +55,6 @@
     "tags": ["fill-in"]
   },
   {
-    "id": "reading-3-0026",
-    "subject": "reading",
-    "grade": 3,
-    "kind": "sightword",
-    "prompt": "Tap the word you hear.",
-    "choices": ["seventh", "seven", "even", "eleven"],
-    "answer": "seven",
-    "hint": "It is a number. It comes after six.",
-    "tags": ["dolch"],
-    "audioWord": "seven"
-  },
-  {
-    "id": "reading-3-0027",
-    "subject": "reading",
-    "grade": 3,
-    "kind": "sightword",
-    "prompt": "Tap the word you hear.",
-    "choices": ["shell", "small", "shall", "shale"],
-    "answer": "shall",
-    "hint": "It sounds like a word for will. It starts with sh.",
-    "tags": ["dolch"],
-    "audioWord": "shall"
-  },
-  {
-    "id": "reading-3-0028",
-    "subject": "reading",
-    "grade": 3,
-    "kind": "sightword",
-    "prompt": "Tap the word you hear.",
-    "choices": ["smell", "shall", "stall", "small"],
-    "answer": "small",
-    "hint": "It is the opposite of big.",
-    "tags": ["dolch"],
-    "audioWord": "small"
-  },
-  {
-    "id": "reading-3-0029",
-    "subject": "reading",
-    "grade": 3,
-    "kind": "sightword",
-    "prompt": "Tap the word you hear.",
-    "choices": ["together", "tonight", "gather", "toggle"],
-    "answer": "together",
-    "hint": "It means with each other, not apart.",
-    "tags": ["dolch"],
-    "audioWord": "together"
-  },
-  {
     "id": "reading-3-0030",
     "subject": "reading",
     "grade": 3,
@@ -352,30 +64,6 @@
     "answer": "close",
     "hint": "It is what you do to shut a door.",
     "tags": ["fill-in"]
-  },
-  {
-    "id": "reading-3-0031",
-    "subject": "reading",
-    "grade": 3,
-    "kind": "sightword",
-    "prompt": "Tap the word you hear.",
-    "choices": ["worm", "wart", "warm", "farm"],
-    "answer": "warm",
-    "hint": "A cozy blanket feels this way.",
-    "tags": ["dolch"],
-    "audioWord": "warm"
-  },
-  {
-    "id": "reading-3-0032",
-    "subject": "reading",
-    "grade": 3,
-    "kind": "sightword",
-    "prompt": "Tap the word you hear.",
-    "choices": ["tomorrow", "toady", "toad", "today"],
-    "answer": "today",
-    "hint": "It means this very day.",
-    "tags": ["dolch"],
-    "audioWord": "today"
   },
   {
     "id": "reading-3-0033",
@@ -471,12 +159,7 @@
     "grade": 3,
     "kind": "mainidea",
     "prompt": "What caused Fred's toothache?",
-    "choices": [
-      "He ate too many marshmallow-covered rocks",
-      "He fell off a hoverboard",
-      "He forgot to visit Priya",
-      "He ate carrots"
-    ],
+    "choices": ["He ate too many marshmallow-covered rocks", "He fell off a hoverboard", "He forgot to visit Priya", "He ate carrots"],
     "answer": "He ate too many marshmallow-covered rocks",
     "hint": "Look at what Fred ate before the toothache.",
     "tags": ["cause-and-effect"],
@@ -512,12 +195,7 @@
     "grade": 3,
     "kind": "mainidea",
     "prompt": "What did Fred change after the visit?",
-    "choices": [
-      "He moved to a new village",
-      "He stopped talking",
-      "He got a hoverboard",
-      "He ate carrots instead of rocks"
-    ],
+    "choices": ["He moved to a new village", "He stopped talking", "He got a hoverboard", "He ate carrots instead of rocks"],
     "answer": "He ate carrots instead of rocks",
     "hint": "Read the last sentence.",
     "tags": ["detail"],
@@ -529,12 +207,7 @@
     "grade": 3,
     "kind": "mainidea",
     "prompt": "What lesson does the story teach?",
-    "choices": [
-      "Taste your food before you serve it",
-      "Never cook soup",
-      "Salt is always good",
-      "Robots cannot cook"
-    ],
+    "choices": ["Taste your food before you serve it", "Never cook soup", "Salt is always good", "Robots cannot cook"],
     "answer": "Taste your food before you serve it",
     "hint": "Think about the chef's last words.",
     "tags": ["theme"],
@@ -546,12 +219,7 @@
     "grade": 3,
     "kind": "mainidea",
     "prompt": "What happened right after Chef Unit Seven served the soup?",
-    "choices": [
-      "The chef tasted it",
-      "The first robot took a sip and spun in circles",
-      "The chef added more salt",
-      "The second robot cooked a new pot"
-    ],
+    "choices": ["The chef tasted it", "The first robot took a sip and spun in circles", "The chef added more salt", "The second robot cooked a new pot"],
     "answer": "The first robot took a sip and spun in circles",
     "hint": "Read the part right after the soup was served.",
     "tags": ["sequence"],
@@ -563,12 +231,7 @@
     "grade": 3,
     "kind": "mainidea",
     "prompt": "Why did the chef's lights blink red?",
-    "choices": [
-      "The kitchen was too cold",
-      "The pot was empty",
-      "The soup was far too salty",
-      "The robots were hungry"
-    ],
+    "choices": ["The kitchen was too cold", "The pot was empty", "The soup was far too salty", "The robots were hungry"],
     "answer": "The soup was far too salty",
     "hint": "Think about what twelve spoons of salt does to soup.",
     "tags": ["inference"],
@@ -580,12 +243,7 @@
     "grade": 3,
     "kind": "mainidea",
     "prompt": "Why did Sir Lena use a hoverboard?",
-    "choices": [
-      "She was afraid of horses",
-      "The rule book required it",
-      "Her horse ran away",
-      "She did not have a horse"
-    ],
+    "choices": ["She was afraid of horses", "The rule book required it", "Her horse ran away", "She did not have a horse"],
     "answer": "She did not have a horse",
     "hint": "Read the sentence about the horse.",
     "tags": ["cause-and-effect"],
@@ -621,12 +279,7 @@
     "grade": 3,
     "kind": "mainidea",
     "prompt": "Why was Sir Lena allowed to ride a hoverboard?",
-    "choices": [
-      "It was too slow",
-      "It was too loud",
-      "The rule book only said to ride something fast",
-      "It was too old"
-    ],
+    "choices": ["It was too slow", "It was too loud", "The rule book only said to ride something fast", "It was too old"],
     "answer": "The rule book only said to ride something fast",
     "hint": "Check what the rule book said.",
     "tags": ["inference"],
@@ -638,12 +291,7 @@
     "grade": 3,
     "kind": "mainidea",
     "prompt": "What does the envelope say to do?",
-    "choices": [
-      "Open it at the museum",
-      "Give it to a teacher",
-      "Never open it",
-      "Open it on a rainy Tuesday"
-    ],
+    "choices": ["Open it at the museum", "Give it to a teacher", "Never open it", "Open it on a rainy Tuesday"],
     "answer": "Open it on a rainy Tuesday",
     "hint": "Read the words on the envelope.",
     "tags": ["detail"],
@@ -655,12 +303,7 @@
     "grade": 3,
     "kind": "mainidea",
     "prompt": "How did the note help Omar?",
-    "choices": [
-      "It helped him feel calm about his test",
-      "It gave him the test answers",
-      "It made him late",
-      "It scared him"
-    ],
+    "choices": ["It helped him feel calm about his test", "It gave him the test answers", "It made him late", "It scared him"],
     "answer": "It helped him feel calm about his test",
     "hint": "Think about how Omar felt at school.",
     "tags": ["cause-and-effect"],
@@ -684,12 +327,7 @@
     "grade": 3,
     "kind": "mainidea",
     "prompt": "What is the main idea of this passage?",
-    "choices": [
-      "Castles were made of wood",
-      "Moats were full of fish",
-      "Castles had several parts that kept people safe",
-      "Guards liked towers"
-    ],
+    "choices": ["Castles were made of wood", "Moats were full of fish", "Castles had several parts that kept people safe", "Guards liked towers"],
     "answer": "Castles had several parts that kept people safe",
     "hint": "Ask what all the sentences are mostly about.",
     "tags": ["main-idea"],
@@ -701,12 +339,7 @@
     "grade": 3,
     "kind": "mainidea",
     "prompt": "What is a drawbridge used for?",
-    "choices": [
-      "To catch fish",
-      "To dig a moat",
-      "To store food",
-      "To block the gate when pulled up"
-    ],
+    "choices": ["To catch fish", "To dig a moat", "To store food", "To block the gate when pulled up"],
     "answer": "To block the gate when pulled up",
     "hint": "Read the sentence about the drawbridge.",
     "tags": ["detail"],
@@ -766,12 +399,7 @@
     "grade": 3,
     "kind": "mainidea",
     "prompt": "What did Pip do after noticing the soggy soil?",
-    "choices": [
-      "Skipped that plant and watered the beans",
-      "Watered it twice as much",
-      "Dug it up",
-      "Went to sleep"
-    ],
+    "choices": ["Skipped that plant and watered the beans", "Watered it twice as much", "Dug it up", "Went to sleep"],
     "answer": "Skipped that plant and watered the beans",
     "hint": "Read what happened the next morning.",
     "tags": ["sequence"],
@@ -816,12 +444,7 @@
     "grade": 3,
     "kind": "grammar",
     "prompt": "Which sentence uses their correctly?",
-    "choices": [
-      "The knights packed their lunches.",
-      "Their going to the castle.",
-      "The knights are over their.",
-      "Their is a dragon outside."
-    ],
+    "choices": ["The knights packed their lunches.", "Their going to the castle.", "The knights are over their.", "Their is a dragon outside."],
     "answer": "The knights packed their lunches.",
     "hint": "Their shows that something belongs to them.",
     "tags": ["grammar"]
@@ -865,12 +488,7 @@
     "grade": 3,
     "kind": "grammar",
     "prompt": "Which sentence shows that the tail belongs to the dragon?",
-    "choices": [
-      "The dragon's tail was green.",
-      "The dragons tail was green.",
-      "The dragons' tail's was green.",
-      "The dragon tail's was green."
-    ],
+    "choices": ["The dragon's tail was green.", "The dragons tail was green.", "The dragons' tail's was green.", "The dragon tail's was green."],
     "answer": "The dragon's tail was green.",
     "hint": "An apostrophe and an s show who owns something.",
     "tags": ["possessives"]
@@ -1024,12 +642,7 @@
     "grade": 3,
     "kind": "grammar",
     "prompt": "Which sentence starts with a capital letter?",
-    "choices": [
-      "the frog hopped away.",
-      "a bird can sing.",
-      "we ran home.",
-      "The frog hopped away."
-    ],
+    "choices": ["the frog hopped away.", "a bird can sing.", "we ran home.", "The frog hopped away."],
     "answer": "The frog hopped away.",
     "hint": "The first letter should be big.",
     "tags": ["grammar"]
@@ -1051,12 +664,7 @@
     "grade": 3,
     "kind": "mainidea",
     "prompt": "What is this story mostly about?",
-    "choices": [
-      "Ben likes sunny windows.",
-      "Ben helped his plant get well.",
-      "Plants are always brown.",
-      "Ben has many plants."
-    ],
+    "choices": ["Ben likes sunny windows.", "Ben helped his plant get well.", "Plants are always brown.", "Ben has many plants."],
     "answer": "Ben helped his plant get well.",
     "hint": "Think about the whole story.",
     "tags": ["mainidea"],
@@ -1080,12 +688,7 @@
     "grade": 3,
     "kind": "mainidea",
     "prompt": "Why did the leaves turn green again?",
-    "choices": [
-      "Ben sang to it.",
-      "It got very cold.",
-      "Ben painted them.",
-      "The plant got sun and water."
-    ],
+    "choices": ["Ben sang to it.", "It got very cold.", "Ben painted them.", "The plant got sun and water."],
     "answer": "The plant got sun and water.",
     "hint": "Look at what Ben did for the plant.",
     "tags": ["cause"],
@@ -1121,12 +724,7 @@
     "grade": 3,
     "kind": "mainidea",
     "prompt": "What is this story mostly about?",
-    "choices": [
-      "Rosa getting ready for the beach",
-      "Rosa eating a snack",
-      "Rosa wearing a hat",
-      "Rosa swimming in the sea"
-    ],
+    "choices": ["Rosa getting ready for the beach", "Rosa eating a snack", "Rosa wearing a hat", "Rosa swimming in the sea"],
     "answer": "Rosa getting ready for the beach",
     "hint": "Think about the whole story.",
     "tags": ["mainidea"],

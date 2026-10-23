@@ -85,7 +85,6 @@ export const RELOAD = {
   /** Fast time limit by question kind. Longer reading takes longer to read, so the bonus stays fair. */
   fastMsByKind: {
     numeric: 8000,
-    sightword: 8000,
     choice: 10000,
     vocab: 12000,
     grammar: 12000,

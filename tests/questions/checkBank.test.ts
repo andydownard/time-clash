@@ -64,7 +64,6 @@ describe('checkBankFiles', () => {
     const base = {
       kind: 'mainidea' as const,
       grade: 5 as const,
-      audioWord: undefined,
       prompt: 'What is the main idea?',
       hint: 'Think big.',
     };
@@ -151,7 +150,7 @@ describe('checkBankFiles', () => {
     expect(r.counts['math-3']).toBe(40);
   });
 
-  it('rejects a sight word item whose choices include a homophone of the answer', () => {
+  it('rejects a word-choice item whose choices include a homophone of the answer', () => {
     const r = checkBankFiles([
       { file: 'reading-0.json', data: [rq({ choices: ['see', 'sea', 'saw', 'say'] })] },
     ]);
@@ -159,14 +158,14 @@ describe('checkBankFiles', () => {
     expect(has(r.problems, 'reading-0-0001')).toBe(true);
   });
 
-  it('accepts a sight word item with no homophones', () => {
+  it('accepts a word-choice item with no homophones', () => {
     const r = checkBankFiles([
       { file: 'reading-0.json', data: [rq({ choices: ['see', 'saw', 'say', 'sit'] })] },
     ]);
     expect(r.problems).toEqual([]);
   });
 
-  it('does not apply the homophone rule to non-sight-word items', () => {
+  it('does not apply the homophone rule to vocab items', () => {
     const r = checkBankFiles([
       {
         file: 'reading-5.json',
@@ -178,11 +177,21 @@ describe('checkBankFiles', () => {
             prompt: 'Which word means a body of salt water?',
             choices: ['sea', 'see', 'saw', 'say'],
             answer: 'sea',
-            audioWord: undefined,
           }),
         ],
       },
     ]);
+    expect(has(r.problems, 'homophone')).toBe(false);
+  });
+
+  it('still applies the homophone rule to reading choices, but not to a fill-in with a sentence', () => {
+    const fill = rq({
+      prompt: 'Fill in the blank: Please ___ the door.',
+      choices: ['close', 'clothes', 'cloud', 'clove'],
+      answer: 'close',
+      hint: 'It is what you do to shut a door.',
+    });
+    const r = checkBankFiles([{ file: 'reading-0.json', data: [fill] }]);
     expect(has(r.problems, 'homophone')).toBe(false);
   });
 });

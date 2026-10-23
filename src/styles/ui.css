@@ -1465,9 +1465,6 @@ body {
 .tc-reload[data-layout='reading'] .tc-choice {
   justify-content: flex-start;
 }
-.tc-speak-btn {
-  flex: none;
-}
 /* Older readers get the story, the question and the answers in the voice font. This is safe
    because no reading question holds a digit (tests/ui/boardGap.test.ts). Math and the youngest
    readers keep the open face above. */
@@ -1579,11 +1576,6 @@ body {
 }
 .tc-cover-mute[data-muted='true']::before {
   content: '\1F507';
-}
-/* Hear It is the main help for a pre-reader, so it is bigger than Hint and Sound. */
-.tc-speak-btn {
-  min-height: 72px;
-  font-size: var(--tc-fs-button);
 }
 /* Empty live regions and the Next slot reserve no space until they have something to say. */
 .tc-reload-body > :empty {

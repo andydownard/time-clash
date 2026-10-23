@@ -1,5 +1,5 @@
-// Words that sound the same. A sight-word item must not offer two words from one group,
-// because the child hears the word and cannot tell them apart.
+// Words that sound the same. A reading word-choice item must not offer two words from one group,
+// because the pair can look like a second right answer to an early reader.
 export const HOMOPHONE_GROUPS: readonly (readonly string[])[] = [
   ['see', 'sea'],
   ['to', 'two', 'too'],

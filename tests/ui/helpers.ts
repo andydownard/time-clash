@@ -91,15 +91,14 @@ export const fractionQ: Question = {
   hint: undefined,
 };
 
-export const sightQ: Question = {
+export const wordQ: Question = {
   id: 'reading-1-0007',
   subject: 'reading',
   grade: 1,
-  kind: 'sightword',
+  kind: 'choice',
   prompt: 'Which word is "because"?',
   choices: ['because', 'became', 'beside', 'before'],
   answer: 'because',
-  audioWord: 'because',
   hint: 'It starts with b-e-c.',
   tags: [],
 };

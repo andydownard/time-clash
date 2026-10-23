@@ -137,12 +137,12 @@ test('plays a full match: aim, fire, reload, pass, win, rematch', async ({ page,
   await page.mouse.click(2, 2); // outside the card
   await expect(tid(page, 'reload-modal')).toBeVisible();
   expect((await snap(page)).stats.PAST.shotsFired).toBe(2);
-  // The only buttons are the answers, Hear it, a hint when there is one, and Sound on/off.
+  // The only buttons are the answers, a hint when there is one, and Sound on/off.
   const buttons = await tid(page, 'reload-modal')
     .getByRole('button')
     .evaluateAll((els) => els.map((e) => e.getAttribute('data-testid')));
   expect(
-    buttons.filter((b) => !/^(reload-(choice-[0-3]|hint|speak)|cover-mute)$/.test(b ?? '')),
+    buttons.filter((b) => !/^(reload-(choice-[0-3]|hint)|cover-mute)$/.test(b ?? '')),
   ).toEqual([]);
 
   // Right and fast: +2 scrap.

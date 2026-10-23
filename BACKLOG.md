@@ -17,7 +17,9 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 - P2: Biome art is simple: cherry trees recolor the aspens and the temple uses plain columns. The spot shapes (tower, bridge deck, food truck wall) are plain steel blocks. Real art from a design board would help.
 - P3: Ammo and the dodge only change damage in the base-health game. With character health (flag off) ammo still changes the flight, but not damage.
 - Camp scrap counter and saved scrap between matches. The Main board has no scrap counter, so it waits for Phase 3 and the Forge.
-- Every grade now has 60 or more items per subject (reading 60 to 70, math 80 to 110). Families who play many rematches will still see repeats. A later pass could grow reading toward 100 per grade and add more variety in the upper grades.
+- Reading in grades 4 to 12 has 79 to 90 items and math 100 to 110. Reading in K to 3 is lower now (see the next items). Families who play many rematches will still see repeats. Families who play many rematches will still see repeats. A later pass could grow reading toward 100 per grade and add more variety in the upper grades.
+- P2: Question-clip voice databases and files are unused; delete in a separate cleanup (`db/voice-k4.sqlite` question rows, later volumes, question clips in `public/audio` if any, and the Python voice scripts' question handling).
+- P2: K to 2 reading count dropped after removing sight-word listening items (K 50, grade 1 51, grade 2 54, grade 3 64); add read-only questions. Owner decides the new questions.
 - There is no way to end a match early and no setting for match length.
 - P2: Battle simplification, next steps. Health shows in both the top chips and the base pills, so one of them can go. The richer scenery and the unit picker on the Battle board belong to Phase 5 (Squads).
 
