@@ -199,6 +199,10 @@ export const SETUP = {
     multiplication: 'Math questions are all multiplication.',
     division: 'Math questions are all division.',
   } as Record<string, string>,
+  /** Match length: a parent picks it. Short and Long change how many hits a base can take. */
+  matchLengthLabel: 'Match length',
+  matchLengthChips: { short: 'Short', normal: 'Normal', long: 'Long' } as Record<string, string>,
+  matchLengthHelper: 'Short ends sooner. Long takes more hits. Questions stay the same.',
   start: "Let's clash!",
   matchHelper: 'Questions will match your grade.',
   namesStay: 'Names stay on this device. Nothing is sent anywhere.',

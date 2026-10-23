@@ -53,6 +53,8 @@ export const TEST_IDS = {
   setupGrade: (team: Team, grade: Grade) => `setup-grade-${team}-${grade}`,
   setupSubject: (team: Team, subject: string) => `setup-subject-${team}-${subject}`,
   setupTopic: (team: Team, topic: string) => `setup-topic-${team}-${topic}`,
+  setupMatchLength: (length: string) => `setup-length-${length}`,
+  setupMatchLengthRow: 'setup-length-row',
   setupNext: 'setup-next',
   setupBack: 'setup-back',
   campForge: 'camp-forge',

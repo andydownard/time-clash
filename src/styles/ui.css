@@ -1142,6 +1142,39 @@ body {
   min-width: 280px;
   font-size: var(--tc-fs-button-lg);
 }
+.tc-setup-form .tc-row-start {
+  align-items: center;
+}
+/* Match length shares the button row, so it costs no extra height. */
+.tc-length {
+  display: flex;
+  align-items: center;
+  gap: var(--tc-s-2);
+}
+.tc-length .tc-label {
+  margin: 0;
+  white-space: nowrap;
+}
+.tc-length .tc-chips {
+  flex-wrap: nowrap;
+  gap: var(--tc-s-1);
+}
+.tc-length .tc-chip {
+  min-height: var(--tc-tap);
+  font-size: var(--tc-fs-label);
+  flex: none;
+  white-space: nowrap;
+  padding-inline: var(--tc-s-3);
+  background: transparent;
+  color: var(--tc-on-dark);
+  border: 3px solid var(--tc-on-dark);
+}
+/* The chosen length is Ember with a check mark, like the grade chips. */
+.tc-length .tc-chip[aria-checked='true'] {
+  background: var(--tc-chip-picked-bg);
+  color: var(--tc-chip-picked-text);
+  border: 4px solid var(--tc-chip-picked-edge);
+}
 .tc-privacy {
   display: flex;
   flex-wrap: wrap;

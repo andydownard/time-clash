@@ -2,7 +2,7 @@
 import { practiceRun } from '../game/practice';
 import { walletOf } from '../game/loadout';
 import { createMatch } from '../game/match';
-import { loadCamp, loadPractice } from '../storage/storage';
+import { loadCamp, loadMatchLength, loadPractice } from '../storage/storage';
 import { EMPTY_HISTORY, type QuestionBank } from '../questions/types';
 import type { BattleSceneData } from './battle/types';
 import type { AppServices, MatchSetup } from './registry';
@@ -14,7 +14,11 @@ export function buildBattleData(
   setup: MatchSetup,
   bank: QuestionBank,
 ): BattleSceneData {
-  const match = createMatch(setup);
+  // The length a parent picked at Setup. A setup that names its own length wins.
+  const match = createMatch({
+    ...setup,
+    matchLength: setup.matchLength ?? loadMatchLength(s.storage),
+  });
   s.session.match = match;
   // Each player's Scrap in hand, found by name. The HUD adds what they earn in this match.
   const camp = loadCamp(s.storage);
