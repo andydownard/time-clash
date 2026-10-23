@@ -4,15 +4,15 @@
     "subject": "reading",
     "grade": 10,
     "kind": "vocab",
-    "prompt": "What does \"equivocal\" mean? \"Her equivocal reply left the committee unsure whether she agreed.\"",
+    "prompt": "What does \"lucid\" mean? \"Her lucid explanation made the hard idea easy to follow.\"",
     "choices": [
-      "loud and angry",
-      "completely honest",
-      "very brief",
-      "deliberately unclear"
+      "long and confusing",
+      "quick and careless",
+      "clear and easy to understand",
+      "loud and proud"
     ],
-    "answer": "deliberately unclear",
-    "hint": "The committee could not tell what she meant.",
+    "answer": "clear and easy to understand",
+    "hint": "A hard idea became easy.",
     "tags": [
       "vocab"
     ]
@@ -22,15 +22,15 @@
     "subject": "reading",
     "grade": 10,
     "kind": "vocab",
-    "prompt": "What does \"pervasive\" mean? \"A pervasive smell of smoke filled every room of the cabin.\"",
+    "prompt": "What does \"pragmatic\" mean? \"The pragmatic coach chose a plan that would work, not one that sounded fancy.\"",
     "choices": [
-      "pleasant and light",
-      "hidden in one corner",
-      "brief and faint",
-      "spreading through everything"
+      "dreamy and fanciful",
+      "practical and sensible",
+      "stubborn and proud",
+      "nervous and shy"
     ],
-    "answer": "spreading through everything",
-    "hint": "It reached every room.",
+    "answer": "practical and sensible",
+    "hint": "She cared about what would work.",
     "tags": [
       "vocab"
     ]
@@ -58,15 +58,15 @@
     "subject": "reading",
     "grade": 10,
     "kind": "vocab",
-    "prompt": "What does \"magnanimous\" mean? \"The magnanimous winner praised her rival's strong effort.\"",
+    "prompt": "What does \"impartial\" mean? \"The impartial judge listened to both teams and favored neither.\"",
     "choices": [
-      "generous toward a rival",
-      "quick to boast",
-      "jealous of others",
-      "unwilling to share"
+      "kind to one team",
+      "fair to both sides",
+      "tired of the case",
+      "slow to decide"
     ],
-    "answer": "generous toward a rival",
-    "hint": "Notice how she treated the person she beat.",
+    "answer": "fair to both sides",
+    "hint": "She favored neither team.",
     "tags": [
       "vocab"
     ]
@@ -76,15 +76,15 @@
     "subject": "reading",
     "grade": 10,
     "kind": "vocab",
-    "prompt": "What does \"obscure\" mean? \"The poem's obscure references puzzled even skilled readers.\"",
+    "prompt": "What does \"ubiquitous\" mean? \"Smartphones are ubiquitous today, found in nearly every pocket and backpack.\"",
     "choices": [
-      "hard to understand",
-      "well known",
-      "very short",
-      "cheerful and light"
+      "hard to find",
+      "costly to fix",
+      "new and rare",
+      "found everywhere"
     ],
-    "answer": "hard to understand",
-    "hint": "Even experts were puzzled.",
+    "answer": "found everywhere",
+    "hint": "Think of pockets and backpacks.",
     "tags": [
       "vocab"
     ]
@@ -238,15 +238,15 @@
     "subject": "reading",
     "grade": 10,
     "kind": "vocab",
-    "prompt": "The Latin root \"spec\" means \"to look.\" A spectator is most likely someone who...",
+    "prompt": "The Latin root \"scrib\" means \"to write.\" A scribe is most likely someone who...",
     "choices": [
-      "sings",
-      "builds",
-      "speaks",
-      "watches"
+      "bakes bread",
+      "paints fences",
+      "writes things down",
+      "sails boats"
     ],
-    "answer": "watches",
-    "hint": "Think about what the audience at a game does.",
+    "answer": "writes things down",
+    "hint": "Think about what the root says a scribe does.",
     "tags": [
       "vocab",
       "roots"
@@ -1215,15 +1215,15 @@
     "subject": "reading",
     "grade": 10,
     "kind": "vocab",
-    "prompt": "What does \"formidable\" mean? \"The chess champion was a formidable opponent.\"",
+    "prompt": "What does \"ominous\" mean? \"The ominous clouds gathered over the field, warning of a coming storm.\"",
     "choices": [
-      "hard to beat",
-      "slow to move",
-      "friendly to all",
-      "easy to please"
+      "bright and cheerful",
+      "soft and fluffy",
+      "hinting at trouble ahead",
+      "far away and small"
     ],
-    "answer": "hard to beat",
-    "hint": "A champion is not easy to face.",
+    "answer": "hinting at trouble ahead",
+    "hint": "The clouds warn of a storm.",
     "tags": [
       "vocab"
     ]

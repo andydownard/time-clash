@@ -1124,10 +1124,10 @@
     "subject": "reading",
     "grade": 7,
     "kind": "vocab",
-    "prompt": "Which word is the best antonym for \"scarce\"?",
-    "choices": ["rare", "tiny", "plentiful", "costly"],
-    "answer": "plentiful",
-    "hint": "Think of a word that means a lot.",
+    "prompt": "Which word is the best antonym for \"jubilant\"?",
+    "choices": ["joyful", "excited", "gloomy", "proud"],
+    "answer": "gloomy",
+    "hint": "Think of how a team feels after a big win, then flip it.",
     "tags": ["vocab", "context"]
   },
   {

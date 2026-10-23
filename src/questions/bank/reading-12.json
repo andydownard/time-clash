@@ -120,15 +120,15 @@
     "subject": "reading",
     "grade": 12,
     "kind": "vocab",
-    "prompt": "The prefix \"circum\" means \"around\" and \"spect\" means \"to look.\" What does \"circumspect\" mean?",
+    "prompt": "The root \"loqu\" means \"to speak.\" What does \"loquacious\" most likely mean?",
     "choices": [
-      "easily distracted by noise",
-      "careful, looking at all risks",
-      "openly boastful about success",
-      "quick to judge other people"
+      "quiet and shy",
+      "careful with money",
+      "slow to learn",
+      "talkative and chatty"
     ],
-    "answer": "careful, looking at all risks",
-    "hint": "Think of someone who looks all around before acting.",
+    "answer": "talkative and chatty",
+    "hint": "Think of someone who speaks a lot.",
     "tags": [
       "vocab-in-context",
       "original"
@@ -738,15 +738,15 @@
     "subject": "reading",
     "grade": 12,
     "kind": "vocab",
-    "prompt": "\"Reticent in groups, Theo seldom offered an opinion until asked directly.\" What does \"reticent\" mean?",
+    "prompt": "\"The ephemeral blossoms lasted only a few days each spring.\" What does \"ephemeral\" mean?",
     "choices": [
-      "eager to lead every group",
-      "reluctant to speak freely",
-      "quick to anger when pressed",
-      "skilled at winning debates"
+      "growing in poor soil",
+      "known across the world",
+      "lasting a very short time",
+      "tough and hard to bend"
     ],
-    "answer": "reluctant to speak freely",
-    "hint": "He spoke only when asked directly.",
+    "answer": "lasting a very short time",
+    "hint": "They lasted only a few days.",
     "tags": [
       "vocab-in-context",
       "original"
