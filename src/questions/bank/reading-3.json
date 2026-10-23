@@ -111,10 +111,10 @@
     "subject": "reading",
     "grade": 3,
     "kind": "choice",
-    "prompt": "Fill in the blank: I ___ a big red kite.",
+    "prompt": "Right now, I ___ a big red kite.",
     "choices": ["has", "have", "had", "hat"],
     "answer": "have",
-    "hint": "Use it with the word I.",
+    "hint": "Use it with the word I when it is happening now.",
     "tags": ["fill-in"]
   },
   {
@@ -393,10 +393,10 @@
     "subject": "reading",
     "grade": 3,
     "kind": "choice",
-    "prompt": "Fill in the blank: Two dogs ___ in the yard.",
+    "prompt": "Fill in the blank: Two dogs ___ in the yard every day.",
     "choices": ["plays", "play", "played", "plan"],
     "answer": "play",
-    "hint": "Two or more dogs need the plain form.",
+    "hint": "Two or more dogs, every day, need the plain form.",
     "tags": ["fill-in"]
   },
   {
@@ -438,7 +438,7 @@
     "grade": 3,
     "kind": "choice",
     "prompt": "Fill in the blank: I like to ___ a book at night.",
-    "choices": ["road", "read", "reed", "real"],
+    "choices": ["ride", "read", "road", "real"],
     "answer": "read",
     "hint": "You do this with your eyes and a story.",
     "tags": ["fill-in"]
@@ -490,7 +490,7 @@
     "prompt": "What does the word terrible mean as used in the story?",
     "choices": ["Very funny", "Very bad", "Very small", "Very quiet"],
     "answer": "Very bad",
-    "hint": "Fred moaned a lot. Is that good or bad?",
+    "hint": "A toothache that hurts a lot is this kind of ache.",
     "tags": ["word-in-context"],
     "passage": "Fred the dragon had a terrible toothache. He had eaten too many marshmallow-covered rocks. Brave Priya zoomed over on her hoverboard with a very long toothbrush. Fred was nervous, but he opened wide, and after a good scrub his tooth felt fine. From then on, Fred ate carrots instead of rocks."
   },
@@ -620,7 +620,7 @@
     "subject": "reading",
     "grade": 3,
     "kind": "mainidea",
-    "prompt": "Why were the judges unsure about her hoverboard?",
+    "prompt": "Why was Sir Lena allowed to ride a hoverboard?",
     "choices": [
       "It was too slow",
       "It was too loud",
@@ -817,12 +817,12 @@
     "kind": "grammar",
     "prompt": "Which sentence uses their correctly?",
     "choices": [
-      "The knights packed their swords.",
+      "The knights packed their lunches.",
       "Their going to the castle.",
       "The knights are over their.",
       "Their is a dragon outside."
     ],
-    "answer": "The knights packed their swords.",
+    "answer": "The knights packed their lunches.",
     "hint": "Their shows that something belongs to them.",
     "tags": ["grammar"]
   },

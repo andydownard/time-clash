@@ -193,10 +193,10 @@
     "subject": "reading",
     "grade": 8,
     "kind": "grammar",
-    "prompt": "Pick the word that fits: Neither of the boys ___ late.",
+    "prompt": "Pick the word that fits: Each of the boys ___ on time.",
     "choices": ["were", "are", "was", "be"],
     "answer": "was",
-    "hint": "Think of one boy at a time.",
+    "hint": "Each means one at a time.",
     "tags": ["grammar", "agreement"]
   },
   {
@@ -564,12 +564,12 @@
     "subject": "reading",
     "grade": 8,
     "kind": "mainidea",
-    "prompt": "Why did the knights probably not attack the robot?",
+    "prompt": "Why did the knights probably stay calm about the robot?",
     "choices": [
-      "They were too tired to fight.",
+      "They were too tired to move.",
       "The party hats made it look friendly.",
       "Pip had already tricked it.",
-      "They did not own any swords."
+      "They were busy eating lunch."
     ],
     "answer": "The party hats made it look friendly.",
     "hint": "Look at what the robot wore on its head.",
@@ -688,7 +688,7 @@
     "answer": "The school should create a marked hoverboard lane.",
     "hint": "Look at the first sentence.",
     "tags": ["mainidea", "evaluating-an-argument"],
-    "passage": "Our school's main hallway is a traffic jam every morning, and it is time for a solution: a marked hoverboard lane along the left wall. Over two hundred students already glide to class. Some say a lane costs too much. In fact, the project needs only a roll of bright tape and a few signs, and the student council has offered to do the painting for free. A lane would also make the hallway safer. When Oakdale Middle tried a similar plan, collisions dropped by more than half. Walkers would know exactly where riders will be. The hallway belongs to everyone. Please, principal, say yes to the lane."
+    "passage": "Our school's main hallway is a traffic jam every morning, and it is time for a solution: a marked hoverboard lane along the left wall. Over two hundred students already glide to class. Some say a lane costs too much. In fact, the project needs only a roll of bright tape and a few signs, and the student council has offered to put them up for free. A lane would also make the hallway safer. When Oakdale Middle tried a similar plan, collisions dropped by more than half. Walkers would know exactly where riders will be. The hallway belongs to everyone. Please, principal, say yes to the lane."
   },
   {
     "id": "reading-8-0050",
@@ -705,7 +705,7 @@
     "answer": "Collisions dropped by more than half at Oakdale Middle.",
     "hint": "Strong evidence uses real numbers from a real event.",
     "tags": ["mainidea", "evaluating-an-argument"],
-    "passage": "Our school's main hallway is a traffic jam every morning, and it is time for a solution: a marked hoverboard lane along the left wall. Over two hundred students already glide to class. Some say a lane costs too much. In fact, the project needs only a roll of bright tape and a few signs, and the student council has offered to do the painting for free. A lane would also make the hallway safer. When Oakdale Middle tried a similar plan, collisions dropped by more than half. Walkers would know exactly where riders will be. The hallway belongs to everyone. Please, principal, say yes to the lane."
+    "passage": "Our school's main hallway is a traffic jam every morning, and it is time for a solution: a marked hoverboard lane along the left wall. Over two hundred students already glide to class. Some say a lane costs too much. In fact, the project needs only a roll of bright tape and a few signs, and the student council has offered to put them up for free. A lane would also make the hallway safer. When Oakdale Middle tried a similar plan, collisions dropped by more than half. Walkers would know exactly where riders will be. The hallway belongs to everyone. Please, principal, say yes to the lane."
   },
   {
     "id": "reading-8-0051",
@@ -716,13 +716,13 @@
     "choices": [
       "By admitting the cost is high but worth it",
       "By ignoring the claim completely",
-      "By noting it needs only tape and signs, and volunteers will paint",
+      "By noting it needs only tape and signs, and volunteers will put them up",
       "By suggesting students pay a fee"
     ],
-    "answer": "By noting it needs only tape and signs, and volunteers will paint",
+    "answer": "By noting it needs only tape and signs, and volunteers will put them up",
     "hint": "Find the sentence that begins with the words In fact.",
     "tags": ["mainidea", "counterargument"],
-    "passage": "Our school's main hallway is a traffic jam every morning, and it is time for a solution: a marked hoverboard lane along the left wall. Over two hundred students already glide to class. Some say a lane costs too much. In fact, the project needs only a roll of bright tape and a few signs, and the student council has offered to do the painting for free. A lane would also make the hallway safer. When Oakdale Middle tried a similar plan, collisions dropped by more than half. Walkers would know exactly where riders will be. The hallway belongs to everyone. Please, principal, say yes to the lane."
+    "passage": "Our school's main hallway is a traffic jam every morning, and it is time for a solution: a marked hoverboard lane along the left wall. Over two hundred students already glide to class. Some say a lane costs too much. In fact, the project needs only a roll of bright tape and a few signs, and the student council has offered to put them up for free. A lane would also make the hallway safer. When Oakdale Middle tried a similar plan, collisions dropped by more than half. Walkers would know exactly where riders will be. The hallway belongs to everyone. Please, principal, say yes to the lane."
   },
   {
     "id": "reading-8-0052",
@@ -739,7 +739,7 @@
     "answer": "persuade the principal to approve the lane",
     "hint": "The last sentence asks the principal for something.",
     "tags": ["mainidea", "author-s-purpose"],
-    "passage": "Our school's main hallway is a traffic jam every morning, and it is time for a solution: a marked hoverboard lane along the left wall. Over two hundred students already glide to class. Some say a lane costs too much. In fact, the project needs only a roll of bright tape and a few signs, and the student council has offered to do the painting for free. A lane would also make the hallway safer. When Oakdale Middle tried a similar plan, collisions dropped by more than half. Walkers would know exactly where riders will be. The hallway belongs to everyone. Please, principal, say yes to the lane."
+    "passage": "Our school's main hallway is a traffic jam every morning, and it is time for a solution: a marked hoverboard lane along the left wall. Over two hundred students already glide to class. Some say a lane costs too much. In fact, the project needs only a roll of bright tape and a few signs, and the student council has offered to put them up for free. A lane would also make the hallway safer. When Oakdale Middle tried a similar plan, collisions dropped by more than half. Walkers would know exactly where riders will be. The hallway belongs to everyone. Please, principal, say yes to the lane."
   },
   {
     "id": "reading-8-0053",
@@ -809,7 +809,7 @@
     "subject": "reading",
     "grade": 8,
     "kind": "mainidea",
-    "prompt": "Which word best describes how Bolt changes over the story?",
+    "prompt": "Which statement best describes how Bolt changes over the story?",
     "choices": [
       "He becomes more willing to trust his senses and learn from mistakes.",
       "He becomes lazier.",
@@ -922,10 +922,10 @@
     "subject": "reading",
     "grade": 8,
     "kind": "vocab",
-    "prompt": "The knight was reluctant to climb on the hoverboard. Reluctant means",
-    "choices": ["eager", "skilled", "tired", "unwilling"],
-    "answer": "unwilling",
-    "hint": "The knight did not want to climb on.",
+    "prompt": "The knight was wary of the strange hoverboard, so he circled it twice before touching it. Wary means",
+    "choices": ["careful and suspicious", "delighted", "sleepy", "proud"],
+    "answer": "careful and suspicious",
+    "hint": "He circled it twice before he touched it.",
     "tags": ["vocab", "vocabulary"]
   },
   {

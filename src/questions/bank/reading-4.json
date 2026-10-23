@@ -492,10 +492,10 @@
     "subject": "reading",
     "grade": 4,
     "kind": "grammar",
-    "prompt": "Where does the comma go? \"We packed apples bananas and grapes.\"",
-    "choices": ["After apples and after bananas", "After we", "After packed", "After and"],
-    "answer": "After apples and after bananas",
-    "hint": "Use commas to split items in a list.",
+    "prompt": "Where does the first comma go? \"We packed apples bananas and grapes.\"",
+    "choices": ["After apples", "After we", "After packed", "After and"],
+    "answer": "After apples",
+    "hint": "Commas split items in a list. The first item is apples.",
     "tags": ["grammar", "punctuation"]
   },
   {
@@ -919,10 +919,10 @@
     "subject": "reading",
     "grade": 4,
     "kind": "vocab",
-    "prompt": "What does the prefix 'un-' mean in the word 'unlock'?",
+    "prompt": "What does the prefix 'dis-' mean in the word 'disagree'?",
     "choices": ["not or the opposite of", "again", "before", "too much"],
     "answer": "not or the opposite of",
-    "hint": "Think of what happens when you unlock a door.",
+    "hint": "To disagree is to not agree.",
     "tags": ["prefixes"]
   },
   {
@@ -930,10 +930,10 @@
     "subject": "reading",
     "grade": 4,
     "kind": "vocab",
-    "prompt": "The word 'rebuild' means",
-    "choices": ["build before", "build again", "not build", "build badly"],
-    "answer": "build again",
-    "hint": "Re- means do it one more time.",
+    "prompt": "The word 'misspell' means",
+    "choices": ["spell again", "spell wrongly", "not spell", "spell before"],
+    "answer": "spell wrongly",
+    "hint": "Mis- means wrongly or badly.",
     "tags": ["prefixes"]
   },
   {

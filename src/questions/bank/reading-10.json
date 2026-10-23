@@ -833,10 +833,10 @@
     "subject": "reading",
     "grade": 10,
     "kind": "vocab",
-    "prompt": "What does \"abrupt\" mean? \"The bus came to an abrupt stop, and the bags slid forward.\"",
-    "choices": ["slow and smooth", "gentle and soft", "sudden and unexpected", "long and tiring"],
-    "answer": "sudden and unexpected",
-    "hint": "The bags slid, so the stop was not gentle.",
+    "prompt": "What does \"tentative\" mean? \"We made tentative plans that could still change if it rained.\"",
+    "choices": ["not final", "very strict", "well known", "kept secret"],
+    "answer": "not final",
+    "hint": "The plans could still change.",
     "tags": ["vocab"]
   },
   {
