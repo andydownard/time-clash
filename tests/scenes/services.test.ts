@@ -76,6 +76,7 @@ describe('createServices', () => {
       captions: false,
       musicOn: true,
       reducedMotion: 'on',
+      hideBonusRing: false,
     });
     const { services } = make({ storage });
     expect(services.audio.muted).toBe(true);

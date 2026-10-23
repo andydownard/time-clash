@@ -1,17 +1,41 @@
 // The five "How to Play" cards. Text is exactly docs/NARRATION.md, split into one
 // caption per sentence. tests/data/introScript.test.ts reads that file and compares.
+// Caption times use the measured pauses in introTimings.json (see scripts/measure-intro-timings.py).
 // Each durationMs is the real clip length in db/voice.sqlite, rounded to 100 ms. The clips are
 // extracted to public/audio/voice/ by scripts/extract-voice-clips.py.
+import timings from './introTimings.json';
 import type { IntroCard, IntroCardId, IntroScript } from './types';
 
+/** A caption appears this long before the voice resumes after a pause, so it is read first. */
+export const CAPTION_LEAD_MS = 100;
+
+export interface Pause {
+  startMs: number;
+  endMs: number;
+}
+
 /**
- * Spreads caption start times across the card in proportion to sentence length,
- * so each caption appears about when its words are spoken.
+ * Times each caption. With measured pauses (src/data/introTimings.json, from
+ * scripts/measure-intro-timings.py), the longest sentence-count-minus-one pauses mark the
+ * sentence breaks and a caption starts just before the voice resumes. Without enough pauses
+ * it spreads the starts in proportion to sentence length.
  */
 export function timeCaptions(
   sentences: readonly string[],
   durationMs: number,
+  pauses: readonly Pause[] = [],
 ): Array<{ text: string; startMs: number }> {
+  const breaks = sentences.length - 1;
+  if (breaks > 0 && pauses.length >= breaks) {
+    const picked = [...pauses]
+      .sort((x, y) => y.endMs - y.startMs - (x.endMs - x.startMs))
+      .slice(0, breaks)
+      .sort((x, y) => x.endMs - y.endMs);
+    return sentences.map((text, i) => ({
+      text,
+      startMs: i === 0 ? 0 : Math.max(0, picked[i - 1]!.endMs - CAPTION_LEAD_MS),
+    }));
+  }
   const total = sentences.reduce((n, s) => n + s.length, 0);
   // Leave a short tail so the last caption has time on screen.
   const span = durationMs * 0.9;
@@ -35,7 +59,11 @@ function card(
     title,
     audio,
     fallbackText: sentences.join(' '),
-    captions: timeCaptions(sentences, durationMs),
+    captions: timeCaptions(
+      sentences,
+      durationMs,
+      (timings as Record<string, { gaps: Pause[] }>)[audio.split('/').pop()!]?.gaps,
+    ),
     art: id,
     durationMs,
   };

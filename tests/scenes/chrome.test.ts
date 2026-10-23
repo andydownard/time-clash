@@ -203,6 +203,57 @@ describe('settings panel', () => {
     expect(b.textContent).toBe(BUTTONS.motionOn);
     expect(document.querySelector('[data-tc-root]')!.getAttribute('data-motion')).toBe('full');
   });
+  it('has a Bonus ring button: shown by default, saved when hidden, and 56px or more', () => {
+    open();
+    const b = q(CHROME_IDS.bonusRing)!;
+    expect(b.textContent).toBe(BUTTONS.bonusRingShown);
+    expect(loadSettings(t.storage).hideBonusRing).toBe(false);
+    click(b);
+    expect(loadSettings(t.storage).hideBonusRing).toBe(true);
+    expect(b.textContent).toBe(BUTTONS.bonusRingHidden);
+    click(b);
+    expect(loadSettings(t.storage).hideBonusRing).toBe(false);
+    expect(b.textContent).toBe(BUTTONS.bonusRingShown);
+    expect(b.classList.contains('tc-btn')).toBe(true);
+  });
+  it('the Bonus ring choice does not change the other settings', () => {
+    open();
+    click(q(CHROME_IDS.captions));
+    click(q(CHROME_IDS.bonusRing));
+    const s = loadSettings(t.storage);
+    expect(s.captions).toBe(false);
+    expect(s.hideBonusRing).toBe(true);
+  });
+  it('Clear my data brings the ring back', () => {
+    t.storage.set('timeclash.settings', { ...loadSettings(t.storage), hideBonusRing: true });
+    open();
+    expect(q(CHROME_IDS.bonusRing)!.textContent).toBe(BUTTONS.bonusRingHidden);
+    click(q(CHROME_IDS.clear));
+    click(q(CHROME_IDS.clearYes));
+    expect(loadSettings(t.storage).hideBonusRing).toBe(false);
+    expect(q(CHROME_IDS.bonusRing)!.textContent).toBe(BUTTONS.bonusRingShown);
+  });
+  it('the chrome host carries data-motion and follows the Motion setting', () => {
+    const host = (): Element => document.querySelector('[data-tc-chrome]')!;
+    open();
+    expect(host().getAttribute('data-motion')).toBe('full');
+    click(q(CHROME_IDS.motion)!);
+    expect(host().getAttribute('data-motion')).toBe('reduced');
+    click(q(CHROME_IDS.motion)!);
+    expect(host().getAttribute('data-motion')).toBe('full');
+  });
+  it('the chrome host starts reduced when the saved setting says so', () => {
+    t.storage.set('timeclash.settings', {
+      muted: false,
+      volume: 0.5,
+      captions: true,
+      musicOn: true,
+      reducedMotion: 'on',
+      hideBonusRing: false,
+    });
+    mount();
+    expect(document.querySelector('[data-tc-chrome]')!.getAttribute('data-motion')).toBe('reduced');
+  });
   it('captions flip, are saved, and hide the caption bar', () => {
     open();
     t.overlay.setCaption('hello');
@@ -234,6 +285,7 @@ describe('settings panel', () => {
       captions: false,
       musicOn: false,
       reducedMotion: 'on',
+      hideBonusRing: false,
     });
     t.audio.setMuted(true);
     t.audio.setMusicOn(false);

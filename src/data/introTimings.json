@@ -1,0 +1,95 @@
+{
+ "intro-01-welcome.m4a": {
+  "durationMs": 6442,
+  "gaps": [
+   {
+    "startMs": 1570,
+    "endMs": 1950
+   },
+   {
+    "startMs": 3860,
+    "endMs": 3990
+   },
+   {
+    "startMs": 4710,
+    "endMs": 5130
+   }
+  ]
+ },
+ "intro-02-aim.m4a": {
+  "durationMs": 7381,
+  "gaps": [
+   {
+    "startMs": 3000,
+    "endMs": 3480
+   },
+   {
+    "startMs": 4350,
+    "endMs": 4960
+   }
+  ]
+ },
+ "intro-03-shoot-twice.m4a": {
+  "durationMs": 6400,
+  "gaps": [
+   {
+    "startMs": 1740,
+    "endMs": 2290
+   },
+   {
+    "startMs": 4220,
+    "endMs": 4670
+   }
+  ]
+ },
+ "intro-04-reload.m4a": {
+  "durationMs": 11306,
+  "gaps": [
+   {
+    "startMs": 2730,
+    "endMs": 3270
+   },
+   {
+    "startMs": 5390,
+    "endMs": 5790
+   },
+   {
+    "startMs": 6340,
+    "endMs": 6780
+   },
+   {
+    "startMs": 8020,
+    "endMs": 8150
+   },
+   {
+    "startMs": 9210,
+    "endMs": 9590
+   }
+  ]
+ },
+ "intro-05-wipeouts-and-passing-the-screen.m4a": {
+  "durationMs": 10624,
+  "gaps": [
+   {
+    "startMs": 1390,
+    "endMs": 1820
+   },
+   {
+    "startMs": 3320,
+    "endMs": 3660
+   },
+   {
+    "startMs": 5200,
+    "endMs": 5640
+   },
+   {
+    "startMs": 7310,
+    "endMs": 7910
+   },
+   {
+    "startMs": 8710,
+    "endMs": 8960
+   }
+  ]
+ }
+}

@@ -120,13 +120,25 @@ export function showReloadModal(ctx: UiCtx, options: ReloadModalOptions): Promis
     });
     const mute = createCoverMute(ctx);
 
-    const timer = h(doc, 'div', {
-      class: 'tc-timer-ring',
-      'data-testid': LOCAL_IDS.reloadTimer,
-      'aria-hidden': 'true',
-    });
     const fastMs = fastWindowMs(question.kind, question.grade);
-    timer.style.setProperty('--tc-fast-ms', `${fastMs}ms`);
+    // "Hide the bonus ring" only removes the picture and its words. The clock, the bonus and
+    // the question are the same, so a slow reader loses nothing (Gate 2).
+    let timerBlock: HTMLElement | null = null;
+    if (!ctx.settings().hideBonusRing) {
+      const timer = h(doc, 'div', {
+        class: 'tc-timer-ring',
+        'data-testid': LOCAL_IDS.reloadTimer,
+        'aria-hidden': 'true',
+      });
+      timer.style.setProperty('--tc-fast-ms', `${fastMs}ms`);
+      timerBlock = h(
+        doc,
+        'div',
+        { class: 'tc-timer' },
+        timer,
+        h(doc, 'p', { class: 'tc-muted', text: COPY.timerLabel }),
+      );
+    }
 
     const nextSlot = h(doc, 'div', { class: 'tc-next-row' });
     const card = h(
@@ -186,13 +198,7 @@ export function showReloadModal(ctx: UiCtx, options: ReloadModalOptions): Promis
           'div',
           { class: 'tc-reload-info' },
           h(doc, 'p', { class: 'tc-instructions', text: COPY.instructions }),
-          h(
-            doc,
-            'div',
-            { class: 'tc-timer' },
-            timer,
-            h(doc, 'p', { class: 'tc-muted', text: COPY.timerLabel }),
-          ),
+          timerBlock,
         ),
         question.passage
           ? h(doc, 'p', { id: 'tc-reload-passage', class: 'tc-passage',

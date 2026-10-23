@@ -18,6 +18,7 @@ import { chronoFace, loadingScene, loadingTimeline, skyline } from './art';
 import { LOCAL_IDS } from './constants';
 import type { UiCtx } from './ctx';
 import { awardIcon } from './awardIcons';
+import { countRow } from './countPictures';
 import { victoryMood } from './victoryMood';
 import { h } from './dom';
 import { TEST_IDS, type LoadingHandle, type VictoryChoice, type VictoryOptions } from './types';
@@ -227,6 +228,25 @@ function confetti(doc: Document): HTMLElement {
   return h(doc, 'div', { class: 'tc-confetti', 'data-role': 'confetti', 'aria-hidden': 'true' }, ...bits);
 }
 
+/** One stat: the words for readers, then a picture row for counting. Screen readers hear the picture's label once. */
+function statLine(
+  doc: Document,
+  cls: string,
+  role: string,
+  words: string,
+  pictures: HTMLElement,
+  picturesRole: string,
+): HTMLElement {
+  pictures.setAttribute('data-role', picturesRole);
+  return h(
+    doc,
+    'p',
+    { class: cls, 'data-role': role },
+    h(doc, 'span', { class: 'tc-stat-words', 'aria-hidden': 'true', text: words }),
+    pictures,
+  );
+}
+
 export function showVictory(ctx: UiCtx, options: VictoryOptions): Promise<VictoryChoice> {
   const { doc } = ctx;
   const { winner, names, stats } = options;
@@ -250,14 +270,37 @@ export function showVictory(ctx: UiCtx, options: VictoryOptions): Promise<Victor
             { class: 'tc-award-card', 'data-team': t, 'data-award-team': t },
             h(doc, 'p', { class: 'tc-team-eyebrow', text: TEAM_NAMES[t] }),
             h(doc, 'h3', { text: names[t] || TEAM_NAMES[t] }),
-            h(doc, 'p', {
-              class: 'tc-brain-stats',
-              'data-role': 'brain-stats',
-              text: `${VICTORY.brainStats}: ${VICTORY.brainStatsValue(
+            statLine(
+              doc,
+              'tc-brain-stats',
+              'brain-stats',
+              `${VICTORY.brainStats}: ${VICTORY.brainStatsValue(
                 stats[t].correctAnswers,
                 stats[t].questionsAnswered,
               )}`,
-            }),
+              countRow(
+                doc,
+                'star',
+                stats[t].correctAnswers,
+                stats[t].questionsAnswered,
+                VICTORY.brainStatsValue(stats[t].correctAnswers, stats[t].questionsAnswered),
+              ),
+              'brain-stars',
+            ),
+            statLine(
+              doc,
+              'tc-scrap-stats',
+              'scrap-line',
+              `${VICTORY.scrapLabel}: ${VICTORY.scrapValue(stats[t].scrapEarned)}`,
+              countRow(
+                doc,
+                'dot',
+                stats[t].scrapEarned,
+                stats[t].scrapEarned,
+                VICTORY.scrapValue(stats[t].scrapEarned),
+              ),
+              'scrap-dots',
+            ),
             h(
               doc,
               'ul',

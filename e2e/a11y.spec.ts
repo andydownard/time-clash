@@ -84,7 +84,11 @@ test.describe('reduced motion', () => {
   test('the screens and covers stop big motion', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await openGame(page);
-    await expect(page.locator('[data-tc-root][data-motion]')).toHaveAttribute(
+    await expect(page.locator('[data-tc-root][data-motion]:not([data-tc-chrome])')).toHaveAttribute(
+      'data-motion',
+      'reduced',
+    );
+    await expect(page.locator('[data-tc-chrome][data-motion]')).toHaveAttribute(
       'data-motion',
       'reduced',
     );

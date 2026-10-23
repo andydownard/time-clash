@@ -29,6 +29,8 @@ import {
   type BackingStore,
   type CreateStorage,
   type LoadSettings,
+  type SetupPick,
+  type SetupPicks,
   type Settings,
   type StorageKey,
   type StorageSchema,
@@ -48,18 +50,40 @@ const TEAM_ORDER: readonly Team[] = ['PAST', 'FUTURE'];
 const isObject = (v: unknown): v is Record<string, unknown> =>
   typeof v === 'object' && v !== null && !Array.isArray(v);
 
-function parsePlayer(v: unknown, team: Team): Player | null {
+/** A grade, subject and optional Focus, checked. Null when the grade or subject is bad. */
+function parsePick(v: unknown, team: Team): SetupPick | null {
   if (!isObject(v)) return null;
-  const { name, grade, subject } = v;
-  if (typeof name !== 'string' || v.team !== team) return null;
+  const { grade, subject } = v;
   if (typeof grade !== 'number' || !Number.isInteger(grade)) return null;
   if (grade < GRADE.min || grade > GRADE.max) return null;
   if (typeof subject !== 'string' || !SUBJECTS.includes(subject as Subject)) return null;
-  const player: Player = { name, team, grade: grade as Grade, subject: subject as Subject };
+  const pick: SetupPick = { grade: grade as Grade, subject: subject as Subject };
   // A saved topic must still be one this side is offered. Anything else is dropped, not fatal.
   const topic = TOPIC_IDS.find((t) => t === v.topic);
-  if (topic && TOPIC_FOCUS.offer[team].includes(topic)) player.topic = topic;
-  return player;
+  if (topic && TOPIC_FOCUS.offer[team].includes(topic)) pick.topic = topic;
+  return pick;
+}
+
+function parsePlayer(v: unknown, team: Team): Player | null {
+  if (!isObject(v)) return null;
+  const pick = parsePick(v, team);
+  if (typeof v.name !== 'string' || v.team !== team || !pick) return null;
+  return { name: v.name, team, ...pick };
+}
+
+function parseSetupPicks(v: unknown): SetupPicks | null {
+  if (!isObject(v)) return null;
+  const out: SetupPicks = {};
+  for (const team of TEAM_ORDER) {
+    const pick = parsePick(v[team], team);
+    if (pick) out[team] = pick;
+  }
+  return out;
+}
+
+/** Each side's grade, subject and Focus from last time. Empty when nothing good is saved. Never throws. */
+export function loadSetupPicks(storage: TypedStorage): SetupPicks {
+  return storage.get('timeclash.setupPicks') ?? {};
 }
 
 function parsePlayers(v: unknown): Players | null {
@@ -80,6 +104,7 @@ function parseSettings(v: unknown): Settings | null {
     captions: typeof v.captions === 'boolean' ? v.captions : d.captions,
     musicOn: typeof v.musicOn === 'boolean' ? v.musicOn : d.musicOn,
     reducedMotion: rm === 'on' || rm === 'off' || rm === 'system' ? rm : d.reducedMotion,
+    hideBonusRing: typeof v.hideBonusRing === 'boolean' ? v.hideBonusRing : d.hideBonusRing,
   };
 }
 
@@ -320,6 +345,7 @@ const GUARDS: { [K in StorageKey]: (v: unknown) => StorageSchema[K] | null } = {
   'timeclash.plan': (v) => (typeof v === 'object' && v !== null ? normalizePlan(v) : null),
   'timeclash.practice': parsePractice,
   'timeclash.bases': parseBases,
+  'timeclash.setupPicks': parseSetupPicks,
 };
 
 function defaultBacking(): BackingStore | null {

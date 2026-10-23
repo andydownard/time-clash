@@ -14,6 +14,7 @@ import { CHROME } from './copy';
 import type { HowToPlay } from './registry';
 import { isReducedMotion } from '../ui/motion';
 import {
+  setHideBonusRing,
   setReducedMotion,
   setVolume,
   toggleCaptions,
@@ -30,6 +31,7 @@ export const CHROME_IDS = {
   volumeValue: 'settings-volume-value',
   music: 'settings-music',
   motion: 'settings-motion',
+  bonusRing: 'settings-bonus-ring',
   clear: 'settings-clear',
   clearYes: 'settings-clear-yes',
   clearNo: 'settings-clear-no',
@@ -115,6 +117,12 @@ export function mountChrome(doc: Document, deps: ChromeDeps): Chrome {
     zIndex: String(CHROME_Z),
     pointerEvents: 'none',
   });
+  const syncMotion = (): boolean => {
+    const reduced = isReducedMotion(loadSettings(storage).reducedMotion, doc.defaultView);
+    host.setAttribute('data-motion', reduced ? 'reduced' : 'full');
+    return reduced;
+  };
+  syncMotion();
   doc.body.append(host);
 
   how.addEventListener('click', () => void howTo.open());
@@ -147,6 +155,11 @@ export function mountChrome(doc: Document, deps: ChromeDeps): Chrome {
       type: 'button',
       class: 'tc-btn tc-btn-neutral',
       'data-testid': CHROME_IDS.motion,
+    });
+    const bonusRing = h(doc, 'button', {
+      type: 'button',
+      class: 'tc-btn tc-btn-neutral',
+      'data-testid': CHROME_IDS.bonusRing,
     });
     const volume = h(doc, 'input', {
       type: 'range',
@@ -183,8 +196,11 @@ export function mountChrome(doc: Document, deps: ChromeDeps): Chrome {
         ? BUTTONS.captionsOn
         : BUTTONS.captionsOff;
       music.textContent = audio.musicOn ? BUTTONS.musicOn : BUTTONS.musicOff;
-      const reduced = isReducedMotion(loadSettings(storage).reducedMotion, doc.defaultView);
+      const reduced = syncMotion();
       motion.textContent = reduced ? BUTTONS.motionOff : BUTTONS.motionOn;
+      bonusRing.textContent = loadSettings(storage).hideBonusRing
+        ? BUTTONS.bonusRingHidden
+        : BUTTONS.bonusRingShown;
       volume.value = String(Math.round(audio.volume * 100));
       volumeValue.textContent = `${volume.value}%`;
     };
@@ -207,6 +223,11 @@ export function mountChrome(doc: Document, deps: ChromeDeps): Chrome {
       const reduced = isReducedMotion(loadSettings(storage).reducedMotion, doc.defaultView);
       // Motion shows what a tap will do: when motion is reduced, the tap turns it back on.
       setReducedMotion(storage, reduced ? 'off' : 'on');
+      overlay.applySettings(loadSettings(storage));
+      paint();
+    });
+    bonusRing.addEventListener('click', () => {
+      setHideBonusRing(storage, !loadSettings(storage).hideBonusRing);
       overlay.applySettings(loadSettings(storage));
       paint();
     });
@@ -271,6 +292,7 @@ export function mountChrome(doc: Document, deps: ChromeDeps): Chrome {
           { class: 'tc-panel-body' },
           h(doc, 'div', { class: 'tc-row' }, mute, captions),
           h(doc, 'div', { class: 'tc-row' }, music, motion),
+          h(doc, 'div', { class: 'tc-row' }, bonusRing),
           h(
             doc,
             'div',

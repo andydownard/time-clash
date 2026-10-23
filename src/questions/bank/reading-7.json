@@ -1023,5 +1023,281 @@
     "answer": "The hoverboards in the garage are brand new.",
     "hint": "The subject is hoverboards. Is that one thing or many?",
     "tags": ["grammar", "grammar"]
+  },
+  {
+    "id": "reading-7-0071",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "vocab",
+    "prompt": "Read: \"The scientist was skeptical, so she asked for proof before she believed the claim.\" What does skeptical mean?",
+    "choices": ["excited", "confused", "trusting", "doubtful"],
+    "answer": "doubtful",
+    "hint": "Look at what she asked for first.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-7-0072",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "vocab",
+    "prompt": "Read: \"We had ample time, so no one had to rush.\" What does ample mean?",
+    "choices": ["almost gone", "hard to measure", "more than enough", "badly spent"],
+    "answer": "more than enough",
+    "hint": "No one had to hurry.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-7-0073",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "vocab",
+    "prompt": "Read: \"Sorting the tiny beads by color was tedious work.\" What does tedious mean?",
+    "choices": ["thrilling and fast", "dull and tiresome", "costly and rare", "silly and light"],
+    "answer": "dull and tiresome",
+    "hint": "Think about doing one small job for hours.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-7-0074",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "vocab",
+    "prompt": "Read: \"Persistent rain kept us indoors all weekend.\" What does persistent mean?",
+    "choices": [
+      "continuing without stopping",
+      "light and warm",
+      "sudden and short",
+      "cold and icy"
+    ],
+    "answer": "continuing without stopping",
+    "hint": "The rain lasted all weekend.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-7-0075",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "vocab",
+    "prompt": "Read: \"The bewildered tourist turned the map around and around.\" What does bewildered mean?",
+    "choices": ["delighted", "sleepy", "bored", "confused"],
+    "answer": "confused",
+    "hint": "The tourist could not make sense of the map.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-7-0076",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "vocab",
+    "prompt": "Which word is the best antonym for \"scarce\"?",
+    "choices": ["rare", "tiny", "plentiful", "costly"],
+    "answer": "plentiful",
+    "hint": "Think of a word that means a lot.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-7-0077",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "vocab",
+    "prompt": "The root \"aud\" means hear. What does \"audible\" mean?",
+    "choices": ["able to be seen", "able to be heard", "hard to read", "easy to break"],
+    "answer": "able to be heard",
+    "hint": "Use the root meaning.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-7-0078",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "vocab",
+    "prompt": "Read: \"The quiz was a piece of cake.\" What does the idiom mean?",
+    "choices": ["It was very easy.", "It was long.", "It was about food.", "It was a surprise."],
+    "answer": "It was very easy.",
+    "hint": "An idiom does not mean its exact words.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-7-0079",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "grammar",
+    "prompt": "Which sentence uses its or it's correctly?",
+    "choices": [
+      "Its time to feed the cat.",
+      "The cat licked it's paw.",
+      "The cat has lost it's toy.",
+      "It's time to feed the cat."
+    ],
+    "answer": "It's time to feed the cat.",
+    "hint": "It's means it is.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-7-0080",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "grammar",
+    "prompt": "Which sentence uses a comma correctly with a name?",
+    "choices": [
+      "Thanks for the help Jordan.",
+      "Thanks, for the help Jordan.",
+      "Thanks for the help, Jordan.",
+      "Thanks for, the help Jordan."
+    ],
+    "answer": "Thanks for the help, Jordan.",
+    "hint": "Set the name apart at the end.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-7-0081",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "grammar",
+    "prompt": "Which word is a preposition? \"The cat hid under the table.\"",
+    "choices": ["cat", "under", "hid", "table"],
+    "answer": "under",
+    "hint": "It shows where the cat was.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-7-0082",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "grammar",
+    "prompt": "Which sentence is in the passive voice?",
+    "choices": [
+      "The window was broken by the storm.",
+      "The storm broke the window.",
+      "The storm is strong.",
+      "The window is very large."
+    ],
+    "answer": "The window was broken by the storm.",
+    "hint": "The doer comes after the action.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-7-0083",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "grammar",
+    "prompt": "Which sentence has parallel structure?",
+    "choices": [
+      "She likes hiking, to bike, and swimming.",
+      "She likes to hike, biking, and swim.",
+      "She likes hiking, bikes, and to swim.",
+      "She likes hiking, biking, and swimming."
+    ],
+    "answer": "She likes hiking, biking, and swimming.",
+    "hint": "The items in a list should match in form.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-7-0084",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "grammar",
+    "prompt": "Which phrase best fills the blank? \"The game was cancelled. ___, we stayed home.\"",
+    "choices": ["For example", "In contrast", "As a result", "Once upon a time"],
+    "answer": "As a result",
+    "hint": "The second sentence is an effect.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-7-0085",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "What is the best description of Lina?",
+    "choices": [
+      "bossy and impatient",
+      "creative and supportive",
+      "shy and nervous",
+      "careless and rushed"
+    ],
+    "answer": "creative and supportive",
+    "hint": "Look at how she helped with the problem.",
+    "tags": ["inference"],
+    "passage": "The night before the science fair, Theo's volcano model cracked down the middle. He wanted to throw it away. His older sister, Lina, stared at the crack and then at the clock. \"Wait,\" she said. \"Real volcanoes have cracks. Let's make this one erupt from the crack.\" Theo grinned, packed the gap with clay, and mixed the baking soda and vinegar. In the morning, the lava poured from the side of the mountain, and the judges leaned in closer than they had for any other project."
+  },
+  {
+    "id": "reading-7-0086",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "Which lesson does this story teach?",
+    "choices": [
+      "A problem can become a chance to be creative.",
+      "Never work with your sister.",
+      "Models should never be moved.",
+      "Judges like clay best."
+    ],
+    "answer": "A problem can become a chance to be creative.",
+    "hint": "Think about what changed after the crack.",
+    "tags": ["theme"],
+    "passage": "The night before the science fair, Theo's volcano model cracked down the middle. He wanted to throw it away. His older sister, Lina, stared at the crack and then at the clock. \"Wait,\" she said. \"Real volcanoes have cracks. Let's make this one erupt from the crack.\" Theo grinned, packed the gap with clay, and mixed the baking soda and vinegar. In the morning, the lava poured from the side of the mountain, and the judges leaned in closer than they had for any other project."
+  },
+  {
+    "id": "reading-7-0087",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "Why did the judges lean in closer?",
+    "choices": [
+      "The model was the biggest.",
+      "Theo gave a long speech.",
+      "The room was too dark.",
+      "The lava came out in a surprising way."
+    ],
+    "answer": "The lava came out in a surprising way.",
+    "hint": "Look at what happened in the morning.",
+    "tags": ["cause"],
+    "passage": "The night before the science fair, Theo's volcano model cracked down the middle. He wanted to throw it away. His older sister, Lina, stared at the crack and then at the clock. \"Wait,\" she said. \"Real volcanoes have cracks. Let's make this one erupt from the crack.\" Theo grinned, packed the gap with clay, and mixed the baking soda and vinegar. In the morning, the lava poured from the side of the mountain, and the judges leaned in closer than they had for any other project."
+  },
+  {
+    "id": "reading-7-0088",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "choices": [
+      "Cities once had no sun.",
+      "Clocks need a flat plate.",
+      "Sundials use shadows to show the time.",
+      "Night is the best time to read."
+    ],
+    "answer": "Sundials use shadows to show the time.",
+    "hint": "Ask what the whole passage is mostly about.",
+    "tags": ["mainidea"],
+    "passage": "Long before cities had clocks, people told time by watching the sun. A sundial uses a flat plate and a raised piece called a gnomon. As the sun moves across the sky, the gnomon's shadow moves across the plate. Marks on the plate show the hour. Sundials are simple and need no power, but they stop working on cloudy days and at night."
+  },
+  {
+    "id": "reading-7-0089",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "What is the raised piece of a sundial called?",
+    "choices": ["a plate", "a gnomon", "a shadow", "an hour mark"],
+    "answer": "a gnomon",
+    "hint": "Find the new word in the passage.",
+    "tags": ["detail"],
+    "passage": "Long before cities had clocks, people told time by watching the sun. A sundial uses a flat plate and a raised piece called a gnomon. As the sun moves across the sky, the gnomon's shadow moves across the plate. Marks on the plate show the hour. Sundials are simple and need no power, but they stop working on cloudy days and at night."
+  },
+  {
+    "id": "reading-7-0090",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "Why would a sundial be a poor choice on a rainy day?",
+    "choices": [
+      "It needs sunlight to make a shadow.",
+      "It needs electric power.",
+      "Its plate would rust away.",
+      "Its marks would fade."
+    ],
+    "answer": "It needs sunlight to make a shadow.",
+    "hint": "Think about what makes the shadow.",
+    "tags": ["inference"],
+    "passage": "Long before cities had clocks, people told time by watching the sun. A sundial uses a flat plate and a raised piece called a gnomon. As the sun moves across the sky, the gnomon's shadow moves across the plate. Marks on the plate show the hour. Sundials are simple and need no power, but they stop working on cloudy days and at night."
   }
 ]

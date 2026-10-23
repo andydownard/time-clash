@@ -610,7 +610,12 @@
     "kind": "mainidea",
     "prompt": "What is the main idea of this passage?",
     "passage": "Early explorers relied on maps drawn by hand, and those maps often held mistakes. Over time, travelers shared what they saw, and mapmakers corrected the errors. Today, satellites photograph the whole planet, and maps can be updated within days.",
-    "choices": ["Satellites draw maps by hand.", "Maps have become more accurate as tools improved.", "Mistakes on maps are helpful.", "Explorers never used maps."],
+    "choices": [
+      "Satellites draw maps by hand.",
+      "Maps have become more accurate as tools improved.",
+      "Mistakes on maps are helpful.",
+      "Explorers never used maps."
+    ],
     "answer": "Maps have become more accurate as tools improved.",
     "hint": "Compare the past with today.",
     "tags": ["mainidea"]
@@ -622,7 +627,12 @@
     "kind": "mainidea",
     "prompt": "What can you infer about the town's plan?",
     "passage": "The mayor announced that the old bridge would close for repairs. Within a week, a new bus route and a free ferry were set up. Few commuters complained about delays.",
-    "choices": ["It planned to remove the river.", "It ignored the problem.", "It wanted fewer people to travel.", "It was prepared to help travelers."],
+    "choices": [
+      "It planned to remove the river.",
+      "It ignored the problem.",
+      "It wanted fewer people to travel.",
+      "It was prepared to help travelers."
+    ],
     "answer": "It was prepared to help travelers.",
     "hint": "Think about what the new bus route and ferry offered.",
     "tags": ["mainidea"]
@@ -634,7 +644,12 @@
     "kind": "mainidea",
     "prompt": "Which detail supports the idea that later start times help?",
     "passage": "Some schools have moved to later start times. Studies show that teenagers who sleep longer pay better attention and make fewer mistakes. Critics worry about bus schedules, but many schools find ways to adjust.",
-    "choices": ["Teens who sleep longer pay better attention.", "Schools have many classrooms.", "Some buses run on a schedule.", "Critics wrote letters."],
+    "choices": [
+      "Teens who sleep longer pay better attention.",
+      "Schools have many classrooms.",
+      "Some buses run on a schedule.",
+      "Critics wrote letters."
+    ],
     "answer": "Teens who sleep longer pay better attention.",
     "hint": "Pick the fact about results for students.",
     "tags": ["mainidea"]
@@ -646,7 +661,12 @@
     "kind": "mainidea",
     "prompt": "Why is bamboo called renewable?",
     "passage": "Bamboo grows faster than almost any other plant, sometimes several inches in one day. Because it regrows after cutting, it can be harvested again and again. For these reasons, builders and makers value it as a renewable material.",
-    "choices": ["It grows only once.", "It never needs water.", "It is made in factories.", "It regrows after it is cut."],
+    "choices": [
+      "It grows only once.",
+      "It never needs water.",
+      "It is made in factories.",
+      "It regrows after it is cut."
+    ],
     "answer": "It regrows after it is cut.",
     "hint": "Look at the second sentence.",
     "tags": ["mainidea"]
@@ -658,7 +678,12 @@
     "kind": "mainidea",
     "prompt": "What does Grandpa's saying suggest?",
     "passage": "Every evening, Grandpa wound the old clock on the mantel. It lost two minutes each week, but he never let it stop. \"Time should be tended,\" he liked to say, \"like a garden.\"",
-    "choices": ["Two minutes do not matter at all.", "Time needs care and attention.", "Gardens grow best at night.", "Clocks should be thrown away."],
+    "choices": [
+      "Two minutes do not matter at all.",
+      "Time needs care and attention.",
+      "Gardens grow best at night.",
+      "Clocks should be thrown away."
+    ],
     "answer": "Time needs care and attention.",
     "hint": "He compares time to a garden. What do gardens need?",
     "tags": ["mainidea"]
@@ -670,7 +695,12 @@
     "kind": "mainidea",
     "prompt": "How is this passage organized?",
     "passage": "First, the seeds are collected and dried. Then they are cleaned and sorted by size. After that, they are packed in paper envelopes and stored in a cool room until spring.",
-    "choices": ["In the order the steps happen.", "By listing reasons for an opinion.", "By comparing two things.", "By describing one place."],
+    "choices": [
+      "In the order the steps happen.",
+      "By listing reasons for an opinion.",
+      "By comparing two things.",
+      "By describing one place."
+    ],
     "answer": "In the order the steps happen.",
     "hint": "Notice the words First, Then, and After that.",
     "tags": ["mainidea"]
@@ -682,7 +712,12 @@
     "kind": "mainidea",
     "prompt": "What is the main idea of this passage?",
     "passage": "Language changes as people use it. New words appear when inventions arrive, and old words slip away when no one needs them. Even meanings shift: the word \"awful\" once meant full of awe.",
-    "choices": ["Languages change over time.", "Meanings never change.", "Old words are always better.", "Inventions have no names."],
+    "choices": [
+      "Languages change over time.",
+      "Meanings never change.",
+      "Old words are always better.",
+      "Inventions have no names."
+    ],
     "answer": "Languages change over time.",
     "hint": "All the examples show the same kind of change.",
     "tags": ["mainidea"]
@@ -693,7 +728,12 @@
     "grade": 12,
     "kind": "grammar",
     "prompt": "Which sentence has correct subject-verb agreement?",
-    "choices": ["The list of rules are on the wall.", "The list of rules is on the wall.", "The lists of rules is on the wall.", "The list of rules were on the wall."],
+    "choices": [
+      "The list of rules are on the wall.",
+      "The list of rules is on the wall.",
+      "The lists of rules is on the wall.",
+      "The list of rules were on the wall."
+    ],
     "answer": "The list of rules is on the wall.",
     "hint": "The subject is the list, not the rules.",
     "tags": ["grammar"]
@@ -704,7 +744,12 @@
     "grade": 12,
     "kind": "grammar",
     "prompt": "Which sentence avoids a dangling modifier?",
-    "choices": ["Walking to school, a rainbow appeared.", "Walking to school, the rain stopped.", "Walking to school, the sky turned bright.", "Walking to school, Ana saw a rainbow."],
+    "choices": [
+      "Walking to school, a rainbow appeared.",
+      "Walking to school, the rain stopped.",
+      "Walking to school, the sky turned bright.",
+      "Walking to school, Ana saw a rainbow."
+    ],
     "answer": "Walking to school, Ana saw a rainbow.",
     "hint": "Who is doing the walking?",
     "tags": ["grammar"]
@@ -726,7 +771,12 @@
     "grade": 12,
     "kind": "grammar",
     "prompt": "Which sentence uses \"affect\" or \"effect\" correctly?",
-    "choices": ["The weather will effect our plans.", "The weather's affect was big.", "The weather has an affect on our plans.", "The weather will affect our plans."],
+    "choices": [
+      "The weather will effect our plans.",
+      "The weather's affect was big.",
+      "The weather has an affect on our plans.",
+      "The weather will affect our plans."
+    ],
     "answer": "The weather will affect our plans.",
     "hint": "One word is the action. The other is the result.",
     "tags": ["grammar"]
@@ -737,7 +787,12 @@
     "grade": 12,
     "kind": "grammar",
     "prompt": "Which sentence has the best punctuation?",
-    "choices": ["My brother, who lives in Austin visited us.", "My brother who lives in Austin, visited us.", "My brother, who lives in Austin, visited us.", "My brother who, lives in Austin, visited us."],
+    "choices": [
+      "My brother, who lives in Austin visited us.",
+      "My brother who lives in Austin, visited us.",
+      "My brother, who lives in Austin, visited us.",
+      "My brother who, lives in Austin, visited us."
+    ],
     "answer": "My brother, who lives in Austin, visited us.",
     "hint": "Commas wrap around extra information.",
     "tags": ["grammar"]
@@ -748,9 +803,290 @@
     "grade": 12,
     "kind": "grammar",
     "prompt": "Which choice is a sentence fragment?",
-    "choices": ["We heard it.", "The bell rang at noon.", "When the bell rang at noon.", "Run to the gate!"],
+    "choices": [
+      "We heard it.",
+      "The bell rang at noon.",
+      "When the bell rang at noon.",
+      "Run to the gate!"
+    ],
     "answer": "When the bell rang at noon.",
     "hint": "Does this group of words make a full thought by itself?",
     "tags": ["grammar"]
+  },
+  {
+    "id": "reading-12-0061",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? She felt ambivalent about moving, both excited and sad.",
+    "choices": ["having mixed feelings", "very certain", "completely happy", "not caring at all"],
+    "answer": "having mixed feelings",
+    "hint": "Look at the words both excited and sad.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-12-0062",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? The prolific author wrote a new book every year.",
+    "choices": ["rarely published", "very famous", "hard to read", "producing a great deal"],
+    "answer": "producing a great deal",
+    "hint": "A new book every year adds up.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-12-0063",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? His altruistic act was giving up his seat for a stranger, with no thought of reward.",
+    "choices": [
+      "selfish and proud",
+      "careless and quick",
+      "caring about the good of others",
+      "loud and boastful"
+    ],
+    "answer": "caring about the good of others",
+    "hint": "He wanted nothing in return.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-12-0064",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? She took copious notes, filling page after page.",
+    "choices": ["messy", "plentiful", "very few", "secret"],
+    "answer": "plentiful",
+    "hint": "She filled page after page.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-12-0065",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? Planting trees can mitigate the heat in a city.",
+    "choices": ["make less severe", "make worse", "put a number on", "bring about"],
+    "answer": "make less severe",
+    "hint": "Trees give shade, so the heat is lessened.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-12-0066",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? They had a tacit agreement. No one said it aloud, but all understood.",
+    "choices": [
+      "written down",
+      "loudly argued",
+      "quickly forgotten",
+      "understood without being said"
+    ],
+    "answer": "understood without being said",
+    "hint": "No one said it aloud.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-12-0067",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? The link between the two stories was tenuous, so few readers noticed it.",
+    "choices": ["strong and clear", "obvious to all", "weak and thin", "very surprising"],
+    "answer": "weak and thin",
+    "hint": "Few readers noticed it.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-12-0068",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "vocab",
+    "prompt": "Read the sentence. What does the word mean? The innocuous remark caused no harm.",
+    "choices": ["rude", "harmless", "clever", "very long"],
+    "answer": "harmless",
+    "hint": "The sentence says it caused no harm.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-12-0069",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "mainidea",
+    "prompt": "Read the passage. What is the main idea?",
+    "passage": "Bridges built long ago were often made of stone. Engineers later learned to use steel and cables to cross much wider gaps. Each new material let builders reach farther than before.",
+    "choices": [
+      "New materials let engineers build longer bridges.",
+      "Stone bridges are still the best.",
+      "Cables are cheaper than steel.",
+      "Wide gaps cannot be crossed."
+    ],
+    "answer": "New materials let engineers build longer bridges.",
+    "hint": "Ask what each new material allowed.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-12-0070",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "mainidea",
+    "prompt": "Read the passage. What is the main idea?",
+    "passage": "A town library started a seed swap. Neighbors bring extra seeds and take home new kinds. Gardens in the area have grown more varied, and people have met neighbors they never knew.",
+    "choices": [
+      "Libraries should sell seeds.",
+      "Neighbors dislike gardening.",
+      "Seeds are hard to find.",
+      "A seed swap grew both gardens and friendships."
+    ],
+    "answer": "A seed swap grew both gardens and friendships.",
+    "hint": "The swap helped in two ways.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-12-0071",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "mainidea",
+    "prompt": "Read the passage. What is the main idea?",
+    "passage": "Many people think talent alone makes a great musician. Yet most musicians say steady practice mattered more. Small daily efforts add up over the years.",
+    "choices": [
+      "Talent is all that matters.",
+      "Musicians practice once a year.",
+      "Steady practice matters more than talent alone.",
+      "Great musicians dislike music."
+    ],
+    "answer": "Steady practice matters more than talent alone.",
+    "hint": "Notice the word yet. It signals the real point.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-12-0072",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "mainidea",
+    "prompt": "Read the passage. What is the main idea?",
+    "passage": "Satellites circle the planet and send back pictures. Scientists use them to track storms, watch forests, and map oceans. This view from above helps people prepare for changes on the ground.",
+    "choices": [
+      "Storms are caused by satellites.",
+      "Satellites help people study and prepare for changes on Earth.",
+      "Forests can only be seen from the ground.",
+      "Pictures are the only use for satellites."
+    ],
+    "answer": "Satellites help people study and prepare for changes on Earth.",
+    "hint": "Think about why the view from above is useful.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-12-0073",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "mainidea",
+    "prompt": "Read the passage. What is the main idea?",
+    "passage": "Elena's team lost its first three games. Instead of blaming one another, they held a meeting and listed what to fix. By the end of the season, they were winning.",
+    "choices": [
+      "Working together to fix problems turned the team around.",
+      "Elena was the only good player.",
+      "Meetings are better than games.",
+      "The team never lost again."
+    ],
+    "answer": "Working together to fix problems turned the team around.",
+    "hint": "Look at what the team chose to do after losing.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-12-0074",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "mainidea",
+    "prompt": "Read the passage. What is the main idea?",
+    "passage": "Stories passed down by voice kept history alive before writing was common. Elders shared tales at gatherings, and children learned them by heart. Songs and rhymes made the words easier to remember.",
+    "choices": [
+      "Children disliked old tales.",
+      "Writing is older than speech.",
+      "Elders did not share stories.",
+      "Spoken stories and songs preserved history before writing."
+    ],
+    "answer": "Spoken stories and songs preserved history before writing.",
+    "hint": "The passage is about how history was kept.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-12-0075",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "grammar",
+    "prompt": "Pick the word that fits. The jury ___ reached its verdict.",
+    "choices": ["have", "are", "has", "were"],
+    "answer": "has",
+    "hint": "The jury acts as one group.",
+    "tags": ["grammar", "subject-verb-agreement"]
+  },
+  {
+    "id": "reading-12-0076",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "grammar",
+    "prompt": "Pick the word that fits. He spoke so quietly that I ___ hear him.",
+    "choices": ["couldn't hardly", "could hardly", "can't hardly", "couldn't never"],
+    "answer": "could hardly",
+    "hint": "Hardly already means almost not. Do not add a second no-word.",
+    "tags": ["grammar", "double-negatives"]
+  },
+  {
+    "id": "reading-12-0077",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "grammar",
+    "prompt": "Which sentence has no dangling modifier?",
+    "choices": [
+      "Walking to school, Ben saw a rainbow.",
+      "Walking to school, a rainbow appeared to Ben.",
+      "Running late, the bus left without Ben.",
+      "Tired from the trip, the bed looked perfect."
+    ],
+    "answer": "Walking to school, Ben saw a rainbow.",
+    "hint": "The opening phrase must describe the person who comes right after it.",
+    "tags": ["grammar", "modifiers"]
+  },
+  {
+    "id": "reading-12-0078",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "grammar",
+    "prompt": "Pick the word that fits. The more she practiced, the ___ she played.",
+    "choices": ["best", "more good", "gooder", "better"],
+    "answer": "better",
+    "hint": "Two things are being compared.",
+    "tags": ["grammar", "comparisons"]
+  },
+  {
+    "id": "reading-12-0079",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "grammar",
+    "prompt": "Which sentence uses its and it's correctly?",
+    "choices": [
+      "Its clear that the dog wagged it's tail.",
+      "It's clear that the dog wagged it's tail.",
+      "It's clear that the dog wagged its tail.",
+      "Its clear that the dog wagged its tail."
+    ],
+    "answer": "It's clear that the dog wagged its tail.",
+    "hint": "It's means it is. Its shows ownership.",
+    "tags": ["grammar", "apostrophes"]
+  },
+  {
+    "id": "reading-12-0080",
+    "subject": "reading",
+    "grade": 12,
+    "kind": "grammar",
+    "prompt": "Pick the word that fits. Neither of the answers ___ correct.",
+    "choices": ["are", "is", "were", "have been"],
+    "answer": "is",
+    "hint": "Neither means one or the other. It takes a single form.",
+    "tags": ["grammar", "subject-verb-agreement"]
   }
 ]

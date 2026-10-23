@@ -1003,5 +1003,286 @@
     "answer": "The drawbridge was stuck; we took the tunnel instead.",
     "hint": "A semicolon joins two complete sentences.",
     "tags": ["grammar", "punctuation"]
+  },
+  {
+    "id": "reading-8-0071",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "vocab",
+    "prompt": "The speaker's candid remarks surprised the crowd because he held nothing back. What does candid mean?",
+    "choices": ["honest and open", "careful and slow", "funny and loud", "secretive and quiet"],
+    "answer": "honest and open",
+    "hint": "He did not hold anything back.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-8-0072",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "vocab",
+    "prompt": "Resilient plants recover quickly after a hard frost. What does resilient mean?",
+    "choices": ["easy to damage", "quick to grow", "slow to change", "able to bounce back"],
+    "answer": "able to bounce back",
+    "hint": "Think of a plant that gets better fast.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-8-0073",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "vocab",
+    "prompt": "The meager meal of broth and one roll barely fed the family. What does meager mean?",
+    "choices": ["rich and heavy", "spicy and hot", "small in amount", "fancy and costly"],
+    "answer": "small in amount",
+    "hint": "It barely fed them.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-8-0074",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "vocab",
+    "prompt": "We made tentative plans that could change if the weather turned bad. What does tentative mean?",
+    "choices": ["very strict", "not final", "well known", "kept secret"],
+    "answer": "not final",
+    "hint": "The plans could change.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-8-0075",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "vocab",
+    "prompt": "The sound of the band began to diminish as the parade moved away. What does diminish mean?",
+    "choices": ["become smaller", "grow louder", "stay the same", "turn sharp"],
+    "answer": "become smaller",
+    "hint": "The band was moving farther off.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-8-0076",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "vocab",
+    "prompt": "Athletes must persevere through hard practices to improve. What does persevere mean?",
+    "choices": [
+      "stop when tired",
+      "practice only once",
+      "avoid the team",
+      "keep trying despite difficulty"
+    ],
+    "answer": "keep trying despite difficulty",
+    "hint": "Think of someone who does not give up.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-8-0077",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "vocab",
+    "prompt": "The root \"chron\" means time. A chronological list follows what?",
+    "choices": [
+      "the alphabet",
+      "the size of things",
+      "the order events happened",
+      "a favorite color"
+    ],
+    "answer": "the order events happened",
+    "hint": "Use the root meaning.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-8-0078",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "vocab",
+    "prompt": "Which word has the most negative meaning when describing a person who spends little?",
+    "choices": ["thrifty", "stingy", "careful", "sensible"],
+    "answer": "stingy",
+    "hint": "Three of these words sound like praise.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-8-0079",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "grammar",
+    "prompt": "Which sentence contains a dangling modifier?",
+    "choices": [
+      "Walking to school, the rain soaked my jacket.",
+      "Walking to school, I got soaked by the rain.",
+      "As I walked to school, the rain soaked me.",
+      "The rain soaked my jacket on the walk to school."
+    ],
+    "answer": "Walking to school, the rain soaked my jacket.",
+    "hint": "Ask who was walking.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-8-0080",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "grammar",
+    "prompt": "Which sentence uses a colon correctly?",
+    "choices": [
+      "Bring three things a pencil, a ruler: and paper.",
+      "Bring a: pencil, a ruler, and paper.",
+      "Bring: three things a pencil, a ruler, and paper.",
+      "Bring three things: a pencil, a ruler, and paper."
+    ],
+    "answer": "Bring three things: a pencil, a ruler, and paper.",
+    "hint": "A colon follows a complete thought and introduces a list.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-8-0081",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "grammar",
+    "prompt": "What is the direct object? \"The chef tossed the salad.\"",
+    "choices": ["chef", "tossed", "salad", "the"],
+    "answer": "salad",
+    "hint": "What received the action?",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-8-0082",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "grammar",
+    "prompt": "Which sentence uses affect or effect correctly?",
+    "choices": [
+      "The rain had a big affect on us.",
+      "Rain can affect the game.",
+      "The affect of the rain was a delay.",
+      "A delay was the affect of rain."
+    ],
+    "answer": "Rain can affect the game.",
+    "hint": "Affect is usually the verb.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-8-0083",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "grammar",
+    "prompt": "Which sentence uses the correct pronoun?",
+    "choices": [
+      "Between you and me, the plan is risky.",
+      "Between you and I, the plan is risky.",
+      "Between I and you, the plan is risky.",
+      "Between you and he, the plan is risky."
+    ],
+    "answer": "Between you and me, the plan is risky.",
+    "hint": "Use an object pronoun after between.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-8-0084",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "grammar",
+    "prompt": "Which word is an adverb that modifies an adjective? \"The very tall tree swayed.\"",
+    "choices": ["tall", "tree", "swayed", "very"],
+    "answer": "very",
+    "hint": "It tells how tall.",
+    "tags": ["grammar"]
+  },
+  {
+    "id": "reading-8-0085",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "mainidea",
+    "prompt": "Which statement best gives the central idea?",
+    "choices": [
+      "Old towers should always be torn down.",
+      "Bake sales are the best way to raise money.",
+      "A community can work together to save something it values.",
+      "Postcards make towns famous."
+    ],
+    "answer": "A community can work together to save something it values.",
+    "hint": "Think about how the argument ended.",
+    "tags": ["theme"],
+    "passage": "For years, the town of Harlow argued about its old clock tower. Some residents wanted to tear it down because it had not worked in decades and was costly to keep standing. Others pointed out that the tower appeared on postcards, welcomed visitors, and reminded everyone of the town's history. At last the council voted to repair the clock, paying for it with a bake sale, a car wash, and donations from nearly every family. When the hands finally began to move, people stopped in the street and cheered."
+  },
+  {
+    "id": "reading-8-0086",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "mainidea",
+    "prompt": "Why did some residents want to tear down the tower?",
+    "choices": [
+      "It blocked the view.",
+      "It was broken and costly to keep.",
+      "It was too new.",
+      "It was in a bad spot on Main Street."
+    ],
+    "answer": "It was broken and costly to keep.",
+    "hint": "Find the first reason given.",
+    "tags": ["detail"],
+    "passage": "For years, the town of Harlow argued about its old clock tower. Some residents wanted to tear it down because it had not worked in decades and was costly to keep standing. Others pointed out that the tower appeared on postcards, welcomed visitors, and reminded everyone of the town's history. At last the council voted to repair the clock, paying for it with a bake sale, a car wash, and donations from nearly every family. When the hands finally began to move, people stopped in the street and cheered."
+  },
+  {
+    "id": "reading-8-0087",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "mainidea",
+    "prompt": "What does \"donations\" most likely mean?",
+    "choices": ["gifts of money or help", "loud complaints", "broken parts", "old postcards"],
+    "answer": "gifts of money or help",
+    "hint": "Families helped pay for the repair.",
+    "tags": ["vocab"],
+    "passage": "For years, the town of Harlow argued about its old clock tower. Some residents wanted to tear it down because it had not worked in decades and was costly to keep standing. Others pointed out that the tower appeared on postcards, welcomed visitors, and reminded everyone of the town's history. At last the council voted to repair the clock, paying for it with a bake sale, a car wash, and donations from nearly every family. When the hands finally began to move, people stopped in the street and cheered."
+  },
+  {
+    "id": "reading-8-0088",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "choices": [
+      "Cities built pumps in the mountains.",
+      "Water flows best uphill.",
+      "Engineers dislike steep slopes.",
+      "Roman aqueducts used gravity and careful planning to move water."
+    ],
+    "answer": "Roman aqueducts used gravity and careful planning to move water.",
+    "hint": "Ask what the whole passage is mostly about.",
+    "tags": ["mainidea"],
+    "passage": "Roman engineers built aqueducts to carry water from distant mountains to growing cities. Instead of pumps, they relied on gravity. Each channel sloped downward by a tiny, carefully measured amount, so that the water flowed steadily without rushing or stalling. Some of these structures still stand today, which shows how precisely the builders planned."
+  },
+  {
+    "id": "reading-8-0089",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "mainidea",
+    "prompt": "Why did the builders measure the slope so carefully?",
+    "choices": [
+      "So the channels looked pretty.",
+      "So pumps could be added later.",
+      "So the water would flow steadily.",
+      "So the mountains stayed dry."
+    ],
+    "answer": "So the water would flow steadily.",
+    "hint": "Look at what the slope controls.",
+    "tags": ["cause"],
+    "passage": "Roman engineers built aqueducts to carry water from distant mountains to growing cities. Instead of pumps, they relied on gravity. Each channel sloped downward by a tiny, carefully measured amount, so that the water flowed steadily without rushing or stalling. Some of these structures still stand today, which shows how precisely the builders planned."
+  },
+  {
+    "id": "reading-8-0090",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "mainidea",
+    "prompt": "What does it suggest that some aqueducts still stand?",
+    "choices": [
+      "They were built last year.",
+      "They were built with great skill.",
+      "They are used as pumps.",
+      "They were never needed."
+    ],
+    "answer": "They were built with great skill.",
+    "hint": "Think about how long ago they were made.",
+    "tags": ["inference"],
+    "passage": "Roman engineers built aqueducts to carry water from distant mountains to growing cities. Instead of pumps, they relied on gravity. Each channel sloped downward by a tiny, carefully measured amount, so that the water flowed steadily without rushing or stalling. Some of these structures still stand today, which shows how precisely the builders planned."
   }
 ]

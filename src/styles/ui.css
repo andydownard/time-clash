@@ -1804,10 +1804,35 @@ body {
 .tc-victory[data-team='FUTURE'] > .tc-team-eyebrow {
   color: var(--tc-eyebrow-future);
 }
-.tc-brain-stats {
-  margin: 0 0 var(--tc-s-2);
+.tc-brain-stats,
+.tc-scrap-stats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0 var(--tc-s-2);
+  margin: 0 0 var(--tc-s-1);
   font-size: var(--tc-fs-label);
   font-weight: 700;
+}
+.tc-scrap-stats {
+  margin-bottom: var(--tc-s-2);
+}
+/* Pictures a pre-reader can count. One row never wraps: ten icons and a plus fit the card. */
+.tc-count-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  flex-wrap: nowrap;
+}
+.tc-count-icon {
+  width: 24px;
+  height: 24px;
+  flex: none;
+}
+.tc-count-more {
+  font-weight: 700;
+  color: var(--tc-panel-text);
 }
 .tc-award-card[data-team='PAST'] {
   border-color: var(--tc-purple-700);
@@ -1917,6 +1942,14 @@ body {
   }
   .tc-badge {
     padding-block: 0;
+  }
+  .tc-brain-stats,
+  .tc-scrap-stats {
+    margin-bottom: 0;
+  }
+  .tc-count-icon {
+    width: 20px;
+    height: 20px;
   }
   .tc-badge-icon {
     width: 30px;
@@ -4739,7 +4772,9 @@ button.tc-forge-row[aria-disabled='true'],
   border-color: var(--tc-ember);
 }
 .tc-helper,
-.tc-dash-spot {
+.tc-dash-spot,
+.tc-helper-back,
+.tc-helper-hear {
   min-width: 56px;
   min-height: 56px;
   padding: 4px 12px;
@@ -4780,8 +4815,44 @@ button.tc-forge-row[aria-disabled='true'],
   opacity: 0.6;
   cursor: default;
 }
+.tc-helper-tools {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+.tc-helper-back[hidden],
+.tc-go-hint[hidden] {
+  display: none;
+}
+.tc-go-hint {
+  flex-basis: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--tc-parchment-warm);
+}
+.tc-go-finger {
+  display: inline-block;
+  font-size: 28px;
+  animation: tc-go-finger-tap 1.2s ease-in-out infinite;
+}
+@keyframes tc-go-finger-tap {
+  50% {
+    transform: translateY(-6px);
+  }
+}
+[data-motion='reduced'] .tc-go-finger {
+  animation: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tc-go-finger {
+    animation: none;
+  }
+}
 .tc-helper:focus-visible,
-.tc-dash-spot:focus-visible {
+.tc-dash-spot:focus-visible,
+.tc-helper-back:focus-visible,
+.tc-helper-hear:focus-visible {
   outline: 4px solid var(--tc-ember);
   outline-offset: 3px;
 }

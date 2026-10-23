@@ -620,7 +620,12 @@
     "kind": "mainidea",
     "prompt": "What is the main idea of this passage?",
     "passage": "Before clocks were common, towns used bells to mark the hours. The sound traveled across fields and rooftops, so workers far from town knew when to stop for lunch. Today, we check phones instead of listening for bells.",
-    "choices": ["Bells once helped people keep track of time.", "Workers never ate lunch.", "Bells are louder than phones.", "Towns were built near fields."],
+    "choices": [
+      "Bells once helped people keep track of time.",
+      "Workers never ate lunch.",
+      "Bells are louder than phones.",
+      "Towns were built near fields."
+    ],
     "answer": "Bells once helped people keep track of time.",
     "hint": "Ask what the bells were used for.",
     "tags": ["mainidea"]
@@ -632,7 +637,12 @@
     "kind": "mainidea",
     "prompt": "Why is staying calm important for a diver?",
     "passage": "Pearl divers hold their breath for a minute or more. They train their lungs for years, and they learn to stay calm underwater. Staying calm saves oxygen.",
-    "choices": ["It saves oxygen.", "It helps find bigger pearls.", "It makes the water warmer.", "It lets the diver sing."],
+    "choices": [
+      "It saves oxygen.",
+      "It helps find bigger pearls.",
+      "It makes the water warmer.",
+      "It lets the diver sing."
+    ],
     "answer": "It saves oxygen.",
     "hint": "Read the last short sentence.",
     "tags": ["mainidea"]
@@ -644,7 +654,12 @@
     "kind": "mainidea",
     "prompt": "What is the planner's goal?",
     "passage": "A city planner studies how people move through a town. She decides where to put parks, bike lanes, and bus stops. Her goal is to make the town easy and pleasant for everyone to use.",
-    "choices": ["To make the town easy and pleasant to use.", "To count the people in town.", "To build the tallest buildings.", "To close all the roads."],
+    "choices": [
+      "To make the town easy and pleasant to use.",
+      "To count the people in town.",
+      "To build the tallest buildings.",
+      "To close all the roads."
+    ],
     "answer": "To make the town easy and pleasant to use.",
     "hint": "Find the sentence that begins with \"Her goal.\"",
     "tags": ["mainidea"]
@@ -656,7 +671,12 @@
     "kind": "mainidea",
     "prompt": "Which lesson fits this story best?",
     "passage": "Mina missed the last word in the spelling bee by one letter. She felt upset at first. Then she read the word again, wrote it ten times, and cheered for the winner. The next year, she tried again.",
-    "choices": ["Spelling is not worth practice.", "Winners never cheer for others.", "Give up after one mistake.", "Keep trying after a setback."],
+    "choices": [
+      "Spelling is not worth practice.",
+      "Winners never cheer for others.",
+      "Give up after one mistake.",
+      "Keep trying after a setback."
+    ],
     "answer": "Keep trying after a setback.",
     "hint": "Notice what Mina did the next year.",
     "tags": ["mainidea"]
@@ -668,7 +688,12 @@
     "kind": "mainidea",
     "prompt": "How do toads move?",
     "passage": "Frogs and toads look alike, but they have differences. Frogs have smooth, moist skin and long legs for leaping. Toads have dry, bumpy skin and shorter legs, so they hop or walk.",
-    "choices": ["They swim all day.", "They glide on wings.", "They only leap far.", "They hop or walk."],
+    "choices": [
+      "They swim all day.",
+      "They glide on wings.",
+      "They only leap far.",
+      "They hop or walk."
+    ],
     "answer": "They hop or walk.",
     "hint": "Look at their legs.",
     "tags": ["mainidea"]
@@ -680,7 +705,12 @@
     "kind": "mainidea",
     "prompt": "What is one limit of wind turbines?",
     "passage": "Wind turbines turn the power of moving air into electricity. They make no smoke, and the wind is free. Still, they work only when the wind blows, so many places use other sources too.",
-    "choices": ["They cannot make electricity.", "They work only when the wind blows.", "They make a lot of smoke.", "They cost money for fuel."],
+    "choices": [
+      "They cannot make electricity.",
+      "They work only when the wind blows.",
+      "They make a lot of smoke.",
+      "They cost money for fuel."
+    ],
     "answer": "They work only when the wind blows.",
     "hint": "Look for the word \"Still.\"",
     "tags": ["mainidea"]
@@ -692,7 +722,12 @@
     "kind": "mainidea",
     "prompt": "Why did many people gather around televisions?",
     "passage": "Many years ago, people watched astronauts walk on the moon. Millions gathered around televisions to see the pictures. Many say it was a moment that made the world feel small and close.",
-    "choices": ["To see astronauts walk on the moon.", "To hear a concert.", "To learn the weather.", "To watch a race."],
+    "choices": [
+      "To see astronauts walk on the moon.",
+      "To hear a concert.",
+      "To learn the weather.",
+      "To watch a race."
+    ],
     "answer": "To see astronauts walk on the moon.",
     "hint": "Read the first sentence.",
     "tags": ["mainidea"]
@@ -714,7 +749,12 @@
     "grade": 11,
     "kind": "grammar",
     "prompt": "Which sentence uses \"who\" or \"whom\" correctly?",
-    "choices": ["To who did you give the note?", "Who did you give the note to whom?", "To whom did you give the note?", "Whom gave you the note?"],
+    "choices": [
+      "To who did you give the note?",
+      "Who did you give the note to whom?",
+      "To whom did you give the note?",
+      "Whom gave you the note?"
+    ],
     "answer": "To whom did you give the note?",
     "hint": "Try \"to him\" and \"to he.\" Which sounds right?",
     "tags": ["grammar"]
@@ -736,7 +776,12 @@
     "grade": 11,
     "kind": "grammar",
     "prompt": "Which sentence keeps the list parallel?",
-    "choices": ["She likes swimming, hiking, and to read.", "She likes to swim, hiking, and read.", "She likes swimming, hiking, and reading.", "She likes swimming, to hike, and reading."],
+    "choices": [
+      "She likes swimming, hiking, and to read.",
+      "She likes to swim, hiking, and read.",
+      "She likes swimming, hiking, and reading.",
+      "She likes swimming, to hike, and reading."
+    ],
     "answer": "She likes swimming, hiking, and reading.",
     "hint": "Make all the items in the list look alike.",
     "tags": ["grammar"]
@@ -747,7 +792,12 @@
     "grade": 11,
     "kind": "grammar",
     "prompt": "Which sentence uses a colon correctly?",
-    "choices": ["Pack these items: a tent, a map, and a lamp.", "Pack these items a tent: a map, and a lamp.", "Pack these: items a tent, a map, and a lamp.", "Pack: these items a tent, a map, and a lamp."],
+    "choices": [
+      "Pack these items: a tent, a map, and a lamp.",
+      "Pack these items a tent: a map, and a lamp.",
+      "Pack these: items a tent, a map, and a lamp.",
+      "Pack: these items a tent, a map, and a lamp."
+    ],
     "answer": "Pack these items: a tent, a map, and a lamp.",
     "hint": "A colon follows a full lead-in and starts the list.",
     "tags": ["grammar"]
@@ -762,5 +812,296 @@
     "answer": "start",
     "hint": "Think of a race. What happens at the sound of the horn?",
     "tags": ["grammar"]
+  },
+  {
+    "id": "reading-11-0061",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "vocab",
+    "prompt": "Read: \"Her story was plausible, so the teacher believed it.\" What does \"plausible\" mean?",
+    "choices": ["silly", "complicated", "very long", "believable"],
+    "answer": "believable",
+    "hint": "The teacher believed it.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-11-0062",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "vocab",
+    "prompt": "Read: \"A judge must be impartial and treat both sides fairly.\" What does \"impartial\" mean?",
+    "choices": [
+      "strict with everyone",
+      "famous for wisdom",
+      "fair, favoring no one",
+      "slow to decide"
+    ],
+    "answer": "fair, favoring no one",
+    "hint": "Look at the words treat both sides fairly.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-11-0063",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "vocab",
+    "prompt": "Read: \"We made tentative plans that we could still change.\" What does \"tentative\" mean?",
+    "choices": ["kept secret", "not yet final", "very costly", "full of detail"],
+    "answer": "not yet final",
+    "hint": "The plans could still change.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-11-0064",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "vocab",
+    "prompt": "Read: \"The bright red kite was conspicuous against the gray sky.\" What does \"conspicuous\" mean?",
+    "choices": ["easy to see", "hard to find", "very old", "very light"],
+    "answer": "easy to see",
+    "hint": "Bright red stands out against gray.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-11-0065",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "vocab",
+    "prompt": "Read: \"The goal in the last minute was pivotal to the win.\" What does \"pivotal\" mean?",
+    "choices": [
+      "mildly useful",
+      "a complete surprise",
+      "against the rules",
+      "very important to the result"
+    ],
+    "answer": "very important to the result",
+    "hint": "One goal decided the game.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-11-0066",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "vocab",
+    "prompt": "Read: \"The crowd broke into spontaneous cheers.\" What does \"spontaneous\" mean?",
+    "choices": [
+      "carefully rehearsed",
+      "quiet and slow",
+      "unplanned and natural",
+      "rare and costly"
+    ],
+    "answer": "unplanned and natural",
+    "hint": "No one told the crowd to cheer.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-11-0067",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "vocab",
+    "prompt": "Read: \"The eloquent speaker moved the audience with her words.\" What does \"eloquent\" mean?",
+    "choices": [
+      "loud and rude",
+      "clear and moving in speech",
+      "shy and nervous",
+      "short and plain"
+    ],
+    "answer": "clear and moving in speech",
+    "hint": "Her words moved the audience.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-11-0068",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "vocab",
+    "prompt": "Read: \"Her lucid explanation made the hard idea easy to follow.\" What does \"lucid\" mean?",
+    "choices": [
+      "clear and easy to follow",
+      "confusing and long",
+      "rushed and quiet",
+      "full of jokes"
+    ],
+    "answer": "clear and easy to follow",
+    "hint": "The hard idea became easy.",
+    "tags": ["vocab"]
+  },
+  {
+    "id": "reading-11-0069",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this story?",
+    "passage": "Coral reefs cover only a small part of the ocean floor. Yet they shelter a huge share of sea life. Fish find food and safe hiding places among the coral.",
+    "choices": [
+      "Coral reefs cover most of the ocean.",
+      "Fish prefer open water.",
+      "Coral is a kind of food.",
+      "Coral reefs are small but support a lot of sea life."
+    ],
+    "answer": "Coral reefs are small but support a lot of sea life.",
+    "hint": "Notice the word yet. It joins two ideas.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-11-0070",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this story?",
+    "passage": "Early explorers had to guess how far they had traveled. Then clocks became accurate enough to work at sea. With the right time, sailors could find their position far better.",
+    "choices": [
+      "Explorers never made guesses.",
+      "Clocks were invented for farmers.",
+      "Accurate clocks helped sailors find where they were.",
+      "Sailors dislike the sea."
+    ],
+    "answer": "Accurate clocks helped sailors find where they were.",
+    "hint": "Ask what the clocks made possible.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-11-0071",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this story?",
+    "passage": "Marcus had always disliked reading aloud. When his class started a reading club for younger kids, he agreed to help. After seeing a child laugh at his funny voices, he began to look forward to every session.",
+    "choices": [
+      "Marcus quit the reading club.",
+      "Helping others changed how Marcus felt about reading aloud.",
+      "Younger kids dislike funny voices.",
+      "Reading aloud is always easy."
+    ],
+    "answer": "Helping others changed how Marcus felt about reading aloud.",
+    "hint": "Compare how Marcus felt at the start and at the end.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-11-0072",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this story?",
+    "passage": "Many cities are adding rooftop gardens. The plants keep buildings cooler, soak up rain, and give people a place to rest. Some even grow vegetables for local shops.",
+    "choices": [
+      "Rooftop gardens offer many benefits to cities.",
+      "Vegetables only grow on roofs.",
+      "Buildings are too hot in winter.",
+      "Shops are closing in cities."
+    ],
+    "answer": "Rooftop gardens offer many benefits to cities.",
+    "hint": "The passage lists several good things the gardens do.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-11-0073",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this story?",
+    "passage": "Languages change over time. New words appear, old ones fade, and sounds shift from one generation to the next. A book from long ago can seem hard to read for this reason.",
+    "choices": [
+      "Old books are always boring.",
+      "New words are better than old ones.",
+      "Sounds never change.",
+      "Languages slowly change over time."
+    ],
+    "answer": "Languages slowly change over time.",
+    "hint": "Every sentence gives an example of change.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-11-0074",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this story?",
+    "passage": "Honest feedback can feel uncomfortable. Still, it shows us what to fix. Athletes, writers, and builders all improve faster when someone points out what is not working.",
+    "choices": [
+      "Athletes never need advice.",
+      "Feedback should always be kept secret.",
+      "Honest feedback, though hard to hear, helps people improve.",
+      "Builders are better than writers."
+    ],
+    "answer": "Honest feedback, though hard to hear, helps people improve.",
+    "hint": "Look at what the word still signals.",
+    "tags": ["mainidea"]
+  },
+  {
+    "id": "reading-11-0075",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "grammar",
+    "prompt": "Pick the word that fits: The results of the survey ___ surprising.",
+    "choices": ["was", "were", "is", "been"],
+    "answer": "were",
+    "hint": "The subject is results, which is plural.",
+    "tags": ["grammar", "subject-verb-agreement"]
+  },
+  {
+    "id": "reading-11-0076",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "grammar",
+    "prompt": "Pick the word that fits: She plays the violin ___ than anyone in the band.",
+    "choices": ["better", "more good", "best", "gooder"],
+    "answer": "better",
+    "hint": "You are comparing her with others.",
+    "tags": ["grammar", "comparisons"]
+  },
+  {
+    "id": "reading-11-0077",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "grammar",
+    "prompt": "Which sentence uses affect and effect correctly?",
+    "choices": [
+      "The weather will effect our plans, and the affect may be a delay.",
+      "The weather will affect our plans, and the affect may be a delay.",
+      "The weather will effect our plans, and the effect may be a delay.",
+      "The weather will affect our plans, and the effect may be a delay."
+    ],
+    "answer": "The weather will affect our plans, and the effect may be a delay.",
+    "hint": "Affect is usually the action. Effect is usually the result.",
+    "tags": ["grammar", "word-choice"]
+  },
+  {
+    "id": "reading-11-0078",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "grammar",
+    "prompt": "Pick the word that fits: If I ___ you, I would ask for help.",
+    "choices": ["was", "am", "were", "be"],
+    "answer": "were",
+    "hint": "Wishing or imagining uses a special form.",
+    "tags": ["grammar", "verb-mood"]
+  },
+  {
+    "id": "reading-11-0079",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "grammar",
+    "prompt": "Which sentence is parallel in form?",
+    "choices": [
+      "She likes hiking, to swim, and biking.",
+      "She likes hiking, swimming, and biking.",
+      "She likes to hike, swimming, and to bike.",
+      "She likes hiking, swim, and biking."
+    ],
+    "answer": "She likes hiking, swimming, and biking.",
+    "hint": "Every item in the list should end the same way.",
+    "tags": ["grammar", "parallel-structure"]
+  },
+  {
+    "id": "reading-11-0080",
+    "subject": "reading",
+    "grade": 11,
+    "kind": "grammar",
+    "prompt": "Pick the word that fits: The prize will go to ___ finishes first.",
+    "choices": ["whoever", "whomever", "whose", "who ever"],
+    "answer": "whoever",
+    "hint": "Ask who does the finishing.",
+    "tags": ["grammar", "pronouns"]
   }
 ]

@@ -3,7 +3,7 @@ import type { BattlePlan } from '../game/battlefield';
 import type { BasesState } from '../game/baseBuilder';
 import type { CampState } from '../game/loadout';
 import type { PracticeChoice } from '../game/practice';
-import type { Players } from '../game/types';
+import type { Grade, Players, Subject, Team, Topic } from '../game/types';
 import type { Levels } from '../questions/calibration';
 import type { PickHistory } from '../questions/types';
 
@@ -16,7 +16,13 @@ export type Settings = {
   musicOn: boolean;
   /** 'system' follows prefers-reduced-motion. */
   reducedMotion: 'system' | 'on' | 'off';
+  /** Hide the bonus ring on the reload card. The fast-answer bonus still works. */
+  hideBonusRing: boolean;
 };
+
+/** What a side picked at Setup last time. No names. */
+export type SetupPick = { grade: Grade; subject: Subject; topic?: Topic };
+export type SetupPicks = Partial<Record<Team, SetupPick>>;
 
 /** Keys from ARCHITECTURE.md. Do not add keys without updating that file. */
 export type StorageSchema = {
@@ -34,6 +40,8 @@ export type StorageSchema = {
   'timeclash.practice': PracticeChoice;
   /** Up to three saved bases per player name and side. Saved on this device only. */
   'timeclash.bases': BasesState;
+  /** The grade, subject and Focus each side picked last time, so Setup opens with them. */
+  'timeclash.setupPicks': SetupPicks;
 };
 
 export type StorageKey = keyof StorageSchema;
@@ -48,6 +56,7 @@ export const STORAGE_KEYS: readonly StorageKey[] = [
   'timeclash.plan',
   'timeclash.practice',
   'timeclash.bases',
+  'timeclash.setupPicks',
 ];
 
 /** The subset of window.localStorage we use. Inject a fake in tests. */
