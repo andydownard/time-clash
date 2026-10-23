@@ -26,7 +26,7 @@ Card title: "Aim"
 
 Card title: "Two Shots"
 
-**Card 4: Reload (about 9 seconds)**
+**Card 4: Reload (about 11 seconds)**
 > After shot two, answer a question to reload. Answer fast to earn bonus scrap. Mistake? Even Chrono trips. You still reload! Get it right for a Power Shot!
 
 Card title: "Reload"
@@ -36,7 +36,7 @@ Card title: "Reload"
 
 Card title: "Wipeouts and Turns"
 
-**Total:** about 40 seconds. Card 4 has 4 captions. Jokes: the wind rascal, Chrono tripping, and the lost dignity.
+**Total:** about 40 seconds (the five recorded clips add up to 42.2 s). Card 4 has 4 captions. Jokes: the wind rascal, Chrono tripping, and the lost dignity.
 
 ## Pass screen line (built)
 Each time the pass screen (the cover between turns) opens, Chrono says its own words: "Pass the screen! No peeking at their question!" (`src/ui/passScreen.ts`, built from `PASS_SCREEN.heading` and `PASS_SCREEN.noPeeking`).

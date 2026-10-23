@@ -46,11 +46,11 @@ The "How to Play" voice plays the five recorded files below. If a file fails to 
 
 ## Voice clips (database)
 
-Spoken lines for Chrono's intro and the funny knock-down lines are stored in `db/voice.sqlite` (table `voice_clips`). Only the five intro clips are served by the site, extracted by `scripts/extract-voice-clips.py`. The knock-down lines are not served yet.
+Spoken lines for Chrono's intro and the funny knock-down lines are stored in `db/voice.sqlite` (table `voice_clips`). The five intro clips ship as static files, extracted by `scripts/extract-voice-clips.py`. The app server does not read this database. The knock-down lines are also in the `voice-*.sqlite` files below, which the app server does serve.
 
 | Part | Source | License |
 |---|---|---|
 | All voice clips | Kokoro-82M text-to-speech model, voice `am_michael`, run by `scripts/build-voice-db.py` | Apache-2.0 (model); the generated audio is original to this project |
-| Question read-aloud and wipeout clips (`db/voice-k4.sqlite`, table `voice_clip_index`) | Same Kokoro-82M model and voice, run by `scripts/build-voice-index.py` | Apache-2.0 (model); the generated audio is original to this project |
+| Question read-aloud and wipeout clips (`db/voice-k4.sqlite`, `db/voice-5-8.sqlite` and `db/voice-9-12.sqlite`, table `voice_clip_index`) | Same Kokoro-82M model and voice, run by `scripts/build-voice-index.py` | Apache-2.0 (model); the generated audio is original to this project |
 
 Why Kokoro: the first voice tried (Piper "ryan") was trained on RyanSpeech, licensed CC BY-NC-SA 4.0, which breaks the original-or-CC0 audio rule. It was dropped and none of its audio is in this repo.

@@ -44,7 +44,7 @@ Any other pair throws. Battle scene loop: `pass screen → ready() → banner �
 1. **`shotsFired` (0, 1, 2) tells the two AIMING states apart.** Keeps the six state names from BUILD.md exactly, with no extra states.
 2. **SHOT_1 and SHOT_2 mean "ball in the air."** `fire()` computes the whole flight up front; `shotLanded()` applies damage after the animation. Rules stay pure and the scene owns timing.
 3. **y grows down, origin top-left, angle 0 is flat toward the opponent, 90 is straight up.** Same as Phaser, so there is no axis flip to get wrong.
-4. **World is 1280x720 logical.** 16:9 fits laptop and iPad landscape with letterbox. `src/main.ts` must use `WORLD` (it says 1280x800 today).
+4. **World is 1280x720 logical.** 16:9 fits laptop and iPad landscape with letterbox. `src/main.ts` uses `WORLD` (plus `BATTLE_BAND` for the bottom control band).
 5. **Wind is an integer, fixed for both shots of a turn, from `(seed, turnNumber)`.** Easy to show as a number and to replay.
 6. **`Shot` stores `wind` and `turnNumber` instead of a `seed`.** That is all a replay needs; ARCHITECTURE.md's `seed` field is replaced.
 7. **No self damage. Blasts score only against the opponent's base.** A weak shot at your own feet should not cost a six-year-old health.

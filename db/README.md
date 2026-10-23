@@ -1,6 +1,6 @@
 # db
 
-`voice.sqlite` holds Chrono's five "How to Play" cards and 24 funny knock-down lines as audio (AAC in an MP4 container, `audio/mp4`), one row per clip in `voice_clips`. The site is static, so the app does not read the database at run time. The five intro clips are extracted to static files (see below). The database is meant to be stood up with the accounts work (`docs/ACCOUNTS_PLAN.md`).
+`voice.sqlite` holds Chrono's five "How to Play" cards and 24 funny knock-down lines as audio (AAC in an MP4 container, `audio/mp4`), one row per clip in `voice_clips`. The app server does not read this database (it ignores the name `voice.sqlite`). The five intro clips are extracted to static files (see below).
 
 - Schema: `migrations/0001_voice_clips.sql`. Migrations are additive and numbered.
 - Rebuild: `python scripts/build-voice-db.py <kokoro_model_dir> [voice]` (see the script header). The build is not deterministic byte for byte, so rebuild only when the text or voice changes.
@@ -11,7 +11,7 @@
 
 ## Question and wipeout clips by text hash (`voice-k4.sqlite`, later volumes)
 
-`voice-k4.sqlite` holds a spoken clip for every reload question in grades K to 4 (math and reading) and every wipeout line. It uses only the table `voice_clip_index` (`migrations/0002_voice_clip_text_ids.sql`). The older `voice.sqlite` and its five intro files are untouched. Like `voice.sqlite`, the site does not read it yet. A server and a game-side player will.
+`voice-k4.sqlite` holds a spoken clip for every reload question in grades K to 4 (math and reading) and every wipeout line. It uses only the table `voice_clip_index` (`migrations/0002_voice_clip_text_ids.sql`). The older `voice.sqlite` and its five intro files are untouched. The app server (`voice-server/`) opens every `db/voice-*.sqlite` read-only and serves the clips at `/v1/clips/:id`, and the game plays them (`src/audio/clipPlayer.ts`). See `docs/APP_SERVER.md`.
 
 **The contract.**
 - `id` is `t:` plus 16 lowercase hex digits: FNV-1a 64-bit of the UTF-8 bytes of the text after collapsing whitespace (`text.split(/\s+/).filter(Boolean).join(' ')`). Offset basis `0xcbf29ce484222325`, prime `0x100000001b3`, modulo 2^64. TypeScript: `src/audio/clipId.ts`. Python: `clip_id()` in `scripts/build-voice-index.py`. Both check the same four test vectors (`"" -> t:cbf29ce484222325`).

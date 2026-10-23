@@ -24,7 +24,7 @@ Voice dictation made some comments noisy, so a few asks are guesses. Claude Desi
 ## Changes Andy asked for in chat (2026-10-17)
 
 - **One unit acts at a time.** This matches rule 2 of [SQUADS_PLAN.md](./SQUADS_PLAN.md).
-- **A right answer earns an extra turn with more powerful damage.** Not built. It changes the protected turn shape (2 shots, then reload), and Andy asked for it directly. The size of the bonus (how many shots, how much extra damage) is still to decide.
+- **A right answer earns an extra turn with more powerful damage.** Built as the Power Shot: one extra shot at 1.5 times the damage after a right reload answer (`BONUS.damageMultiplier`). The size of the bonus is still Andy's call.
 - **Every screen a family has progressed to needs a Back, and a game needs a way to leave.** Built: Back on Setup and Forge, Leave game in the pause panel.
 - **Returning families should not face a Tap to Play first screen.** Built: they go straight to the Camp. New families still see it once, because sound and the spoken How to Play start only after a tap.
 
@@ -32,9 +32,9 @@ Voice dictation made some comments noisy, so a few asks are guesses. Claude Desi
 
 | Board | Status |
 |---|---|
-| 1 Camp Hub | Built, no hawk or fires yet. Home screen for returning families. Both side buttons open their screens. |
-| 2 Loading | Not rebuilt from the latest board (daytime scene, three balloon riders, 10 seconds). |
-| 3 Battle | HUD simplified to one bottom bar. The units, scenery and explosions are not built (Phase 5 Squads). |
+| 1 Camp Hub | Built, with the circling hawk. Home screen for returning families. Both side buttons open their screens. |
+| 2 Loading | Rebuilt from the latest board. |
+| 3 Battle | HUD simplified to one bottom bar. Five fighters per side, explosions and funny falls are built. Richer scenery is not (Phase 5 Squads). |
 | 4 Setup | Built from the earlier board. |
 | 5 Math, 6 Reading | Built from earlier boards. |
 | 7 and 7b Forge | Built (Scrap only). |
