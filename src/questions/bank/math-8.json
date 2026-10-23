@@ -338,7 +338,7 @@
     "choices": ["14", "12", "10", "48"],
     "answer": "10",
     "hint": "Square each leg, add them, then find the square root.",
-    "tags": ["arithmetic", "manual"]
+    "tags": ["arithmetic"]
   },
   {
     "id": "math-8-0032",
@@ -349,7 +349,7 @@
     "choices": ["6", "1/3", "4", "3"],
     "answer": "3",
     "hint": "Slope is rise over run.",
-    "tags": ["arithmetic", "manual"]
+    "tags": ["arithmetic"]
   },
   {
     "id": "math-8-0033",
@@ -371,7 +371,7 @@
     "choices": ["25", "9", "6", "10"],
     "answer": "9",
     "hint": "Find how many groups of 5 are in the dogs.",
-    "tags": ["arithmetic", "manual"]
+    "tags": ["arithmetic"]
   },
   {
     "id": "math-8-0035",
@@ -382,7 +382,7 @@
     "choices": ["7", "9", "8", "4"],
     "answer": "8",
     "hint": "Put the numbers in order first. Then find the middle one.",
-    "tags": ["arithmetic", "manual"]
+    "tags": ["arithmetic"]
   },
   {
     "id": "math-8-0036",
@@ -415,7 +415,7 @@
     "choices": ["12", "13", "14", "17"],
     "answer": "13",
     "hint": "Try a number times itself.",
-    "tags": ["arithmetic", "manual"]
+    "tags": ["arithmetic"]
   },
   {
     "id": "math-8-0039",
@@ -437,7 +437,7 @@
     "choices": ["12", "16", "48", "64"],
     "answer": "64",
     "hint": "Multiply the side by itself three times.",
-    "tags": ["arithmetic", "manual"]
+    "tags": ["arithmetic"]
   },
   {
     "id": "math-8-0041",
@@ -448,7 +448,7 @@
     "choices": ["7", "17", "5", "-7"],
     "answer": "7",
     "hint": "Move the x terms to one side first.",
-    "tags": ["linear-equations", "manual"]
+    "tags": ["linear-equations"]
   },
   {
     "id": "math-8-0042",
@@ -459,7 +459,7 @@
     "choices": ["3", "7", "14", "1"],
     "answer": "7",
     "hint": "Subtract 3x from both sides to gather the x terms.",
-    "tags": ["linear-equations", "manual"]
+    "tags": ["linear-equations"]
   },
   {
     "id": "math-8-0043",
@@ -470,7 +470,7 @@
     "choices": ["13", "10", "5", "3"],
     "answer": "5",
     "hint": "Share the 4 across the parentheses first.",
-    "tags": ["linear-equations", "manual"]
+    "tags": ["linear-equations"]
   },
   {
     "id": "math-8-0044",
@@ -481,7 +481,7 @@
     "choices": ["2", "6", "24", "8"],
     "answer": "8",
     "hint": "Subtract 3x from both sides, then add 9.",
-    "tags": ["linear-equations", "manual"]
+    "tags": ["linear-equations"]
   },
   {
     "id": "math-8-0045",
@@ -492,7 +492,7 @@
     "choices": ["15", "3", "12", "6"],
     "answer": "15",
     "hint": "Share the 2 across the parentheses first.",
-    "tags": ["linear-equations", "manual"]
+    "tags": ["linear-equations"]
   },
   {
     "id": "math-8-0046",
@@ -503,7 +503,7 @@
     "choices": ["2", "-8", "-2", "-1/2"],
     "answer": "-2",
     "hint": "Slope is the change in y divided by the change in x.",
-    "tags": ["slope", "manual"]
+    "tags": ["slope"]
   },
   {
     "id": "math-8-0047",
@@ -514,7 +514,7 @@
     "choices": ["0.8", "5", "4", "1.25"],
     "answer": "1.25",
     "hint": "Slope is the change in y divided by the change in x.",
-    "tags": ["slope", "manual"]
+    "tags": ["slope"]
   },
   {
     "id": "math-8-0048",
@@ -525,7 +525,7 @@
     "choices": ["13", "12", "14", "7"],
     "answer": "13",
     "hint": "Put 6 in place of x, then multiply and add.",
-    "tags": ["slope", "manual"]
+    "tags": ["slope"]
   },
   {
     "id": "math-8-0049",
@@ -558,7 +558,7 @@
     "choices": ["13", "169", "37", "17"],
     "answer": "17",
     "hint": "Find each square root, then add them.",
-    "tags": ["square-roots", "manual"]
+    "tags": ["square-roots"]
   },
   {
     "id": "math-8-0052",
@@ -580,7 +580,7 @@
     "choices": ["12", "7", "25", "5"],
     "answer": "7",
     "hint": "What number times itself three times makes 27? Then find the square root of 16.",
-    "tags": ["roots", "manual"]
+    "tags": ["roots"]
   },
   {
     "id": "math-8-0054",
@@ -624,7 +624,7 @@
     "choices": ["8", "12", "18", "10"],
     "answer": "12",
     "hint": "Subtract the squares: the long side squared minus the leg squared.",
-    "tags": ["pythagorean-theorem", "manual"]
+    "tags": ["pythagorean-theorem"]
   },
   {
     "id": "math-8-0058",
@@ -701,7 +701,7 @@
     "choices": ["282.6", "94.2", "942", "188.4"],
     "answer": "282.6",
     "hint": "Volume is pi times radius squared times height.",
-    "tags": ["volume-of-cylinders", "manual"]
+    "tags": ["volume-of-cylinders"]
   },
   {
     "id": "math-8-0065",
@@ -712,7 +712,7 @@
     "choices": ["113.04", "37.68", "12.56", "50.24"],
     "answer": "37.68",
     "hint": "A cone is one third of the matching cylinder.",
-    "tags": ["volume-of-cones", "manual"]
+    "tags": ["volume-of-cones"]
   },
   {
     "id": "math-8-0066",
@@ -723,7 +723,7 @@
     "choices": ["84.78", "339.12", "113.04", "37.68"],
     "answer": "113.04",
     "hint": "Use four thirds times pi times the radius cubed.",
-    "tags": ["volume-of-spheres", "manual"]
+    "tags": ["volume-of-spheres"]
   },
   {
     "id": "math-8-0067",
@@ -734,7 +734,7 @@
     "choices": ["78.5", "314", "62.8", "157"],
     "answer": "157",
     "hint": "Volume is pi times radius squared times height.",
-    "tags": ["volume-of-cylinders", "manual"]
+    "tags": ["volume-of-cylinders"]
   },
   {
     "id": "math-8-0068",
@@ -745,7 +745,7 @@
     "choices": ["188.4", "565.2", "94.2", "376.8"],
     "answer": "188.4",
     "hint": "A cone is one third of the matching cylinder.",
-    "tags": ["volume-of-cones", "manual"]
+    "tags": ["volume-of-cones"]
   },
   {
     "id": "math-8-0069",
@@ -756,7 +756,7 @@
     "choices": ["452.16", "904.32", "678.24", "301.44"],
     "answer": "904.32",
     "hint": "Use four thirds times pi times the radius cubed.",
-    "tags": ["volume-of-spheres", "manual"]
+    "tags": ["volume-of-spheres"]
   },
   {
     "id": "math-8-0101",

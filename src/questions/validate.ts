@@ -13,6 +13,7 @@ import {
   sub,
   type Rational,
 } from './mathEval';
+import { recomputeMore } from './recomputeMore';
 import type { Topic } from '../game/types';
 import type { QuestionKind, RecomputeMathAnswer, ValidateQuestion } from './types';
 
@@ -60,6 +61,10 @@ function decimalOf(text: string): Rational | null {
 
 function recomputeValue(prompt: string): Rational | null {
   if (typeof prompt !== 'string') return null;
+  return recomputeBasic(prompt) ?? recomputeMore(prompt);
+}
+
+function recomputeBasic(prompt: string): Rational | null {
 
   // Solve for x: ax + b = c   or   ax - b = c
   const solve = new RegExp(String.raw`^Solve for x: (-?\d*)x ([+-]) (${NUM}) = (-?${NUM})$`).exec(

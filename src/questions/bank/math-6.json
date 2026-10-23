@@ -382,7 +382,7 @@
     "choices": ["25", "5", "9", "12"],
     "answer": "9",
     "hint": "Find how many groups of 5 are in 15. Each group has 3 cats.",
-    "tags": ["ratios", "manual"]
+    "tags": ["ratios"]
   },
   {
     "id": "math-6-0036",
@@ -393,7 +393,7 @@
     "choices": ["110", "80", "130", "70"],
     "answer": "70",
     "hint": "The three angles of a triangle add up to 180 degrees.",
-    "tags": ["geometry", "manual"]
+    "tags": ["geometry"]
   },
   {
     "id": "math-6-0037",
@@ -404,7 +404,7 @@
     "choices": ["30", "60", "16", "15"],
     "answer": "30",
     "hint": "Multiply base by height. Then take half.",
-    "tags": ["geometry", "manual"]
+    "tags": ["geometry"]
   },
   {
     "id": "math-6-0038",
@@ -437,7 +437,7 @@
     "choices": ["15", "25", "5", "10"],
     "answer": "10",
     "hint": "The diameter goes all the way across the circle.",
-    "tags": ["geometry", "manual"]
+    "tags": ["geometry"]
   },
   {
     "id": "math-6-0041",
@@ -470,7 +470,7 @@
     "choices": ["48", "320", "64", "13"],
     "answer": "64",
     "hint": "First find the cost of one tart.",
-    "tags": ["rates", "manual"]
+    "tags": ["rates"]
   },
   {
     "id": "math-6-0044",
@@ -635,7 +635,7 @@
     "choices": ["-13", "0", "13", "31"],
     "answer": "13",
     "hint": "Absolute value is the distance from zero, so it is never negative.",
-    "tags": ["absolute-value", "manual"]
+    "tags": ["absolute-value"]
   },
   {
     "id": "math-6-0059",
@@ -690,7 +690,7 @@
     "choices": ["20", "40", "13", "26"],
     "answer": "20",
     "hint": "Multiply base times height, then cut it in half.",
-    "tags": ["area-of-triangles", "manual"]
+    "tags": ["area-of-triangles"]
   },
   {
     "id": "math-6-0064",
@@ -701,7 +701,7 @@
     "choices": ["84", "42", "19", "24"],
     "answer": "42",
     "hint": "Multiply base times height, then cut it in half.",
-    "tags": ["area-of-triangles", "manual"]
+    "tags": ["area-of-triangles"]
   },
   {
     "id": "math-6-0065",
@@ -734,7 +734,7 @@
     "choices": ["7", "5", "9", "35"],
     "answer": "7",
     "hint": "Put the numbers in order. The median is in the middle.",
-    "tags": ["median", "manual"]
+    "tags": ["median"]
   },
   {
     "id": "math-6-0068",
@@ -745,7 +745,7 @@
     "choices": ["4", "5", "10", "6"],
     "answer": "5",
     "hint": "With two middle numbers, find the number halfway between them.",
-    "tags": ["median", "manual"]
+    "tags": ["median"]
   },
   {
     "id": "math-6-0101",

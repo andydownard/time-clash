@@ -327,7 +327,7 @@
     "choices": ["14", "10", "12", "100"],
     "answer": "10",
     "hint": "Add the squares of the legs. Then take the square root.",
-    "tags": ["manual"]
+    "tags": ["geometry"]
   },
   {
     "id": "math-10-0031",
@@ -338,7 +338,7 @@
     "choices": ["6", "1/3", "3", "2"],
     "answer": "3",
     "hint": "Slope is rise over run.",
-    "tags": ["manual"]
+    "tags": ["algebra"]
   },
   {
     "id": "math-10-0032",
@@ -371,7 +371,7 @@
     "choices": ["9", "10", "50", "11"],
     "answer": "10",
     "hint": "Add them all up, then share equally.",
-    "tags": ["manual"]
+    "tags": ["statistics"]
   },
   {
     "id": "math-10-0035",
@@ -404,7 +404,7 @@
     "choices": ["162", "108", "72", "216"],
     "answer": "162",
     "hint": "Each number is multiplied by the same amount.",
-    "tags": ["manual"]
+    "tags": ["patterns"]
   },
   {
     "id": "math-10-0038",
@@ -426,7 +426,7 @@
     "choices": ["14", "12", "13", "84"],
     "answer": "13",
     "hint": "Try numbers a little more than ten.",
-    "tags": ["manual"]
+    "tags": ["algebra"]
   },
   {
     "id": "math-10-0040",
@@ -437,7 +437,7 @@
     "choices": ["10", "100", "300", "3"],
     "answer": "3",
     "hint": "How many tens do you multiply to make a thousand?",
-    "tags": ["manual"]
+    "tags": ["algebra"]
   },
   {
     "id": "math-10-0041",
@@ -547,7 +547,7 @@
     "choices": ["21", "15", "108", "12"],
     "answer": "15",
     "hint": "Draw a right triangle. Use the long-side rule.",
-    "tags": ["geometry", "manual"]
+    "tags": ["geometry"]
   },
   {
     "id": "math-10-0051",
@@ -558,7 +558,7 @@
     "choices": ["-1", "1", "-6", "6"],
     "answer": "-1",
     "hint": "Slope is rise over run. Watch the signs.",
-    "tags": ["algebra", "manual"]
+    "tags": ["algebra"]
   },
   {
     "id": "math-10-0052",
@@ -624,7 +624,7 @@
     "choices": ["11", "22", "19", "57"],
     "answer": "19",
     "hint": "Subtract the smallest from the biggest.",
-    "tags": ["statistics", "manual"]
+    "tags": ["statistics"]
   },
   {
     "id": "math-10-0058",
@@ -646,7 +646,7 @@
     "choices": ["17", "13", "10", "21"],
     "answer": "17",
     "hint": "Put 5 in for x.",
-    "tags": ["functions", "manual"]
+    "tags": ["functions"]
   },
   {
     "id": "math-10-0060",

@@ -338,7 +338,7 @@
     "choices": ["1/3", "6", "3", "2"],
     "answer": "3",
     "hint": "Slope is rise over run. Subtract the y values, then the x values.",
-    "tags": ["slope", "manual"]
+    "tags": ["slope"]
   },
   {
     "id": "math-11-0032",
@@ -360,7 +360,7 @@
     "choices": ["13", "17", "60", "11"],
     "answer": "13",
     "hint": "Use a squared plus b squared equals c squared.",
-    "tags": ["geometry", "manual"]
+    "tags": ["geometry"]
   },
   {
     "id": "math-11-0034",
@@ -393,7 +393,7 @@
     "choices": ["14", "9", "24", "11"],
     "answer": "11",
     "hint": "Put 4 in for x. Multiply first, then add.",
-    "tags": ["functions", "manual"]
+    "tags": ["functions"]
   },
   {
     "id": "math-11-0037",
@@ -426,7 +426,7 @@
     "choices": ["16", "6", "5", "4"],
     "answer": "5",
     "hint": "Ask how many 2s you multiply to reach 32.",
-    "tags": ["logs", "manual"]
+    "tags": ["logs"]
   },
   {
     "id": "math-11-0040",
@@ -547,7 +547,7 @@
     "choices": ["32", "8", "6", "5"],
     "answer": "6",
     "hint": "How many 2s multiply to make 64?",
-    "tags": ["logs", "manual"]
+    "tags": ["logs"]
   },
   {
     "id": "math-11-0051",
@@ -558,7 +558,7 @@
     "choices": ["2", "-2", "-1", "0.1"],
     "answer": "-2",
     "hint": "Ask what power of 10 gives 0.01.",
-    "tags": ["logs", "manual"]
+    "tags": ["logs"]
   },
   {
     "id": "math-11-0052",
@@ -602,7 +602,7 @@
     "choices": ["18", "20", "19.5", "120"],
     "answer": "20",
     "hint": "Add them all up. Then split evenly by how many there are.",
-    "tags": ["statistics", "manual"]
+    "tags": ["statistics"]
   },
   {
     "id": "math-11-0056",
@@ -613,7 +613,7 @@
     "choices": ["10", "14", "100", "8"],
     "answer": "10",
     "hint": "Draw a right triangle. Use the long-side rule.",
-    "tags": ["geometry", "manual"]
+    "tags": ["geometry"]
   },
   {
     "id": "math-11-0057",
@@ -624,7 +624,7 @@
     "choices": ["22", "-12", "2", "-2"],
     "answer": "-2",
     "hint": "Put 3 in for x. Square first.",
-    "tags": ["functions", "manual"]
+    "tags": ["functions"]
   },
   {
     "id": "math-11-0058",

@@ -338,7 +338,7 @@
     "choices": ["8", "11", "10", "12"],
     "answer": "10",
     "hint": "Count up by one from 9.",
-    "tags": ["number-order", "manual"]
+    "tags": ["number-order"]
   },
   {
     "id": "math-0-0032",
@@ -448,7 +448,7 @@
     "choices": ["8", "10", "9", "11"],
     "answer": "10",
     "hint": "Count up one more from the number.",
-    "tags": ["number-order", "manual"]
+    "tags": ["number-order"]
   },
   {
     "id": "math-0-0042",
@@ -459,7 +459,7 @@
     "choices": ["13", "16", "15", "17"],
     "answer": "15",
     "hint": "Say the numbers in order. Which one comes next?",
-    "tags": ["number-order", "manual"]
+    "tags": ["number-order"]
   },
   {
     "id": "math-0-0043",
@@ -470,7 +470,7 @@
     "choices": ["9", "6", "5", "7"],
     "answer": "7",
     "hint": "Count back one step from the number.",
-    "tags": ["number-order", "manual"]
+    "tags": ["number-order"]
   },
   {
     "id": "math-0-0044",

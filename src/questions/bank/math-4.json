@@ -360,7 +360,7 @@
     "choices": ["22", "11", "24", "16"],
     "answer": "22",
     "hint": "Add all four sides.",
-    "tags": ["manual", "perimeter"]
+    "tags": ["perimeter"]
   },
   {
     "id": "math-4-0034",
@@ -382,7 +382,7 @@
     "choices": ["3400", "3460", "3500", "4000"],
     "answer": "3500",
     "hint": "Look at the tens digit. Is it 5 or more?",
-    "tags": ["manual", "rounding"]
+    "tags": ["rounding"]
   },
   {
     "id": "math-4-0036",
@@ -536,7 +536,7 @@
     "choices": ["5", "6", "7", "4"],
     "answer": "5",
     "hint": "Count by 6s up to 47. How much is left?",
-    "tags": ["manual", "division-with-remainders"]
+    "tags": ["division-with-remainders"]
   },
   {
     "id": "math-4-0050",
@@ -547,7 +547,7 @@
     "choices": ["22", "21", "20", "23"],
     "answer": "21",
     "hint": "4 x 20 is 80. How many more 4s fit?",
-    "tags": ["manual", "division-with-remainders"]
+    "tags": ["division-with-remainders"]
   },
   {
     "id": "math-4-0051",
@@ -558,7 +558,7 @@
     "choices": ["4", "5", "3", "2"],
     "answer": "3",
     "hint": "8 x 15 is 120. How far is 123 from that?",
-    "tags": ["manual", "division-with-remainders"]
+    "tags": ["division-with-remainders"]
   },
   {
     "id": "math-4-0052",
@@ -569,7 +569,7 @@
     "choices": ["14", "12", "15", "13"],
     "answer": "13",
     "hint": "7 x 10 is 70. How many more 7s fit before 96?",
-    "tags": ["manual", "division-with-remainders"]
+    "tags": ["division-with-remainders"]
   },
   {
     "id": "math-4-0053",
@@ -580,7 +580,7 @@
     "choices": ["20", "21", "19", "22"],
     "answer": "20",
     "hint": "Try 12 x 10, then see how many more 12s fit.",
-    "tags": ["manual", "division-with-remainders"]
+    "tags": ["division-with-remainders"]
   },
   {
     "id": "math-4-0054",
@@ -602,7 +602,7 @@
     "choices": ["5", "6", "4", "3"],
     "answer": "4",
     "hint": "8 x 12 is 96. What is left from 100?",
-    "tags": ["manual", "division-with-remainders"]
+    "tags": ["division-with-remainders"]
   },
   {
     "id": "math-4-0056",
@@ -679,7 +679,7 @@
     "choices": ["45", "55", "65", "35"],
     "answer": "55",
     "hint": "A straight angle is 180. Take away the angle you know.",
-    "tags": ["manual", "angles"]
+    "tags": ["angles"]
   },
   {
     "id": "math-4-0063",
@@ -701,7 +701,7 @@
     "choices": ["40", "60", "70", "50"],
     "answer": "50",
     "hint": "Add 70 and 60, then take that from 180.",
-    "tags": ["manual", "angles"]
+    "tags": ["angles"]
   },
   {
     "id": "math-4-0065",
@@ -723,7 +723,7 @@
     "choices": ["5", "6", "7", "8"],
     "answer": "6",
     "hint": "List every pair that multiplies to 12. Count each number once.",
-    "tags": ["manual", "factors"]
+    "tags": ["factors"]
   },
   {
     "id": "math-4-0067",
@@ -734,7 +734,7 @@
     "choices": ["49", "55", "56", "57"],
     "answer": "56",
     "hint": "Add 7 to 49.",
-    "tags": ["manual", "multiples"]
+    "tags": ["multiples"]
   },
   {
     "id": "math-4-0068",
@@ -745,7 +745,7 @@
     "choices": ["3", "9", "12", "6"],
     "answer": "6",
     "hint": "List the factors of both. Find the biggest one they share.",
-    "tags": ["manual", "factors"]
+    "tags": ["factors"]
   },
   {
     "id": "math-4-0069",
@@ -756,7 +756,7 @@
     "choices": ["12", "6", "24", "8"],
     "answer": "12",
     "hint": "List multiples of 4 and 6. Find the first match.",
-    "tags": ["manual", "multiples"]
+    "tags": ["multiples"]
   },
   {
     "id": "math-4-0070",
