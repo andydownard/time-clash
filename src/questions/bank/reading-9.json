@@ -722,7 +722,7 @@
     "grade": 9,
     "kind": "mainidea",
     "prompt": "Why can a glacier carve valleys?",
-    "passage": "A glacier is a huge river of ice. It moves very slowly, only a few inches each day. Over many years, it can carve out valleys in the land.",
+    "passage": "A glacier is a huge river of ice. It moves very slowly, sometimes only a few inches each day. Over many years, it can carve out valleys in the land.",
     "choices": [
       "It is pushed by fast winds.",
       "It moves over the land for many years.",
@@ -908,15 +908,15 @@
     "grade": 9,
     "kind": "mainidea",
     "prompt": "What is the main idea of this passage?",
-    "passage": "Honeybees dance to share news. When a bee finds good flowers, it moves in a pattern that shows the way. Other bees watch and then fly straight there.",
+    "passage": "Spiders use silk in many ways. Some spin round webs to catch flies. Others wrap their eggs in silk to keep them safe. A few even use a strand of silk like a parachute to float to a new home.",
     "choices": [
-      "Bees dance because they are happy.",
-      "Bees use dances to tell others where food is.",
-      "Flowers grow best near hives.",
-      "Bees cannot fly very far."
+      "Spiders use silk in many ways.",
+      "Spiders only eat flies.",
+      "All webs are round.",
+      "Spiders cannot float."
     ],
-    "answer": "Bees use dances to tell others where food is.",
-    "hint": "Ask what the dance is for.",
+    "answer": "Spiders use silk in many ways.",
+    "hint": "Ask what the silk is used for.",
     "tags": ["mainidea"]
   },
   {
@@ -925,14 +925,14 @@
     "grade": 9,
     "kind": "mainidea",
     "prompt": "What is the main idea of this passage?",
-    "passage": "Lighthouses were built to guide ships. Their bright beams warned sailors about rocky shores. Today ships use satellites, but many lighthouses still shine.",
+    "passage": "Windmills turn the power of wind into useful work. Long ago, they ground grain into flour. Today, tall wind turbines make electricity for homes and schools.",
     "choices": [
-      "Lighthouses have long helped ships stay safe.",
-      "Satellites are better than lights.",
-      "Sailors never visit rocky shores.",
-      "Lighthouses are built from rock."
+      "Windmills use wind to do useful work.",
+      "Wind blows only in winter.",
+      "Flour is made from electricity.",
+      "Turbines are very short."
     ],
-    "answer": "Lighthouses have long helped ships stay safe.",
+    "answer": "Windmills use wind to do useful work.",
     "hint": "Find the idea that fits the whole passage.",
     "tags": ["mainidea"]
   },
@@ -976,15 +976,15 @@
     "grade": 9,
     "kind": "mainidea",
     "prompt": "What is the main idea of this passage?",
-    "passage": "Volcanoes form where hot rock rises through the earth. Over time, layers of cooled rock pile up and build a mountain. Some islands began this way.",
+    "passage": "Coral reefs are built by tiny animals. Each one makes a hard cup of stone around its body. When many of them gather, the cups join to form a reef where fish can hide.",
     "choices": [
-      "All mountains are volcanoes.",
-      "Volcanoes build land as cooled rock piles up.",
-      "Islands float on the sea.",
-      "Hot rock is always underwater."
+      "Tiny animals build reefs that give fish a home.",
+      "Reefs are made of sand and wood.",
+      "Fish build all the coral.",
+      "Coral lives on dry land."
     ],
-    "answer": "Volcanoes build land as cooled rock piles up.",
-    "hint": "Ask what the cooled rock does over time.",
+    "answer": "Tiny animals build reefs that give fish a home.",
+    "hint": "Ask who builds the reef and what it is for.",
     "tags": ["mainidea"]
   },
   {

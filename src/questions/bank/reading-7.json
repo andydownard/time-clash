@@ -748,11 +748,11 @@
     "choices": [
       "He cooked it too long himself.",
       "The dragon cooked it on purpose.",
-      "The snoring created heat.",
-      "His ceiling is the dragon's floor, so heat rises from above."
+      "The dragon lives right above his apartment.",
+      "The weather outside was very hot."
     ],
-    "answer": "His ceiling is the dragon's floor, so heat rises from above.",
-    "hint": "Where does warm air go?",
+    "answer": "The dragon lives right above his apartment.",
+    "hint": "The letter says his ceiling is the dragon's floor.",
     "tags": ["mainidea", "inference"],
     "passage": "To Mr. Cinderbreath, Dragon and Landlord of Rocky Hollow Cave Apartments: I hope this letter finds you well and not on fire. I am writing about Apartment B, which I love dearly, except for a few small issues. First, the heat. My ceiling is now your floor, and last Tuesday my breakfast was already toasted. Second, the snoring. Last week a pebble shaken loose by your rumbles landed in my soup. Third, the rent has gone up from ten gold coins to twelve. If you could snore more softly, I will pay the extra two coins. With the greatest respect and a slight singe, Sir Gallant of Apartment B"
   },
@@ -932,15 +932,10 @@
     "subject": "reading",
     "grade": 7,
     "kind": "vocab",
-    "prompt": "Read the sentence: \"The robot was meticulous, checking every screw twice.\" What does \"meticulous\" mean?",
-    "choices": [
-      "fast and sloppy",
-      "easily frightened",
-      "loud and cheerful",
-      "very careful about details"
-    ],
-    "answer": "very careful about details",
-    "hint": "The robot checked every screw twice, so it paid attention to little things.",
+    "prompt": "Read the sentence: \"The merchant was frugal, saving every coin and wasting nothing.\" What does \"frugal\" mean?",
+    "choices": ["careful not to waste money", "very generous", "sleepy and slow", "loud and proud"],
+    "answer": "careful not to waste money",
+    "hint": "Saving every coin and wasting nothing is the clue.",
     "tags": ["vocab", "vocabulary"]
   },
   {
@@ -948,10 +943,10 @@
     "subject": "reading",
     "grade": 7,
     "kind": "vocab",
-    "prompt": "Read the sentence: \"Gold coins were scarce in the village, so everyone shared.\" What does \"scarce\" mean?",
-    "choices": ["hard to find", "shiny", "heavy", "everywhere"],
-    "answer": "hard to find",
-    "hint": "Everyone shared, so there must not have been much.",
+    "prompt": "Read the sentence: \"The sturdy bridge held the weight of ten wagons.\" What does \"sturdy\" mean?",
+    "choices": ["weak and wobbly", "strong and solid", "old and gray", "narrow and long"],
+    "answer": "strong and solid",
+    "hint": "It held ten wagons without breaking.",
     "tags": ["vocab", "vocabulary"]
   },
   {
@@ -997,7 +992,7 @@
     "subject": "reading",
     "grade": 7,
     "kind": "grammar",
-    "prompt": "Which sentence uses the possessive correctly?",
+    "prompt": "Many knights own the horses. Which sentence uses the possessive correctly?",
     "choices": [
       "The knights' horses were all named Biscuit.",
       "The knight's horses were all named Biscuit.",

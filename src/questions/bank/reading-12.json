@@ -818,10 +818,15 @@
     "subject": "reading",
     "grade": 12,
     "kind": "vocab",
-    "prompt": "Read the sentence. What does the word mean? She felt ambivalent about moving, both excited and sad.",
-    "choices": ["having mixed feelings", "very certain", "completely happy", "not caring at all"],
-    "answer": "having mixed feelings",
-    "hint": "Look at the words both excited and sad.",
+    "prompt": "Read the sentence. What does the word mean? The ostentatious ring was huge and sparkly, made to impress everyone who saw it.",
+    "choices": [
+      "showy, to impress others",
+      "plain and simple",
+      "small and hidden",
+      "old and broken"
+    ],
+    "answer": "showy, to impress others",
+    "hint": "It was made to impress everyone.",
     "tags": ["vocab"]
   },
   {
@@ -1083,10 +1088,10 @@
     "subject": "reading",
     "grade": 12,
     "kind": "grammar",
-    "prompt": "Pick the word that fits. Neither of the answers ___ correct.",
+    "prompt": "Pick the word that fits. One of the answers ___ correct.",
     "choices": ["are", "is", "were", "have been"],
     "answer": "is",
-    "hint": "Neither means one or the other. It takes a single form.",
+    "hint": "The subject is one. It is a single answer.",
     "tags": ["grammar", "subject-verb-agreement"]
   }
 ]

@@ -384,10 +384,10 @@
     "subject": "reading",
     "grade": 11,
     "kind": "grammar",
-    "prompt": "Pick the word that fits: Neither of the boys ___ ready.",
+    "prompt": "Pick the word that fits: One of the boys ___ ready.",
     "choices": ["is", "are", "were", "been"],
     "answer": "is",
-    "hint": "Neither means one or the other. It takes a single form.",
+    "hint": "The subject is one. It is a single person.",
     "tags": ["subject-verb-agreement", "original"]
   },
   {
@@ -845,10 +845,10 @@
     "subject": "reading",
     "grade": 11,
     "kind": "vocab",
-    "prompt": "Read: \"We made tentative plans that we could still change.\" What does \"tentative\" mean?",
-    "choices": ["kept secret", "not yet final", "very costly", "full of detail"],
-    "answer": "not yet final",
-    "hint": "The plans could still change.",
+    "prompt": "Read: \"Ana felt ambivalent about moving. She was excited to see a new city, but sad to leave her friends.\" What does \"ambivalent\" mean?",
+    "choices": ["having mixed feelings", "completely sure", "bored and tired", "angry and loud"],
+    "answer": "having mixed feelings",
+    "hint": "She felt excited and sad at the same time.",
     "tags": ["vocab"]
   },
   {
