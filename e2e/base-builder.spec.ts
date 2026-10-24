@@ -1,5 +1,5 @@
 // Base builder: drag bricks onto the plot, turn, undo, keep three saved bases, and see the chosen
-// base again after a reload. The builder is behind ?builder=1 until the panel has reviewed it.
+// base again after a reload.
 import { expect, test } from './fixtures';
 import {
   bricks,
@@ -13,13 +13,6 @@ import {
 import { giveScrap } from './support/camp';
 import { tid } from './support/game';
 import { saveShot } from './support/shots';
-
-test('the Camp has no Build buttons unless the builder is switched on', async ({ page }) => {
-  await page.goto('/?e2e=1');
-  await page.waitForFunction(() => Boolean(window.__timeclash));
-  await expect(tid(page, 'camp-build-PAST')).toHaveCount(0);
-  await expect(tid(page, 'camp-build-FUTURE')).toHaveCount(0);
-});
 
 test('with the builder on, each side has one Build Base button and no old shop button', async ({
   page,

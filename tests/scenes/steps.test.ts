@@ -215,6 +215,7 @@ describe('setup step', () => {
 });
 
 describe('camp step', () => {
+  afterEach(() => window.history.replaceState(null, '', '/'));
   it('starts a seeded match for the saved players when Time to Clash! is tapped', async () => {
     t.services.session.bank = tinyBank;
     t.storage.set('timeclash.players', players);
@@ -253,6 +254,7 @@ describe('camp step', () => {
     expect(t.services.session.match).toBeNull();
   });
   it('with the builder off, opens the old Build Base shop, saves what the family does there, and returns to the Camp', async () => {
+    window.history.replaceState(null, '', '/?builder=0');
     t.storage.set('timeclash.players', players);
     t.storage.set('timeclash.camp', campWith(30, 0));
     const p = runCampStep(t.services);
@@ -266,6 +268,7 @@ describe('camp step', () => {
     expect(await p).toEqual({ key: SCENE_KEYS.camp });
   });
   it('an upgrade bought there is in the next match (more base health)', async () => {
+    window.history.replaceState(null, '', '/?builder=0');
     t.services.session.bank = tinyBank;
     t.storage.set('timeclash.players', players);
     t.storage.set('timeclash.camp', campWith(40, 0));
@@ -345,7 +348,8 @@ describe('camp step: Battle Plan', () => {
 
 describe('camp step: Build Base and the builder flag', () => {
   afterEach(() => window.history.replaceState(null, '', '/'));
-  it('flag off: no builder button, and Build Base opens the old shop screen', async () => {
+  it('?builder=0: no builder button, and Build Base opens the old shop screen', async () => {
+    window.history.replaceState(null, '', '/?builder=0');
     t.storage.set('timeclash.players', players);
     t.storage.set('timeclash.camp', campWith(30, 0));
     const p = runCampStep(t.services);
@@ -358,8 +362,7 @@ describe('camp step: Build Base and the builder flag', () => {
     click(q(TEST_IDS.upgradeBack));
     await p;
   });
-  it('flag on: Build Base opens the builder, not the old shop', async () => {
-    window.history.replaceState(null, '', '/?builder=1');
+  it('by default Build Base opens the builder, not the old shop', async () => {
     t.storage.set('timeclash.players', players);
     const p = runCampStep(t.services);
     expect(q(TEST_IDS.campUpgrade)).toBeNull();

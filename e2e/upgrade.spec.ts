@@ -1,4 +1,4 @@
-// Build Base (old shop, builder off): opens from the Camp, spends Scrap, and the upgrade shows up in the next match.
+// Build Base (old shop, ?builder=0): opens from the Camp, spends Scrap, and the upgrade shows up in the next match.
 import { expect, test } from './fixtures';
 import { giveScrap } from './support/camp';
 import {
@@ -12,7 +12,7 @@ import {
 } from './support/game';
 
 async function toCamp(page: Parameters<typeof tid>[0]): Promise<void> {
-  await toSetup(page);
+  await toSetup(page, '&builder=0');
   await fillTeam(page, 'PAST', PAST_SIDE);
   await fillTeam(page, 'FUTURE', FUTURE_SIDE);
   await tid(page, 'setup-next').click();
