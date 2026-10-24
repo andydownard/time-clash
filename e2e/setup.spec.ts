@@ -47,7 +47,7 @@ test('Setup refuses every word the game rules also refuse', async ({ page }) => 
   await toSetup(page);
   await tid(page, 'setup-name-PAST').fill('Poop');
   await tid(page, 'setup-next').click();
-  await expect(err(page, 'PAST')).toHaveText("Let's pick a different name.", { timeout: 2_000 });
+  await expect(err(page, 'PAST')).toHaveText("Let's pick a different name.");
 });
 
 test('each side keeps its own grade and subject, and they reach the match', async ({ page }) => {

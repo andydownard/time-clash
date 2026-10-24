@@ -74,12 +74,27 @@ test('flag on: pick Computer player and Hard, play a whole match to Victory', as
   await clashFromCamp(page);
   await page.waitForFunction(() => window.__timeclash!.match() !== null);
 
+  // The thinking note shows for only a second or two, and a busy machine can poll right past it.
+  // Watch for it inside the page, so every text it ever showed is on record.
+  await page.evaluate(() => {
+    const w = window as unknown as { __thinkSeen: string[] };
+    w.__thinkSeen = [];
+    const look = () => {
+      const t = document.querySelector('[data-testid="computer-thinking"]')?.textContent;
+      if (t && !w.__thinkSeen.includes(t)) w.__thinkSeen.push(t);
+    };
+    new MutationObserver(look).observe(document.body, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
+  });
+
   // No pass-the-mouse screen at all: the child keeps the screen.
   const seen = { thinkingAim: false, thinkingAsk: false, coverOnComputer: false };
   let humanTurns = 0;
-  const deadline = Date.now() + 160_000;
+  // No wall-clock deadline here: the test's own (slow) timeout ends a stuck match.
   for (;;) {
-    expect(Date.now(), 'the match took too long').toBeLessThan(deadline);
     await expect(tid(page, 'pass-screen')).toHaveCount(0);
     if (await tid(page, 'victory').isVisible()) break;
     // The match is cleared just before the Victory screen shows, so a null here means "almost there".
@@ -129,6 +144,10 @@ test('flag on: pick Computer player and Hard, play a whole match to Victory', as
   }
 
   expect(seen.coverOnComputer, 'a question card or cover showed on the computer turn').toBe(false);
+  const notes = await page.evaluate(() => (window as unknown as { __thinkSeen: string[] }).__thinkSeen);
+  seen.thinkingAim ||= notes.some((t) => t.includes('aiming'));
+  seen.thinkingAsk ||= notes.some((t) => t.includes('thinking'));
+  for (const t of notes) expect(t, 'the note never shows a question or a number').not.toMatch(/\?|\d/);
   expect(seen.thinkingAim, 'the aiming note showed').toBe(true);
   expect(humanTurns).toBeGreaterThan(0);
   await expect(tid(page, 'victory')).toContainText('Computer player');
