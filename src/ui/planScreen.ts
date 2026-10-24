@@ -1,13 +1,15 @@
 // Battle Plan (Phase 2): the last stop between the Camp and the battle. Pick a place (biome), Team
-// Future hides its base (spot), and either side may unlock special ammo with Scrap. Lock it in!
-// starts the match. The last plan is picked already, so one tap is enough. Back saves no plan.
+// Past places its castle (fort), Team Future hides its base (spot), and either side may unlock
+// special ammo with Scrap. Lock it in! starts the match. The last plan is picked already, so one
+// tap is enough. A plan with no castle place yet shows none picked (the Phase 1 castle). Back
+// saves no plan.
 import { PLAN_COPY, TEAM_NAMES } from '../data/copy';
 import { AMMO, type AmmoId } from '../game/ammo';
 import type { BattlePlan } from '../game/battlefield';
-import { BIOME_IDS, SPOT_IDS } from '../game/config';
+import { BIOME_IDS, FORT_IDS, SPOT_IDS } from '../game/config';
 import { unlockAmmo } from '../game/economy';
 import { walletOf, type CampState } from '../game/loadout';
-import { TEAMS, type BiomeId, type SpotIdValue, type Team } from '../game/types';
+import { TEAMS, type BiomeId, type FortIdValue, type SpotIdValue, type Team } from '../game/types';
 import type { UiCtx } from './ctx';
 import { h } from './dom';
 import { AMMO_ICON } from './hudGear';
@@ -22,6 +24,11 @@ const SPOT_ICON: Record<SpotIdValue, string> = {
   skyscraper: '\u{1F3D9}',
   foodTruck: '\u{1F32E}',
   bridge: '\u{1F309}',
+};
+const FORT_ICON: Record<FortIdValue, string> = {
+  hillFort: '\u{26F0}\u{FE0F}',
+  villageWall: '\u{1F9F1}',
+  drawbridge: '\u{1F3F0}',
 };
 /** Spots in the order a child reads them: high, middle, low. */
 const SPOT_ORDER: readonly SpotIdValue[] = ['skyscraper', 'foodTruck', 'bridge'];
@@ -87,6 +94,18 @@ export function showPlan(ctx: UiCtx, options: PlanOptions): Promise<BattlePlan |
         ),
     );
 
+    const fortCards = FORT_IDS.map((id) =>
+      card(
+        TEST_IDS.planFort(id),
+        FORT_ICON[id],
+        [PLAN_COPY.forts[id].name, `${PLAN_COPY.forts[id].height}. ${PLAN_COPY.forts[id].note}`],
+        () => {
+          plan.fort = id;
+          paint();
+        },
+      ),
+    );
+
     const scrapOut = {} as Record<Team, HTMLElement>;
     const ammoButtons = {} as Record<Team, Array<{ id: AmmoId; el: HTMLButtonElement }>>;
     const teamBoxes = TEAMS.map((team) => {
@@ -136,6 +155,9 @@ export function showPlan(ctx: UiCtx, options: PlanOptions): Promise<BattlePlan |
       BIOME_IDS.forEach((id, i) =>
         biomeCards[i]!.setAttribute('aria-checked', String(plan.biome === id)),
       );
+      FORT_IDS.forEach((id, i) =>
+        fortCards[i]!.setAttribute('aria-checked', String(plan.fort === id)),
+      );
       spotCards.forEach((el, i) =>
         el.setAttribute('aria-checked', String(plan.spot === SPOT_ORDER[i])),
       );
@@ -183,11 +205,11 @@ export function showPlan(ctx: UiCtx, options: PlanOptions): Promise<BattlePlan |
       text: PLAN_COPY.go,
     });
 
-    const group = (heading: string, cards: HTMLElement[]) =>
+    const group = (heading: string, cards: HTMLElement[], team?: Team) =>
       h(
         doc,
         'section',
-        { class: 'tc-plan-group' },
+        { class: 'tc-plan-group', ...(team ? { 'data-team': team } : {}) },
         h(doc, 'h2', { class: 'tc-plan-heading', text: heading }),
         h(
           doc,
@@ -209,7 +231,8 @@ export function showPlan(ctx: UiCtx, options: PlanOptions): Promise<BattlePlan |
         h(doc, 'h1', { class: 'tc-plan-title', text: PLAN_COPY.title }),
       ),
       group(PLAN_COPY.placeHeading, biomeCards),
-      group(PLAN_COPY.spotHeading(options.names.FUTURE), spotCards),
+      group(PLAN_COPY.fortHeading(options.names.PAST), fortCards, 'PAST'),
+      group(PLAN_COPY.spotHeading(options.names.FUTURE), spotCards, 'FUTURE'),
       h(
         doc,
         'section',

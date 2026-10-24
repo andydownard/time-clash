@@ -69,7 +69,7 @@ test('touch: drag a brick on, turn, undo, save to slot 2, reload and see it agai
   page,
 }) => {
   await toBuilderCamp(page);
-  await page.getByTestId('camp-build-PAST').tap();
+  await page.getByTestId('camp-build').tap();
   await expect(page.locator('[data-screen="builder"]')).toBeVisible();
   await tid(page, 'bb-slot-2').tap();
   await expect(tid(page, 'bb-slot-2')).toHaveAttribute('aria-pressed', 'true');
@@ -93,10 +93,9 @@ test('touch: drag a brick on, turn, undo, save to slot 2, reload and see it agai
   await expect(bricks(page)).toHaveCount(before);
 
   await tid(page, 'bb-done').tap();
-  await expect(tid(page, 'camp-base-PAST')).toHaveAttribute('data-bricks', '2');
   await page.reload();
   await expect(tid(page, 'camp-start')).toBeVisible({ timeout: 10_000 });
-  await page.getByTestId('camp-build-PAST').tap();
+  await page.getByTestId('camp-build').tap();
   await expect(tid(page, 'bb-slot-2')).toHaveAttribute('aria-pressed', 'true');
   await expect(bricks(page)).toHaveCount(2);
   await expect(bricks(page).first()).toHaveAttribute('transform', /rotate\(90\)/);
@@ -106,7 +105,8 @@ test('touch: every tool and tray brick is at least 56px, and text is at least 20
   page,
 }) => {
   await toBuilderCamp(page);
-  await page.getByTestId('camp-build-FUTURE').tap();
+  await page.getByTestId('camp-build').tap();
+  await page.getByTestId('bb-team-FUTURE').tap();
   await expect(page.locator('[data-screen="builder"]')).toBeVisible();
   const small = await page.evaluate(() => {
     const out: string[] = [];
@@ -142,7 +142,7 @@ test('touch: tap Weapons, tap spot 2, tap a weapon, reload, and it is still ther
   await giveScrap(page, 10, 0);
   await page.reload();
   await expect(tid(page, 'camp-start')).toBeVisible({ timeout: 10_000 });
-  await page.getByTestId('camp-build-PAST').tap();
+  await page.getByTestId('camp-build').tap();
   await expect(page.locator('[data-screen="builder"]')).toBeVisible();
   await chooseSpot(page, 2, true);
   await tid(page, 'bb-weapon-archerPost').tap();
@@ -154,7 +154,7 @@ test('touch: tap Weapons, tap spot 2, tap a weapon, reload, and it is still ther
   await tid(page, 'bb-done').tap();
   await page.reload();
   await expect(tid(page, 'camp-start')).toBeVisible({ timeout: 10_000 });
-  await page.getByTestId('camp-build-PAST').tap();
+  await page.getByTestId('camp-build').tap();
   await tid(page, 'bb-mode-weapons').tap();
   await expect(spotPad(page, 2)).toHaveAttribute('aria-label', 'Spot 2, archer post');
   await expect(tid(page, 'bb-spots-chip')).toHaveText('Spots 1 of 4 used');
@@ -162,7 +162,8 @@ test('touch: tap Weapons, tap spot 2, tap a weapon, reload, and it is still ther
 
 test('touch: weapon pads and the weapon list meet the 56px and 20px rules', async ({ page }) => {
   await toBuilderCamp(page);
-  await page.getByTestId('camp-build-FUTURE').tap();
+  await page.getByTestId('camp-build').tap();
+  await page.getByTestId('bb-team-FUTURE').tap();
   await chooseSpot(page, 4, true);
   const problems = await page.evaluate(() => {
     const out: string[] = [];

@@ -58,10 +58,13 @@ export async function dragBrick(
   await page.mouse.up();
 }
 
-/** Open the builder for a side from the Camp. */
+/** Open the builder from the Camp, then pick the side with its Past and Future choice. */
 export async function openBuilder(page: Page, team: 'PAST' | 'FUTURE'): Promise<void> {
-  await tid(page, `camp-build-${team}`).click();
+  await tid(page, 'camp-build').click();
   await expect(page.locator('[data-screen="builder"]')).toBeVisible();
+  // Build Base opens on Team Past. The picker inside it switches sides.
+  if (team === 'FUTURE') await tid(page, 'bb-team-FUTURE').click();
+  await expect(page.locator(`[data-screen="builder"][data-team="${team}"]`)).toBeVisible();
 }
 
 export const bricks = (page: Page) => page.locator('.tc-bb-piece');

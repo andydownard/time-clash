@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { createMatch } from '../../src/game/match';
 import { simulateShot } from '../../src/game/ballistics';
 import { classifyBlast } from '../../src/game/damage';
@@ -16,9 +16,6 @@ import type {
   Players,
   ReloadInput,
 } from '../../src/game/types';
-
-// Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
-vi.setConfig({ testTimeout: 120_000 });
 
 const PLAYERS: Players = [
   { name: 'Alex', team: 'PAST', grade: 5, subject: 'math' },

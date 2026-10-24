@@ -1,14 +1,12 @@
 // @vitest-environment jsdom
 // Squads S1 helper bar in the HUD: GO banner, helper pick, dash spots, Fire gating.
 import { readFileSync } from 'node:fs';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { SQUAD_COPY, goTurnBanner } from '../../src/data/copy';
 import { SQUADS } from '../../src/game/config';
 import type { HudHandlers, HudSquads, HudState } from '../../src/ui/types';
 import { TEST_IDS } from '../../src/ui/types';
 import { click, key, q, qa, setup } from './helpers';
-
-vi.setConfig({ testTimeout: 120_000 });
 
 let s: ReturnType<typeof setup>;
 beforeEach(() => {

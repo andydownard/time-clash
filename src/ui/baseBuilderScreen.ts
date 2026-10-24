@@ -2,7 +2,7 @@
 // battle. Drag a brick from the tray onto the plot, turn it, move it, drag it back to remove it.
 // Every change is saved at once through `saveBases`. The rules live in src/game/baseBuilder.ts.
 import '../styles/baseBuilder.css';
-import { BUILDER_COPY } from '../data/copy';
+import { BUILDER_COPY, TEAM_NAMES } from '../data/copy';
 import { SHAPE_COPY } from '../data/shapeCopy';
 import {
   assignWeapon,
@@ -49,6 +49,7 @@ import { BASE_BUILDER as B } from '../game/config';
 import { cellsFromKey, customId, shapeKey, shapeProblem, type Cell } from '../game/customShapes';
 import { unlockPiece, unlockSpotWeapon } from '../game/economy';
 import { walletOf, type CampState } from '../game/loadout';
+import { TEAMS, type Team } from '../game/types';
 import type { UiCtx } from './ctx';
 import { h } from './dom';
 import {
@@ -114,9 +115,9 @@ type Drag =
       pid: number;
     };
 
-export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<void> {
+export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Team | null> {
   const { doc } = ctx;
-  return new Promise<void>((resolve) => {
+  return new Promise<Team | null>((resolve) => {
     const { team } = options;
     const name = options.names[team];
     let camp: CampState = options.camp;
@@ -173,6 +174,24 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<vo
       { class: 'tc-bb-scrap', 'data-testid': 'bb-scrap' },
       h(doc, 'span', { text: `${BUILDER_COPY.scrap} ` }),
       scrapValue,
+    );
+    /** Past or Future, like the Forge. The side you are not on opens the builder for that side. */
+    const teamPicker = h(
+      doc,
+      'div',
+      { class: 'tc-bb-teams', role: 'radiogroup', 'aria-label': BUILDER_COPY.pickTeam },
+      ...TEAMS.map((t) =>
+        h(doc, 'button', {
+          type: 'button',
+          role: 'radio',
+          class: 'tc-chip tc-bb-team',
+          'data-team': t,
+          'data-testid': `bb-team-${t}`,
+          'aria-checked': String(t === team),
+          tabindex: t === team ? 0 : -1,
+          text: TEAM_NAMES[t],
+        }),
+      ),
     );
     const slotNav = h(doc, 'nav', { class: 'tc-bb-slots', 'aria-label': BUILDER_COPY.slots });
 
@@ -425,7 +444,7 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<vo
         'data-motion': ctx.motion(),
       },
       h(doc, 'h1', { class: 'tc-sr-only', text: BUILDER_COPY.title[team] }),
-      h(doc, 'header', { class: 'tc-bb-top' }, back, slotNav, scrapBox),
+      h(doc, 'header', { class: 'tc-bb-top' }, back, teamPicker, slotNav, scrapBox),
       h(doc, 'div', { class: 'tc-bb-main' }, plotWrap, tools, pad),
       status,
       keys,
@@ -512,7 +531,8 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<vo
                   doc,
                   '<svg viewBox="0 0 40 40" width="32" height="32" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"><path d="M20,6 V34 M6,20 H34"/></svg>',
                 ),
-            h(doc, 'span', { text: BUILDER_COPY.slot(i + 1) }),
+            // The number is enough to see. The full name is the aria-label above.
+            h(doc, 'span', { text: String(i + 1) }),
           );
           b.addEventListener('click', () => switchSlot(i));
           return b;
@@ -1595,15 +1615,20 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<vo
 
     // ---------- Finish ----------
     const close = ctx.openScreen(screen);
-    const finish = (): void => {
+    const finish = (next: Team | null = null): void => {
       endDrag();
       endPaint();
       doc.defaultView?.removeEventListener('resize', onResize);
       close();
-      resolve();
+      resolve(next);
     };
-    back.addEventListener('click', finish);
-    doneBtn.addEventListener('click', finish);
+    back.addEventListener('click', () => finish());
+    doneBtn.addEventListener('click', () => finish());
+    teamPicker.addEventListener('click', (e) => {
+      const chip = (e.target as Element).closest<HTMLElement>('[data-team]');
+      const picked = TEAMS.find((t) => t === chip?.dataset.team);
+      if (picked && picked !== team) finish(picked);
+    });
     hintDefault();
     renderAll();
     back.focus();

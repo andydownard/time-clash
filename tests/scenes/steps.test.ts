@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { LOADING } from '../../src/data/copy';
 import { SCENE_KEYS } from '../../src/scenes/registry';
 import {
@@ -18,9 +18,6 @@ import { campWith } from '../helpers/camp';
 import { loadCamp } from '../../src/storage/storage';
 import { fakeController, makeServices, players, tinyBank } from './fakes';
 import { loadSettings } from '../../src/storage/storage';
-
-// Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
-vi.setConfig({ testTimeout: 120_000 });
 
 let t: ReturnType<typeof makeServices>;
 beforeEach(() => {
@@ -218,6 +215,7 @@ describe('setup step', () => {
 });
 
 describe('camp step', () => {
+  afterEach(() => window.history.replaceState(null, '', '/'));
   it('starts a seeded match for the saved players when Time to Clash! is tapped', async () => {
     t.services.session.bank = tinyBank;
     t.storage.set('timeclash.players', players);
@@ -256,6 +254,7 @@ describe('camp step', () => {
     expect(t.services.session.match).toBeNull();
   });
   it('with the builder off, opens the old Build Base shop, saves what the family does there, and returns to the Camp', async () => {
+    window.history.replaceState(null, '', '/?builder=0');
     t.storage.set('timeclash.players', players);
     t.storage.set('timeclash.camp', campWith(30, 0));
     const p = runCampStep(t.services);
@@ -269,6 +268,7 @@ describe('camp step', () => {
     expect(await p).toEqual({ key: SCENE_KEYS.camp });
   });
   it('an upgrade bought there is in the next match (more base health)', async () => {
+    window.history.replaceState(null, '', '/?builder=0');
     t.services.session.bank = tinyBank;
     t.storage.set('timeclash.players', players);
     t.storage.set('timeclash.camp', campWith(40, 0));
@@ -348,11 +348,12 @@ describe('camp step: Battle Plan', () => {
 
 describe('camp step: Build Base and the builder flag', () => {
   afterEach(() => window.history.replaceState(null, '', '/'));
-  it('flag off: no builder button, and Build Base opens the old shop screen', async () => {
+  it('?builder=0: no builder button, and Build Base opens the old shop screen', async () => {
+    window.history.replaceState(null, '', '/?builder=0');
     t.storage.set('timeclash.players', players);
     t.storage.set('timeclash.camp', campWith(30, 0));
     const p = runCampStep(t.services);
-    expect(q(TEST_IDS.campBuild('PAST'))).toBeNull();
+    expect(q(TEST_IDS.campBuild)).toBeNull();
     expect(q(TEST_IDS.campUpgrade)!.textContent).toBe('Build Base');
     click(q(TEST_IDS.campUpgrade));
     await flush();
@@ -361,17 +362,31 @@ describe('camp step: Build Base and the builder flag', () => {
     click(q(TEST_IDS.upgradeBack));
     await p;
   });
-  it('flag on: Build Base opens the builder, not the old shop', async () => {
-    window.history.replaceState(null, '', '/?builder=1');
+  it('by default Build Base opens the builder on Team Past, not the old shop', async () => {
     t.storage.set('timeclash.players', players);
     const p = runCampStep(t.services);
     expect(q(TEST_IDS.campUpgrade)).toBeNull();
-    click(q(TEST_IDS.campBuild('FUTURE')));
+    click(q(TEST_IDS.campBuild));
     await flush();
-    expect(document.querySelector('[data-screen="builder"]')).not.toBeNull();
+    expect(document.querySelector('[data-screen="builder"]')!.getAttribute('data-team')).toBe('PAST');
     expect(document.querySelector('[data-screen="upgrade"]')).toBeNull();
     click(q('bb-back'));
     expect(await p).toEqual({ key: SCENE_KEYS.camp });
+  });
+  it('the Past and Future choice switches sides inside Build Base, and Back returns to the Camp', async () => {
+    t.storage.set('timeclash.players', players);
+    const p = runCampStep(t.services);
+    click(q(TEST_IDS.campBuild));
+    await flush();
+    click(q('bb-team-FUTURE'));
+    await flush();
+    expect(document.querySelector('[data-screen="builder"]')!.getAttribute('data-team')).toBe('FUTURE');
+    click(q('bb-team-PAST'));
+    await flush();
+    expect(document.querySelector('[data-screen="builder"]')!.getAttribute('data-team')).toBe('PAST');
+    click(q('bb-back'));
+    expect(await p).toEqual({ key: SCENE_KEYS.camp });
+    expect(document.querySelector('[data-screen="builder"]')).toBeNull();
   });
 });
 

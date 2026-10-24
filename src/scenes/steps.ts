@@ -1,7 +1,7 @@
 // One async step per screen. Each shows its DOM screen, waits for a tap, saves what needs
 // saving, and returns where to go next. Phaser scenes just run a step and follow the route.
 import { LOADING } from '../data/copy';
-import { baseBuilderOn, chosenBase, type Placed } from '../game/baseBuilder';
+import { baseBuilderOn } from '../game/baseBuilder';
 import { creditMatch } from '../game/economy';
 import { TEAMS, type Players, type Team } from '../game/types';
 import { buildLayout } from '../game/battlefield';
@@ -87,15 +87,6 @@ export async function runSetupStep(s: AppServices): Promise<SceneRoute> {
   return routeAfterSetup();
 }
 
-/** The chosen base of each side, cleaned, for the small pictures on the Camp. */
-function chosenBases(s: AppServices, names: Record<Team, string>): Record<Team, Placed[]> {
-  const bases = loadBases(s.storage);
-  return {
-    PAST: chosenBase(bases, names.PAST, 'PAST'),
-    FUTURE: chosenBase(bases, names.FUTURE, 'FUTURE'),
-  };
-}
-
 /** Camp: the big button starts a fresh match for the players Setup saved. */
 export async function runCampStep(s: AppServices): Promise<SceneRoute> {
   const players = s.storage.get('timeclash.players');
@@ -103,18 +94,20 @@ export async function runCampStep(s: AppServices): Promise<SceneRoute> {
   if (!players) return { key: SCENE_KEYS.setup };
   const names = namesOf(players);
   const builder = baseBuilderOn(globalThis.location?.search ?? '');
-  const choice = await s.overlay.showCamp(
-    builder ? { builder, names, bases: chosenBases(s, names) } : undefined,
-  );
-  if (choice === 'buildPast' || choice === 'buildFuture') {
-    await s.overlay.showBaseBuilder({
-      team: choice === 'buildPast' ? 'PAST' : 'FUTURE',
-      camp: loadCamp(s.storage),
-      names,
-      bases: loadBases(s.storage),
-      saveCamp: (next: CampState) => void s.storage.set('timeclash.camp', next),
-      saveBases: (next) => void s.storage.set('timeclash.bases', next),
-    });
+  const choice = await s.overlay.showCamp({ builder });
+  if (choice === 'build') {
+    // The builder has its own Past and Future picker, so it opens again for the side picked.
+    let team: Team | null = 'PAST';
+    while (team) {
+      team = await s.overlay.showBaseBuilder({
+        team,
+        camp: loadCamp(s.storage),
+        names,
+        bases: loadBases(s.storage),
+        saveCamp: (next: CampState) => void s.storage.set('timeclash.camp', next),
+        saveBases: (next) => void s.storage.set('timeclash.bases', next),
+      });
+    }
     return { key: SCENE_KEYS.camp };
   }
   if (choice === 'players') return { key: SCENE_KEYS.setup };

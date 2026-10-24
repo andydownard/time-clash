@@ -4,7 +4,7 @@
 import type { AmmoId } from '../game/ammo';
 import type { BattlePlan } from '../game/battlefield';
 import type { EvasionView } from '../game/types';
-import type { BasesState, Placed } from '../game/baseBuilder';
+import type { BasesState } from '../game/baseBuilder';
 import type { CampState } from '../game/loadout';
 import type { Grade, Players, Team, TeamStats, Vec2 } from '../game/types';
 import type { UnitId } from '../game/units';
@@ -77,12 +77,12 @@ export const TEST_IDS = {
   planStatus: 'plan-status',
   planBiome: (id: string) => `plan-biome-${id}`,
   planSpot: (id: string) => `plan-spot-${id}`,
+  planFort: (id: string) => `plan-fort-${id}`,
   planScrap: (team: Team) => `plan-scrap-${team}`,
   planAmmo: (team: Team, id: string) => `plan-ammo-${team}-${id}`,
   gearAmmo: 'gear-ammo',
   gearEvasion: 'gear-evasion',
-  campBuild: (team: Team) => `camp-build-${team}`,
-  campBase: (team: Team) => `camp-base-${team}`,
+  campBuild: 'camp-build',
   turnBanner: 'turn-banner',
   passScreen: 'pass-screen',
   passReady: 'pass-ready',
@@ -219,15 +219,12 @@ export type VictoryOptions = {
 };
 
 /** The Camp starts the match, or sends the family back to Setup to change the players. */
-export type CampChoice = 'battle' | 'players' | 'forge' | 'upgrade' | 'buildPast' | 'buildFuture';
+export type CampChoice = 'battle' | 'players' | 'forge' | 'upgrade' | 'build';
 
-/** What the Camp needs to show the base builder buttons and the small picture of each base. */
+/** What the Camp needs to know about Build Base. */
 export type CampOptions = {
-  /** True when the base builder is switched on. Without it the Camp looks as it always did. */
+  /** True when the base builder is on. Build Base then opens it, not the old shop. */
   builder: boolean;
-  /** The chosen base of each side, for the small picture. */
-  bases?: Record<Team, Placed[]>;
-  names?: Record<Team, string>;
 };
 
 export type BuilderOptions = {
@@ -305,8 +302,11 @@ export interface Overlay {
   showUpgrade(options: ForgeOptions): Promise<void>;
   /** Battle Plan: place, base spot and ammo. Resolves with the plan, or null on Back. */
   showPlan(options: PlanOptions): Promise<BattlePlan | null>;
-  /** The base builder. Changes go through `saveBases` and `saveCamp`. Resolves on Done or Back. */
-  showBaseBuilder(options: BuilderOptions): Promise<void>;
+  /**
+   * The base builder. Changes go through `saveBases` and `saveCamp`. Resolves with the other team
+   * when the player taps its Past or Future choice, or null on Done or Back.
+   */
+  showBaseBuilder(options: BuilderOptions): Promise<Team | null>;
   showVictory(options: VictoryOptions): Promise<VictoryChoice>;
 
   // Battle HUD (Z.hud)
