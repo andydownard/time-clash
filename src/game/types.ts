@@ -4,7 +4,7 @@
 
 import type { AmmoId } from './ammo';
 import type { Crew, DashOutcome, GroundSpotId, HelperId } from './crew';
-import type { BIOME_IDS, SPOT_IDS } from './config';
+import type { BIOME_IDS, FORT_IDS, SPOT_IDS } from './config';
 import type { EvasionId, EvasionPhase } from './evasion';
 import type { Placed, ResolvedSpot, SpotRole } from './baseBuilder';
 import type { MatchEffects } from './loadout';
@@ -57,6 +57,8 @@ export type Bases = Record<Team, Rect>;
 export type BiomeId = (typeof BIOME_IDS)[number];
 /** Where Team Future hides its base (Phase 2). */
 export type SpotIdValue = (typeof SPOT_IDS)[number];
+/** Where Team Past puts its castle. */
+export type FortIdValue = (typeof FORT_IDS)[number];
 
 /** Everything static about one battlefield. Phase 2 adds more layouts. */
 export type BattleLayout = {
@@ -69,6 +71,8 @@ export type BattleLayout = {
   biome?: BiomeId;
   /** Team Future's base spot. Missing or null means the Phase 1 spot. */
   spot?: SpotIdValue | null;
+  /** Team Past's castle place. Missing or null means the Phase 1 castle. */
+  fort?: FortIdValue | null;
   /** How far each base moved from its Phase 1 place. Fighters standing on it move too. */
   baseShift?: Partial<Record<Team, Vec2>>;
 };

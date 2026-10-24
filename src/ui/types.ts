@@ -77,6 +77,7 @@ export const TEST_IDS = {
   planStatus: 'plan-status',
   planBiome: (id: string) => `plan-biome-${id}`,
   planSpot: (id: string) => `plan-spot-${id}`,
+  planFort: (id: string) => `plan-fort-${id}`,
   planScrap: (team: Team) => `plan-scrap-${team}`,
   planAmmo: (team: Team, id: string) => `plan-ammo-${team}-${id}`,
   gearAmmo: 'gear-ammo',

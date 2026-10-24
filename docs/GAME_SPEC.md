@@ -69,6 +69,15 @@ Instead of a fixed spawn point, the Future player can choose where to plant thei
 ⚬ Disguised inside a high-tech food truck pavilion.
 ⚬ Position directly alters shooting elevation, trajectory angles, and cover obstacles.
 
+Team Past gets the same kind of choice for its castle (added 2026-10-23, owner request: "the past needs a way to have things that block too"):
+
+⚬ Hill Fort: high on a solid rock. The best view. Low shots thud into the rock.
+⚬ Village Wall: on the ground, behind a low stone wall out in front.
+⚬ Drawbridge: low, behind a raised wooden drawbridge that stops flat shots, so players lob.
+⚬ No pick (every plan saved before this) keeps the castle where it always was, with no cover.
+
+Every blocking shape is drawn as the thing it is (stone courses, moss and grass, cherry petals, temple vines, tower windows with neon trim, a steel truss, a taco truck, oak planks with iron bands), never a plain dark box. The picture and the solid shape are the same outline, so a shell hits exactly what a child sees.
+
 D. Clear Turn Indicators (Single-Computer Hot-Seat)
 
 Because two players share one screen, turns must be unmissable:

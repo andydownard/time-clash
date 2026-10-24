@@ -286,6 +286,47 @@ export const SPOTS: Record<(typeof SPOT_IDS)[number], SpotConfig> = {
   },
 };
 
+// ---------- Castle places (Team Past) ----------
+/**
+ * Places for Team Past's castle, the mirror of Team Future's SPOTS. `null` (no place picked, and
+ * every plan saved before these existed) is the Phase 1 castle, unchanged. Each place moves the
+ * castle (and the fighters standing on it) by `shift`, and adds its own solid shapes.
+ */
+export const FORT_IDS = ['hillFort', 'villageWall', 'drawbridge'] as const;
+
+export const FORTS: Record<(typeof FORT_IDS)[number], SpotConfig> = {
+  /** High on a rock. The best view. The rock is solid, so low shots thud into it. */
+  hillFort: {
+    shift: { x: 0, y: -140 },
+    base: { x: 80, y: 330, w: 160, h: 150 },
+    launchOrigin: { x: 220, y: 310 },
+    obstacles: [
+      [
+        { x: 84, y: 480 },
+        { x: 236, y: 480 },
+        { x: 242, y: 536 },
+        { x: 238, y: GROUND_Y },
+        { x: 74, y: GROUND_Y },
+        { x: 70, y: 548 },
+      ],
+    ],
+  },
+  /** On the ground, behind a low stone wall out in front. */
+  villageWall: {
+    shift: { x: 0, y: 0 },
+    base: { x: 80, y: 470, w: 160, h: 150 },
+    launchOrigin: { x: 220, y: 450 },
+    obstacles: [rectToPolygon({ x: 426, y: 536, w: 32, h: GROUND_Y - 536 })],
+  },
+  /** Low, behind a raised wooden drawbridge. The bridge stops flat shots, so players must lob. */
+  drawbridge: {
+    shift: { x: 0, y: 50 },
+    base: { x: 80, y: 520, w: 160, h: 100 },
+    launchOrigin: { x: 220, y: 500 },
+    obstacles: [rectToPolygon({ x: 260, y: 380, w: 160, h: 50 })],
+  },
+};
+
 // ---------- Biomes (Phase 2) ----------
 /** Where the battle happens. Each place has its own middle obstacle and its own backdrop. */
 export const BIOME_IDS = ['aspen', 'cherry', 'temple'] as const;
