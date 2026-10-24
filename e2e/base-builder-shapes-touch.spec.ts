@@ -48,7 +48,7 @@ test('touch: tap an L on the pad, save it, drag it on, turn it, reload and see i
   page,
 }) => {
   await toBuilderCamp(page);
-  await page.getByTestId('camp-build-PAST').tap();
+  await page.getByTestId('camp-build').tap();
   await expect(page.locator('[data-screen="builder"]')).toBeVisible();
   await tid(page, 'bb-own').tap();
   await tid(page, 'bb-pad-clear').tap();
@@ -79,14 +79,15 @@ test('touch: tap an L on the pad, save it, drag it on, turn it, reload and see i
 
   await page.reload();
   await expect(tid(page, 'camp-start')).toBeVisible({ timeout: 10_000 });
-  await page.getByTestId('camp-build-PAST').tap();
+  await page.getByTestId('camp-build').tap();
   await expect(bricks(page)).toHaveCount(1);
   await expect(bricks(page).first()).toHaveAttribute('transform', /rotate\(90\)/);
 });
 
 test('touch: the pad and the saved shapes meet the 56px and 20px rules', async ({ page }) => {
   await toBuilderCamp(page);
-  await page.getByTestId('camp-build-FUTURE').tap();
+  await page.getByTestId('camp-build').tap();
+  await page.getByTestId('bb-team-FUTURE').tap();
   await tid(page, 'bb-own').tap();
   await tid(page, 'bb-pad-save').tap();
   await tid(page, 'bb-own').tap();

@@ -165,14 +165,15 @@ test('every screen keeps the floors (UPDATE_SCREENSHOTS=1 also retakes the scree
     await tid(page, 'forge-back').click();
     await expect(tid(page, 'camp-start')).toBeVisible();
     // Build Base (the builder), for both teams, then back to the Camp.
+    await tid(page, 'camp-build').click();
     for (const team of ['PAST', 'FUTURE'] as const) {
-      await tid(page, `camp-build-${team}`).click();
-      await expect(tid(page, 'bb-back')).toBeVisible();
+      if (team === 'FUTURE') await tid(page, 'bb-team-FUTURE').click();
+      await expect(page.locator(`[data-screen="builder"][data-team="${team}"]`)).toBeVisible();
       await floors(page, `Builder ${team}`);
       await fitsOnScreen(page, 'builder', `Builder ${team}`);
-      await tid(page, 'bb-back').click();
-      await expect(tid(page, 'camp-start')).toBeVisible();
     }
+    await tid(page, 'bb-back').click();
+    await expect(tid(page, 'camp-start')).toBeVisible();
     // The Battle Plan (Phase 2), then Back to the Camp. startMatch locks it in after this.
     await tid(page, 'camp-start').click();
     await expect(tid(page, 'plan-go')).toBeVisible();

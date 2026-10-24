@@ -1,11 +1,9 @@
 // The Camp hub: the home base between Setup and Battle. A sunset field with both camps and four
 // buttons. Time to Clash! starts the match. Forge Weapon and Build Base open their own screens.
-// With the base builder on, each side has one Build Base button that opens the builder. With it
-// off, the Future side keeps the old Build Base shop button (code name: upgrade).
+// Build Base opens the builder, which has its own Past and Future picker like the Forge. With the
+// builder off (?builder=0) it opens the old Build Base shop instead (code name: upgrade).
 // Change players goes back to Setup.
-import { BUILDER_COPY, CAMP, GAME_TITLE } from '../data/copy';
-import type { Team } from '../game/types';
-import { baseThumb } from './baseBuilderArt';
+import { CAMP, GAME_TITLE } from '../data/copy';
 import { campScene, hawkFrontLayer } from './campArt';
 import { campScheduler, flyOverCamp } from './campFlights';
 import type { UiCtx } from './ctx';
@@ -24,38 +22,9 @@ export function showCamp(ctx: UiCtx, options?: CampOptions): Promise<CampChoice>
         text: label,
       });
     const forge = side(TEST_IDS.campForge, CAMP.forge, 'past');
-    const upgrade = side(TEST_IDS.campUpgrade, CAMP.upgrade, 'future');
-
-    /** The base builder button and a small picture of the chosen base, when the builder is on. */
-    const builderBits = (team: Team): HTMLElement[] => {
-      if (!options?.builder) return [];
-      const button = h(doc, 'button', {
-        type: 'button',
-        class: `tc-btn tc-btn-${team === 'PAST' ? 'past' : 'future'} tc-camp-side tc-camp-build`,
-        'data-testid': TEST_IDS.campBuild(team),
-        text: BUILDER_COPY.campButton[team],
-      });
-      button.addEventListener('click', () => {
-        close();
-        resolve(team === 'PAST' ? 'buildPast' : 'buildFuture');
-      });
-      const pieces = options.bases?.[team] ?? [];
-      const who = options.names?.[team] ?? '';
-      const thumb = h(
-        doc,
-        'div',
-        {
-          class: 'tc-camp-base',
-          'data-team': team,
-          'data-bricks': pieces.length,
-          role: 'img',
-          'aria-label': BUILDER_COPY.campThumb(team, who),
-          'data-testid': TEST_IDS.campBase(team),
-        },
-        baseThumb(doc, team, pieces),
-      );
-      return [thumb, button];
-    };
+    // One Build Base button on the Future side opens the builder or, with it off, the old shop.
+    const builder = options?.builder === true;
+    const upgrade = side(builder ? TEST_IDS.campBuild : TEST_IDS.campUpgrade, CAMP.upgrade, 'future');
 
     const start = h(doc, 'button', {
       type: 'button',
@@ -97,14 +66,13 @@ export function showCamp(ctx: UiCtx, options?: CampOptions): Promise<CampChoice>
           doc,
           'div',
           { class: 'tc-camp-slot', 'data-kind': 'past' },
-          ...builderBits('PAST'),
           forge,
         ),
         h(
           doc,
           'div',
           { class: 'tc-camp-slot', 'data-kind': 'future' },
-          ...(options?.builder ? builderBits('FUTURE') : [upgrade]),
+          upgrade,
         ),
       ),
       players,
@@ -130,7 +98,7 @@ export function showCamp(ctx: UiCtx, options?: CampOptions): Promise<CampChoice>
     });
     upgrade.addEventListener('click', () => {
       close();
-      resolve('upgrade');
+      resolve(builder ? 'build' : 'upgrade');
     });
     players.addEventListener('click', () => {
       close();

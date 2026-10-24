@@ -353,7 +353,7 @@ describe('camp step: Build Base and the builder flag', () => {
     t.storage.set('timeclash.players', players);
     t.storage.set('timeclash.camp', campWith(30, 0));
     const p = runCampStep(t.services);
-    expect(q(TEST_IDS.campBuild('PAST'))).toBeNull();
+    expect(q(TEST_IDS.campBuild)).toBeNull();
     expect(q(TEST_IDS.campUpgrade)!.textContent).toBe('Build Base');
     click(q(TEST_IDS.campUpgrade));
     await flush();
@@ -362,16 +362,31 @@ describe('camp step: Build Base and the builder flag', () => {
     click(q(TEST_IDS.upgradeBack));
     await p;
   });
-  it('by default Build Base opens the builder, not the old shop', async () => {
+  it('by default Build Base opens the builder on Team Past, not the old shop', async () => {
     t.storage.set('timeclash.players', players);
     const p = runCampStep(t.services);
     expect(q(TEST_IDS.campUpgrade)).toBeNull();
-    click(q(TEST_IDS.campBuild('FUTURE')));
+    click(q(TEST_IDS.campBuild));
     await flush();
-    expect(document.querySelector('[data-screen="builder"]')).not.toBeNull();
+    expect(document.querySelector('[data-screen="builder"]')!.getAttribute('data-team')).toBe('PAST');
     expect(document.querySelector('[data-screen="upgrade"]')).toBeNull();
     click(q('bb-back'));
     expect(await p).toEqual({ key: SCENE_KEYS.camp });
+  });
+  it('the Past and Future choice switches sides inside Build Base, and Back returns to the Camp', async () => {
+    t.storage.set('timeclash.players', players);
+    const p = runCampStep(t.services);
+    click(q(TEST_IDS.campBuild));
+    await flush();
+    click(q('bb-team-FUTURE'));
+    await flush();
+    expect(document.querySelector('[data-screen="builder"]')!.getAttribute('data-team')).toBe('FUTURE');
+    click(q('bb-team-PAST'));
+    await flush();
+    expect(document.querySelector('[data-screen="builder"]')!.getAttribute('data-team')).toBe('PAST');
+    click(q('bb-back'));
+    expect(await p).toEqual({ key: SCENE_KEYS.camp });
+    expect(document.querySelector('[data-screen="builder"]')).toBeNull();
   });
 });
 

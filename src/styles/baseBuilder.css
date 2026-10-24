@@ -24,6 +24,16 @@
   align-self: center;
   white-space: nowrap;
 }
+.tc-bb-teams {
+  display: flex;
+  align-self: center;
+  gap: var(--tc-s-2);
+  flex: 0 0 auto;
+}
+.tc-bb-team {
+  white-space: nowrap;
+  padding-inline: var(--tc-s-3);
+}
 .tc-bb-slots {
   display: flex;
   gap: var(--tc-s-2);
@@ -32,7 +42,7 @@
 }
 .tc-bb-slot {
   flex: 1 1 0;
-  min-width: 0;
+  min-width: var(--tc-tap);
   min-height: 64px;
   display: flex;
   align-items: center;
@@ -304,23 +314,6 @@
 }
 .tc-bb-ghost-art {
   display: block;
-}
-
-/* Camp: a small picture of the chosen base above its Build button. */
-.tc-camp-base {
-  width: 168px;
-  height: 84px;
-  border: 4px solid var(--tc-ember);
-  border-radius: 12px;
-  overflow: hidden;
-  background: var(--tc-ink-deep);
-}
-.tc-camp-base .tc-bb-thumb {
-  display: block;
-  width: 100%;
-  height: 100%;
-  border: 0;
-  border-radius: 0;
 }
 
 [data-motion='reduced'] .tc-bb-tool:active {

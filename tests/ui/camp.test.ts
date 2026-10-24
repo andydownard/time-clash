@@ -111,17 +111,19 @@ describe('Camp side buttons', () => {
     void s.overlay.showCamp({ builder: false });
     expect(q(TEST_IDS.campUpgrade)!.textContent).toBe('Build Base');
     expect(document.body.textContent).not.toMatch(/upgrade/i);
-    expect(q(TEST_IDS.campBuild('PAST'))).toBeNull();
-    expect(q(TEST_IDS.campBuild('FUTURE'))).toBeNull();
+    expect(q(TEST_IDS.campBuild)).toBeNull();
   });
 
-  it('with the builder on, each side has one Build Base button and the old shop button is gone', () => {
-    void s.overlay.showCamp({ builder: true });
+  it('with the builder on, one Build Base button sits on the Future side, with no pictures of the bases', async () => {
+    const choice = s.overlay.showCamp({ builder: true });
     expect(q(TEST_IDS.campUpgrade)).toBeNull();
-    for (const team of ['PAST', 'FUTURE'] as const) {
-      expect(q(TEST_IDS.campBuild(team))!.textContent).toBe('Build Base');
-    }
+    const build = q(TEST_IDS.campBuild)!;
+    expect(build.textContent).toBe('Build Base');
+    expect(build.parentElement!.getAttribute('data-kind')).toBe('future');
+    expect(document.querySelectorAll('.tc-camp-side')).toHaveLength(2);
+    expect(document.querySelector('.tc-camp-base')).toBeNull();
     expect(document.body.textContent).not.toMatch(/upgrade|build castle/i);
-    expect(document.querySelectorAll('.tc-camp-build')).toHaveLength(2);
+    click(build);
+    await expect(choice).resolves.toBe('build');
   });
 });

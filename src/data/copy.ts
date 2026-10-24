@@ -573,11 +573,9 @@ export const GEAR_COPY = {
 export const BUILDER_COPY = {
   /** The screen is called Build Base for both sides. */
   title: { PAST: 'Build Base', FUTURE: 'Build Base' } as Record<Team, string>,
-  /** The one Camp button per side that opens the builder. */
-  campButton: { PAST: 'Build Base', FUTURE: 'Build Base' } as Record<Team, string>,
   /** A tap on a locked piece or weapon when the purse is short. */
   needMore: (n: number): string => `Not enough Scrap yet. You need ${n} more.`,
-  campThumb: (team: Team, name: string): string => `${name}'s ${TEAM_HOMES[team]}`,
+  pickTeam: 'Choose a team',
   back: 'Back',
   scrap: 'Scrap',
   slots: 'Saved bases',
