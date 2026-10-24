@@ -151,7 +151,8 @@ export async function readQuestion(page: Page): Promise<{ prompt: string; choice
 
 /**
  * Answers the open reload question. "slow" moves the page clock forward 9 seconds instead
- * of waiting. Returns the question, the right answer, and what was tapped.
+ * of waiting, and "right-fast" answers 300 ms after the card showed on the page clock, however
+ * busy the machine is. Returns the question, the right answer, and what was tapped.
  */
 export async function answerReload(page: Page, how: HowToAnswer) {
   const q = await readQuestion(page);
@@ -160,7 +161,27 @@ export async function answerReload(page: Page, how: HowToAnswer) {
   if (how === 'right-slow')
     await page.evaluate(() => (window.__skew = (window.__skew ?? 0) + 9000));
   const pick = how === 'wrong' ? wrong : right;
-  await tid(page, `reload-choice-${pick}`).click();
+  if (how === 'right-fast') {
+    // Fast is judged on the page clock, from when the card showed. A busy machine can take
+    // seconds to get here, so check the button is tappable, then tap it in one page task with the
+    // clock set to 300 ms after the card appeared. The skew is put back at once.
+    const choice = tid(page, `reload-choice-${pick}`);
+    await choice.click({ trial: true });
+    await choice.evaluate((el) => {
+      const w = window;
+      const saved = w.__skew ?? 0;
+      if (w.__modalAt !== undefined) {
+        w.__skew = saved - Math.max(0, w.performance.now() - w.__modalAt - 300);
+      }
+      try {
+        (el as HTMLElement).click();
+      } finally {
+        w.__skew = saved;
+      }
+    });
+  } else {
+    await tid(page, `reload-choice-${pick}`).click();
+  }
   return { ...q, rightIndex: right, rightAnswer: q.choices[right]!, picked: q.choices[pick]! };
 }
 

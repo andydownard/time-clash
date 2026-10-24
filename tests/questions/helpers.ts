@@ -47,19 +47,18 @@ export function mq(overrides: Partial<Question> = {}): Question {
   };
 }
 
-/** A valid reading-0 sight word question. Override any field. */
+/** A valid reading-0 word-choice question. Override any field. */
 export function rq(overrides: Partial<Question> = {}): Question {
   return {
     id: 'reading-0-0001',
     subject: 'reading',
     grade: 0,
-    kind: 'sightword',
-    prompt: 'Tap the word you hear.',
+    kind: 'choice',
+    prompt: 'Which word says "see"?',
     choices: ['see', 'saw', 'say', 'sit'],
     answer: 'see',
     hint: 'It starts with the sound sss.',
     tags: ['dolch'],
-    audioWord: 'see',
     ...overrides,
   };
 }

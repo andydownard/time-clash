@@ -45,7 +45,7 @@ describe('exportCell', () => {
     expect(first).toMatchObject({ id: 'math-5-0001', prompt: 'What is 1 + 1?', kind: 'numeric' });
     expect(first!.choices).toHaveLength(4);
   });
-  it('keeps passage and audioWord for reading cells', () => {
+  it('keeps the passage for reading cells', () => {
     const out = exportCell(
       [{ ...pool('reading', 5, 1)[0]!, passage: 'A short passage.' }],
       'reading-5',

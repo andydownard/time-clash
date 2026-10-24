@@ -349,7 +349,7 @@
     "choices": ["16", "19", "27", "18"],
     "answer": "18",
     "hint": "Count up one from 17.",
-    "tags": ["manual", "number-order"]
+    "tags": ["number-order"]
   },
   {
     "id": "math-1-0033",
@@ -360,7 +360,7 @@
     "choices": ["39", "38", "41", "14"],
     "answer": "39",
     "hint": "Count back one from 40.",
-    "tags": ["manual", "number-order"]
+    "tags": ["number-order"]
   },
   {
     "id": "math-1-0034",
@@ -393,7 +393,7 @@
     "choices": ["35", "31", "50", "40"],
     "answer": "40",
     "hint": "Each step adds 10.",
-    "tags": ["manual", "counting"]
+    "tags": ["counting"]
   },
   {
     "id": "math-1-0037",
@@ -558,7 +558,7 @@
     "choices": ["25", "34", "14", "44"],
     "answer": "34",
     "hint": "Add one ten to the number.",
-    "tags": ["place-value", "manual"]
+    "tags": ["place-value"]
   },
   {
     "id": "math-1-0052",
@@ -569,7 +569,7 @@
     "choices": ["49", "60", "40", "5"],
     "answer": "40",
     "hint": "Take away one ten.",
-    "tags": ["place-value", "manual"]
+    "tags": ["place-value"]
   },
   {
     "id": "math-1-0053",
@@ -591,7 +591,7 @@
     "choices": ["40", "31", "35", "50"],
     "answer": "40",
     "hint": "Count up by tens.",
-    "tags": ["skip-counting", "manual"]
+    "tags": ["skip-counting"]
   },
   {
     "id": "math-1-0055",

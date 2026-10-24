@@ -327,7 +327,7 @@
     "choices": ["29", "28", "26", "30"],
     "answer": "28",
     "hint": "Count up one from 27.",
-    "tags": ["manual", "number-order"]
+    "tags": ["number-order"]
   },
   {
     "id": "math-2-0031",
@@ -371,7 +371,7 @@
     "choices": ["38", "39", "41", "49"],
     "answer": "39",
     "hint": "Go back one number from 40.",
-    "tags": ["manual", "number-order"]
+    "tags": ["number-order"]
   },
   {
     "id": "math-2-0035",
@@ -547,7 +547,7 @@
     "choices": ["30", "25", "24", "22"],
     "answer": "25",
     "hint": "Each jump is the same size. Keep going.",
-    "tags": ["skip-counting", "manual"]
+    "tags": ["skip-counting"]
   },
   {
     "id": "math-2-0051",
@@ -558,7 +558,7 @@
     "choices": ["55", "70", "60", "51"],
     "answer": "60",
     "hint": "Each jump is the same size. Keep going.",
-    "tags": ["skip-counting", "manual"]
+    "tags": ["skip-counting"]
   },
   {
     "id": "math-2-0052",
@@ -569,7 +569,7 @@
     "choices": ["17", "20", "19", "18"],
     "answer": "18",
     "hint": "Each jump is the same size. Keep going.",
-    "tags": ["skip-counting", "manual"]
+    "tags": ["skip-counting"]
   },
   {
     "id": "math-2-0053",
@@ -580,7 +580,7 @@
     "choices": ["500", "410", "600", "450"],
     "answer": "500",
     "hint": "Each jump is the same size. Keep going.",
-    "tags": ["skip-counting", "manual"]
+    "tags": ["skip-counting"]
   },
   {
     "id": "math-2-0054",
@@ -712,7 +712,7 @@
     "choices": ["74", "65", "84", "54"],
     "answer": "74",
     "hint": "Add one ten to the number.",
-    "tags": ["place-value", "manual"]
+    "tags": ["place-value"]
   },
   {
     "id": "math-2-0066",
@@ -723,7 +723,7 @@
     "choices": ["520", "430", "630", "330"],
     "answer": "430",
     "hint": "Take away one hundred.",
-    "tags": ["place-value", "manual"]
+    "tags": ["place-value"]
   },
   {
     "id": "math-2-0067",

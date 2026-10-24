@@ -23,13 +23,14 @@ npm i phaser
 npm i -D vitest @vitest/coverage-v8 playwright @playwright/test eslint prettier typescript
 ```
 Add scripts: `dev`, `build`, `preview`, `test` (vitest run), `lint`, `typecheck` (tsc --noEmit), `e2e` (playwright test).
+This setup is done. It stays here as the record of how the project started.
 Pin versions. Commit the lockfile. Add `.gitignore` (node_modules, dist, .env). Add `.env.example` (empty for now).
 
 ## Folder layout
 ```
 src/
   main.ts                 boot, scene registry
-  scenes/                 Phaser scenes: Boot, TapToStart, Intro, Loading, Setup, Camp, Deploy, Battle, Victory
+  scenes/                 Phaser scenes (Boot, Intro, Loading, Setup, Camp, Battle, and the Flow scene that steps between them)
   ui/                     DOM overlays: modals, banners, caption bar, pass-the-mouse screen
   game/                   PURE TypeScript rules (no Phaser). Unit tested.
     ballistics.ts         trajectory math
@@ -41,8 +42,8 @@ src/
     rng.ts                seeded random
   questions/
     types.ts
-    bank/reading-k.json ... reading-12.json
-    bank/math-k.json ... math-12.json
+    bank/reading-0.json ... reading-12.json   (grade 0 is kindergarten)
+    bank/math-0.json ... math-12.json
     pick.ts               choose a question by grade, subject, and recent history
   data/introScript.ts     from NARRATION.md
   audio/                  sound manager (mute, volume, unlock on tap)
@@ -61,7 +62,7 @@ Status: built. Decisions made during the build are in `docs/CONTRACTS.md`. Open 
 
 ### Screens and flow
 TapToStart → Intro (spoken how-to-play) → Loading → Setup → Battle → Victory → (Rematch → Loading → Battle).
-Camp, Deploy, and biomes arrive in Phase 2. In Phase 1 the Future base uses a fixed spot.
+Camp, the Battle Plan, and biomes arrived in Phase 2. In Phase 1 the Future base used a fixed spot.
 
 ### Features and acceptance criteria
 1. **Tap to Start screen.** Unlocks audio. Mute and captions toggles. Done when: no sound plays before the first tap (test).
@@ -97,10 +98,10 @@ Camp, Deploy, and biomes arrive in Phase 2. In Phase 1 the Future base uses a fi
   "tags": ["pre-algebra", "linear-equations"]
 }
 ```
-- Reading K to 3: sight words and simple sentences (use the public Dolch and Fry lists). `kind: "sightword"` with `audioWord` text for the speak button.
+- Reading K to 3: printed words and simple sentences (use the public Dolch and Fry lists), always answerable by reading. (The `sightword` kind and its speak button were removed on 2026-10-23.)
 - Reading 4 to 12: vocabulary in context, main idea, and grammar. Write original questions only.
 - Math K to 12: counting, add and subtract, times tables, fractions, ratios, pre-algebra, algebra, geometry, trig basics.
-- At least 40 questions per grade per subject before launch. Phase 1 may ship with 15 per grade for grades K, 2, 5, and 8, with a generic fallback to the nearest grade.
+- At least 40 questions per grade per subject before launch. The bank is past that: 2,439 questions, with 100 to 110 math and 70 to 90 reading per grade (`npm run check:questions` prints the count per file). The picker still falls back to the nearest grade if a grade is ever empty.
 - Topic tag: a question that belongs to a math topic carries the tag `topic:<name>` (today `topic:multiplication` for Team Past and `topic:division` for Team Future, 20 or more of each per grade, K to 12). `check:questions` requires the topic prompt to be checkable by the recompute (no `manual`), the kind to be `numeric`, the prompt to really multiply (or divide), and no wrong choice worth the same as the answer. Equal-groups word problems ("3 baskets have 4 apples each. How many apples in all?") are checkable too. So are sharing and grouping problems ("12 cookies are shared equally by 3 kids. How many cookies does each kid get?", "20 apples are put in groups of 5. How many groups are there?") and remainders ("What is the remainder when 17 is divided by 5?"). `TOPIC_FOCUS.offer` in `src/game/config.ts` says which side Setup shows each switch to. Setup sets `Player.topic`; the picker narrows math picks to the tag, keeps its own used-list per topic (`math-3-multiplication`), and falls back to plain math if the bank has none.
 - Question picker never repeats a question until the pool is used up, then reshuffles with a seeded RNG.
 - Every math question has its answer checked by a script (`npm run check:questions`) that recomputes the answer from the prompt where possible. Done when: this script runs in CI.
@@ -111,9 +112,9 @@ Camp, Deploy, and biomes arrive in Phase 2. In Phase 1 the Future base uses a fi
 - `damage.test.ts`: direct hit, near miss, miss, win condition.
 - `reload.test.ts`: bonus scrap rule, wrong answer path.
 - `pick.test.ts`: grade selection, no repeats, fallback grade.
-- `questions.test.ts`: every question has a unique id, valid answer in choices, grade 0 to 12.
-- `copy-lint.test.ts`: banned words (kill, die, dead, blood, gore, defeat, buy, price, upgrade to pro).
-- `intro.test.ts`: from NARRATION.md.
+- `tests/questions/validate.test.ts` and `checkBank.test.ts`: every question has a unique id, valid answer in choices, grade 0 to 12.
+- `tests/copy-lint.test.ts`: banned words (kill, die, dead, blood, gore, defeat, buy, price, upgrade to pro).
+- `tests/data/introScript.test.ts`: from NARRATION.md.
 - E2E (Playwright): full game from Setup to Victory with scripted inputs, in Chromium and WebKit, at 1280x800 and 1024x768.
 
 ## Look and feel phase: built
@@ -122,6 +123,7 @@ Status: built. The screens use the Claude Design handoff look. The rules and tok
 The design boards are 1600x900 mockups. We translate their look to 1280x800, 1024x768, and 768x1024. Board names: Main (Camp hub), Loading, Battle, DesignSystem, Setup, Math, Reading, Forge, ForgeFuture, Upgrade, UpgradePast, Destroyed. Phase 2 and 3 boards are not built yet. Phase 2 uses Main. Phase 3 uses Forge, ForgeFuture, Upgrade, and UpgradePast.
 
 ## Phase 2: Camp Hub, base placement, biomes
+Status: built, except that the base builder is switched off (`BASE_BUILDER.enabled = false`) and built bases are not yet used in battle (`BASE_IN_BATTLE.enabled = false`).
 - Camp Hub scene per the Main (Camp hub) board in the design handoff. **Built.** The board shows the campfire, both camps, workbenches, and three buttons: [FORGE WEAPON], [BUILD BASE] and the big [TIME TO CLASH!]. The big one starts the match. Forge Weapon and Build Base open their own screens. Tweak Gear is not on the board, so it is not built.
 - Base Deployment: three Austin spots (skyscraper top, bridge underside, food truck pavilion). The spot changes launch height and cover. Test: each spot has a distinct elevation and a reachable shot path.
   - **Rules built, picked on the Battle Plan**: `src/game/spots.ts` and the `SPOTS` block in `src/game/config.ts`. `layoutForSpot(null)` is exactly the Phase 1 layout. Launch height (y): skyscraper 310, food truck 470, bridge 530. The bridge deck blocks flat shots, so players lob. `shiftForSpot` moves the Future fighters with their base. Tests: `tests/game/spots.test.ts`.
@@ -142,15 +144,17 @@ The design boards are 1600x900 mockups. We translate their look to 1280x800, 102
   - Tests: `tests/game/battlefield.test.ts`, `evasion.test.ts`, `matchPhase2.test.ts`, `ammoUnlock.test.ts`, `tests/storage/plan.test.ts`, `tests/ui/plan.test.ts`, `hudGear.test.ts`, `tests/scenes/battle/flowPhase2.test.ts`, `e2e/phase2.spec.ts`.
 
 ## Phase 3: Deep crafting and customization
+Status: Forge, Build Base shop, ammo, the Scrap economy and calibration are built. Hybrid weapons and recipes are not built.
 - Working Camp buttons. Build the Forge screens from the Forge and ForgeFuture boards, and the Upgrade screens from the Upgrade and UpgradePast boards. Recipes combine Past materials (granite, iron) with Future materials (nanotubes, energy shields).
 - **Forge Weapon screen built** from the Forge and ForgeFuture boards (`src/ui/forgeScreen.ts`, `forgeArt.ts`): pick a team, unlock or equip a weapon, forge the one in use. Scrap only. **Build Base screen (old shop, shown while the builder is off) built** from the Upgrade and UpgradePast boards (`src/ui/upgradeScreen.ts`, `upgradeArt.ts`): pick a team, raise any of three upgrades through three levels with Scrap. The battle HUD and base pills show the raised maximum health.
 - **Rules built**: `src/game/weapons.ts`, `upgrades.ts`, `loadout.ts` and `economy.ts`, saved in `timeclash.camp`. Scrap is the only currency. A fresh game plays exactly like Phase 1. The balance test (`tests/game/balance.test.ts`) checks that no single purchase wins the game alone.
-- Hybrid weapons: Nanotech Trebuchet, Wrought-Iron Railgun, EMP-shielded Railgun. Each has stats in `src/game/weapons.ts` (damage, blast radius, speed, reload difficulty).
+- Hybrid weapons: Nanotech Trebuchet, Wrought-Iron Railgun, EMP-shielded Railgun. Not built. `src/game/weapons.ts` holds six weapons today, three per team (Royal Sword, Elder Longbow, Iron Cannon; Plasma Blade, Laser Rifle, Rail Cannon), each with damage, blast radius, speed and reload difficulty.
 - Ammo types: confetti explosives (bigger blast, a little less damage), bouncy plasma spheres (one real bounce off the ground), heavy iron bowling balls (slower, hardly pushed by wind, more damage). Rules are in `src/game/ammo.ts`. Each costs Scrap to unlock (10, 14, 18) and has 3, 3 and 2 uses per match. Wired in: unlock on the Battle Plan, load with the Ammo button in battle (see Phase 2).
 - Scrap economy: earned from fast, correct reloads. Spent only at the Camp. Kept by player name on the device, with a lifetime total. A database for signed-in players is planned (docs/ACCOUNTS_PLAN.md). Balance test: no single purchase wins the game alone.
 - Individual K to 12 calibration: if a player gets 4 of 5 right, nudge the next question up a level (never more than 2 above grade). If 2 of 5 or fewer, nudge down. Show nothing scary about this.
 
 ## Phase 4: iPad and multi-device
+Status: not built. The app server has one place for the relay to mount (`/ws`, see docs/APP_SERVER.md).
 - Room codes: 4 uppercase letters, no vowels (avoids bad words), expire after 2 hours idle.
 - Small Node relay with `ws`. Server owns the turn order and checks that moves come from the right player (`SERVER` rule). Clients send inputs only. Rate limit messages. The question and its answer are checked on the server, so a player cannot peek at the other player's answer.
 - Reconnect within 60 seconds restores the match.
@@ -159,8 +163,8 @@ The design boards are 1600x900 mockups. We translate their look to 1280x800, 102
 - Full audio suite and optional extra voice lines.
 
 ## Hosting (free)
-- Phases 1 to 3: build to `dist/` and host on Cloudflare Pages or GitHub Pages. Custom domain optional.
-- Phase 4 relay: a free tier (Cloudflare Workers with Durable Objects, or Fly.io free allowance). Confirm current free limits before choosing.
+- Phases 1 to 3 run today on Railway as one Node app server (`npm start`) that serves `dist/` and the spoken clips. See docs/APP_SERVER.md.
+- Phase 4 relay: planned to mount at `/ws` in the same process (`ws`). Confirm Railway limits and cost before building.
 
 ## Order of work for Claude Code (parallel where safe)
 1. Setup + config + empty scenes + CI. (one agent)

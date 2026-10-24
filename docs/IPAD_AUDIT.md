@@ -2,7 +2,7 @@
 
 Date: 2026-10-17. Build: `origin/main` before the Turn your iPad screen. Browser: WebKit (Playwright), touch on.
 
-Screenshots: `docs/screenshots/ipad-audit/<device>-<orientation>/<screen>.png`. Measurements (text size, tap targets, off-screen controls, canvas box) are in `measurements.json` beside each set. They come from the DOM, not from eye guesses. Re-run with `npx playwright test -c scripts/ipad-audit.config.ts` (set `AUDIT_DIST` to serve a bundle built from another commit).
+Screenshots: `docs/screenshots/ipad-audit/<device>-<orientation>/<screen>.png`. Measurements (text size, tap targets, off-screen controls, canvas box) are in `measurements.json` beside each set. They come from the DOM, not from eye guesses. The `docs/screenshots/*-<WxH>.png` set from the e2e specs is retaken only with `UPDATE_SCREENSHOTS=1` (Chromium only), so normal runs never change tracked files. Re-run the audit with `npx playwright test -c scripts/ipad-audit.config.ts` (set `AUDIT_DIST` to serve a bundle built from another commit).
 
 Sizes: iPad mini 1133x744 and 744x1133, iPad Pro 11in 1194x834 and 834x1194, iPad Pro 13in 1376x1032 and 1032x1376.
 

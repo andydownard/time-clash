@@ -7,7 +7,7 @@ Status: plan only. Nothing here is built. Andy said signed-in users are coming a
 Today nothing a child types leaves the device (`AGENTS.md`, `SECURITY.md`). A database and sign-in change that:
 
 - Names, Scrap and purchases would live on a server. That is personal data about children.
-- The static host (Railway serves the built site) has no server code. A small Node service and a place to keep the SQLite file (a Railway volume) would be new.
+- Railway already runs one small Node app server (`app-server/`, see docs/APP_SERVER.md) that serves the site and read-only voice clips. It has no writable database and no sign-in. Account routes and a place to keep a writable SQLite file (a Railway volume) would be new.
 - It needs real accounts (a parent signs in, kids are profiles under it). Plain names are not enough: anyone could type "Alex" and take that pile.
 
 So before any code: a panel review (parent and teacher can BLOCK on privacy and safety, and only Andy can override), a privacy statement, and a decision on how a parent signs in (email link, a passkey, or a school login). Do not collect kids' emails.

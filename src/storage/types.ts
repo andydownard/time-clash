@@ -2,6 +2,7 @@
 import type { BattlePlan } from '../game/battlefield';
 import type { BasesState } from '../game/baseBuilder';
 import type { CampState } from '../game/loadout';
+import type { MatchLength } from '../game/matchLength';
 import type { PracticeChoice } from '../game/practice';
 import type { Grade, Players, Subject, Team, Topic } from '../game/types';
 import type { Levels } from '../questions/calibration';
@@ -42,6 +43,8 @@ export type StorageSchema = {
   'timeclash.bases': BasesState;
   /** The grade, subject and Focus each side picked last time, so Setup opens with them. */
   'timeclash.setupPicks': SetupPicks;
+  /** Short, Normal or Long. Scales how much damage a base can take. Normal when missing. */
+  'timeclash.matchLength': MatchLength;
 };
 
 export type StorageKey = keyof StorageSchema;
@@ -57,6 +60,7 @@ export const STORAGE_KEYS: readonly StorageKey[] = [
   'timeclash.practice',
   'timeclash.bases',
   'timeclash.setupPicks',
+  'timeclash.matchLength',
 ];
 
 /** The subset of window.localStorage we use. Inject a fake in tests. */

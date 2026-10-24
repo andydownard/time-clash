@@ -2,7 +2,7 @@
 
 One small Node process serves the whole site: the built game (`dist/`) and the spoken clips (`/v1/clips/:id`), on the SAME origin. It uses only `node:http`, `node:fs`, `node:path`, `node:zlib` and `node:sqlite`. No framework, no new dependency.
 
-> **Merging this change alters how production is served.** Today Railway serves `dist/` as plain static files (Railpack and Caddy). After the merge Railway runs `npm start`, which runs this server. Merge it on purpose, when the owner can watch the deploy. Cutover and rollback steps are below.
+> **Status: live.** The cutover is done. Railway runs `npm start`, which runs this server, and `https://timeclash.rallytasks.com/health` reports the build SHA and the clip count (1,588 on 2026-10-23). The cutover and rollback steps below are kept for reference.
 
 ## Why one process
 
@@ -46,7 +46,7 @@ Note for the cutover: the old Caddy host ignored `_headers`, so production sent 
 - `GET /v1/clips/:id` returns the bytes: `Content-Type: audio/mp4`, `Accept-Ranges: bytes`, `Content-Length`, `Cache-Control: public, max-age=31536000, immutable` (ids are content hashes). `206` with `Content-Range` for a Range request, `416` past the end.
 - `404` unknown id. `400` for a bad id or any query string. `405` for methods other than GET and HEAD. `429` after 120 clip requests a minute from one IP (in memory; behind Railway's proxy the last `X-Forwarded-For` entry). The limit covers clips only, not the site.
 
-The repo ships `db/voice-k4.sqlite` (grades K to 4). `db/voice.sqlite` (the original five intro cards and knock-down lines) uses a different table and a name the store ignores, so it is not served.
+The repo ships `db/voice-k4.sqlite`, `db/voice-5-8.sqlite` and `db/voice-9-12.sqlite`. They hold the wipeout lines, plus question clips the game no longer asks for (the owner removed question read-aloud on 2026-10-23). `db/voice.sqlite` (the original five intro cards and knock-down lines) uses a different table and a name the store ignores, so it is not served.
 
 ## What it keeps and logs
 
@@ -79,11 +79,11 @@ None of these are secrets.
 
 Other behavior: request timeout 30 s, header timeout 10 s, keep-alive 65 s (longer than the proxy's idle time), SIGTERM closes the server and exits (forced after 10 s).
 
-## Deploy on Railway (not done by this change)
+## Deploy on Railway (done)
 
 The existing `time-clash` service, builder Railpack. `railway.json` pins the start command, the health check and the restart policy, so the cutover needs no dashboard edits. Railpack runs `npm run build` (this now also compiles the server), then `npm start`.
 
-Cutover:
+Cutover steps (already done once; use them again after a Railway change):
 
 1. Merge the PR into `main`. Railway deploys after CI passes.
 2. In the deploy logs look for `time-clash: N clips, port 8080`. The health check `GET /health` must pass before Railway switches traffic.

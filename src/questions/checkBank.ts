@@ -63,14 +63,17 @@ export function checkBankFiles(files: readonly BankFile[], options: CheckOptions
       }
 
       if (
-        rec.kind === 'sightword' &&
+        rec.subject === 'reading' &&
+        rec.kind === 'choice' &&
+        typeof rec.prompt === 'string' &&
+        !rec.prompt.includes('___') && // a fill-in has a sentence to settle it
         Array.isArray(rec.choices) &&
         typeof rec.answer === 'string'
       ) {
         for (const c of rec.choices) {
           if (typeof c === 'string' && areHomophones(c, rec.answer)) {
             problems.push(
-              `${where}: choice "${c}" is a homophone of the answer "${rec.answer}". A child who hears the word cannot tell them apart`,
+              `${where}: choice "${c}" is a homophone of the answer "${rec.answer}". Two words that sound alike can look like a second right answer`,
             );
           }
         }
@@ -83,7 +86,7 @@ export function checkBankFiles(files: readonly BankFile[], options: CheckOptions
       }
 
       if (typeof rec.prompt === 'string') {
-        const extra = [rec.passage, rec.audioWord]
+        const extra = [rec.passage]
           .map((v) => (typeof v === 'string' ? v.trim().toLowerCase() : ''))
           .join('||');
         const promptKey = `${rec.prompt.trim().toLowerCase()}||${extra}`;

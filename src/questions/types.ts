@@ -7,8 +7,7 @@ export type QuestionSubject = 'reading' | 'math';
 export type QuestionKind =
   | 'numeric' // math with a number answer; checker recomputes it from the prompt
   | 'choice' // math or reading, pick one of four
-  | 'sightword' // reading K to 3; needs audioWord for the speak button
-  | 'vocab' // reading 4 to 12, word in context
+  | 'vocab' // reading, word in context
   | 'mainidea' // reading 4 to 12, needs passage
   | 'grammar'; // reading 4 to 12
 
@@ -28,8 +27,6 @@ export type Question = {
   /** Short, kind, and never gives the answer away. */
   hint?: string;
   tags: string[];
-  /** Required when kind is 'sightword'. Spoken by the speaker button. */
-  audioWord?: string;
   /** Required when kind is 'mainidea'. 2 to 5 short sentences. */
   passage?: string;
 };

@@ -1,6 +1,6 @@
 # Two iPads, accounts, matching and a bot: proposal
 
-> **Status: proposal, reconciled against this repo on 2026-10-17.** It was first written without sight of this repo, then corrected. Where it disagrees with `AGENTS.md`, `AGENTS.md` wins until Andy says otherwise. Nothing here is built.
+> **Status: proposal, reconciled against this repo on 2026-10-17.** It was first written without sight of this repo, then corrected. Where it disagrees with `AGENTS.md`, `AGENTS.md` wins until Andy says otherwise. Two small pieces have since been built: the "Turn your iPad sideways" screen and the Computer player (off by default). The rest is not built.
 
 ## Reconciliation with what already exists
 
@@ -10,12 +10,12 @@
 | Players | Two players share one computer (pass the mouse) | Each player on their own iPad | Phase 4 in `BACKLOG.md` ("iPad play with room codes") already covers it |
 | Accounts | None through Phase 3. `docs/ACCOUNTS_PLAN.md` is plan only (parent signs in, kids are profiles, SQLite on a Railway volume) | Same shape, plus kid-friendly picture or word passwords for the child profile | Parent sign-in method (open question 1 in `ACCOUNTS_PLAN.md`) |
 | Age | Children, no age stated | **Ages 5 to 12 (confirmed by Andy 2026-10-17).** Under 13 means COPPA applies once accounts exist | Counsel review before accounts ship |
-| Questions | About 40 per grade and subject in `src/questions/bank` | A separate bank of 540 (30 per grade and subject, K to 8) was written; it is NOT in this repo and does not use this repo's format or checker | Whether to convert it to this repo's bank format |
-| Voice | Chrono intro, speech synthesis today, recordings planned (`docs/NARRATION.md`) | Neural read-aloud clips | See the audio license note below |
-| Screens | `AGENTS.md` Override UI: iPad portrait and landscape both supported | Andy approved a "turn your iPad" screen, which means landscape only | Update Override UI if adopted |
+| Questions | 2,439 in `src/questions/bank` (100 to 110 math and 70 to 90 reading per grade, 2026-10-23) | A separate bank of 540 (30 per grade and subject, K to 8) was written; it is NOT in this repo and does not use this repo's format or checker | Whether to convert it to this repo's bank format |
+| Voice | Chrono intro as recorded Kokoro clips, plus recorded question and wipeout clips for K to 12 served by the app server (`docs/NARRATION.md`, `docs/APP_SERVER.md`) | Neural read-aloud clips | See the audio license note below |
+| Screens | `AGENTS.md` Override UI: iPad landscape only, with a "Turn your iPad sideways" screen (built) | Andy approved a "turn your iPad" screen, which means landscape only | Update Override UI if adopted |
 | Hits and falls | Wipeouts exist (tumble) | A new "Battle Hits" artboard in the design canvas shows hit bursts, damage pips and funny lines | Port the look into the Phaser battle scene |
 | Base builder | Upgrade screen is built | Drag, rotate and place bricks, up to 3 saved bases (voice note 2026-10-17) | Fits Phase 2 base placement in `docs/BUILD.md` |
-| Bot | None | A labeled practice bot when no one is free | Needs panel review (`AGENTS.md`) |
+| Bot | Built as the "Computer player" behind a switch, off by default (`PRACTICE_BOT.enabled`) | A labeled practice bot when no one is free | Needs panel review (`AGENTS.md`) |
 
 ### Audio license note (needs Andy)
 
@@ -24,7 +24,7 @@ The Piper voice "ryan" was trained on the RyanSpeech dataset, licensed **CC BY-N
 ---
 
 **Date:** 2026-10-17 (rewritten the same day after the owner shared the real game)
-**Status:** draft for owner review. Nothing here is built.
+**Status:** draft for owner review. Two small pieces have since been built: the "Turn your iPad sideways" screen and the Computer player (off by default). The rest is not built.
 
 > The first draft of this plan assumed a thrift store sim. That was wrong. The game is **Time Clash**, and it stays as designed. This plan only adds real two-player play on two iPads, accounts, matching and a bot.
 

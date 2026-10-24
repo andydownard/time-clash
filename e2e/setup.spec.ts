@@ -47,7 +47,7 @@ test('Setup refuses every word the game rules also refuse', async ({ page }) => 
   await toSetup(page);
   await tid(page, 'setup-name-PAST').fill('Poop');
   await tid(page, 'setup-next').click();
-  await expect(err(page, 'PAST')).toHaveText("Let's pick a different name.", { timeout: 2_000 });
+  await expect(err(page, 'PAST')).toHaveText("Let's pick a different name.");
 });
 
 test('each side keeps its own grade and subject, and they reach the match', async ({ page }) => {
@@ -147,4 +147,29 @@ test('the clear-data confirm buttons stay hidden until Clear my data is tapped',
   await expect(tid(page, 'clear-data-yes')).toBeVisible();
   await tid(page, 'clear-data-no').click();
   await expect(tid(page, 'clear-data-yes')).toBeHidden();
+});
+
+test('Match length: Normal at first, big enough to tap, and it stays on screen', async ({
+  page,
+}) => {
+  await toSetup(page);
+  const normal = tid(page, 'setup-length-normal');
+  await expect(normal).toHaveAttribute('aria-checked', 'true');
+  for (const id of ['short', 'normal', 'long']) {
+    const chip = tid(page, `setup-length-${id}`);
+    const box = await chip.boundingBox();
+    expect(box!.height).toBeGreaterThanOrEqual(56);
+    expect(box!.width).toBeGreaterThanOrEqual(56);
+    const font = await chip.evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
+    expect(font).toBeGreaterThanOrEqual(20);
+  }
+  await tid(page, 'setup-length-short').click();
+  await expect(tid(page, 'setup-length-short')).toHaveAttribute('aria-checked', 'true');
+  await tid(page, 'setup-length-short').press('ArrowRight');
+  await expect(normal).toHaveAttribute('aria-checked', 'true');
+  const fits = await page.evaluate(() => {
+    const row = document.querySelector('[data-testid="setup-length-row"]')!.getBoundingClientRect();
+    return row.bottom <= window.innerHeight && row.right <= window.innerWidth && row.left >= 0;
+  });
+  expect(fits).toBe(true);
 });

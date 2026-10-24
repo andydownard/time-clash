@@ -1,4 +1,5 @@
 import { isSpecialAmmo, radiusScale, resolveAmmo, type AmmoId } from './ammo';
+import { scaleHealth } from './matchLength';
 import { clampAim, simulateShot } from './ballistics';
 import { withWalls } from './battlefield';
 import {
@@ -144,9 +145,10 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
   let winner: Team | null = null;
   const effects = options.effects ?? DEFAULT_EFFECTS;
   const maxHp: Record<Team, number> = {
-    PAST: effects.PAST.maxHp,
-    FUTURE: effects.FUTURE.maxHp,
+    PAST: scaleHealth(effects.PAST.maxHp, options.matchLength),
+    FUTURE: scaleHealth(effects.FUTURE.maxHp, options.matchLength),
   };
+  const maxUnitHp = scaleHealth(CHARACTER_HEALTH.hp, options.matchLength);
   let baseHp: Record<Team, number> = { ...maxHp };
   /** Hits each base's force field can still block this match. */
   const shield: Record<Team, number> = {
@@ -178,7 +180,7 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
   };
   /** The field right now: the layout plus a stone wall that is standing. */
   const currentLayout = () => withWalls(layout, wallsFor(evasion));
-  const unitHp = freshUnitHp();
+  const unitHp = freshUnitHp(maxUnitHp);
   /** Flies the active fighter (or weapon) with the current aim. Changes nothing, so a preview can use it. */
   const flyCurrent = (mount: ReturnType<typeof mountOf> | undefined) => {
     let nextSource: ShellSource | null = null;
@@ -385,7 +387,7 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       baseHp: { ...baseHp },
       characterHealth,
       unitHp: { ...unitHp },
-      maxUnitHp: CHARACTER_HEALTH.hp,
+      maxUnitHp,
       aliveCount: {
         PAST: aliveUnitIds(unitHp, 'PAST').length,
         FUTURE: aliveUnitIds(unitHp, 'FUTURE').length,

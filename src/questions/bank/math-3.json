@@ -360,7 +360,7 @@
     "choices": ["16", "12", "8", "14"],
     "answer": "16",
     "hint": "Add all four sides. Two are long and two are short.",
-    "tags": ["geometry", "manual"]
+    "tags": ["geometry"]
   },
   {
     "id": "math-3-0034",
@@ -404,7 +404,7 @@
     "choices": ["25", "24", "30", "22"],
     "answer": "25",
     "hint": "Look at how much the numbers grow each time.",
-    "tags": ["patterns", "manual"]
+    "tags": ["patterns"]
   },
   {
     "id": "math-3-0038",
@@ -646,7 +646,7 @@
     "choices": ["15", "8", "16", "30"],
     "answer": "16",
     "hint": "Add all four sides, or double length plus width.",
-    "tags": ["manual", "perimeter"]
+    "tags": ["perimeter"]
   },
   {
     "id": "math-3-0060",
@@ -657,7 +657,7 @@
     "choices": ["14", "49", "21", "28"],
     "answer": "28",
     "hint": "A square has four equal sides. Add them up.",
-    "tags": ["manual", "perimeter"]
+    "tags": ["perimeter"]
   },
   {
     "id": "math-3-0061",
@@ -679,7 +679,7 @@
     "choices": ["4", "5", "10", "16"],
     "answer": "5",
     "hint": "A square has 4 equal sides. Share the perimeter equally.",
-    "tags": ["manual", "perimeter"]
+    "tags": ["perimeter"]
   },
   {
     "id": "math-3-0063",
@@ -690,7 +690,7 @@
     "choices": ["40", "45", "50", "60"],
     "answer": "50",
     "hint": "Look at the ones digit. Five or more rounds up.",
-    "tags": ["manual", "rounding"]
+    "tags": ["rounding"]
   },
   {
     "id": "math-3-0064",
@@ -701,7 +701,7 @@
     "choices": ["400", "460", "600", "500"],
     "answer": "500",
     "hint": "Look at the tens digit. Five or more rounds up.",
-    "tags": ["manual", "rounding"]
+    "tags": ["rounding"]
   },
   {
     "id": "math-3-0065",
@@ -712,7 +712,7 @@
     "choices": ["390", "380", "400", "385"],
     "answer": "390",
     "hint": "The ones digit is 5, so round up.",
-    "tags": ["manual", "rounding"]
+    "tags": ["rounding"]
   },
   {
     "id": "math-3-0066",

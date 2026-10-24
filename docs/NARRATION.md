@@ -26,7 +26,7 @@ Card title: "Aim"
 
 Card title: "Two Shots"
 
-**Card 4: Reload (about 9 seconds)**
+**Card 4: Reload (about 11 seconds)**
 > After shot two, answer a question to reload. Answer fast to earn bonus scrap. Mistake? Even Chrono trips. You still reload! Get it right for a Power Shot!
 
 Card title: "Reload"
@@ -36,14 +36,14 @@ Card title: "Reload"
 
 Card title: "Wipeouts and Turns"
 
-**Total:** about 40 seconds. Card 4 has 4 captions. Jokes: the wind rascal, Chrono tripping, and the lost dignity.
+**Total:** about 40 seconds (the five recorded clips add up to 42.2 s). Card 4 has 4 captions. Jokes: the wind rascal, Chrono tripping, and the lost dignity.
 
 ## Pass screen line (built)
 Each time the pass screen (the cover between turns) opens, Chrono says its own words: "Pass the screen! No peeking at their question!" (`src/ui/passScreen.ts`, built from `PASS_SCREEN.heading` and `PASS_SCREEN.noPeeking`).
 - It goes through the AudioManager, so it is silent before the first tap, while muted, and in a browser driven by a test tool. The caption shows in every case, above the cover, unless captions are off in Settings.
 - "I'm ready!" is its Skip: it stops the line and clears the caption. The cover's Sound button hushes it mid-line.
 - The line is fixed text. It never holds the child's name or any question text.
-- It never asks the voice service for a clip (`noClip` on the line), so the cover makes no network request. The device voice reads it. Only a tap on "Hear it" may request a clip (`e2e/voice-clips.spec.ts`).
+- It never asks the voice service for a clip (`noClip` on the line), so the cover makes no network request. The device voice reads it. No question text is ever spoken, so the question card makes no clip request either (`e2e/voice-clips.spec.ts`).
 - A match against the computer has no pass screen, so it has no pass line.
 
 ## Short replays (optional, build later)

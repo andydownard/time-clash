@@ -5,19 +5,19 @@ For anyone who writes or checks questions. The checker is `npm run check:questio
 ## Files
 One JSON array per subject and grade, in `src/questions/bank/`. The name is `<subject>-<grade>.json`. Kindergarten is grade 0.
 
-Examples: `math-0.json`, `math-5.json`, `reading-12.json`.
+Examples: `math-0.json`, `math-5.json`, `reading-12.json`. The bank holds 2,439 questions in 26 files (checked 2026-10-23).
 
 ## Fields
 Each question follows `src/questions/types.ts`.
 
 - `id`: `<subject>-<grade>-<nnnn>`, for example `math-5-0042`. Four digits. Unique in the whole bank. The subject and grade must match the file.
-- `subject`, `grade`, `kind`: kind is `numeric`, `choice`, `sightword`, `vocab`, `mainidea`, or `grammar`. `numeric` is math only. The other reading kinds are reading only.
-- `prompt`: plain text a child reads. No two prompts in one file may match (same prompt, same passage, same audioWord).
+- `subject`, `grade`, `kind`: kind is `numeric`, `choice`, `vocab`, `mainidea`, or `grammar`. `numeric` is math only. The other reading kinds are reading only.
+- `prompt`: plain text a child reads. No two prompts in one file may match (same prompt, same passage).
 - `choices`: 3 or 4 different non-blank strings. Use 4 unless there is a good reason.
 - `answer`: must equal one choice exactly.
 - `hint`: required. Short and kind. It must not contain the answer as a whole word or number (the checker looks).
 - `tags`: array of strings. Add `"manual"` to a math question whose prompt is not one of the patterns below.
-- `audioWord`: required for `sightword`.
+- Every question must be answerable by reading. No question may depend on hearing a word (no "Tap the word you hear"), and the game does not read questions aloud. The owner removed the `sightword` kind, `audioWord`, and read-aloud on 2026-10-23 (`tests/questions/readOnly.test.ts`).
 - `passage`: required for `mainidea`.
 
 ## Math prompts the checker recomputes
@@ -31,6 +31,7 @@ Prompts must match exactly: capital letters, spaces, and the final `?`.
 4. `What is the area of a rectangle with length L and width W?`. Example: `... length 6 and width 4?`. Write the answer as a number with no units.
 5. `What is X/Y + P/Q?`. Example: `What is 1/2 + 1/3?`. Also works with `-`, `x`, and `/`. Write fraction answers in simplest form as `a/b` (like `5/6`). A whole-number result is just the number (`1`, not `4/4`).
 6. `What is the value of E?` where E uses numbers, `+ - x / ^`, and parentheses. Example: `What is the value of (3 + 4) x 2?`. Exponents must be whole numbers. `^` binds tighter than `x`, and `-2^2` is `-4`.
+7. More fixed shapes live in `src/questions/recomputeMore.ts` (tested in `tests/questions/recomputeMore.test.ts`): mean, median and range of a list; slope through two points; right triangle sides and point distance; rounding to the nearest ten, hundred, thousand; square and cube roots; equations with x on both sides; a rule in x at one value (`f(3)`); volume of a box, cube, cylinder, cone and sphere (with 3.14); circle area and circumference (with 3.14); perimeter of a rectangle or square; triangle area and third angle; ratio and unit-rate word problems; counting and number patterns that add or multiply by a fixed amount; one more, one less, after, before; remainders; GCF, LCM, factors, factorial, absolute value; whole-number logs. Read the test file for the exact wording. A reworded prompt does not match, and needs `"manual"`.
 
 How answers are compared:
 - Any form with the same value passes: `0.5` equals `1/2`. A fraction answer with a slash must be in lowest terms (`2/4` fails).

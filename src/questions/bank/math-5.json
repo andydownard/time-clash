@@ -327,7 +327,7 @@
     "choices": ["24", "22", "11", "14"],
     "answer": "22",
     "hint": "Add all four sides.",
-    "tags": ["geometry", "manual"]
+    "tags": ["geometry"]
   },
   {
     "id": "math-5-0031",
@@ -360,7 +360,7 @@
     "choices": ["4,700", "4,600", "5,000", "4,670"],
     "answer": "4,700",
     "hint": "Look at the tens digit to decide.",
-    "tags": ["rounding", "manual"]
+    "tags": ["rounding"]
   },
   {
     "id": "math-5-0034",
@@ -371,7 +371,7 @@
     "choices": ["110", "70", "80", "130"],
     "answer": "70",
     "hint": "The angles in a triangle add up to 180 degrees.",
-    "tags": ["geometry", "manual"]
+    "tags": ["geometry"]
   },
   {
     "id": "math-5-0035",
@@ -404,7 +404,7 @@
     "choices": ["27", "9", "18", "81"],
     "answer": "27",
     "hint": "Multiply the length, width, and height.",
-    "tags": ["geometry", "manual"]
+    "tags": ["geometry"]
   },
   {
     "id": "math-5-0038",
@@ -646,7 +646,7 @@
     "choices": ["50", "48", "60", "72"],
     "answer": "60",
     "hint": "Volume is length x width x height.",
-    "tags": ["manual", "volume"]
+    "tags": ["volume"]
   },
   {
     "id": "math-5-0060",
@@ -657,7 +657,7 @@
     "choices": ["36", "108", "144", "216"],
     "answer": "216",
     "hint": "A cube has three equal sides. Multiply 6 three times.",
-    "tags": ["manual", "volume"]
+    "tags": ["volume"]
   },
   {
     "id": "math-5-0061",
@@ -668,7 +668,7 @@
     "choices": ["30", "20", "15", "35"],
     "answer": "30",
     "hint": "Volume is length x width x depth.",
-    "tags": ["manual", "volume"]
+    "tags": ["volume"]
   },
   {
     "id": "math-5-0062",
@@ -701,7 +701,7 @@
     "choices": ["2900000", "2000000", "1000000", "2800000"],
     "answer": "2800000",
     "hint": "Look at the digit just right of the hundred thousands place.",
-    "tags": ["manual", "place-value"]
+    "tags": ["place-value"]
   },
   {
     "id": "math-5-0065",

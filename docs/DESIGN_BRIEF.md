@@ -110,7 +110,7 @@ Full-screen cover that hides the board. Big text: "Pass the screen! No peeking a
 ### 9. Reload Modal (the learning moment)
 Appears right after shot 2. Hides the rest of the screen so the other player cannot see.
 Three question layouts:
-- **Reading (K to 3)**: a sight word shown large, with a speaker button that says the word. Four big picture-or-word choices.
+- **Reading (K to 3)**: a printed word or short sentence shown large, with no speaker button (questions are not read aloud). Four big picture-or-word choices.
 - **Reading (4 to 12)**: a short sentence or vocabulary item with 4 choices.
 - **Math**: an equation, for example `3x + 5 = 20`, with a number pad or 4 choice buttons. Include a visible fraction and exponent style.
 Elements: a fast-answer timer ring (friendly, not stressful; no buzzer), a hint button, a progress "reload bar" that fills when correct. Right answer: cheerful clunk and "RELOADED!" with scrap sparkle (fast answers earn bonus scrap). Wrong answer: a funny boing, show the right answer kindly, reload still happens after a short beat (kids never get stuck).

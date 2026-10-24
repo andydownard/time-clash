@@ -235,13 +235,9 @@ describe('How to Play', () => {
 });
 
 describe('Reload card', () => {
-  it('Hear It is the big first helper, and Sound gets a speaker icon from CSS', () => {
+  it('Sound gets a speaker icon from CSS, and there is no Hear It button', () => {
     void s.overlay.showReloadModal({ question: mathQ, team: 'PAST', playerName: 'Alex' });
-    const speak = q(TEST_IDS.reloadSpeak)!;
-    expect(speak.classList.contains('tc-btn-future')).toBe(true);
-    expect(
-      parseInt(/min-height:\s*(\d+)px/.exec(bodyOf('.tc-speak-btn'))![1]!, 10),
-    ).toBeGreaterThan(56);
+    expect(q('reload-speak')).toBeNull();
     expect(q('cover-mute')!.getAttribute('data-muted')).toBe('false');
     expect(bodyOf('.tc-cover-mute::before')).toContain('content');
   });

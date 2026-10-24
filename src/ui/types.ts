@@ -53,6 +53,8 @@ export const TEST_IDS = {
   setupGrade: (team: Team, grade: Grade) => `setup-grade-${team}-${grade}`,
   setupSubject: (team: Team, subject: string) => `setup-subject-${team}-${subject}`,
   setupTopic: (team: Team, topic: string) => `setup-topic-${team}-${topic}`,
+  setupMatchLength: (length: string) => `setup-length-${length}`,
+  setupMatchLengthRow: 'setup-length-row',
   setupNext: 'setup-next',
   setupBack: 'setup-back',
   campForge: 'camp-forge',
@@ -87,7 +89,6 @@ export const TEST_IDS = {
   reloadModal: 'reload-modal',
   reloadChoice: (index: number) => `reload-choice-${index}`,
   reloadHint: 'reload-hint',
-  reloadSpeak: 'reload-speak',
   reloadNext: 'reload-next',
   angleControl: 'aim-angle',
   powerControl: 'aim-power',
@@ -120,8 +121,6 @@ export type ReloadModalOptions = {
   playerName: string;
   /** The other side, shown as a "Waiting" tag. Optional. Their name is not secret. */
   waiting?: { team: Team; name: string };
-  /** Reads the question aloud (the Hear it button). Gets the whole text and its sentences. */
-  speak?: (text: string, sentences: string[]) => void;
   /** Chrono's quick joke for the answer. Optional. */
   quip?: (outcome: 'fast' | 'slow' | 'wrong') => string | null;
   /** Injected clock for tests. Default performance.now. */

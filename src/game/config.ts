@@ -78,6 +78,19 @@ export const CHARACTER_HEALTH = {
   nearScale: 0.75,
 } as const;
 
+// ---------- Match length ----------
+/**
+ * A parent picks how long a match runs at Setup. It only scales how much damage a base
+ * (or a fighter, with CHARACTER_HEALTH on) can take. Turns, questions, reload timing and
+ * scoring never change. Normal is exactly the balance above.
+ */
+export const MATCH_LENGTH = {
+  default: 'normal',
+  ids: ['short', 'normal', 'long'],
+  /** Multiplies full health. Normal is 1, so nothing moves for anyone who leaves it alone. */
+  healthScale: { short: 0.5, normal: 1, long: 1.5 },
+} as const;
+
 // ---------- Reload and scrap ----------
 export const RELOAD = {
   /** Answers strictly under this many ms are "fast". */
@@ -85,7 +98,6 @@ export const RELOAD = {
   /** Fast time limit by question kind. Longer reading takes longer to read, so the bonus stays fair. */
   fastMsByKind: {
     numeric: 8000,
-    sightword: 8000,
     choice: 10000,
     vocab: 12000,
     grammar: 12000,

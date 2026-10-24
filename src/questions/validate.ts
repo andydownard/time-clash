@@ -13,18 +13,18 @@ import {
   sub,
   type Rational,
 } from './mathEval';
+import { recomputeMore } from './recomputeMore';
 import type { Topic } from '../game/types';
 import type { QuestionKind, RecomputeMathAnswer, ValidateQuestion } from './types';
 
 export const KINDS: readonly QuestionKind[] = [
   'numeric',
   'choice',
-  'sightword',
   'vocab',
   'mainidea',
   'grammar',
 ];
-const READING_ONLY_KINDS: readonly QuestionKind[] = ['sightword', 'vocab', 'mainidea', 'grammar'];
+const READING_ONLY_KINDS: readonly QuestionKind[] = ['vocab', 'mainidea', 'grammar'];
 export const MIN_CHOICES = 3;
 export const MAX_CHOICES = 4;
 export const MANUAL_TAG = 'manual';
@@ -60,6 +60,10 @@ function decimalOf(text: string): Rational | null {
 
 function recomputeValue(prompt: string): Rational | null {
   if (typeof prompt !== 'string') return null;
+  return recomputeBasic(prompt) ?? recomputeMore(prompt);
+}
+
+function recomputeBasic(prompt: string): Rational | null {
 
   // Solve for x: ax + b = c   or   ax - b = c
   const solve = new RegExp(String.raw`^Solve for x: (-?\d*)x ([+-]) (${NUM}) = (-?${NUM})$`).exec(
@@ -273,16 +277,13 @@ export const validateQuestion: ValidateQuestion = (input) => {
   }
 
   // kind-specific fields
-  if (q.kind === 'sightword' && !nonBlank(q.audioWord))
-    problems.push('sightword needs a non-blank audioWord');
   if (q.kind === 'mainidea' && !nonBlank(q.passage)) problems.push('mainidea needs a passage');
 
-  // banned words in everything a child can see or hear
+  // banned words in everything a child can see
   const visible: unknown[] = [
     q.prompt,
     q.hint,
     q.passage,
-    q.audioWord,
     q.answer,
     ...(Array.isArray(choices) ? choices : []),
   ];
