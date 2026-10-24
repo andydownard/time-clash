@@ -5,7 +5,8 @@
 import Phaser from 'phaser';
 import { BALLISTICS, HIT_FX, WORLD } from '../game/config';
 import type { AimInput, BattleLayout, Rect, ShotResult, Team, Vec2 } from '../game/types';
-import { drawBackdrop, type Backdrop } from './battle/backdrop';
+import { drawBackdrop, paintArt, type Backdrop } from './battle/backdrop';
+import { obstacleArt } from './battle/obstacleArt';
 import { createAimArt, type AimArt, type AimArtState } from './battle/aimArt';
 import { effectColor, floatLabel, playDamagePip, playFade } from './battle/effects';
 import { createDamageArt, damageStage, type DamageArt } from './battle/damageArt';
@@ -59,7 +60,6 @@ import { FALL_DX, FALL_MS, REDUCED_FADE_MS, TEAM_COLOR } from './battle/visual';
 import { drawUnits, type UnitArt } from './battle/unitArt';
 import { UNITS, type UnitId } from '../game/units';
 import { ridesBase } from '../game/battlefield';
-import { ART } from './battle/visual';
 
 const TEAMS: readonly Team[] = ['PAST', 'FUTURE'];
 
@@ -451,15 +451,17 @@ export class BattleScene extends Phaser.Scene implements BattleView {
     this.walls = null;
     if (walls.length === 0) return;
     const g = this.add.graphics().setDepth(9);
-    for (const w of walls) {
-      g.fillStyle(ART.stone, 1);
-      g.fillRect(w.x, w.y, w.w, w.h);
-      g.lineStyle(4, ART.stoneLine, 1);
-      g.strokeRect(w.x, w.y, w.w, w.h);
-      // Brick lines, so it reads as a wall and not a plain bar.
-      g.lineStyle(2, ART.stoneEdge, 1);
-      for (let y = w.y + 24; y < w.y + w.h; y += 24) g.lineBetween(w.x, y, w.x + w.w, y);
-    }
+    // Brick courses, so it reads as a wall and not a plain bar. Same recipe as the field's walls.
+    for (const w of walls)
+      paintArt(
+        g,
+        obstacleArt('stoneWall', [
+          { x: w.x, y: w.y },
+          { x: w.x + w.w, y: w.y },
+          { x: w.x + w.w, y: w.y + w.h },
+          { x: w.x, y: w.y + w.h },
+        ]),
+      );
     this.walls = g;
   }
 

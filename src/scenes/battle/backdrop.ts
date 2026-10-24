@@ -1,10 +1,12 @@
 // Battle backdrop: a dusk sky that runs from deep blue to a warm glow, twinkling stars, drifting
-// clouds, three layers of parallax hills, and the ground and hill from the layout.
+// clouds, three layers of parallax hills, the ground, and every solid shape from the layout
+// (painted from obstacleArt.ts, so the art matches exactly where shells hit).
 // Original shapes only. Nothing here is scary.
 import Phaser from 'phaser';
 import type { BattleLayout, Polygon } from '../../game/types';
 import { aspenLayers, type AspenLayer } from './aspens';
 import { biomeLook } from './biomeArt';
+import { layoutObstacleArt, type ArtShape } from './obstacleArt';
 import { BATTLE_BAND } from '../../game/config';
 import { ART, PALETTE } from './visual';
 
@@ -32,6 +34,34 @@ const SKY = [ART.skyTop, ART.skyMid, ART.skyLow, ART.skyHorizon, ART.skyGlow] as
 
 const toPoints = (poly: Polygon): Phaser.Types.Math.Vector2Like[] =>
   poly.map((p) => ({ x: p.x, y: p.y }));
+
+/** Paint shapes from obstacleArt.ts onto a Graphics, in order. */
+export function paintArt(g: Phaser.GameObjects.Graphics, shapes: readonly ArtShape[]): void {
+  for (const s of shapes) {
+    switch (s.op) {
+      case 'poly':
+        g.fillStyle(s.color, s.alpha);
+        g.fillPoints(s.pts, true);
+        break;
+      case 'rect':
+        g.fillStyle(s.color, s.alpha);
+        g.fillRect(s.x, s.y, s.w, s.h);
+        break;
+      case 'circle':
+        g.fillStyle(s.color, s.alpha);
+        g.fillCircle(s.x, s.y, s.r);
+        break;
+      case 'line':
+        g.lineStyle(s.width, s.color, s.alpha);
+        g.lineBetween(s.a.x, s.a.y, s.b.x, s.b.y);
+        break;
+      case 'outline':
+        g.lineStyle(s.width, s.color, 1);
+        g.strokePoints(s.pts, true);
+        break;
+    }
+  }
+}
 
 export type Backdrop = {
   /** Drift these slowly (unless motion is reduced). */
@@ -120,14 +150,9 @@ export function drawBackdrop(scene: Phaser.Scene, layout: BattleLayout): Backdro
   g.fillRect(0, height, width / 2, BATTLE_BAND);
   g.fillStyle(ART.hullDark, 1);
   g.fillRect(width / 2, height, width / 2, BATTLE_BAND);
-  // Obstacle 0 is the biome's middle shape (stone). Any more come from Team Future's base spot:
-  // the tower, the bridge deck or the food truck wall, drawn in city steel.
-  layout.terrain.obstacles.forEach((o, i) => {
-    g.fillStyle(i === 0 ? ART.stone : ART.hull, 1);
-    g.fillPoints(toPoints(o), true);
-    g.lineStyle(4, i === 0 ? ART.stoneLine : ART.hullDark, 1);
-    g.strokePoints(toPoints(o), true);
-  });
+  // Obstacle 0 is the biome's middle shape. Then Team Future's spot (tower, bridge deck or food
+  // truck) and Team Past's castle place (rock, village wall or drawbridge), each with its own look.
+  for (const shapes of layoutObstacleArt(layout)) paintArt(g, shapes);
   const top = layout.terrain.ground[0];
   const topRight = layout.terrain.ground[1];
   if (top && topRight) {
