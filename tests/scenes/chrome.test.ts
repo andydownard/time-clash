@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { BUTTONS, UI_EXTRA } from '../../src/data/copy';
 import { INTRO_SCRIPT } from '../../src/data/introScript';
 import { UI } from '../../src/game/config';
@@ -9,9 +9,6 @@ import { loadSettings } from '../../src/storage/storage';
 import { TEST_IDS } from '../../src/ui/types';
 import { click, flush, key, q } from '../ui/helpers';
 import { makeServices } from './fakes';
-
-// Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
-vi.setConfig({ testTimeout: 120_000 });
 
 let t: ReturnType<typeof makeServices>;
 beforeEach(() => {

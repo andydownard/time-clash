@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { LOADING } from '../../src/data/copy';
 import { SCENE_KEYS } from '../../src/scenes/registry';
 import {
@@ -18,9 +18,6 @@ import { campWith } from '../helpers/camp';
 import { loadCamp } from '../../src/storage/storage';
 import { fakeController, makeServices, players, tinyBank } from './fakes';
 import { loadSettings } from '../../src/storage/storage';
-
-// Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
-vi.setConfig({ testTimeout: 120_000 });
 
 let t: ReturnType<typeof makeServices>;
 beforeEach(() => {

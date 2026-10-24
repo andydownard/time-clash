@@ -4,7 +4,7 @@
 // is one pixel, so a cell is 40px and the plot is 960 by 480.
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
   freshBases,
   newBuild,
@@ -21,9 +21,6 @@ import { plotPoint } from '../../src/ui/baseBuilderScreen';
 import { TEST_IDS } from '../../src/ui/types';
 import { NAMES, campWith } from '../helpers/camp';
 import { click, flush, q, qa, setup } from './helpers';
-
-// Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
-vi.setConfig({ testTimeout: 120_000 });
 
 const css = readFileSync(join(process.cwd(), 'src/styles/baseBuilder.css'), 'utf8');
 const tokens = readFileSync(join(process.cwd(), 'src/styles/tokens.css'), 'utf8');

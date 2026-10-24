@@ -1,13 +1,10 @@
 // @vitest-environment jsdom
 // The Camp hub: one big button that starts the match, two closed buttons that say so, and rules
 // that must hold on every look (real buttons, a name for assistive tech, no color-only meaning).
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { CAMP, GAME_TAGLINE, GAME_TITLE } from '../../src/data/copy';
 import { TEST_IDS } from '../../src/ui/types';
 import { click, q, qa, setup } from './helpers';
-
-// Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
-vi.setConfig({ testTimeout: 120_000 });
 
 let s: ReturnType<typeof setup>;
 beforeEach(() => {

@@ -1,6 +1,6 @@
 // The hawk is a small solid: a body, a head, two thick wings and a tail, turned about its upright
 // axis and drawn flat. These tests check it keeps its volume at every angle.
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import {
   HAWK_COLORS,
   HAWK_STILL,
@@ -8,9 +8,6 @@ import {
   hawkPaints,
   type HawkPaint,
 } from '../../src/ui/hawkModel';
-
-// Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
-vi.setConfig({ testTimeout: 120_000 });
 
 function bounds(paints: readonly HawkPaint[]) {
   const xs: number[] = [];

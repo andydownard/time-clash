@@ -14,4 +14,3 @@ Raw ideas land here. Triage promotes them to BACKLOG.md. Items expire after 30 d
   - Castle and bunkers explode, then are rebuilt, then explode again (a battle idle loop on the design canvas; the real game ends a match on base health).
   - Owner answers (2026-10-21): Future Forge units are Hover Balloon, Rocket Sled and Zap Catapult. The Camp button stays "Build Base". Lasers are Future only. Each team keeps one evasion ability (Past Stone Wall, Future Hoverboard Dodge).
 
-- (2026-10-21) Flaky unit tests under load: `vitest.config.ts` now sets a 30 s test and hook limit, because a full run beside builds and other agents stretched ~40 ms tests past 5 s (different tests each run, in `tests/ui` and `tests/game`). `tests/ui/baseBuilder.test.ts` still carries its own 120 s `vi.setConfig` (line 26); drop it if it never trips. Check whether any test truly needs more than 30 s. A full `npm test` on 2026-10-23 passed 3,487 tests in about 64 s.

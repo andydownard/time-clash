@@ -2,7 +2,7 @@
 // Each end-of-match award has a small decorative picture and its name in words.
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { VICTORY } from '../../src/data/copy';
 import { AWARD_IDS } from '../../src/game/awards';
 import { awardIcon } from '../../src/ui/awardIcons';
@@ -10,9 +10,6 @@ import { parseCssVars, resolveCssVars } from '../../src/ui/contrast';
 import type { TeamStats } from '../../src/game/types';
 import { TEST_IDS } from '../../src/ui/types';
 import { click, q, qa, setup } from './helpers';
-
-// Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
-vi.setConfig({ testTimeout: 120_000 });
 
 const source = readFileSync(join(process.cwd(), 'src/ui/awardIcons.ts'), 'utf8');
 const ui = readFileSync(join(process.cwd(), 'src/styles/ui.css'), 'utf8');
