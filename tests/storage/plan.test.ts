@@ -30,6 +30,27 @@ describe('timeclash.plan', () => {
     expect(loadPlan(s)).toEqual({ biome: 'temple', spot: 'bridge' });
   });
 
+  it('round-trips Team Past’s castle place', () => {
+    const s = createStorage(fakeBacking());
+    s.set('timeclash.plan', { biome: 'cherry', spot: 'skyscraper', fort: 'hillFort' });
+    expect(loadPlan(s)).toEqual({ biome: 'cherry', spot: 'skyscraper', fort: 'hillFort' });
+  });
+
+  it('loads a plan saved before castle places existed, with no castle place', () => {
+    const old = createStorage(
+      fakeBacking({ 'timeclash.plan': JSON.stringify({ biome: 'temple', spot: 'bridge' }) }),
+    );
+    const p = loadPlan(old);
+    expect(p).toEqual({ biome: 'temple', spot: 'bridge' });
+    expect(p).not.toHaveProperty('fort');
+    const junk = createStorage(
+      fakeBacking({
+        'timeclash.plan': JSON.stringify({ biome: 'temple', spot: 'bridge', fort: 'moat' }),
+      }),
+    );
+    expect(loadPlan(junk)).toEqual({ biome: 'temple', spot: 'bridge' });
+  });
+
   it('fixes bad or partial data from the default plan', () => {
     const bad = (v: unknown) =>
       loadPlan(createStorage(fakeBacking({ 'timeclash.plan': JSON.stringify(v) })));
