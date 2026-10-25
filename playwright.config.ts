@@ -18,8 +18,9 @@ const quiet = { launchOptions: { args: ['--mute-audio'] } };
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
-  // Phaser and four browsers at once starve each other. Fewer workers keeps timing honest.
-  workers: process.env.CI ? 2 : 4,
+  // One worker per core. The GitHub runner for this public repo has 4 cores, like a laptop run.
+  // Tests wait on conditions, not the clock, so a busy machine is slower but not flaky.
+  workers: 4,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? 'github' : 'list',
