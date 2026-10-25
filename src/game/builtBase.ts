@@ -7,17 +7,20 @@ import {
   PLOT_STEPS,
   chosenBase,
   chosenSpots,
+  onFoundation,
   rectOf,
   restOverlap,
   spotWeaponById,
   type BasesState,
   type Placed,
   type Rect as StepRect,
+  type Rotation,
   type SpotRole,
 } from './baseBuilder';
 import type {
   AimInput,
   BattleLayout,
+  BlastResult,
   BrickId,
   BrickView,
   BuiltEvents,
@@ -49,22 +52,147 @@ export const PLOT_PX = { w: PLOT_STEPS.w * S, h: PLOT_STEPS.h * S } as const;
 export const plotLeft = (team: Team): number =>
   team === 'PAST' ? BIB.margin : WORLD.width - BIB.margin - PLOT_PX.w;
 
+/**
+ * Where build steps land on the battlefield. Steps `x0` to `x1` across become px from `left`, at
+ * `scale` px a step. The plot's bottom edge (the top of the foundation) sits at `bottom`. A
+ * mirrored frame turns the base round, so Team Future faces Team Past.
+ */
+export type PlotFrame = {
+  left: number;
+  bottom: number;
+  scale: number;
+  x0: number;
+  x1: number;
+  mirror: boolean;
+};
+
+/** The whole plot at BASE_IN_BATTLE.scale, from the team's own edge (character health mode). */
+export const plotFrame = (team: Team): PlotFrame => ({
+  left: plotLeft(team),
+  bottom: BIB.plotBottomY,
+  scale: S,
+  x0: 0,
+  x1: PLOT_STEPS.w,
+  mirror: TEAM_FACING[team] !== 1,
+});
+
+const padHalf = BB.spots.padSteps;
+
+/**
+ * Base health mode: the bricks and pads of a base, fitted inside the old base footprint `box`
+ * (the drawn castle's place), so the aim, the fighters, the field and the HUD never move. It is
+ * centered, stands on the box's bottom edge, keeps its shape, and is never drawn bigger than
+ * BASE_IN_BATTLE.fitMaxScale px a step.
+ */
+export function fitFrame(team: Team, base: ChosenBase, box: Rect): PlotFrame {
+  let l = Infinity;
+  let r = -Infinity;
+  let t: number = PLOT_STEPS.h;
+  for (const p of base.pieces) {
+    const rect = rectOf(p);
+    if (!rect) continue;
+    l = Math.min(l, rect.l);
+    r = Math.max(r, rect.r);
+    t = Math.min(t, rect.t);
+  }
+  for (const sp of base.spots) {
+    l = Math.min(l, sp.x - padHalf);
+    r = Math.max(r, sp.x + padHalf);
+    t = Math.min(t, sp.y - padHalf);
+  }
+  if (!Number.isFinite(l) || r <= l) {
+    l = 0;
+    r = PLOT_STEPS.w;
+  }
+  l = Math.max(0, l);
+  r = Math.min(PLOT_STEPS.w, r);
+  t = Math.max(0, Math.min(t, PLOT_STEPS.h - 1));
+  const w = r - l;
+  const h = PLOT_STEPS.h - t;
+  const scale = Math.min(box.w / w, box.h / h, BIB.fitMaxScale);
+  return {
+    left: box.x + (box.w - w * scale) / 2,
+    bottom: box.y + box.h,
+    scale,
+    x0: l,
+    x1: r,
+    mirror: TEAM_FACING[team] !== 1,
+  };
+}
+
 /** A point in build steps to battlefield px. Team Future is mirrored so it faces Team Past. */
-export function pointToWorld(team: Team, x: number, y: number): Vec2 {
-  const sx = TEAM_FACING[team] === 1 ? x : PLOT_STEPS.w - x;
-  return { x: plotLeft(team) + sx * S, y: BIB.plotBottomY - (PLOT_STEPS.h - y) * S };
+export function pointToWorld(team: Team, x: number, y: number, frame = plotFrame(team)): Vec2 {
+  const sx = frame.mirror ? frame.x1 - x : x - frame.x0;
+  return { x: frame.left + sx * frame.scale, y: frame.bottom - (PLOT_STEPS.h - y) * frame.scale };
 }
 
 /** A brick's box in build steps to a box in battlefield px. */
-export function boxToWorld(team: Team, r: StepRect): Rect {
-  const a = pointToWorld(team, r.l, r.t);
-  const b = pointToWorld(team, r.r, r.b);
+export function boxToWorld(team: Team, r: StepRect, frame = plotFrame(team)): Rect {
+  const a = pointToWorld(team, r.l, r.t, frame);
+  const b = pointToWorld(team, r.r, r.b, frame);
   return {
     x: Math.min(a.x, b.x),
     y: Math.min(a.y, b.y),
     w: Math.abs(b.x - a.x),
     h: Math.abs(b.y - a.y),
   };
+}
+
+// ---------- Base health mode: brick health ----------
+
+/**
+ * Shares `total` by `weights` in whole numbers. Every share gets at least 1, the rest goes by
+ * weight, and what rounding leaves over goes to the biggest remainders (then the lowest index).
+ * So the shares add up to `total` exactly (when it is at least the count) and repeat every time.
+ */
+export function splitHealth(total: number, weights: readonly number[]): number[] {
+  const n = weights.length;
+  if (n === 0) return [];
+  const rest = Math.max(0, Math.round(total) - n);
+  const sumW = weights.reduce((a, w) => a + Math.max(0, w), 0);
+  const raw = weights.map((w) => (sumW > 0 ? (rest * Math.max(0, w)) / sumW : rest / n));
+  const out = raw.map((v) => Math.floor(v));
+  let left = rest - out.reduce((a, v) => a + v, 0);
+  const order = raw
+    .map((v, i) => ({ i, f: v - Math.floor(v) }))
+    .sort((a, b) => b.f - a.f || a.i - b.i);
+  for (const { i } of order) {
+    if (left <= 0) break;
+    out[i] = (out[i] as number) + 1;
+    left -= 1;
+  }
+  return out.map((v) => v + 1);
+}
+
+/**
+ * Base health mode: each brick's starting health. The saved hit points times `perHp`, held in the
+ * fair band around `flatHp` (the health the team would have with no built base). The bricks on
+ * the foundation share `foundationShare` of it by their saved strength, and the bricks above
+ * share the rest. A base with nothing above gives the foundation all of it.
+ */
+export function healthPlan(
+  saved: readonly number[],
+  grounded: readonly boolean[],
+  flatHp: number,
+): number[] {
+  const { perHp, band, foundationShare } = BIB.health;
+  const totalSaved = saved.reduce((a, v) => a + Math.max(0, v), 0);
+  const total = Math.round(
+    Math.min(flatHp * band.max, Math.max(flatHp * band.min, totalSaved * perHp)),
+  );
+  const up = saved.map((_, i) => !grounded[i]);
+  const upper = up.some(Boolean) ? Math.round(total * (1 - foundationShare)) : 0;
+  const lower = splitHealth(
+    total - upper,
+    saved.filter((_, i) => !up[i]),
+  );
+  const higher = splitHealth(
+    upper,
+    saved.filter((_, i) => up[i]),
+  );
+  let a = 0;
+  let b = 0;
+  return saved.map((_, i) => (up[i] ? (higher[b++] as number) : (lower[a++] as number)));
 }
 
 // ---------- State ----------
@@ -76,6 +204,7 @@ type BrickRec = BrickView & {
   below: number[];
   /** Resting on the foundation. */
   grounded: boolean;
+  rot: Rotation;
   /** Nothing held it up when the match began (a floating brick). It never falls by support. */
   anchored: boolean;
 };
@@ -95,10 +224,11 @@ const emptyTeam = (team: Team): BuiltTeam => ({ team, bricks: [], mounts: [], sp
 /** True when a team brought a base (bricks or spots). */
 export const hasBuilt = (bt: BuiltTeam): boolean => bt.bricks.length > 0 || bt.spots.length > 0;
 
-const padHalf = BB.spots.padSteps;
+type BuildOptions = { frame?: PlotFrame; mounts?: boolean; flatHp?: number };
 
-function buildTeam(team: Team, base: ChosenBase | undefined): BuiltTeam {
+function buildTeam(team: Team, base: ChosenBase | undefined, opts: BuildOptions = {}): BuiltTeam {
   if (!base) return emptyTeam(team);
+  const frame = opts.frame ?? plotFrame(team);
   const bricks: BrickRec[] = [];
   base.pieces.forEach((p, index) => {
     const steps = rectOf(p);
@@ -109,8 +239,9 @@ function buildTeam(team: Team, base: ChosenBase | undefined): BuiltTeam {
       piece: p.piece,
       hp: Math.max(1, p.hp),
       maxHp: Math.max(1, p.hp),
-      box: boxToWorld(team, steps),
+      box: boxToWorld(team, steps, frame),
       alive: true,
+      rot: p.rot,
       steps,
       below: [],
       grounded: steps.b >= PLOT_STEPS.h,
@@ -126,22 +257,39 @@ function buildTeam(team: Team, base: ChosenBase | undefined): BuiltTeam {
     });
     a.anchored = !a.grounded && a.below.length === 0;
   });
+  // Base health mode: the bricks are the base health, in the fair band (healthPlan).
+  if (opts.flatHp !== undefined) {
+    const hp = healthPlan(
+      bricks.map((b) => b.maxHp),
+      bricks.map((b) => b.grounded),
+      opts.flatHp,
+    );
+    bricks.forEach((b, i) => {
+      b.hp = hp[i] as number;
+      b.maxHp = hp[i] as number;
+    });
+  }
+  // A weapon sits on the highest brick under its pad, or on the foundation.
+  const under = (x: number, y: number): BrickRec | null => {
+    let found: BrickRec | null = null;
+    for (const b of bricks) {
+      if (b.steps.l < x + padHalf && b.steps.r > x - padHalf && b.steps.t >= y) {
+        if (!found || b.steps.t < found.steps.t) found = b;
+      }
+    }
+    return found;
+  };
   const spots: SpotView[] = base.spots.map((s) => {
-    const w = pointToWorld(team, s.x, s.y);
-    return { index: s.index, x: w.x, y: w.y, weapon: s.weapon };
+    const w = pointToWorld(team, s.x, s.y, frame);
+    return { index: s.index, x: w.x, y: w.y, weapon: s.weapon, brick: under(s.x, s.y)?.id ?? null };
   });
   const mounts: MountRec[] = [];
+  if (opts.mounts === false) return { team, bricks, mounts, spots };
   base.spots.forEach((s) => {
     const def = s.weapon === null ? undefined : spotWeaponById(s.weapon);
     if (!def || def.team !== team) return;
-    const c = pointToWorld(team, s.x, s.y);
-    // The weapon sits on the highest brick under its pad, or on the foundation.
-    let under: BrickRec | null = null;
-    for (const b of bricks) {
-      if (b.steps.l < s.x + padHalf && b.steps.r > s.x - padHalf && b.steps.t >= s.y) {
-        if (!under || b.steps.t < under.steps.t) under = b;
-      }
-    }
+    const c = pointToWorld(team, s.x, s.y, frame);
+    const below = under(s.x, s.y);
     mounts.push({
       id: `mount:${s.index}` as MountId,
       team,
@@ -158,7 +306,7 @@ function buildTeam(team: Team, base: ChosenBase | undefined): BuiltTeam {
         h: BIB.mountBox.h,
       },
       alive: true,
-      brick: under ? under.id : null,
+      brick: below ? below.id : null,
       canFire: def.role !== 'guard',
       damage: def.damage,
     });
@@ -166,11 +314,101 @@ function buildTeam(team: Team, base: ChosenBase | undefined): BuiltTeam {
   return { team, bricks, mounts, spots };
 }
 
+/**
+ * Base health mode (character health off): each base is fitted into its old footprint in
+ * `layout`, and its bricks get base health around `flatHp`. The weapon pads are drawn only:
+ * mounted weapons in this mode are a later task (BACKLOG.md).
+ */
+export type BaseHealthBuild = { layout: BattleLayout; flatHp: Record<Team, number> };
+
 /** Builds both teams. A team with no base given is empty (the default fixed base is used). */
-export const createBuilt = (bases: Partial<Record<Team, ChosenBase>> = {}): Built => ({
-  PAST: buildTeam('PAST', bases.PAST),
-  FUTURE: buildTeam('FUTURE', bases.FUTURE),
-});
+export function createBuilt(
+  bases: Partial<Record<Team, ChosenBase>> = {},
+  baseHealth?: BaseHealthBuild,
+): Built {
+  const one = (team: Team): BuiltTeam => {
+    const base = bases[team];
+    if (!baseHealth || !base) return buildTeam(team, base);
+    return buildTeam(team, base, {
+      frame: fitFrame(team, base, baseHealth.layout.bases[team]),
+      mounts: false,
+      flatHp: baseHealth.flatHp[team],
+    });
+  };
+  return { PAST: one('PAST'), FUTURE: one('FUTURE') };
+}
+
+/** True when a base has a brick on the foundation (base health mode needs one to stand). */
+export const standsOnGround = (base: ChosenBase | undefined): boolean =>
+  !!base && base.pieces.some((p) => onFoundation(p));
+
+/**
+ * The bases the Camp takes into battle: each player's chosen base for their side, only when it
+ * has a brick on the foundation. A player with no such base gets the default castle or base.
+ */
+export function battleBasesFor(
+  state: BasesState,
+  names: Record<Team, string>,
+): Partial<Record<Team, ChosenBase>> {
+  const out: Partial<Record<Team, ChosenBase>> = {};
+  for (const team of TEAMS) {
+    const base = chosenBaseFor(state, names[team], team);
+    if (standsOnGround(base)) out[team] = base;
+  }
+  return out;
+}
+
+// ---------- Base health mode: the base health the HUD shows ----------
+
+/** A brick on the foundation still stands. While one does, the base stands. */
+export const foundationStands = (bt: BuiltTeam): boolean =>
+  bt.bricks.some((b) => b.alive && b.grounded);
+
+/** Base health left: the sum of the standing bricks, or 0 once the foundation is gone. */
+export const builtHealth = (bt: BuiltTeam): number =>
+  foundationStands(bt) ? bt.bricks.reduce((a, b) => a + (b.alive ? b.hp : 0), 0) : 0;
+
+/** The standing brick closest to `p` (lowest index on a tie), or null when none stands. */
+export function nearestBrick(bt: BuiltTeam, p: Vec2): { id: BrickId; box: Rect } | null {
+  let best: BrickRec | null = null;
+  let bestD = Infinity;
+  for (const b of bt.bricks) {
+    if (!b.alive) continue;
+    const dx = Math.max(b.box.x - p.x, 0, p.x - (b.box.x + b.box.w));
+    const dy = Math.max(b.box.y - p.y, 0, p.y - (b.box.y + b.box.h));
+    const d = Math.hypot(dx, dy);
+    if (d < bestD) {
+      bestD = d;
+      best = b;
+    }
+  }
+  return best ? { id: best.id, box: best.box } : null;
+}
+
+/** The standing brick on the foundation nearest the enemy: where a walking helper bonks. */
+export function frontBrick(bt: BuiltTeam): BrickId | null {
+  const front = (b: BrickRec): number =>
+    TEAM_FACING[bt.team] === 1 ? b.box.x + b.box.w : -b.box.x;
+  let best: BrickRec | null = null;
+  for (const b of bt.bricks) {
+    if (b.alive && b.grounded && (!best || front(b) > front(best))) best = b;
+  }
+  return best ? best.id : null;
+}
+
+/** A repair patches the most hurt standing brick (lowest index on a tie), never past full. */
+export function repairBricks(bt: BuiltTeam, amount: number): void {
+  if (amount <= 0) return;
+  let worst: BrickRec | null = null;
+  for (const b of bt.bricks) {
+    if (!b.alive || b.hp >= b.maxHp) continue;
+    if (!worst || b.maxHp - b.hp > worst.maxHp - worst.hp) worst = b;
+  }
+  if (worst) worst.hp = Math.min(worst.maxHp, worst.hp + amount);
+}
+
+/** What a shell that reached a built base counts as: the brick it is scored on, and how well. */
+export type BrickBlast = { brick: BrickId | null; result: BlastResult };
 
 const brickByIdIn = (bt: BuiltTeam, id: BrickId): BrickRec | undefined =>
   bt.bricks.find((b) => b.id === id);
@@ -199,6 +437,8 @@ export function viewBricks(built: Built): Record<BrickId, BrickView> {
         maxHp: b.maxHp,
         box: { ...b.box },
         alive: b.alive,
+        rot: b.rot,
+        grounded: b.grounded,
       };
     }
   }

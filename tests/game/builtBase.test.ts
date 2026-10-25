@@ -654,13 +654,18 @@ describe('flags', () => {
     expect(a.out[0]!.built).toBeUndefined();
   });
 
-  it('built bases need character health', () => {
+  it('without character health a built base is the base health, with no mounted weapons yet', () => {
     const c = mk({ PAST: PAST_BASE }, 5, { characterHealth: false });
-    expect(c.snapshot().baseInBattle).toBeUndefined();
+    const s = c.snapshot();
+    expect(s.baseInBattle).toBe(true);
+    expect(s.builtBase).toEqual({ PAST: true, FUTURE: false });
+    expect(s.mounts?.PAST).toEqual([]);
+    c.ready();
+    expect(() => c.selectUnit('mount:0')).toThrow(RangeError);
   });
 
-  it('the constant default is off', () => {
-    expect(BASE_IN_BATTLE.enabled).toBe(false);
+  it('the constant default is on (owner, 2026-10-25)', () => {
+    expect(BASE_IN_BATTLE.enabled).toBe(true);
   });
 
   it('same seed, same events', () => {
