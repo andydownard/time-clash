@@ -186,9 +186,7 @@ export const SUBJECT_LABELS: Record<Subject, string> = {
   both: 'Both',
 };
 
-/** Short label for chips: K, 1, 2 ... 12. */
-export const gradeLabel = (grade: number): string => (grade === 0 ? 'K' : String(grade));
-/** Long label for screen readers and summaries. */
+/** The grade dropdown's words, also used by screen readers and summaries. */
 export const gradeChipLabel = (grade: number): string =>
   grade === 0 ? 'Kindergarten' : `Grade ${grade}`;
 
@@ -212,8 +210,6 @@ export const BUTTONS = {
   back: 'Back',
   leaveGame: 'Leave game',
   stay: 'Stay',
-  next: 'Next',
-  ok: 'OK',
 } as const;
 
 // ---------- Pause and leaving a game ----------
@@ -232,7 +228,8 @@ export const TURN_SCREEN = {
 // ---------- Tap to Start ----------
 export const TAP_TO_START = {
   button: 'TAP TO PLAY',
-  helper: 'Tap the big button to start. Sound starts after you tap.',
+  /** The sound promise. The big button already says what to do. */
+  helper: 'Sound starts after you tap.',
 } as const;
 
 // ---------- Intro (How to Play) ----------
@@ -243,7 +240,6 @@ export const INTRO = {
   mute: 'Mute',
   unmute: 'Unmute',
   next: 'Next card',
-  done: "Let's go!",
   cardOf: (n: number, total: number): string => `Card ${n} of ${total}`,
 } as const;
 
@@ -273,29 +269,18 @@ export const LOADING = {
 // ---------- Setup ----------
 export const SETUP = {
   heading: 'Who is fighting?',
-  subtitle: 'Type your name. Pick your grade and subject.',
   nameLabel: 'Name',
   namePlaceholder: 'Type a name',
   gradeLabel: 'Grade',
   subjectLabel: 'Subject',
   gradeHelper: 'Each team gets questions for its own grade. That keeps it fair.',
-  subjectHelper: 'Both mixes reading and math.',
-  /** Optional math focus (a parent picks it). Off at first. */
-  topicLabel: 'Focus',
-  topicChips: {
-    multiplication: 'Focus: Multiplication',
-    division: 'Focus: Division',
-  } as Record<string, string>,
-  topicHelpers: {
-    multiplication: 'Math questions are all multiplication.',
-    division: 'Math questions are all division.',
-  } as Record<string, string>,
+  /** One quiet line under the grade, only while that team's grade is K or 1. No read-aloud. */
+  youngReaderNote: 'A grown-up can read the questions with you.',
   /** Match length: a parent picks it. Short and Long change how many hits a base can take. */
   matchLengthLabel: 'Match length',
   matchLengthChips: { short: 'Short', normal: 'Normal', long: 'Long' } as Record<string, string>,
   matchLengthHelper: 'Short ends sooner. Long takes more hits. Questions stay the same.',
   start: "Let's clash!",
-  matchHelper: 'Questions will match your grade.',
   namesStay: 'Names stay on this device. Nothing is sent anywhere.',
   readBack: (team: string, grade: string, subject: string): string =>
     `${team}: ${grade}, ${subject}`,
@@ -392,7 +377,6 @@ export const goTurnBanner = (name: string, go: number): string =>
 
 export const PASS_SCREEN = {
   heading: 'Pass the screen!',
-  noPeeking: 'No peeking at their question!',
   upNext: (name: string): string => `${name}, you're up!`,
   ready: "I'm ready!",
   /** Shown beside the heading, so the next side is clear without color. */
@@ -427,7 +411,6 @@ export const HITS = {
   direct: 'Direct hit!',
   near: 'So close!',
   miss: 'Whoosh! Missed.',
-  blocks: 'Boing! Toy blocks everywhere!',
 } as const;
 
 /** More ways to say it. The scene picks with a seeded shuffle bag, so no line repeats back to back. */
@@ -533,7 +516,6 @@ export function tumblePool(team: Team): readonly string[] {
 // ---------- Victory ----------
 export const VICTORY = {
   heading: (name: string): string => `${name} wins!`,
-  teamWins: (team: Team): string => `${TEAM_NAMES[team]} wins!`,
   /**
    * Said by the losing side's fighter in the canvas speech bubble, never by Chrono. Chrono did not
    * fall over, so the line only fits in the mouth of the side that took the wipeout.
@@ -557,15 +539,6 @@ export const VICTORY = {
     scrapCollector: 'Scrap Collector',
     goodSport: 'Good Sport',
   } as Record<AwardId, string>,
-  statsHeading: 'Scoreboard',
-  shotsFired: 'Shots fired',
-  directHits: 'Direct hits',
-  questionsAnswered: 'Questions answered',
-  correctAnswers: 'Right answers',
-  fastestAnswer: 'Fastest answer',
-  fastestValue: (ms: number | null): string =>
-    ms === null ? 'None yet' : `${(Number(ms) / 1000).toFixed(1)} seconds`,
-  scrapEarned: 'Scrap earned',
   rematch: 'Rematch',
   backToCamp: 'Back to Camp',
 } as const;
@@ -584,14 +557,6 @@ export const VICTORY_CHRONO = {
 } as const;
 export type VictoryMood = keyof typeof VICTORY_CHRONO;
 
-// ---------- Errors ----------
-export const ERRORS = {
-  generic: 'Something went wonky. Tap to try again.',
-  tryAgain: 'Try again',
-  noSound: 'Sound is not working here. Captions are on.',
-  saveFailed: 'This browser will not save. The game still works today.',
-} as const;
-
 // ---------- Added by the UI track (additive) ----------
 export const UI_EXTRA = {
   gradeError: 'Pick a grade.',
@@ -605,7 +570,6 @@ export const UI_EXTRA = {
   choicesLabel: 'Answer choices',
   stepsLabel: 'Steps',
   loadingLabel: 'Loading',
-  playerCard: (team: Team): string => `${TEAM_NAMES[team]} player`,
 } as const;
 
 // ---------- Phase 2: Battle Plan, ammo and evasion (additive) ----------

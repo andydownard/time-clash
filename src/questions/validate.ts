@@ -1,5 +1,5 @@
 // Question checks used by `npm run check:questions` and the tests. Pure TypeScript.
-import { TOPIC_FOCUS, TOPIC_IDS } from '../game/config';
+import { QUESTION_TOPICS, TOPIC_IDS } from '../game/config';
 import {
   add,
   div,
@@ -174,13 +174,13 @@ function topicProblems(q: Record<string, unknown>): string[] {
   const tags = Array.isArray(q.tags)
     ? q.tags.filter((t): t is string => typeof t === 'string')
     : [];
-  const known = new Set(Object.values(TOPIC_FOCUS.tags));
+  const known = new Set(Object.values(QUESTION_TOPICS.tags));
   for (const tag of tags) {
     if (tag.startsWith(TOPIC_PREFIX) && !known.has(tag)) {
       out.push(`unknown topic tag "${tag}" (known: ${[...known].join(', ')})`);
     }
   }
-  const topics = TOPIC_IDS.filter((t) => tags.includes(TOPIC_FOCUS.tags[t]));
+  const topics = TOPIC_IDS.filter((t) => tags.includes(QUESTION_TOPICS.tags[t]));
   if (topics.length > 0 && q.subject !== 'math') out.push('topic tag is for math, not reading');
   const shape: Record<Topic, { rule: RegExp; says: string }> = {
     multiplication: { rule: MULTIPLIES, says: 'multiply (needs "x" or "each")' },

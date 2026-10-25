@@ -192,12 +192,6 @@
 .tc-setup-choice .tc-team-card .tc-label {
   margin-top: 2px;
 }
-.tc-setup-choice .tc-chips-grades {
-  gap: var(--tc-s-1);
-}
-.tc-setup-choice .tc-match-helper {
-  font-size: var(--tc-fs-body);
-}
 .tc-setup.tc-setup-choice {
   gap: var(--tc-s-1);
   padding-bottom: var(--tc-s-1);

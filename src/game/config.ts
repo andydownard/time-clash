@@ -165,18 +165,22 @@ export const SQUADS = {
 } as const;
 
 // ---------- Setup ----------
-export const GRADE = { min: 0, max: 12 } as const;
+export const GRADE = {
+  min: 0,
+  max: 12,
+  /** Setup shows "A grown-up can read the questions with you." up to this grade (K and 1). */
+  grownUpNoteMax: 1,
+} as const;
 export const NAME = { minLength: 1, maxLength: 12 } as const;
 export const DEFAULT_NAMES: Record<Team, string> = { PAST: 'Knight', FUTURE: 'Rocket' };
 
-// ---------- Topic focus ----------
+// ---------- Question topics ----------
 /**
- * A parent can focus one side's math questions on a topic. Off by default for every player.
- * `offer` lists the topics Setup shows on each side: multiplication for Team Past, division for Team Future.
+ * Some math questions belong to a topic (multiplication or division). They are ordinary math
+ * questions in play. `check:questions` uses the tag to check each topic question really
+ * multiplies or divides, and that every grade keeps enough of them.
  */
-export const TOPIC_FOCUS = {
-  enabled: true,
-  offer: { PAST: ['multiplication'], FUTURE: ['division'] } as Record<Team, readonly Topic[]>,
+export const QUESTION_TOPICS = {
   /** The tag a bank question carries when it belongs to a topic. */
   tags: { multiplication: 'topic:multiplication', division: 'topic:division' } as Record<
     Topic,

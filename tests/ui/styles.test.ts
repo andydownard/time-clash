@@ -36,7 +36,16 @@ describe('tokens and sizes agree with config', () => {
 });
 
 describe('ui.css: tap targets', () => {
-  it.each(['.tc-btn', '.tc-chip', '.tc-input', '.tc-choice', '.tc-icon-btn', '.tc-range'])(
+  it.each([
+    '.tc-btn',
+    '.tc-chip',
+    '.tc-input',
+    '.tc-select',
+    '.tc-link',
+    '.tc-choice',
+    '.tc-icon-btn',
+    '.tc-range',
+  ])(
     '%s has min-height: var(--tc-tap)',
     (cls) => {
       const hit = all.filter(

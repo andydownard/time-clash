@@ -164,38 +164,20 @@ describe('validateSetup', () => {
   });
 });
 
-describe('validateSetup topic focus', () => {
+describe('validateSetup without the retired Focus switch', () => {
   const base = {
     PAST: { name: 'Alex', grade: 3, subject: 'math' },
     FUTURE: { name: 'Sam', grade: 8, subject: 'math' },
   } as const;
 
-  it('leaves the topic off by default', () => {
-    const r = validateSetup(base);
+  it('never adds a topic, even when an old caller passes one', () => {
+    const old = { ...base, PAST: { ...base.PAST, topic: 'multiplication' } } as never;
+    const r = validateSetup(old);
     expect(r.ok && r.players[0]).not.toHaveProperty('topic');
-  });
-  it('keeps multiplication for Team Past when picked', () => {
-    const r = validateSetup({ ...base, PAST: { ...base.PAST, topic: 'multiplication' } });
-    expect(r.ok && r.players[0].topic).toBe('multiplication');
-  });
-  it('drops a topic that Team Future is not offered', () => {
-    const r = validateSetup({ ...base, FUTURE: { ...base.FUTURE, topic: 'multiplication' } });
     expect(r.ok && r.players[1]).not.toHaveProperty('topic');
   });
-  it('keeps division for Team Future when picked', () => {
-    const r = validateSetup({ ...base, FUTURE: { ...base.FUTURE, topic: 'division' } });
-    expect(r.ok && r.players[1].topic).toBe('division');
-  });
-  it('drops division for Team Past', () => {
-    const r = validateSetup({ ...base, PAST: { ...base.PAST, topic: 'division' } });
-    expect(r.ok && r.players[0]).not.toHaveProperty('topic');
-  });
-  it('drops an unknown topic', () => {
-    const r = validateSetup({ ...base, PAST: { ...base.PAST, topic: 'juggling' } });
-    expect(r.ok && r.players[0]).not.toHaveProperty('topic');
-  });
   it('keeps different grades per side', () => {
-    const r = validateSetup({ ...base, PAST: { ...base.PAST, topic: 'multiplication' } });
+    const r = validateSetup(base);
     expect(r.ok && [r.players[0].grade, r.players[1].grade]).toEqual([3, 8]);
   });
 });

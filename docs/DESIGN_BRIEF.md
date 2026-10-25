@@ -105,7 +105,7 @@ Storyboard of 6 frames: character near the blast folds like a lawn chair, spins 
 Show one lying flat on their stomach, arms spread, with a bubble.
 
 ### 8. Pass-the-Mouse Screen (between turns)
-Full-screen cover that hides the board. Big text: "Pass the screen! No peeking at their question!" Shows the next player's name and avatar and a **I'm ready!** button. A small hand-off animation (a cartoon hand passing a mouse).
+Full-screen cover that hides the board. Big text: "Pass the screen!" Shows the next player's name and avatar and a **I'm ready!** button. A small hand-off animation (a cartoon hand passing a mouse).
 
 ### 9. Reload Modal (the learning moment)
 Appears right after shot 2. Hides the rest of the screen so the other player cannot see.

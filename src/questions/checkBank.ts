@@ -1,5 +1,5 @@
 // Whole-bank checks for `npm run check:questions`. Pure: callers pass in parsed file contents.
-import { TOPIC_FOCUS, TOPIC_IDS } from '../game/config';
+import { QUESTION_TOPICS, TOPIC_IDS } from '../game/config';
 import { areHomophones } from './homophones';
 import { validateQuestion } from './validate';
 
@@ -99,7 +99,7 @@ export function checkBankFiles(files: readonly BankFile[], options: CheckOptions
 
   if (options.requireTopics) {
     for (const topic of TOPIC_IDS) {
-      const tag = TOPIC_FOCUS.tags[topic];
+      const tag = QUESTION_TOPICS.tags[topic];
       for (const { file, data } of files) {
         const cell = parseBankFileName(file);
         if (!cell || cell.subject !== 'math' || !Array.isArray(data)) continue;
@@ -109,9 +109,9 @@ export function checkBankFiles(files: readonly BankFile[], options: CheckOptions
             e !== null &&
             ((e as { tags?: unknown }).tags as unknown[] | undefined)?.includes?.(tag),
         ).length;
-        if (n < TOPIC_FOCUS.minPerGrade) {
+        if (n < QUESTION_TOPICS.minPerGrade) {
           problems.push(
-            `${file}: only ${n} ${topic} questions (tag "${tag}"). Each grade needs at least ${TOPIC_FOCUS.minPerGrade}`,
+            `${file}: only ${n} ${topic} questions (tag "${tag}"). Each grade needs at least ${QUESTION_TOPICS.minPerGrade}`,
           );
         }
       }

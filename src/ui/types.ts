@@ -6,7 +6,7 @@ import type { BattlePlan } from '../game/battlefield';
 import type { EvasionView } from '../game/types';
 import type { BasesState } from '../game/baseBuilder';
 import type { CampState } from '../game/loadout';
-import type { Grade, Players, Team, TeamStats, Vec2 } from '../game/types';
+import type { Players, Team, TeamStats, Vec2 } from '../game/types';
 import type { UnitId } from '../game/units';
 import type { Question } from '../questions/types';
 import type { Settings } from '../storage/types';
@@ -50,9 +50,9 @@ export const TEST_IDS = {
   captionBar: 'caption-bar',
   loadingRetry: 'loading-retry',
   setupName: (team: Team) => `setup-name-${team}`,
-  setupGrade: (team: Team, grade: Grade) => `setup-grade-${team}-${grade}`,
+  /** The grade dropdown (a native select) on each team card. */
+  setupGrade: (team: Team) => `setup-grade-${team}`,
   setupSubject: (team: Team, subject: string) => `setup-subject-${team}-${subject}`,
-  setupTopic: (team: Team, topic: string) => `setup-topic-${team}-${topic}`,
   setupMatchLength: (length: string) => `setup-length-${length}`,
   setupMatchLengthRow: 'setup-length-row',
   setupNext: 'setup-next',

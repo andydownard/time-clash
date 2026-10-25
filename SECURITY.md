@@ -6,7 +6,7 @@ Players are children. Assume the strictest rules for kids' privacy (COPPA in the
 - No accounts, no sign-in, no email, no phone numbers.
 - Names are first names a family types in. They stay in the browser (`localStorage`). They are never sent to a server, logged, or put in a URL.
 - No analytics, no ad networks, no third-party scripts, no cookies, no fonts or images loaded from other sites (self-host everything).
-- A "Clear my data" button in Settings wipes all `timeclash.*` keys.
+- A "Clear my data" link in Settings (and on Setup) wipes all `timeclash.*` keys after a "Yes, clear it" confirm.
 
 ## Content
 - No gore, blood, or realistic harm. No scary imagery.

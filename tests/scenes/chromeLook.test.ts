@@ -46,12 +46,30 @@ describe('Settings panel look', () => {
     expect(row.style.position).toBe('absolute');
   });
 
-  it('the neutral buttons and the one primary Done button are real sized buttons', () => {
+  it('on/off settings are switches, Done is the one primary button, Clear my data is a link', () => {
     click(q(CHROME_IDS.settingsButton));
     expect(q(CHROME_IDS.close)!.classList.contains('tc-btn-primary')).toBe(true);
-    for (const id of [CHROME_IDS.mute, CHROME_IDS.captions, CHROME_IDS.music, CHROME_IDS.motion]) {
-      expect(q(id)!.classList.contains('tc-btn-neutral')).toBe(true);
+    for (const id of [
+      CHROME_IDS.mute,
+      CHROME_IDS.captions,
+      CHROME_IDS.music,
+      CHROME_IDS.motion,
+      CHROME_IDS.bonusRing,
+    ]) {
+      const el = q(id)!;
+      expect(el.getAttribute('role'), id).toBe('switch');
+      expect(el.classList.contains('tc-chip'), id).toBe(true);
+      expect(el.classList.contains('tc-btn'), id).toBe(false);
+      expect(['true', 'false']).toContain(el.getAttribute('aria-checked'));
     }
+    expect(q(CHROME_IDS.clear)!.className).toBe('tc-link');
+  });
+
+  it('the clear confirm never makes wiping data the primary button', () => {
+    click(q(CHROME_IDS.settingsButton));
+    click(q(CHROME_IDS.clear));
+    expect(q(CHROME_IDS.clearYes)!.classList.contains('tc-btn-primary')).toBe(false);
+    expect(q(CHROME_IDS.clearYes)!.classList.contains('tc-btn-neutral')).toBe(true);
   });
 
   it('Done closes the panel and puts focus back on the gear', () => {

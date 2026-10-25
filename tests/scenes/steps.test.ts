@@ -13,7 +13,7 @@ import {
 } from '../../src/scenes/steps';
 import { TEST_IDS } from '../../src/ui/types';
 import type { BattleSceneData } from '../../src/scenes/battle/types';
-import { click, flush, q } from '../ui/helpers';
+import { click, flush, pickGrade, q } from '../ui/helpers';
 import { freshCamp, freshLoadout, freshWallet, walletOf, withWallet } from '../../src/game/loadout';
 import { DAMAGE } from '../../src/game/config';
 import { upgradeById } from '../../src/game/upgrades';
@@ -191,7 +191,7 @@ describe('setup step: Back', () => {
     t.storage.set('timeclash.players', players);
     const p = runSetupStep(t.services);
     expect(q(TEST_IDS.setupBack)).not.toBeNull();
-    click(q(TEST_IDS.setupGrade('PAST', 9)));
+    pickGrade('PAST', 9);
     click(q(TEST_IDS.setupBack));
     expect(await p).toEqual({ key: SCENE_KEYS.camp });
     expect(t.storage.get('timeclash.players')).toEqual(players);
@@ -209,7 +209,7 @@ describe('setup step', () => {
   it('saves both players and goes to the Camp', async () => {
     t.services.session.bank = tinyBank;
     const p = runSetupStep(t.services);
-    click(q(TEST_IDS.setupGrade('FUTURE', 7)));
+    pickGrade('FUTURE', 7);
     click(q(TEST_IDS.setupSubject('FUTURE', 'math')));
     click(q(TEST_IDS.setupNext));
     const route = await p;

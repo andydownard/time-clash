@@ -15,7 +15,7 @@ Two teams, two colors. Chrono Blue is the future (pods, neon, interface glow). R
 | `--tc-blue-100` | #e1eaff | Text on Future surfaces |
 | `--tc-blue-300` | #86a9ff | Future labels on dark |
 | `--tc-blue-500` | #2f6bff | Primary. Fills and lines only, not a text background |
-| `--tc-blue-700` | #1a3fb5 | Neon button top, selected chip, focus ring on light |
+| `--tc-blue-700` | #1a3fb5 | Neon button top, focus ring on light |
 | `--tc-blue-900` | #0a1a4f | Future surface, progress track |
 | `--tc-purple-100` | #efe6ff | Light Past tint |
 | `--tc-purple-300` | #bc9cff | Past labels on dark |
@@ -24,7 +24,7 @@ Two teams, two colors. Chrono Blue is the future (pods, neon, interface glow). R
 | `--tc-purple-900` | #25104f | Past surface, wood button bottom |
 | `--tc-ink-deep` | #12102b | Page ink, dark surface |
 | `--tc-parchment-warm` | #f7ebcb | Light surface, text on dark |
-| `--tc-oak` | #7a4a24 | Chip and input borders |
+| `--tc-oak` | #7a4a24 | Input and dropdown borders |
 | `--tc-steel-blue` | #9aa8bd | Art and dividers only. Never text |
 | `--tc-ember` | #ffb23e | Turn banner, gold border, focus ring on dark |
 | `--tc-pulse` | #4fd8ff | Neon edge, progress edge |
@@ -50,6 +50,28 @@ Fallbacks are system fonts (Palatino, Georgia, Arial Black), so a slow or blocke
 
 Spacing is a 4px scale: `--tc-s-1` 4, `-2` 8, `-3` 12, `-4` 16, `-5` 24, `-6` 32, `-7` 48, `-8` 64. Radii: chip 14, button 16, large button 20, card 18, bubble 26, pill 999. Shadows and glows: `--tc-shadow-wood`, `--tc-shadow-card`, `--tc-shadow-banner`, `--tc-glow-neon`, `--tc-glow-ready`. Under `prefers-reduced-motion`, keep glows static (no pulsing) and drop the banner tilt animation.
 
+## Controls: Button, Selector, Link
+
+Every control is one of three kinds, and each kind has one look everywhere. A child should know what a thing does from how it looks. The owner asked for this on 2026-10-24 ("make buttons buttony and selectors selectors").
+
+| Kind | What it does | Look | Classes | Role |
+|---|---|---|---|---|
+| **Button** | Starts an action (Let's clash!, Time to Clash!, Fire!, Done, Back, I'm ready!) | Solid and raised: it stands on a bottom edge (`--tc-btn-edge`, Purple 700; neon buttons use `--tc-btn-edge-neon`) and presses down onto it on `:active` (moves `--tc-btn-press`, the edge folds away). | `.tc-btn` plus one recipe: `-primary`, `-neutral`, `-past`, `-future`, `-fire` | a plain `<button>`, never `role="radio"` or `"switch"` |
+| **Selector** | Picks a value from a set (subject, match length, Play with, How hard, place, castle spot, base spot, team picker) or turns one setting on or off (Sound, Captions, Music, Motion, Bonus ring) | Flat: see-through, an outline, no edge, never moves when pressed. Options sit in one connected strip: neighbours share one edge and only the ends are rounded. The picked option is filled Ember (`--tc-chip-picked-bg`) with Ink words and a check mark. An on/off setting is one option on its own with a drawn switch track: the knob sits right and the track is Ember when on. The words also say the state ("Sound on"). | strip `.tc-chips` (also `.tc-forge-picker`, `.tc-plan-cards`), option `.tc-chip`, on/off `.tc-chip.tc-toggle` | `role="radiogroup"` with `role="radio"` options (one Tab stop, arrow keys move), or `role="switch"` with `aria-checked` |
+| **Link** | A quiet, rare action (Clear my data) | Underlined body text at `--tc-fs-label`, no box, color from the surface. Padding keeps the tap area 56px tall. | `.tc-link` | a plain `<button>` |
+
+Rules:
+
+1. **One filled primary per screen or panel** (`.tc-btn-primary`, or a team's wood or neon button where the team is the point, such as "I'm ready!" on the pass screen). Other buttons are the outlined neutral (`.tc-btn-neutral`).
+2. **Destructive is never the primary.** "Yes, clear it" and "Leave game" are neutral. In a "Leave this game?" or Pause panel the safe choice (Stay, Keep playing) is the primary and gets focus.
+3. **Dropdown when the set is big.** More than about five values (the grade, K to 12) is a native `<select>` (`.tc-select` in a `.tc-select-wrap`), never a wall of chips. A native select gives an iPad its own big picker wheel and gives the keyboard its own keys.
+4. **The outline follows the surface.** `--tc-sel-edge` is cream on the dark screens, Ink on parchment panels (Settings, reload card, intro card), and the team edge on a Setup team card. A selector floating over the picture (the battle Sound switch) sits on an Ink backing.
+5. **Never color alone.** A picked option has a check mark, a switch has its knob position and its words, and a button has its words.
+
+Shared code: `radioGroup` and `switchChip` in `src/ui/selector.ts` build selectors, so a new screen gets the roles, the arrow keys and the classes for free. `tests/ui/controls.test.ts` opens every screen (except the Base Builder, which is being laid out again) and checks each control against this table.
+
+Not yet on the rule (see the panel notes, `docs/panel/2026-10-24-batch.md`): the Base Builder screen, the Forge weapon rows (`.tc-forge-pick`, a pressed-state card), the battle fighter picker (`.tc-unit`, round letter tokens that match the letters drawn over the fighters on the canvas) and the Squads helper picker (behind a flag).
+
 ## Component recipes
 
 All interactive parts are at least 56px tall and wide (`--tc-tap`).
@@ -70,13 +92,17 @@ All interactive parts are at least 56px tall and wide (`--tc-tap`).
 
 **Celebrations.** Victory drops one burst of confetti (`confetti` in `src/ui/simpleScreens.ts`, `CELEBRATE` in config, palette tokens only, `aria-hidden`, out of the layout, hidden under reduced motion). A fast right answer pops a "+2 scrap" burst on the reload card with the caption "Ka-ching!" and the `bonus` sound (made in code, plays only through the audio manager, so Mute and the tap rule hold). Slow and wrong answers get no burst, and nothing is taken away.
 
-**Bonus ring.** The reload card shows a ring and the line "Bonus scrap if you answer fast. No rush!" (`.tc-timer`). Settings has a "Bonus ring: shown / hidden" button (56px or more, text in words) for slow readers. When hidden, the ring and its line are not drawn at all, so a screen reader hears no timer either. Nothing else changes: the same question, the same fast-answer clock (`fastWindowMs`), the same bonus Scrap, and a slow answer still loses nothing. The choice is `hideBonusRing` in `timeclash.settings`, and Clear my data resets it.
+**Bonus ring.** The reload card shows a ring and the line "Bonus scrap if you answer fast. No rush!" (`.tc-timer`). Settings has a "Bonus ring: shown / hidden" switch (56px or more, text in words) for slow readers. When hidden, the ring and its line are not drawn at all, so a screen reader hears no timer either. Nothing else changes: the same question, the same fast-answer clock (`fastWindowMs`), the same bonus Scrap, and a slow answer still loses nothing. The choice is `hideBonusRing` in `timeclash.settings`, and Clear my data resets it.
 
 **Chrono's lines.** On the reload card, Chrono's quip shows his face and "Chrono:" before the line. On Victory, Chrono's line fits the match: close, one side landed nothing, or a plain good match (`src/ui/victoryMood.ts`, `VICTORY_CHRONO`). "My dignity needs a rematch" belongs to the losing fighter's bubble on the canvas, never to Chrono.
 
 **Progress bar.** Track `--tc-bar-track`, 3px edge in `--tc-bar-edge`, fill `--tc-bar-fill`, height `--tc-bar-h` (26px). The label above it shows the percent as a number ("64%"), so the fill is never the only signal. Label text is `--tc-on-future` at `--tc-fs-lead`.
 
-**Chips (grade picker, K to 12).** Orbitron 800, `--tc-fs-label`. Unselected: `--tc-chip-bg`, `--tc-chip-text`, `--tc-chip-border`. Selected: `--tc-chip-on-bg`, `--tc-chip-on-text`, `--tc-chip-on-border`, plus a check mark so selection is not color-only. Size at least `--tc-chip-min` (56px) square. The mock used 52px, which is too small.
+**Selector options (`.tc-chip`).** Orbitron 700, `--tc-fs-label`, see-through with a 3px `--tc-sel-edge` outline. Picked: `--tc-chip-picked-bg` (Ember) with `--tc-chip-picked-text` (Ink) and a check mark, so selection is not color-only. Size at least `--tc-chip-min` (56px) square. The older parchment-and-blue chip tokens (`--tc-chip-bg`, `--tc-chip-on-*`) were removed on 2026-10-24: nothing drew them any more.
+
+**Grade dropdown (Setup).** A native `<select>` per team (`.tc-select` in a `.tc-select-wrap`), K and Grades 1 to 12. It looks like the name field: `--tc-input-bg`, `--tc-input-text`, `--tc-input-border`, at least 56px tall, `--tc-fs-button` text in the plain rounded stack (Orbitron draws 1 as a bar), with a visible "Grade" label and a ▾ arrow drawn by CSS. A native select gives an iPad its own big picker wheel and gives the keyboard arrow keys for free. While a team's grade is K or 1, one quiet line shows under it: "A grown-up can read the questions with you." (no read-aloud).
+
+**Link (Clear my data).** `.tc-link`: underlined body text at `--tc-fs-label`, no box, color from the surface. Padding keeps the tap area 56px tall. The privacy line "Names stay on this device. Nothing is sent anywhere." sits beside it as plain small text. The confirm step ("Yes, clear it", "Keep them") stays two real buttons.
 
 **Inputs.** Background `--tc-input-bg`, text `--tc-input-text`, border `--tc-input-border`, radius `--tc-r-button`, min height `--tc-input-min-h` (56px), text at least `--tc-fs-body`. Always a visible label.
 
@@ -84,7 +110,7 @@ All interactive parts are at least 56px tall and wide (`--tc-tap`).
 
 ### Match length (Setup)
 
-A radio group of three chips (Short, Normal, Long) with the label "Match length", on the same row as Let's clash! so Setup keeps fitting 1024x768 and 1133x744 with no scroll. Chips are 56px tall, 20px type, a cream outline. The chosen chip is Ember with an Ink border and a check mark (not color alone). One Tab stop; arrow keys move. Styles: `.tc-length` in `src/styles/ui.css`.
+A selector strip of three options (Short, Normal, Long) with the label "Match length", on the same row as Let's clash! so Setup keeps fitting 1024x768 and 1133x744 with no scroll. Options are 56px tall, 20px type, a cream outline. The chosen one is Ember with a check mark (not color alone). One Tab stop; arrow keys move. Styles: `.tc-length` in `src/styles/ui.css`.
 
 ## Battle layout
 
@@ -114,8 +140,7 @@ Computed from the token values by `tests/styles/designPairs.ts` (WCAG 2.1 relati
 | Primary button text on Blue 900 | `--tc-btn-primary-text` #f7ebcb | `--tc-blue-900` #0a1a4f | 13.89:1 | 4.5:1 | pass |
 | Turn banner text on Ember | `--tc-banner-turn-text` #12102b | `--tc-banner-turn-bg` #ffb23e | 10.30:1 | 4.5:1 | pass |
 | Speech bubble text | `--tc-bubble-text` #12102b | `--tc-bubble-bg` #f7ebcb | 15.59:1 | 4.5:1 | pass |
-| Chip text | `--tc-chip-text` #12102b | `--tc-chip-bg` #f7ebcb | 15.59:1 | 4.5:1 | pass |
-| Selected chip text | `--tc-chip-on-text` #ffffff | `--tc-chip-on-bg` #1a3fb5 | 8.66:1 | 4.5:1 | pass |
+| Selector text on ink | `--tc-on-dark` #f7ebcb | `--tc-surface-dark` #12102b | 15.59:1 | 4.5:1 | pass |
 | Picked chip text on Ember | `--tc-chip-picked-text` #12102b | `--tc-chip-picked-bg` #ffb23e | 10.30:1 | 4.5:1 | pass |
 | Chip text on Past card | `--tc-on-dark` #f7ebcb | `--tc-card-past-bg` #25104f | 13.98:1 | 4.5:1 | pass |
 | Chip text on Future card | `--tc-on-future` #e1eaff | `--tc-card-future-bg` #0a1a4f | 13.67:1 | 4.5:1 | pass |
@@ -130,8 +155,9 @@ Computed from the token values by `tests/styles/designPairs.ts` (WCAG 2.1 relati
 | Focus ring on ink | `--tc-focus-on-dark` #ffb23e | `--tc-surface-dark` #12102b | 10.30:1 | 3:1 | pass |
 | Focus ring on Past surface | `--tc-focus-on-dark` #ffb23e | `--tc-surface-past` #25104f | 9.23:1 | 3:1 | pass |
 | Focus ring on Future surface | `--tc-focus-on-dark` #ffb23e | `--tc-surface-future` #0a1a4f | 9.17:1 | 3:1 | pass |
-| Chip border on parchment | `--tc-oak` #7a4a24 | `--tc-chip-bg` #f7ebcb | 6.24:1 | 3:1 | pass |
-| Selected chip fill on parchment | `--tc-chip-on-bg` #1a3fb5 | `--tc-surface-light` #f7ebcb | 7.30:1 | 3:1 | pass |
+| Selector outline on ink | `--tc-sel-edge` #f7ebcb | `--tc-surface-dark` #12102b | 15.59:1 | 3:1 | pass |
+| Selector outline on parchment | `--tc-on-light` #12102b | `--tc-surface-light` #f7ebcb | 15.59:1 | 3:1 | pass |
+| Picked selector fill (Ember) on ink | `--tc-chip-picked-bg` #ffb23e | `--tc-surface-dark` #12102b | 10.30:1 | 3:1 | pass |
 | Input border on white | `--tc-oak` #7a4a24 | `--tc-input-bg` #ffffff | 7.41:1 | 3:1 | pass |
 | Progress edge on ink | `--tc-bar-edge` #4fd8ff | `--tc-surface-dark` #12102b | 11.10:1 | 3:1 | pass |
 | Progress fill (Blue 500) on track | `--tc-blue-500` #2f6bff | `--tc-bar-track` #0a1a4f | 3.66:1 | 3:1 | pass |
@@ -147,10 +173,10 @@ Computed from the token values by `tests/styles/designPairs.ts` (WCAG 2.1 relati
 | Design value | Our value | Why |
 |---|---|---|
 | Wood button gradient Purple 500 to 700 with cream text | Purple 700 to 900 | Cream on Purple 500 is 4.41:1. It needs 4.5:1. |
-| Grade chips 52px | 56px minimum | Tap target floor. |
+| Grade chips 52px | A 56px grade dropdown | Tap target floor. Thirteen chips took two rows per card; a native dropdown is one row and suits the iPad. |
 | Labels and eyebrows at 14, 16, 18px | 20px | Text floor. |
-| Chip on a team card: see-through, team edge (Purple 300 or Blue 300), cream text. Picked chip: Ember fill, Ink text and border, parchment ring | Same as the board, with a check mark added | The board is already accessible (Ink on Ember is 10.30:1). The check mark means the pick is never shown by color alone. Chips off a team card use Blue 700 with white text (8.66:1). |
-| Chip digits in Orbitron | Grade chips, question numbers and answer numbers use the plain rounded system stack | Orbitron draws 1 as a bar and 7 as a flag, which young readers mix up. Titles and counters keep Orbitron. |
+| Chip on a team card: see-through, team edge (Purple 300 or Blue 300), cream text. Picked chip: Ember fill, Ink text and border, parchment ring | Same as the board, with a check mark added | The board is already accessible (Ink on Ember is 10.30:1). The check mark means the pick is never shown by color alone. Since 2026-10-24 every selector uses this look (see "Controls"), with a cream outline off the cards. |
+| Chip digits in Orbitron | The grade dropdown, question numbers and answer numbers use the plain rounded system stack | Orbitron draws 1 as a bar and 7 as a flag, which young readers mix up. Titles and counters keep Orbitron. |
 | A separate shots panel in the middle of the HUD | One control bar at the bottom. Its header names whose turn it is and shows the shot pips (two shots, then Reload) | The Battle board has one bar: badge, Angle, Power, Fire. The banner and the bar already say "shot 1 of 2". |
 | Wind drawn twice (card and sign) | One wind sign, on the canvas. The HUD copy is for screen readers | Two readouts in two type voices confused the top row. |
 | Team card edge in red or old cyan | Past: Purple. Future: Blue with a Pulse glow when active | Red and old cyan are not in the palette. |

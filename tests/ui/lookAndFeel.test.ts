@@ -126,10 +126,10 @@ describe('contrast of the pairs the screens use', () => {
 });
 
 describe('tap targets', () => {
-  it('chips are at least 56px and the grade grid never shrinks them', () => {
+  it('chips are at least 56px, and so is the grade dropdown', () => {
     expect(Number.parseFloat(vars['--tc-chip-min']!)).toBeGreaterThanOrEqual(56);
     expect(bodyOf('.tc-chip')).toMatch(/min-width:\s*var\(--tc-chip-min\)/);
-    expect(bodyOf('.tc-chips-grades')).toMatch(/minmax\(var\(--tc-chip-min\),\s*1fr\)/);
+    expect(bodyOf('.tc-select')).toMatch(/min-height:\s*var\(--tc-tap\)/);
   });
   it('every button recipe keeps a 56px floor or more', () => {
     for (const sel of ['.tc-btn-past', '.tc-btn-future', '.tc-btn-primary']) {
@@ -176,12 +176,12 @@ describe('fonts', () => {
     expect(family('.tc-percent')).toBe(newVoice);
   });
   // Orbitron draws 1 as a bar and 7 as a flag, so young readers mix them up. Questions, answer
-  // tiles and grade chips use the plain rounded stack, which has open numerals.
-  it('the equation, answer tiles and grade chips use plain numerals, not Orbitron', () => {
+  // tiles and the grade dropdown use the plain rounded stack, which has open numerals.
+  it('the equation, answer tiles and grade dropdown use plain numerals, not Orbitron', () => {
     for (const sel of [
       ".tc-reload[data-layout='math'] .tc-prompt",
       ".tc-reload[data-layout='math'] .tc-choice",
-      '.tc-chips-grades .tc-chip',
+      '.tc-select',
     ]) {
       expect(bodyOf(sel), sel).toMatch(/font-family:\s*var\(--tc-font\)/);
     }

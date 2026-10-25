@@ -27,10 +27,10 @@ describe('remembered Setup picks', () => {
     expect(loadSetupPicks(createStorage(fakeBacking()))).toEqual({});
   });
 
-  it('round-trips grade, subject and focus for each side', () => {
+  it('round-trips grade and subject for each side', () => {
     const backing = fakeBacking();
     const picks = {
-      PAST: { grade: 4, subject: 'math', topic: 'multiplication' },
+      PAST: { grade: 4, subject: 'math' },
       FUTURE: { grade: 0, subject: 'reading' },
     } as const;
     createStorage(backing).set(KEY, picks);
@@ -48,11 +48,11 @@ describe('remembered Setup picks', () => {
     expect(loadSetupPicks(s)).toEqual({ FUTURE: { grade: 7, subject: 'both' } });
   });
 
-  it('drops a bad subject, and a focus this side is not offered', () => {
+  it('drops a bad subject, and any old Focus topic (the switch is retired)', () => {
     expect(loadSetupPicks(saved({ PAST: { grade: 3, subject: 'art' } }))).toEqual({});
     const s = saved({
       PAST: { grade: 3, subject: 'math', topic: 'juggling' },
-      FUTURE: { grade: 3, subject: 'math', topic: 'multiplication' },
+      FUTURE: { grade: 3, subject: 'math', topic: 'division' },
     });
     expect(loadSetupPicks(s)).toEqual({
       PAST: { grade: 3, subject: 'math' },

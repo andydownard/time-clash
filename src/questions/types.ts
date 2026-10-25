@@ -1,5 +1,5 @@
 // Shared contract for the question bank and picker. Pure TypeScript, no DOM, no Phaser.
-import type { Grade, Rng, Subject, Topic } from '../game/types';
+import type { Grade, Rng, Subject } from '../game/types';
 
 /** A question is always one subject. Players may pick 'both' (see Subject). */
 export type QuestionSubject = 'reading' | 'math';
@@ -37,7 +37,7 @@ export type QuestionBank = {
 };
 
 /** Pool key, e.g. "math-8". */
-export type PoolKey = `${QuestionSubject}-${number}` | `${QuestionSubject}-${number}-${Topic}`;
+export type PoolKey = `${QuestionSubject}-${number}`;
 
 /** Saved in localStorage as timeclash.history. Plain JSON. */
 export type PickHistory = {
@@ -62,8 +62,6 @@ export type PickRequest = {
    * never the child's name.
    */
   who: string;
-  /** Optional math focus. Only changes math picks. Falls back to plain math if the bank has none. */
-  topic?: Topic;
 };
 
 export type PickResult = {

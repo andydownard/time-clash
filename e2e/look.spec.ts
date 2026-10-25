@@ -251,7 +251,7 @@ test('a full match keeps the floors on every screen and plays by the rules: aim,
   // Chrono's pass line has a caption above the cover, clear of the ready button. A browser
   // driven by a test tool never really speaks it (Regression 17).
   const caption = tid(page, 'caption-bar');
-  await expect(caption).toHaveText('Pass the screen! No peeking at their question!');
+  await expect(caption).toHaveText('Pass the screen!');
   await expect(caption).toBeVisible();
   const [capBox, readyBox] = await Promise.all([
     caption.boundingBox(),

@@ -1,5 +1,4 @@
 // Chooses the next reload question. Pure and seeded: the caller supplies the Rng.
-import { TOPIC_FOCUS, TOPIC_IDS } from '../game/config';
 import type { Grade, Rng } from '../game/types';
 import type { TypedStorage } from '../storage/types';
 import {
@@ -60,20 +59,15 @@ export function noteMissed(history: PickHistory, id: string): PickHistory {
 
 export const pickQuestion: PickQuestion = (bank, request, history, rng) => {
   const subject = pickSubject(bank, request, history);
-  const allOfSubject = questionsFor(bank, subject);
-  if (allOfSubject.length === 0) throw new Error(`The question bank has no ${subject} questions.`);
-  // A topic only narrows math. With no topic questions in the bank, play on with plain math.
-  const tag = request.topic ? TOPIC_FOCUS.tags[request.topic] : undefined;
-  const focused = subject === 'math' && tag ? allOfSubject.filter((q) => q.tags.includes(tag)) : [];
-  const topic = focused.length > 0 ? request.topic : undefined;
-  const ofSubject = focused.length > 0 ? focused : allOfSubject;
+  const ofSubject = questionsFor(bank, subject);
+  if (ofSubject.length === 0) throw new Error(`The question bank has no ${subject} questions.`);
 
   const gradeUsed = nearestGrade(
     [...new Set(ofSubject.map((q) => q.grade))],
     request.grade,
   ) as Grade;
   const pool = ofSubject.filter((q) => q.grade === gradeUsed);
-  const key = (topic ? `${subject}-${gradeUsed}-${topic}` : `${subject}-${gradeUsed}`) as PoolKey;
+  const key = `${subject}-${gradeUsed}` as PoolKey;
 
   const poolIds = new Set(pool.map((q) => q.id));
   const used = (history.used[key] ?? []).filter((id) => poolIds.has(id)); // drop stale ids
@@ -122,7 +116,8 @@ export const pickQuestion: PickQuestion = (bank, request, history, rng) => {
   };
 };
 
-const POOL_KEY = new RegExp(`^(math|reading)-\\d{1,2}(?:-(?:${TOPIC_IDS.join('|')}))?$`);
+/** "math-3" or "reading-10". Old keys from the retired Focus switch ("math-3-division") are dropped. */
+const POOL_KEY = /^(math|reading)-\d{1,2}$/;
 
 /** Makes any stored value safe to use. Bad parts are dropped; bad everything gives an empty history. */
 export function sanitizeHistory(value: unknown): PickHistory {

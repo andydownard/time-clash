@@ -176,6 +176,12 @@
   /* Shadows and glows */
   --tc-shadow-wood: 0 6px 0 var(--tc-purple-900), inset 0 3px 0 rgb(255 255 255 / 25%);
   --tc-shadow-card: 0 8px 0 var(--tc-purple-700);
+  /* Buttons stand on a bottom edge and press down onto it (translateY by --tc-btn-press). */
+  --tc-btn-edge: 0 4px 0 var(--tc-purple-700);
+  --tc-btn-edge-neon: 0 4px 0 var(--tc-blue-700);
+  --tc-btn-press: 4px;
+  /* A selector's outline. Cream on the dark screens; ui.css swaps it on parchment and team cards. */
+  --tc-sel-edge: var(--tc-on-dark);
   --tc-shadow-banner: 0 0 0 4px var(--tc-parchment-warm), 0 8px 0 var(--tc-purple-700);
   --tc-glow-neon:
     0 0 0 3px rgb(79 216 255 / 25%), 0 0 26px var(--tc-blue-500),
@@ -225,12 +231,6 @@
   --tc-bubble-bg: var(--tc-parchment-warm);
   --tc-bubble-text: var(--tc-ink-deep);
   --tc-bubble-border: 4px solid var(--tc-ink-deep);
-  --tc-chip-bg: var(--tc-parchment-warm);
-  --tc-chip-text: var(--tc-ink-deep);
-  --tc-chip-border: 3px solid var(--tc-oak);
-  --tc-chip-on-bg: var(--tc-blue-700);
-  --tc-chip-on-text: var(--tc-white);
-  --tc-chip-on-border: 3px solid var(--tc-ember);
   --tc-chip-min: 56px;
   /* Chips on a team card (Setup board): see-through with the team edge. Picked = Ember on Ink. */
   --tc-chip-past-edge: var(--tc-purple-300);

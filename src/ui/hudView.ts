@@ -8,6 +8,7 @@ import type { UnitId } from '../game/units';
 import { LOCAL_IDS } from './constants';
 import type { UiCtx } from './ctx';
 import { h } from './dom';
+import { setSwitch, switchChip } from './selector';
 import { createGear } from './hudGear';
 import { createSquadBar, type SquadBar } from './squadBar';
 import { hudIcon } from './hudIcons';
@@ -191,7 +192,10 @@ export function createHud(ctx: UiCtx) {
     h_.onFire();
   };
 
-  const muteLabel = (): string => (ctx.settings().muted ? BUTTONS.soundOff : BUTTONS.soundOn);
+  const paintMute = (el: HTMLElement): void => {
+    const muted = ctx.settings().muted;
+    setSwitch(el, !muted, muted ? BUTTONS.soundOff : BUTTONS.soundOn);
+  };
 
   function build(h_: HudHandlers): Parts {
     const slider = (id: string, label: string, min: number, max: number, onInput: () => void) => {
@@ -237,12 +241,8 @@ export function createHud(ctx: UiCtx) {
       if (canFire && !dasherUp) fireNow(h_);
     });
 
-    const mute = h(doc, 'button', {
-      type: 'button',
-      class: 'tc-btn tc-btn-neutral',
-      'data-testid': LOCAL_IDS.hudMute,
-      text: muteLabel(),
-    });
+    const mute = switchChip(doc, { testId: LOCAL_IDS.hudMute });
+    paintMute(mute);
     mute.addEventListener('click', () => h_.onMuteToggle());
 
     // The canvas wind sign is the one sighted readout. This copy stays for screen readers.
@@ -416,7 +416,7 @@ export function createHud(ctx: UiCtx) {
       doc.addEventListener('keydown', onKey);
       doc.defaultView?.addEventListener('resize', placeGear);
       unsubscribe = ctx.onSettings(() => {
-        if (parts) parts.mute.textContent = muteLabel();
+        if (parts) paintMute(parts.mute);
       });
       paintAim();
     },

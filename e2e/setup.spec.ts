@@ -72,40 +72,49 @@ test('names, grades and subjects are remembered after a reload', async ({ page }
   await expect(tid(page, 'setup-next')).toBeVisible();
   await expect(tid(page, 'setup-name-PAST')).toHaveValue(PAST_SIDE.name);
   await expect(tid(page, 'setup-name-FUTURE')).toHaveValue(FUTURE_SIDE.name);
-  await expect(tid(page, 'setup-grade-PAST-2')).toHaveAttribute('aria-checked', 'true');
-  await expect(tid(page, 'setup-grade-FUTURE-3')).toHaveAttribute('aria-checked', 'true');
+  await expect(tid(page, 'setup-grade-PAST')).toHaveValue('2');
+  await expect(tid(page, 'setup-grade-FUTURE')).toHaveValue('3');
   await expect(tid(page, 'setup-subject-PAST-math')).toHaveAttribute('aria-checked', 'true');
 });
 
-test('the focus switches are off, are one topic per team, and are remembered', async ({ page }) => {
+test('Setup has no Focus switch and no line about Both', async ({ page }) => {
   await toSetup(page);
-  const chip = tid(page, 'setup-topic-PAST-multiplication');
-  await expect(chip).toHaveAttribute('aria-checked', 'false');
-  await expect(tid(page, 'setup-topic-FUTURE-multiplication')).toHaveCount(0);
-  await expect(tid(page, 'setup-topic-PAST-division')).toHaveCount(0);
-  const divChip = tid(page, 'setup-topic-FUTURE-division');
-  await expect(divChip).toHaveAttribute('aria-checked', 'false');
-  const box = await chip.boundingBox();
-  expect(box!.height).toBeGreaterThanOrEqual(56);
-  expect((await divChip.boundingBox())!.height).toBeGreaterThanOrEqual(56);
-  await fillTeam(page, 'PAST', PAST_SIDE);
-  await fillTeam(page, 'FUTURE', FUTURE_SIDE);
-  await chip.click();
-  await expect(chip).toHaveAttribute('aria-checked', 'true');
-  await divChip.click();
-  await expect(divChip).toHaveAttribute('aria-checked', 'true');
-  await tid(page, 'setup-next').click();
-  await expect(tid(page, 'camp-start')).toBeVisible();
+  await expect(page.locator('[data-testid^="setup-topic-"]')).toHaveCount(0);
+  await expect(page.getByText('Focus:')).toHaveCount(0);
+  await expect(page.getByText('Both mixes reading and math.')).toHaveCount(0);
+  // The summary line repeats the cards, so only a screen reader hears it.
+  const box = await tid(page, 'setup-read-back').boundingBox();
+  expect(box === null || box.width <= 1).toBe(true);
+});
 
-  await page.reload();
-  await expect(tid(page, 'camp-start')).toBeVisible({ timeout: 10_000 });
-  await tid(page, 'camp-players').click();
-  await expect(tid(page, 'setup-topic-PAST-multiplication')).toHaveAttribute(
-    'aria-checked',
-    'true',
+test('the grade is a big dropdown, and the grown-up note shows only for K and Grade 1', async ({
+  page,
+}) => {
+  await toSetup(page);
+  for (const team of ['PAST', 'FUTURE'] as const) {
+    const sel = tid(page, `setup-grade-${team}`);
+    const box = await sel.boundingBox();
+    expect(box!.height).toBeGreaterThanOrEqual(56);
+    const font = await sel.evaluate((el) => parseFloat(getComputedStyle(el).fontSize));
+    expect(font).toBeGreaterThanOrEqual(20);
+    await expect(page.locator(`label[for="${await sel.getAttribute('id')}"]`)).toHaveText('Grade');
+  }
+  await tid(page, 'setup-grade-PAST').selectOption('0');
+  await tid(page, 'setup-grade-FUTURE').selectOption('5');
+  await expect(tid(page, 'setup-grade-note-PAST')).toBeVisible();
+  await expect(tid(page, 'setup-grade-note-PAST')).toHaveText(
+    'A grown-up can read the questions with you.',
   );
-  await expect(tid(page, 'setup-topic-FUTURE-division')).toHaveAttribute('aria-checked', 'true');
-  await expect(tid(page, 'setup-grade-FUTURE-3')).toHaveAttribute('aria-checked', 'true');
+  await expect(tid(page, 'setup-grade-note-FUTURE')).toBeHidden();
+  // The native picker owns the keys (macOS opens a list, others step), so pick through it.
+  await tid(page, 'setup-grade-PAST').selectOption('1');
+  await expect(tid(page, 'setup-grade-note-PAST')).toBeVisible();
+  await tid(page, 'setup-grade-PAST').selectOption('2');
+  await expect(tid(page, 'setup-grade-note-PAST')).toBeHidden();
+  const fits = await page.evaluate(
+    () => document.documentElement.scrollHeight <= window.innerHeight,
+  );
+  expect(fits).toBe(true);
 });
 
 test('Loading shows for at least 1.5 seconds before Setup',async ({ page }) => {
@@ -136,6 +145,18 @@ test('the clear-data confirm buttons stay hidden until Clear my data is tapped',
 }) => {
   await toSetup(page);
   await expect(tid(page, 'clear-data')).toBeVisible();
+  // A quiet underlined link, still a 56px tap and 20px text.
+  const link = tid(page, 'clear-data');
+  const look = await link.evaluate((el) => {
+    const cs = getComputedStyle(el);
+    return {
+      underline: cs.textDecorationLine.includes('underline'),
+      font: parseFloat(cs.fontSize),
+      border: parseFloat(cs.borderTopWidth),
+    };
+  });
+  expect(look).toEqual({ underline: true, font: 20, border: 0 });
+  expect((await link.boundingBox())!.height).toBeGreaterThanOrEqual(56);
   await expect(tid(page, 'clear-data-yes')).toBeHidden();
   await expect(tid(page, 'clear-data-no')).toBeHidden();
   await tid(page, 'clear-data').click();

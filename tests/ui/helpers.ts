@@ -125,3 +125,15 @@ export const mainIdeaQ: Question = {
   answer: 'Old things can still work',
   tags: [],
 };
+
+/** Picks a grade in a team's grade dropdown, the way a change from the native picker does. */
+export function pickGrade(team: 'PAST' | 'FUTURE', grade: number): void {
+  const sel = q<HTMLSelectElement>(`setup-grade-${team}`);
+  if (!sel) throw new Error(`pickGrade: no grade dropdown for ${team}`);
+  sel.value = String(grade);
+  sel.dispatchEvent(new Event('change', { bubbles: true }));
+}
+
+/** The grade a team's dropdown shows now. */
+export const gradeShown = (team: 'PAST' | 'FUTURE'): number =>
+  Number(q<HTMLSelectElement>(`setup-grade-${team}`)!.value);
