@@ -67,6 +67,7 @@ Rules:
 3. **Dropdown when the set is big.** More than about five values (the grade, K to 12) is a native `<select>` (`.tc-select` in a `.tc-select-wrap`), never a wall of chips. A native select gives an iPad its own big picker wheel and gives the keyboard its own keys.
 4. **The outline follows the surface.** `--tc-sel-edge` is cream on the dark screens, Ink on parchment panels (Settings, reload card, intro card), and the team edge on a Setup team card. A selector floating over the picture (the battle Sound switch) sits on an Ink backing.
 5. **Never color alone.** A picked option has a check mark, a switch has its knob position and its words, and a button has its words.
+6. **Team colors only for one team.** Wood (`-past`) and neon (`-future`) are for a button that belongs to one side, such as "I'm ready!" on the pass screen. A button that opens a screen for both teams is neutral. On the Camp, Forge Weapon and Build Base are `.tc-btn-neutral` (both screens open with a Past and Future picker), and Time to Clash! is the one primary. `tests/ui/camp.test.ts` checks it.
 
 Shared code: `radioGroup` and `switchChip` in `src/ui/selector.ts` build selectors, so a new screen gets the roles, the arrow keys and the classes for free. `tests/ui/controls.test.ts` opens every screen (except the Base Builder, which is being laid out again) and checks each control against this table.
 
