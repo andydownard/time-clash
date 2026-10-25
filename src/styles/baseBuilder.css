@@ -2,7 +2,7 @@
    Tokens only: no raw colors, no font under 20px (tests/ui/baseBuilder.test.ts checks both). */
 
 .tc-bb {
-    padding: var(--tc-s-3) var(--tc-s-4) var(--tc-s-3);
+  padding: var(--tc-s-3) var(--tc-s-4) var(--tc-s-3);
   align-items: stretch;
   gap: var(--tc-s-3);
   overflow: hidden;
@@ -24,15 +24,50 @@
   align-self: center;
   white-space: nowrap;
 }
+/* The left rail: Team, a line, Mode, and the spots count. It sits beside the plot, never on it. */
+.tc-bb-rail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tc-s-2);
+  min-height: 0;
+  padding: var(--tc-s-2);
+  background: var(--tc-ink-deep);
+  border: 4px solid var(--tc-purple-700);
+  border-radius: 22px;
+  box-shadow: 0 0 0 3px var(--tc-ember);
+  overflow: hidden;
+}
+.tc-bb[data-team='FUTURE'] .tc-bb-rail {
+  border-color: var(--tc-blue-500);
+}
 .tc-bb-teams {
   display: flex;
-  align-self: center;
+  flex-direction: column;
   gap: var(--tc-s-2);
-  flex: 0 0 auto;
 }
 .tc-bb-team {
-  white-space: nowrap;
-  padding-inline: var(--tc-s-3);
+  width: 100%;
+  min-height: var(--tc-tap);
+  padding: var(--tc-s-1) var(--tc-s-2);
+  line-height: 1.05;
+  white-space: normal;
+  text-align: center;
+}
+.tc-bb-rail-line {
+  width: 100%;
+  margin: 0;
+  border: 0;
+  border-top: 3px solid var(--tc-ember);
+  opacity: 0.6;
+}
+.tc-bb-count {
+  margin: 0;
+  color: var(--tc-parchment-warm);
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: var(--tc-text-min);
+  line-height: 1.15;
+  text-align: center;
 }
 .tc-bb-slots {
   display: flex;
@@ -111,23 +146,26 @@
   flex: 1 1 0;
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 156px;
-  gap: var(--tc-s-3);
+  grid-template-columns: 184px minmax(0, 1fr) 156px;
+  gap: var(--tc-s-4);
 }
+/* The plot picture fills its framed box exactly (2 by 1 inside the frame), so there is no empty
+   band to drop into. It sits at the top, level with the rails. */
 .tc-bb-plot {
   position: relative;
   min-height: 0;
   min-width: 0;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
 }
 .tc-bb-plot-art {
   display: block;
+  box-sizing: content-box;
   width: auto;
   height: auto;
-  max-width: 100%;
-  max-height: 100%;
+  max-width: calc(100% - 12px);
+  max-height: calc(100% - 12px);
   aspect-ratio: 2 / 1;
   border-radius: 22px;
   border: 6px solid var(--tc-ink-deep);
@@ -320,18 +358,10 @@
   transform: none;
 }
 
-/* Weapon spots: the mode switch, the spots chip, the pads on the plot, and the weapon list. */
-.tc-bb-modebar {
-  position: absolute;
-  top: var(--tc-s-3);
-  left: var(--tc-s-3);
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  gap: var(--tc-s-3);
-}
+/* Weapon spots: the mode switch in the rail, the pads on the plot, and the weapon list. */
 .tc-bb-mode {
   display: flex;
+  flex-direction: column;
   overflow: hidden;
   background: var(--tc-parchment-warm);
   border: 4px solid var(--tc-purple-700);
@@ -343,11 +373,12 @@
 .tc-bb-mode-btn {
   min-width: 56px;
   min-height: 56px;
+  width: 100%;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: var(--tc-s-2);
-  padding: 0 var(--tc-s-3);
+  justify-content: flex-start;
+  gap: var(--tc-s-1);
+  padding: 0 var(--tc-s-2);
   background: transparent;
   color: var(--tc-ink-deep);
   border: 0;
@@ -361,6 +392,12 @@
   font-family: var(--tc-font-voice-new);
   font-weight: var(--tc-fw-new-heavy);
 }
+/* The icon never gives up its room to a long word ("Weapons" in Orbitron). */
+.tc-bb-mode-btn svg {
+  flex: none;
+  width: 28px;
+  height: 28px;
+}
 .tc-bb-mode-btn[aria-pressed='true'] {
   background: var(--tc-ember);
 }
@@ -368,17 +405,8 @@
   outline: var(--tc-focus-width) solid var(--tc-ink-deep);
   outline-offset: -6px;
 }
-.tc-bb-chip {
-  margin: 0;
-  padding: var(--tc-s-2) var(--tc-s-3);
-  background: var(--tc-ink-deep);
-  color: var(--tc-parchment-warm);
-  border: 3px solid var(--tc-ember);
-  border-radius: 12px;
-  font-family: var(--tc-font-voice-new);
-  font-weight: var(--tc-fw-new-heavy);
-  font-size: var(--tc-text-min);
-  white-space: nowrap;
+.tc-bb-mode-btn + .tc-bb-mode-btn {
+  border-top: 3px solid var(--tc-purple-700);
 }
 
 .tc-bb-spot[data-live='true'] {
@@ -427,10 +455,7 @@
 .tc-bb-weapons[data-side='right'] {
   right: var(--tc-s-3);
 }
-/* On the left it starts under the mode switch, which sits at the top left. */
 .tc-bb-weapons[data-side='left'] {
-  top: calc(var(--tc-s-3) + 72px);
-  max-height: calc(100% - var(--tc-s-3) * 2 - 72px);
   left: var(--tc-s-3);
 }
 .tc-bb-weapons-title {
@@ -800,5 +825,24 @@
   .tc-bb-done svg {
     width: 32px;
     height: 32px;
+  }
+}
+/* iPad mini (1133 by 744) and other short screens: the rails pack a little tighter so every
+   button, the spots count and the whole Done button fit beside the plot. Taps stay 56px. */
+@media (max-height: 760px) {
+  .tc-bb-rail {
+    gap: var(--tc-s-1);
+    padding: 6px;
+  }
+  .tc-bb-team {
+    padding-block: 2px;
+    line-height: 1;
+  }
+  .tc-bb-tools {
+    gap: var(--tc-s-1);
+  }
+  .tc-bb-tool {
+    min-height: 56px;
+    gap: 0;
   }
 }

@@ -7,14 +7,14 @@ import { SHAPE_COPY } from '../data/shapeCopy';
 import {
   assignWeapon,
   basesOf,
+  baseWasSettled,
   chooseSlot,
   clampToPlot,
   clearBuild,
   clearSpot,
-  check,
   deleteShape,
-  findSpot,
   footprint,
+  landingFor,
   movePiece,
   newBuild,
   ownedPieceIds,
@@ -41,6 +41,7 @@ import {
   type BuildState,
   type PieceDef,
   type Placed,
+  type PlaceRefusal,
   type SpotWeaponDef,
   type Pos,
   type Rotation,
@@ -73,12 +74,44 @@ import { TEST_IDS, type BuilderOptions } from './types';
 
 /** How far a pointer moves before a press becomes a drag. Smaller is a tap. */
 const DRAG_START_PX = 6;
+/**
+ * A brick let go this close outside the plot (over its frame) still lands: it is pushed back
+ * inside, at the nearest legal place. Farther out, the drag is put back.
+ */
+const EDGE_GRACE_PX = 28;
 
 type Box = { left: number; top: number; width: number; height: number };
 
+/** The words for why a brick cannot go where it was let go. */
+export function refusalText(why: PlaceRefusal): string {
+  if (why === 'full') return BUILDER_COPY.full;
+  if (why === 'floating') return BUILDER_COPY.floating;
+  if (why === 'holding') return BUILDER_COPY.holding;
+  return BUILDER_COPY.noRoom;
+}
+
+/**
+ * The inside of a framed element on screen (its border taken off): the plot picture fills exactly
+ * this box, so every pixel of it is a place to build.
+ */
+export function innerBox(el: Element): Box {
+  const r = el.getBoundingClientRect();
+  const cs = el.ownerDocument.defaultView?.getComputedStyle(el);
+  const px = (v: string | undefined): number => parseFloat(v ?? '') || 0;
+  const l = px(cs?.borderLeftWidth);
+  const t = px(cs?.borderTopWidth);
+  return {
+    left: r.left + l,
+    top: r.top + t,
+    width: Math.max(0, r.width - l - px(cs?.borderRightWidth)),
+    height: Math.max(0, r.height - t - px(cs?.borderBottomWidth)),
+  };
+}
+
 /**
  * Where a screen point is on the plot, in picture units, and how big one unit is on screen.
- * The picture is fitted inside its box and centered, so the empty side bands are skipped.
+ * The picture fills its box. If the box were ever a different shape, the picture is fitted and
+ * centered, and the bands beside it are skipped.
  */
 export function plotPoint(
   box: Box,
@@ -102,7 +135,17 @@ const within = (box: Box, x: number, y: number): boolean =>
   x >= box.left && x <= box.left + box.width && y >= box.top && y <= box.top + box.height;
 
 type Drag =
-  | { kind: 'new'; id: string; rot: Rotation; sx: number; sy: number; moved: boolean; pid: number }
+  | {
+      kind: 'new';
+      id: string;
+      rot: Rotation;
+      sx: number;
+      sy: number;
+      moved: boolean;
+      pid: number;
+      /** A picked brick pressed onto the plot: a tap puts it down right there. */
+      fromPlot: boolean;
+    }
   | {
       kind: 'move';
       index: number;
@@ -144,6 +187,10 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
         slotPieces(bases, name, team, slot, owned()),
         slotSpots(bases, name, team, slot, ownedWeapons()),
       );
+    /** True when the slot held floating bricks from before the support rule (they are set down). */
+    const slotSettled = (): boolean =>
+      baseWasSettled(basesOf(bases, name, team).slots[slot], team, owned());
+    let settledOnOpen = slotSettled();
     let build = loadSlot();
 
     // ---------- Static parts ----------
@@ -276,11 +323,14 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
       BUILDER_COPY.modeWeapons,
       BUILDER_COPY.modeWeaponsLabel,
     );
-    const spotChip = h(doc, 'p', { class: 'tc-bb-chip', 'data-testid': 'bb-spots-chip' });
-    const modeBar = h(
+    const spotChip = h(doc, 'p', { class: 'tc-bb-count', 'data-testid': 'bb-spots-chip' });
+    /** The left rail beside the plot: Team, then Mode and the spots count. Nothing sits on the plot. */
+    const rail = h(
       doc,
-      'div',
-      { class: 'tc-bb-modebar' },
+      'aside',
+      { class: 'tc-bb-rail', 'aria-label': BUILDER_COPY.rail, 'data-testid': 'bb-rail' },
+      teamPicker,
+      h(doc, 'hr', { class: 'tc-bb-rail-line', 'aria-hidden': 'true' }),
       h(
         doc,
         'div',
@@ -313,7 +363,7 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
       panelList,
       clearSpotBtn,
     );
-    const plotWrap = h(doc, 'div', { class: 'tc-bb-plot' }, plotArt, modeBar, weaponPanel, confirm);
+    const plotWrap = h(doc, 'div', { class: 'tc-bb-plot' }, plotArt, weaponPanel, confirm);
 
     const toolIcons: Record<string, string> = {
       turn: '<path d="M38,24 A14,14 0 1 1 30,11"/><path d="M26,3 L32,11 L23,15"/>',
@@ -444,8 +494,8 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
         'data-motion': ctx.motion(),
       },
       h(doc, 'h1', { class: 'tc-sr-only', text: BUILDER_COPY.title[team] }),
-      h(doc, 'header', { class: 'tc-bb-top' }, back, teamPicker, slotNav, scrapBox),
-      h(doc, 'div', { class: 'tc-bb-main' }, plotWrap, tools, pad),
+      h(doc, 'header', { class: 'tc-bb-top' }, back, slotNav, scrapBox),
+      h(doc, 'div', { class: 'tc-bb-main' }, rail, plotWrap, tools, pad),
       status,
       keys,
       spotKeys,
@@ -865,9 +915,22 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
     }
 
     // ---------- Geometry ----------
-    const plotBox = (): Box => plotArt.getBoundingClientRect();
+    /** The plot picture on screen without its frame: every pixel of it is a place to build. */
+    const plotBox = (): Box => innerBox(plotArt);
+    /** The plot plus a narrow band around it, where a let-go brick is pushed back inside. */
+    const onPlot = (x: number, y: number): boolean => {
+      const b = plotBox();
+      const g = EDGE_GRACE_PX;
+      return within(
+        { left: b.left - g, top: b.top - g, width: b.width + 2 * g, height: b.height + 2 * g },
+        x,
+        y,
+      );
+    };
 
-    /** Where a carried brick would land for a pointer position (resolved to a free spot). */
+    type Landing = { pos: Pos; ok: boolean; why: PlaceRefusal | null };
+
+    /** Where a carried brick would land for a pointer position, and why not when it cannot. */
     function landing(
       id: string,
       rot: Rotation,
@@ -875,7 +938,7 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
       cy: number,
       grab: { gx: number; gy: number } | null,
       skip: number | null,
-    ): { pos: Pos; ok: boolean } | null {
+    ): Landing | null {
       const def = pieceById(id);
       if (!def) return null;
       const { ux, uy } = plotPoint(plotBox(), cx, cy);
@@ -885,23 +948,22 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
       return resolveSpot(def, rot, positionFromPoint(fx, fy, snap), skip);
     }
 
-    function resolveSpot(
-      def: PieceDef,
-      rot: Rotation,
-      want: Pos,
-      skip: number | null,
-    ): { pos: Pos; ok: boolean } {
+    /**
+     * The place for a brick let go at `want`: pushed inside the plot, then right there, dropped
+     * onto what is just under it, or the nearest legal spot when it overlaps. A brick in mid-air
+     * is refused (`floating`), and so is a move that would leave a brick with nothing under it.
+     */
+    function resolveSpot(def: PieceDef, rot: Rotation, want: Pos, skip: number | null): Landing {
       const pos = clampToPlot(def, rot, want);
       const cand: Placed = { piece: def.id, ...pos, rot, hp: def.hp };
-      if (check(build.pieces, cand, skip) === null) return { pos, ok: true };
-      const near = findSpot(build.pieces, cand, skip);
-      return near ? { pos: near, ok: true } : { pos, ok: false };
+      const r = landingFor(build.pieces, cand, skip);
+      return r.pos ? { pos: r.pos, ok: true, why: null } : { pos, ok: false, why: r.why };
     }
 
     // ---------- Actions ----------
     function applied(result: ReturnType<typeof placePiece>, ok: string): boolean {
       if (!result.ok) {
-        say(result.reason === 'full' ? BUILDER_COPY.full : BUILDER_COPY.noRoom);
+        say(refusalText(result.reason));
         return false;
       }
       build = result.state;
@@ -922,7 +984,19 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
 
     function doTurn(): void {
       if (armed) {
+        const def = pieceById(armed.id);
+        const before = def ? footprint(def, armed.rot).h : 0;
         armed = { ...armed, rot: rotate(armed.rot) };
+        // The keyboard ghost keeps its bottom where it was, so a brick on the ground stays there.
+        if (cursor && def) {
+          const c = clampToPlot(def, armed.rot, {
+            x: cursor.x,
+            y: cursor.y + before - footprint(def, armed.rot).h,
+            ox: 0,
+            oy: 0,
+          });
+          cursor = { x: c.x, y: c.y };
+        }
         drawArmed();
         say(BUILDER_COPY.turned(nameOf(armed.id)));
         return;
@@ -949,15 +1023,29 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
       renderAll();
     }
 
-    function doRemove(index: number): void {
+    /** Takes a brick off. A brick that holds another stays, and the status line says why. */
+    function doRemove(index: number): boolean {
       const p = build.pieces[index];
       const result = removePiece(build, index);
-      if (!p || !result.ok) return;
+      if (!p) return false;
+      if (!result.ok) {
+        say(refusalText(result.reason));
+        renderAll();
+        return false;
+      }
       build = result.state;
       selected = null;
       persist();
       say(BUILDER_COPY.removed(nameOf(p.piece)));
       renderAll();
+      return true;
+    }
+
+    /** Opens a slot. A base saved with floating bricks has them set down, saved, and said once. */
+    function openSlot(): void {
+      settledOnOpen = slotSettled();
+      build = loadSlot();
+      if (settledOnOpen) persist();
     }
 
     function switchSlot(i: number): void {
@@ -965,12 +1053,13 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
       slot = i;
       bases = chooseSlot(bases, name, team, slot);
       options.saveBases(bases);
-      build = loadSlot();
+      openSlot();
       selected = null;
       selSpot = null;
       armed = null;
       cursor = null;
-      hintDefault();
+      if (settledOnOpen) say(BUILDER_COPY.settled);
+      else hintDefault();
       renderAll();
     }
 
@@ -1041,14 +1130,20 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
     const pickWithKeyboard = (def: PieceDef): void => pick(def, true);
 
     // ---------- Pointer dragging ----------
+    /** The last refusal said while dragging, so the status line changes only when it must. */
+    let dragWhy: PlaceRefusal | null = null;
+
     function startDrag(
       e: PointerEvent,
-      from: { kind: 'new'; id: string; rot: Rotation } | { kind: 'move'; index: number },
+      from:
+        | { kind: 'new'; id: string; rot: Rotation; fromPlot?: boolean }
+        | { kind: 'move'; index: number },
     ): void {
       if (drag) return;
       const base = { sx: e.clientX, sy: e.clientY, moved: false, pid: e.pointerId };
+      dragWhy = null;
       if (from.kind === 'new') {
-        drag = { ...base, kind: 'new', id: from.id, rot: from.rot };
+        drag = { ...base, kind: 'new', id: from.id, rot: from.rot, fromPlot: !!from.fromPlot };
         dragRot = from.rot;
       } else {
         const p = build.pieces[from.index];
@@ -1091,16 +1186,25 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
       if (!d.moved && Math.hypot(e.clientX - d.sx, e.clientY - d.sy) < DRAG_START_PX) return;
       if (!d.moved) {
         d.moved = true;
-        armed = null;
+        // A brick picked from the tray keeps its pick while a finger slides it on the plot.
+        if (!(d.kind === 'new' && d.fromPlot)) armed = null;
         cursor = null;
       }
       const info = dragInfo();
       showGhost(info.id, dragRot, e.clientX, e.clientY);
-      const box = plotBox();
-      if (within(box, e.clientX, e.clientY)) {
+      if (onPlot(e.clientX, e.clientY)) {
         const spot = landing(info.id, dragRot, e.clientX, e.clientY, info.grab, info.skip);
         drawPreview(spot ? { id: info.id, rot: dragRot, pos: spot.pos, ok: spot.ok } : null);
-      } else drawPreview(null);
+        ghost.setAttribute('data-ok', String(spot?.ok ?? false));
+        const why = spot?.why ?? null;
+        if (why !== dragWhy) {
+          dragWhy = why;
+          if (why) say(refusalText(why));
+        }
+      } else {
+        drawPreview(null);
+        ghost.removeAttribute('data-ok');
+      }
       if (e.cancelable) e.preventDefault();
     }
 
@@ -1111,6 +1215,7 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
       doc.removeEventListener('pointerup', onUp);
       doc.removeEventListener('pointercancel', onCancel);
       ghost.hidden = true;
+      ghost.removeAttribute('data-ok');
       return d;
     }
 
@@ -1120,14 +1225,29 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
       renderAll();
     }
 
+    /** Puts the picked brick down where the pointer is. A refused place keeps it picked. */
+    function putArmedAt(cx: number, cy: number): void {
+      if (!armed) return;
+      const spot = landing(armed.id, armed.rot, cx, cy, null, null);
+      if (spot && spot.ok) putDown(armed.id, armed.rot, spot.pos);
+      else {
+        say(refusalText(spot?.why ?? 'overlap'));
+        renderAll();
+      }
+    }
+
     function onUp(e: PointerEvent): void {
       const d = drag;
       if (!d || (d.pid !== undefined && e.pointerId !== undefined && e.pointerId !== d.pid)) return;
       const info = dragInfo();
       endDrag();
-      const box = plotBox();
-      const onPlot = within(box, e.clientX, e.clientY);
+      const here = onPlot(e.clientX, e.clientY);
       if (!d.moved) {
+        if (d.kind === 'new' && d.fromPlot) {
+          // A tap on the plot with a picked brick puts it down right there.
+          putArmedAt(e.clientX, e.clientY);
+          return;
+        }
         // A tap. A tray brick is picked (tap the plot to put it down). A placed brick is chosen.
         if (d.kind === 'new') pick(pieceById(d.id)!, false);
         else {
@@ -1138,13 +1258,16 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
         }
         return;
       }
-      if (onPlot) {
+      if (here) {
         const spot = landing(info.id, dragRot, e.clientX, e.clientY, info.grab, info.skip);
         if (!spot || !spot.ok) {
-          say(BUILDER_COPY.noRoom);
+          // Nothing changes: a carried brick goes back where it was, a new one back to the tray.
+          say(refusalText(spot?.why ?? 'overlap'));
           renderAll();
-        } else if (d.kind === 'new') putDown(d.id, dragRot, spot.pos);
-        else moveTo(d.index, spot.pos, dragRot);
+        } else if (d.kind === 'new') {
+          if (d.fromPlot && armed) armed = { ...armed, rot: dragRot };
+          putDown(d.id, dragRot, spot.pos);
+        } else moveTo(d.index, spot.pos, dragRot);
         return;
       }
       // Dropped off the plot. A placed brick dropped on the tray comes off. Anything else cancels.
@@ -1161,22 +1284,10 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
     function moveTo(index: number, pos: Pos, rot: Rotation): void {
       const cur = build.pieces[index];
       if (!cur) return;
-      let state = build;
-      if (rot !== cur.rot) {
-        // The carried brick was turned in the air: turn it first, then move.
-        let turns = 0;
-        let r = cur.rot;
-        while (r !== rot && turns < 4) {
-          const t = turnPiece(state, index);
-          if (!t.ok) break;
-          state = { ...t.state, undo: state.undo };
-          r = rotate(r);
-          turns++;
-        }
-      }
-      const result = movePiece(state, index, pos);
+      // A brick turned while it was carried moves and turns in one step (one Undo).
+      const result = movePiece(build, index, pos, rot);
       if (!result.ok) {
-        say(BUILDER_COPY.noRoom);
+        say(refusalText(result.reason));
         renderAll();
         return;
       }
@@ -1208,16 +1319,17 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
     plotArt.addEventListener('pointerdown', (e) => {
       if ((e.button ?? 0) !== 0 || drag) return;
       if (mode === 'weapons') return;
+      if (armed) {
+        // A picked brick: a tap anywhere on the plot (even on a brick, to stack on it) puts it
+        // down there, and a press and slide carries it to where the finger lets go.
+        startDrag(e, { kind: 'new', id: armed.id, rot: armed.rot, fromPlot: true });
+        showGhost(armed.id, armed.rot, e.clientX, e.clientY);
+        if (e.cancelable) e.preventDefault();
+        return;
+      }
       const hit = (e.target as Element | null)?.closest?.('.tc-bb-piece');
       if (hit) {
         startDrag(e, { kind: 'move', index: Number(hit.getAttribute('data-index')) });
-        return;
-      }
-      if (armed) {
-        // Tap the plot to put down the picked brick.
-        const spot = landing(armed.id, armed.rot, e.clientX, e.clientY, null, null);
-        if (spot && spot.ok) putDown(armed.id, armed.rot, spot.pos);
-        else say(BUILDER_COPY.noRoom);
         return;
       }
       selected = null;
@@ -1227,6 +1339,16 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
         .forEach((n) => n.removeAttribute('data-selected'));
     });
     plotArt.addEventListener('dragstart', (e) => e.preventDefault());
+    // A mouse over the plot with a picked brick shows where it would go (a finger has no hover).
+    plotArt.addEventListener('pointermove', (e) => {
+      if (!armed || drag || mode !== 'build' || e.pointerType === 'touch') return;
+      cursor = null;
+      const spot = landing(armed.id, armed.rot, e.clientX, e.clientY, null, null);
+      drawPreview(spot ? { id: armed.id, rot: armed.rot, pos: spot.pos, ok: spot.ok } : null);
+    });
+    plotArt.addEventListener('pointerleave', () => {
+      if (armed && !drag && !cursor) drawPreview(null);
+    });
     // Weapons mode: a tap on a pad chooses it. A tap anywhere else on the plot lets go of it.
     plotArt.addEventListener('click', (e) => {
       if (mode !== 'weapons') return;
@@ -1374,7 +1496,7 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
           if (r.ok) {
             putDown(armed.id, armed.rot, r.pos);
             focusPiece(selected);
-          } else say(BUILDER_COPY.noRoom);
+          } else say(refusalText(r.why ?? 'overlap'));
         } else if (k === 'Escape') {
           armed = null;
           cursor = null;
@@ -1411,8 +1533,9 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
           doTurn();
         } else if (k === 'Delete' || k === 'Backspace') {
           e.preventDefault();
-          doRemove(index);
-          plotArt.focus();
+          // A brick that holds another stays, so the keyboard stays on it.
+          if (doRemove(index)) plotArt.focus();
+          else focusPiece(index);
         }
       }
     });
@@ -1629,7 +1752,11 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
       const picked = TEAMS.find((t) => t === chip?.dataset.team);
       if (picked && picked !== team) finish(picked);
     });
-    hintDefault();
+    // An old base with floating bricks was set down when it opened: save that and say so once.
+    if (settledOnOpen) {
+      persist();
+      say(BUILDER_COPY.settled);
+    } else hintDefault();
     renderAll();
     back.focus();
   });
