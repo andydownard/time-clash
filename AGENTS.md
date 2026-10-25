@@ -196,6 +196,6 @@ New ideas go in [INBOX.md](./INBOX.md) (raw, 30-day expiry). Triage moves them t
 | Squads plan (Phase 5, S1 on: the walking helper) | [docs/SQUADS_PLAN.md](./docs/SQUADS_PLAN.md) |
 | Two-iPad, accounts and matching proposal | [docs/plans/2026-10-17-two-player-ipad-plan.md](./docs/plans/2026-10-17-two-player-ipad-plan.md) |
 | Voice clip databases | [db/README.md](./db/README.md) |
-| Panel review of the 2026-10-23 and 2026-10-24 batch | [docs/panel/2026-10-24-batch.md](./docs/panel/2026-10-24-batch.md) |
+| Panel review of the 2026-10-23 and 2026-10-24 batch, and the second batch (2026-10-25) | [docs/panel/2026-10-24-batch.md](./docs/panel/2026-10-24-batch.md) |
 | Global rules (copy) | [GLOBAL_AGENTS.md](./GLOBAL_AGENTS.md) |
 | Backlog and inbox | [BACKLOG.md](./BACKLOG.md), [INBOX.md](./INBOX.md) |

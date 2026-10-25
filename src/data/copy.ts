@@ -119,7 +119,7 @@ export const WORKSHOP_COPY = {
     empty: '',
     long: 'That name is too long.',
     letters: 'Use only letters, numbers and spaces.',
-    blocked: 'Let us pick a friendlier name.',
+    blocked: "Let's pick a friendlier name.",
     private: 'Keep your own name a secret.',
     digits: 'Use fewer numbers in a row.',
   },
@@ -376,7 +376,7 @@ export const SQUAD_COPY = {
   /** What Chrono says on Hear it. Plain words, one short line per kind of helper. */
   hearLine: (kind: string, name: string): string =>
     kind === 'dasher'
-      ? `${name} walks to the other side and bonks every turn. Tap Walk out!`
+      ? `${name} walks across. He bonks every turn. Tap Walk out!`
       : `${name} fires a ball. Press Fire!`,
 } as const;
 
