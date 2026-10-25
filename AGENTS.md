@@ -124,6 +124,7 @@ Check this list before coding. If your change touches a listed area, read the ex
 | 15 | The tumble bubble tail pointed at empty sky, away from the speaker. | `tests/ui/hud.test.ts` (tail shift) and `tests/scenes/battle/geometry.test.ts` (`bubbleTailTarget`). |
 | 16 | Leaving a game from Pause left the reused Battle scene marked paused, so the next match never reached its first turn. | `e2e/navigation.spec.ts` (Leave game, then a new match starts). `BattleScene.cleanup` resets `paused`. |
 | 17 | The fighter selector made the control bar wrap to three rows, so the bar reached over the ground fighters. The system voice read the intro aloud during scripted browser runs (`--mute-audio` does not mute it). | `e2e/layout.spec.ts` (bar starts below the ground line, selector, sliders and Fire share one row). `tests/scenes/services.test.ts` (no speech in a browser driven by a test tool). |
+| 18 | At Hill Fort the aim guide's "45°" sat on Balloon A (panel review, 2026-10-24). | `angleLabelBox` in `src/scenes/battle/angleLabel.ts`. `tests/scenes/battle/angleLabel.test.ts` sweeps every fighter, castle place, base spot, biome and angle. `e2e/phase2.spec.ts` checks the real label size and that it covers no fighter. |
 
 ## Current state (2026-10-23)
 Phases 1 to 3 are built and live on Railway. Phase 4 (two iPads) and signed-in players with a database are planned, not built.
