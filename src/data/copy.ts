@@ -610,7 +610,8 @@ export const PLAN_COPY = {
   },
   forts: {
     hillFort: { name: 'Hill Fort', height: 'High', note: 'Solid rock below.' },
-    villageWall: { name: 'Village Wall', height: 'Middle', note: 'A low wall.' },
+    /** Code id `villageWall`. The label is just "Village", so it never sounds like the Stone Wall ability. */
+    villageWall: { name: 'Village', height: 'Middle', note: 'A low wall.' },
     drawbridge: { name: 'Drawbridge', height: 'Low', note: 'Blocks flat shots.' },
   },
   ammo: {
