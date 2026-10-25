@@ -451,6 +451,15 @@ export const HIT_LINES = {
   ],
 } as const;
 
+/**
+ * The sound words for birds and gusts. Each one floats over the board when it happens, so the
+ * squawk and the whoosh are never sound-only cues.
+ */
+export const DISTURBANCE_COPY = {
+  squawk: 'Squawk!',
+  whoosh: 'Whoosh!',
+} as const;
+
 /** Chrono's quick joke after a reload. Warm, and always at Chrono's expense. */
 export const RELOAD_QUIPS = {
   fast: [

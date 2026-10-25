@@ -19,7 +19,7 @@ const AIMS = [
 ];
 
 function playTrace(seed: number): string[] {
-  const c = createMatch({ players: PLAYERS, seed });
+  const c = createMatch({ disturbances: false, players: PLAYERS, seed });
   const out: string[] = [];
   let i = 0;
   for (let t = 0; t < 6 && c.snapshot().status === 'PLAYING'; t++) {

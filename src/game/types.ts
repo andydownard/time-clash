@@ -5,6 +5,7 @@
 import type { AmmoId } from './ammo';
 import type { Crew, DashOutcome, GroundSpotId, HelperId } from './crew';
 import type { BIOME_IDS, FORT_IDS, SPOT_IDS } from './config';
+import type { BirdPath, FlightDisturbance } from './disturbance';
 import type { EvasionId, EvasionPhase } from './evasion';
 import type { Placed, ResolvedSpot, SpotRole } from './baseBuilder';
 import type { MatchEffects } from './loadout';
@@ -112,7 +113,12 @@ export type Shot = AimInput & {
   ammo?: AmmoId;
   /** Only when a mounted weapon fired (BASE_IN_BATTLE on). Then `unit` is the fighter that stayed picked. */
   mount?: MountId;
+  /** Only with disturbances on: the bird clock (ms) when it fired, so the flight can be replayed. */
+  birdMs?: number;
 };
+
+/** What fire() may be told. `birdMs` is the bird clock: ms since this turn's birds took off. */
+export type FireOptions = { birdMs?: number };
 
 export type ShotInput = AimInput & {
   origin: Vec2;
@@ -123,7 +129,15 @@ export type ShotInput = AimInput & {
   layout: BattleLayout;
   /** Multiplies the launch speed (a longer-range weapon). Default 1. */
   speedScale?: number;
+  /** Birds and the turn's gust (DISTURBANCE). Missing means the plain physics, as before. */
+  disturbance?: FlightDisturbance;
 };
+
+/** A bird the shell bumped: which one, the shell's path step and spot, and where the bird was. */
+export type BirdBump = { bird: number; step: number; at: Vec2; birdAt: Vec2 };
+
+/** The turn's gust as it blew during this flight: path steps it pushed on, and its push. */
+export type GustHit = { push: number; fromStep: number; toStep: number; at: Vec2 };
 
 export type CollisionHit =
   | { kind: 'base'; team: Team }
@@ -149,6 +163,10 @@ export type ShotResult = {
   stoppedBy?: { kind: 'brick' | 'mount'; id: string };
   /** Only for a volley: every small shell (the first is also this result). */
   volley?: ShotResult[];
+  /** Only when the shot flew with disturbances: every bird it bumped, in order (often none). */
+  bumps?: BirdBump[];
+  /** Only when the turn's gust blew while this shell was in the air. */
+  gust?: GustHit;
 };
 
 /** Pure and deterministic. Same input, same output, bit for bit. */
@@ -437,6 +455,10 @@ export type Match = {
   readonly ammoLeft: Record<Team, Partial<Record<AmmoId, number>>>;
   /** Each team's evasion ability and where it is in its cycle. */
   readonly evasion: Record<Team, EvasionView>;
+  /** True when birds, gusts and recoil are on (DISTURBANCE). Absent in old fakes. */
+  readonly disturbances?: boolean;
+  /** This turn's birds (empty when disturbances are off). The scene draws them. Absent in old fakes. */
+  readonly birds?: readonly BirdPath[];
 };
 
 /** What the screens need to know about one team's evasion ability. */
@@ -470,6 +492,11 @@ export type MatchOptions = {
   squads?: boolean;
   /** Short, Normal or Long. Scales full health only. Default and unknown values: Normal. */
   matchLength?: MatchLength;
+  /**
+   * Birds, gusts and recoil on or off. Default DISTURBANCE.enabled (on). Tests that check exact
+   * flight paths or aims after a shot pass false.
+   */
+  disturbances?: boolean;
 };
 
 export class MatchOverError extends Error {
@@ -519,8 +546,12 @@ export interface MatchController {
    * A drawing aid only. It changes nothing and takes no shot.
    */
   previewShot(): ShotResult;
-  /** AIMING -> SHOT_n, or BONUS_AIMING -> BONUS_SHOT. Runs the full flight now. The scene animates result.path. */
-  fire(): ShotResult;
+  /**
+   * AIMING -> SHOT_n, or BONUS_AIMING -> BONUS_SHOT. Runs the full flight now. The scene animates result.path.
+   * With disturbances on, the shell meets this turn's birds at `birdMs` on the bird clock (default 0)
+   * and the turn's gust, and the team's aim then slides by the fighter's recoil.
+   */
+  fire(options?: FireOptions): ShotResult;
   /**
    * SHOT_n -> AIMING (after shot 1) or RELOAD (after shot 2); BONUS_SHOT -> NEXT_PLAYER.
    * Applies damage (a Power Shot's damage is multiplied).

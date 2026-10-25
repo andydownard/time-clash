@@ -47,7 +47,7 @@ const FULL_BASE = { PAST: DAMAGE.startingBaseHp, FUTURE: DAMAGE.startingBaseHp }
 const WRONG = { correct: false, elapsedMs: 1000 };
 
 const mk = (characterHealth: boolean, seed = 5): MatchController =>
-  createMatch({ players: PLAYERS, seed, characterHealth });
+  createMatch({ disturbances: false, players: PLAYERS, seed, characterHealth });
 
 type Want = { direct?: UnitId; near?: boolean };
 
@@ -136,7 +136,7 @@ describe('the flag', () => {
     expect(CHARACTER_HEALTH.powerHit).toBe(2);
   });
   it('a match made with no option follows the constant (off)', () => {
-    expect(createMatch({ players: PLAYERS, seed: 1 }).snapshot().characterHealth).toBe(false);
+    expect(createMatch({ disturbances: false, players: PLAYERS, seed: 1 }).snapshot().characterHealth).toBe(false);
   });
 });
 

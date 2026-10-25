@@ -108,6 +108,19 @@ describe('installTestHook', () => {
     t.win.__timeclash!.setSquads(null);
     expect(t.flags.squads).toBeUndefined();
   });
+  it('starts a test run with birds, gusts and recoil off, and lets a test switch them', () => {
+    const t = make();
+    expect(t.flags.disturbances).toBe(false);
+    t.win.__timeclash!.setDisturbances(true);
+    expect(t.flags.disturbances).toBe(true);
+    t.win.__timeclash!.setDisturbances(null);
+    expect(t.flags.disturbances).toBeUndefined();
+    expect(make({ mode: 'production' }).flags.disturbances).toBeUndefined();
+  });
+  it('reads the birds from the active scene, or null', () => {
+    const t = make();
+    expect(t.win.__timeclash!.birds()).toBeNull();
+  });
   it('has no squads switch in production or without the query', () => {
     expect(make({ mode: 'production' }).win.__timeclash).toBeUndefined();
     expect(make({ search: '?squads=1' }).win.__timeclash).toBeUndefined();

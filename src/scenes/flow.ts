@@ -52,7 +52,7 @@ export function buildMatchSetup(
   players: Players,
   seed: number,
   effects?: MatchEffects,
-  extra: Pick<MatchOptions, 'layout' | 'ammo' | 'squads'> = {},
+  extra: Pick<MatchOptions, 'layout' | 'ammo' | 'squads' | 'disturbances'> = {},
 ): MatchSetup {
   return {
     players,
@@ -62,6 +62,7 @@ export function buildMatchSetup(
     ...(extra.layout ? { layout: extra.layout } : {}),
     ...(extra.ammo ? { ammo: extra.ammo } : {}),
     ...(extra.squads === undefined ? {} : { squads: extra.squads }),
+    ...(extra.disturbances === undefined ? {} : { disturbances: extra.disturbances }),
   };
 }
 

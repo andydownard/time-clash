@@ -118,6 +118,12 @@ describe('buildMatchSetup', () => {
     const setup = buildMatchSetup(players, 5, DEFAULT_EFFECTS);
     expect(setup.effects).toBe(DEFAULT_EFFECTS);
   });
+  it('adds the disturbances switch only when it is given', () => {
+    expect(buildMatchSetup(players, 5, undefined, {})).not.toHaveProperty('disturbances');
+    const off = buildMatchSetup(players, 5, undefined, { disturbances: false });
+    expect(off.disturbances).toBe(false);
+    expect(createMatch(off).snapshot().birds).toEqual([]);
+  });
   it('adds the squads switch only when it is given', () => {
     expect(buildMatchSetup(players, 5, undefined, {})).not.toHaveProperty('squads');
     expect(buildMatchSetup(players, 5, undefined, { squads: true }).squads).toBe(true);

@@ -12,6 +12,11 @@ export type TimeClashHook = {
   setSeed(seed: number | null): void;
   /** Squads S1 on (true), off (false) or back to the config default (null) for matches started after this. */
   setSquads(on: boolean | null): void;
+  /**
+   * Birds, gusts and recoil on (true), off (false) or the config default (null) for matches
+   * started after this. A test run starts with them off, so scripted shots land where aimed.
+   */
+  setDisturbances(on: boolean | null): void;
   failNextLoads(count: number): void;
   /** Key of the active scene, or null. */
   scene(): string | null;
@@ -30,6 +35,8 @@ export type TimeClashHook = {
     texts: string[];
     label?: { x: number; y: number; w: number; h: number } | null;
   } | null;
+  /** The birds drawn on the board right now and the bird clock, or null. */
+  birds(): { clockMs: number; birds: { x: number; y: number }[] } | null;
 };
 
 export function e2eEnabled(search: string, mode: string): boolean {
@@ -38,7 +45,7 @@ export function e2eEnabled(search: string, mode: string): boolean {
 }
 
 /** Switches a test can flip. Missing means the config default. Only the e2e hook writes it. */
-export type TestFlags = { squads?: boolean; quickLoad?: boolean };
+export type TestFlags = { squads?: boolean; quickLoad?: boolean; disturbances?: boolean };
 export const createFlags = (): TestFlags => ({});
 
 export type LoadFaults = {
@@ -72,6 +79,7 @@ export type ActiveScene = {
     texts: string[];
     label?: { x: number; y: number; w: number; h: number } | null;
   };
+  birdState?: () => { clockMs: number; birds: { x: number; y: number }[] } | null;
 };
 
 export type HookDeps = {
@@ -89,6 +97,8 @@ export function installTestHook(win: { __timeclash?: TimeClashHook }, deps: Hook
   if (!e2eEnabled(deps.search, deps.mode)) return false;
   // A test run never waits out the funny Loading screen (TIMING.loadingQuickMs).
   deps.flags.quickLoad = true;
+  // Scripted shots must land where they are aimed, so birds, gusts and recoil start off.
+  deps.flags.disturbances = false;
   const findController = (): MatchController | null => {
     if (deps.session.match) return deps.session.match;
     for (const s of deps.activeScenes()) {
@@ -104,6 +114,10 @@ export function installTestHook(win: { __timeclash?: TimeClashHook }, deps: Hook
       if (on === null) delete deps.flags.squads;
       else deps.flags.squads = on;
     },
+    setDisturbances: (on) => {
+      if (on === null) delete deps.flags.disturbances;
+      else deps.flags.disturbances = on;
+    },
     failNextLoads: (count) => deps.faults.failNext(count),
     scene: () => deps.activeScenes()[0]?.scene?.key ?? null,
     match: () => findController()?.snapshot() ?? null,
@@ -111,6 +125,7 @@ export function installTestHook(win: { __timeclash?: TimeClashHook }, deps: Hook
     players: () => deps.storage.get('timeclash.players'),
     labelPx: () => deps.activeScenes()[0]?.labels?.minRenderedPx() ?? null,
     aim: () => deps.activeScenes()[0]?.aimState?.() ?? null,
+    birds: () => deps.activeScenes()[0]?.birdState?.() ?? null,
   };
   return true;
 }

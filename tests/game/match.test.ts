@@ -24,6 +24,8 @@ const PLAYERS: Players = [
 const opts = (seed = 1, extra: Partial<MatchOptions> = {}): MatchOptions => ({
   players: PLAYERS,
   seed,
+  // These tests check exact flights and aims, so birds, gusts and recoil stay off.
+  disturbances: false,
   ...extra,
 });
 

@@ -103,6 +103,8 @@ export function makeWorld(
   const match: MatchController = createMatch({
     players: opts.players ?? PLAYERS,
     seed: opts.seed ?? 7,
+    // The flow tests script exact hits, so birds, gusts and recoil stay off unless a test asks.
+    disturbances: false,
     ...opts.matchOptions,
   });
 

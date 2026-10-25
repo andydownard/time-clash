@@ -11,7 +11,7 @@ const PLAYERS: Players = [
 describe('previewShot', () => {
   it('flies the same path fire() flies, for every fighter (their range differs)', () => {
     for (const unit of unitsOf('PAST')) {
-      const c = createMatch({ players: PLAYERS, seed: 3 });
+      const c = createMatch({ disturbances: false, players: PLAYERS, seed: 3 });
       c.ready();
       c.selectUnit(unit.id);
       c.setAim({ angleDeg: 52, power: 77 });
@@ -23,7 +23,7 @@ describe('previewShot', () => {
   it('gives different arcs for fighters with different range', () => {
     const reach = new Set<number>();
     for (const unit of unitsOf('PAST')) {
-      const c = createMatch({ players: PLAYERS, seed: 3 });
+      const c = createMatch({ disturbances: false, players: PLAYERS, seed: 3 });
       c.ready();
       c.selectUnit(unit.id);
       c.setAim({ angleDeg: 45, power: 60 });
@@ -34,7 +34,7 @@ describe('previewShot', () => {
   });
 
   it('takes no shot and changes nothing', () => {
-    const c = createMatch({ players: PLAYERS, seed: 3 });
+    const c = createMatch({ disturbances: false, players: PLAYERS, seed: 3 });
     c.ready();
     const before = JSON.stringify(c.snapshot());
     c.previewShot();

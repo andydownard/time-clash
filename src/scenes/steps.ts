@@ -140,6 +140,7 @@ export async function runCampStep(s: AppServices): Promise<SceneRoute> {
     layout: buildLayout(plan),
     ammo: matchAmmoFor(camp, names),
     ...(s.flags?.squads === undefined ? {} : { squads: s.flags.squads }),
+    ...(s.flags?.disturbances === undefined ? {} : { disturbances: s.flags.disturbances }),
   });
   // The bank is loaded once, before Setup. If it is somehow missing, load it first.
   if (!s.session.bank) {
