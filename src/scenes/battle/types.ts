@@ -6,6 +6,8 @@ import type {
   AimInput,
   BirdBump,
   BlastOutcome,
+  BrickId,
+  BrickView,
   GustHit,
   MatchController,
   MatchOptions,
@@ -122,6 +124,15 @@ export interface BattleView {
   playBirdBump?(bump: BirdBump): void;
   /** The turn's gust blew on the shell: streaks, an arrow and the "Whoosh!" word. */
   playGust?(gust: GustHit): void;
+  /**
+   * Built bases: redraw `team`'s bricks as the rules have them now. The bricks in `fell` (the
+   * rules' order) puff dust, tumble to the ground and fade. Resolves when they are done.
+   */
+  playBricks?(
+    team: Team,
+    fell: readonly BrickId[],
+    bricks: Readonly<Record<BrickId, BrickView>>,
+  ): Promise<void>;
 }
 
 /** What Victory needs. */

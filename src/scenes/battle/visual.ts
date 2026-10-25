@@ -41,7 +41,13 @@ export const ART = {
   aspenBark: 0x2a2540,
   aspenLeafFar: 0x8f7436,
   aspenLeafNear: 0xa8863a,
+  /** A hurt built brick is drawn a little darker, then darker still (it also shows cracks). */
+  brickWorn: 0xd8d8d8,
+  brickWornMore: 0xb0b0b0,
 } as const;
+
+/** Phaser's "no tint" (multiplies by white). Not a color on screen. */
+export const NO_TINT = 0xffffff;
 
 /** Colors the drawing code leans on, grouped by team. Every UI color is a design token. */
 export const PALETTE = {

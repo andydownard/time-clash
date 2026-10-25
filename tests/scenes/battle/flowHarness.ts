@@ -96,6 +96,8 @@ export function makeWorld(
   const results: BattleResult[] = [];
   /** Squads: every field the flow asked the view to draw. */
   const fields: Array<SquadField | null> = [];
+  /** Built bases: every time the flow asked the view to redraw a side's bricks. */
+  const brickPlays: Array<{ team: Team; fell: string[]; standing: number }> = [];
   let cover: 'pass' | 'reload' | null = null;
   const coverViolations: string[] = [];
   let handlers: HudHandlers | null = null;
@@ -174,6 +176,15 @@ export function makeWorld(
     playDasherHit: async (team, how) => {
       guard('playDasherHit');
       log.push(`dasherHit:${team}:${how}`);
+    },
+    playBricks: async (team, fell, bricks) => {
+      guard('playBricks');
+      brickPlays.push({
+        team,
+        fell: [...fell],
+        standing: Object.values(bricks).filter((b) => b.team === team && b.alive).length,
+      });
+      log.push(`bricks:${team}:${fell.length}`);
     },
   };
 
@@ -287,6 +298,7 @@ export function makeWorld(
     levelsSaved,
     results,
     fields,
+    brickPlays,
     coverViolations,
     handlers: () => handlers,
     drag: (aim: AimInput) => dragHandler?.(aim),
