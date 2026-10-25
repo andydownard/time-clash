@@ -111,7 +111,8 @@ describe('Team Past places its castle', () => {
     const ability = GEAR_COPY.abilities.barricade;
     const abilityWords = new Set(`${ability.name} ${ability.short}`.toLowerCase().split(/\s+/));
     for (const f of Object.values(PLAN_COPY.forts))
-      for (const w of f.name.toLowerCase().split(/\s+/)) expect(abilityWords.has(w), f.name).toBe(false);
+      for (const w of f.name.toLowerCase().split(/\s+/))
+        expect(abilityWords.has(w), f.name).toBe(false);
   });
 
   it('a new family sees the Village picked, and exactly one castle card checked', () => {

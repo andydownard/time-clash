@@ -62,9 +62,9 @@ describe('copy: banned words', () => {
 });
 
 describe('copy: content', () => {
-  it('has the 12 tumble bubble lines', () => {
-    expect(COPY.TUMBLE_LINES).toHaveLength(12);
-    expect(new Set(COPY.TUMBLE_LINES).size).toBe(12);
+  it('has the 18 shared tumble bubble lines', () => {
+    expect(COPY.TUMBLE_LINES).toHaveLength(18);
+    expect(new Set(COPY.TUMBLE_LINES).size).toBe(18);
     expect(COPY.TUMBLE_LINES).toContain('Just checking the lawn for four-leaf clovers!');
   });
 
