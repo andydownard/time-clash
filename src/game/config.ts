@@ -41,8 +41,14 @@ export const AIM = {
 } as const;
 
 // ---------- Damage and health ----------
+/**
+ * Pace (owner, 2026-10-24): a player with perfect aim and a right answer every turn needs five
+ * turns of their own to win, so a match never ends in one or two turns. A perfect turn is two
+ * direct hits and a Power Shot (25 + 25 + 38 = 88), so full health is a little under five
+ * perfect turns. `tests/game/pace.test.ts` plays it.
+ */
 export const DAMAGE = {
-  startingBaseHp: 100,
+  startingBaseHp: 400,
   /** Impact within this distance of the base rect is a direct hit. */
   directRadius: 48,
   /** Impact within this distance is a near miss (tumble). */
@@ -59,8 +65,8 @@ export const DAMAGE = {
  */
 export const CHARACTER_HEALTH = {
   enabled: false,
-  /** Health each fighter starts with. */
-  hp: 3,
+  /** Health each fighter starts with. Four, so a perfect team needs five turns to beat. */
+  hp: 4,
   /** Health lost to a direct hit. */
   directHit: 1,
   /**
@@ -360,8 +366,11 @@ export const BIOMES: Record<(typeof BIOME_IDS)[number], BiomeConfig> = {
   },
 };
 
-/** What a new family's first Battle Plan shows picked. Food Trucks keeps the Phase 1 base spot. */
-export const DEFAULT_PLAN = { biome: 'aspen', spot: 'foodTruck' } as const;
+/**
+ * What a new family's first Battle Plan shows picked. Food Trucks keeps the Phase 1 base spot, and
+ * Village Wall is Team Past's matching default castle place (owner decision, 2026-10-24).
+ */
+export const DEFAULT_PLAN = { biome: 'aspen', spot: 'foodTruck', fort: 'villageWall' } as const;
 
 // ---------- Evasion (Phase 2) ----------
 /**
@@ -386,10 +395,12 @@ export const EVASION = {
 
 // ---------- Timing (ms) ----------
 export const TIMING = {
-  /** Loading screen waits at least this long so jokes can be read. */
-  loadingMinMs: 1500,
+  /** Loading screen waits at least this long so the jokes and the balloon riders can be enjoyed. */
+  loadingMinMs: 5000,
   /** A new family sees the longer, funnier load once. Returning families use loadingMinMs. */
-  loadingFirstMinMs: 4000,
+  loadingFirstMinMs: 8000,
+  /** Browser tests (the e2e hook is on) wait this long, so a full run is not slowed by the jokes. */
+  loadingQuickMs: 1500,
   loadingMessageMs: 2500,
   bannerDropMs: 400,
   bannerHoldMs: 1800,
@@ -503,8 +514,8 @@ export type BotProfile = {
 };
 
 export const PRACTICE_BOT = {
-  /** Off by default. The UI turns it on later, after the panel review. */
-  enabled: false,
+  /** On for everyone (owner decision, 2026-10-24). `?computer=0` hides it, `?computer=1` shows it. */
+  enabled: true,
   /** Shown wherever the opponent appears. Never "bot", "AI" or "assistant". */
   displayName: 'Computer player',
   levels: {

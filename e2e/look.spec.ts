@@ -3,7 +3,7 @@
 // whole match that also checks the rules of play (aim, fire, reload, pass, win, rematch).
 // Screenshots are retaken only with UPDATE_SCREENSHOTS=1 (see e2e/support/shots.ts).
 import type { Page } from '@playwright/test';
-import { LAUNCH_ORIGINS } from '../src/game/config';
+import { DAMAGE, LAUNCH_ORIGINS } from '../src/game/config';
 import { expect, test } from './fixtures';
 import { smallTargets, smallText } from './support/audit';
 import {
@@ -27,6 +27,7 @@ import {
   waitBonusAiming,
   waitPassScreen,
   watchBanner,
+  wearDown,
 } from './support/game';
 import { saveShot } from './support/shots';
 
@@ -117,7 +118,9 @@ test('Setup fits every iPad landscape size, Clear my data included', async ({ pa
       return b ? b.getBoundingClientRect().bottom : -1;
     });
     expect.soft(clear, `Setup ${w}x${h}: Clear my data bottom edge`).toBeGreaterThan(0);
-    expect.soft(clear, `Setup ${w}x${h}: Clear my data clear of the bottom`).toBeLessThanOrEqual(h - 8);
+    expect
+      .soft(clear, `Setup ${w}x${h}: Clear my data clear of the bottom`)
+      .toBeLessThanOrEqual(h - 8);
   }
 });
 
@@ -170,15 +173,17 @@ test('the page links no outside style, script or font', async ({ page }) => {
 // How the test reaches Victory without editing the app: the ?e2e=1 hook pins the seed and reads
 // state, but it cannot set health. So the test plays it out, with the keyboard and Space to fire.
 // For each shot it asks the real game rules (src/game) which angle and power give a direct hit.
-// Four direct hits (25 each) wipe out a base. Team Future shoots short harmless shots, so it still
-// takes its turns and answers its questions. Reload answers come from the bank on disk. "Slow"
+// Full health is DAMAGE.startingBaseHp, so Team Past needs about five turns of direct hits and
+// Power Shots (the pace rule, done by wearDown). Team Future shoots short harmless shots, so it
+// still takes its turns and answers its questions. Reload answers come from the bank on disk. "Slow"
 // moves the page clock forward 9 seconds (window.__skew) instead of waiting.
 test('a full match keeps the floors on every screen and plays by the rules: aim, fire, reload, pass, win, rematch', async ({
   page,
   browserName,
 }) => {
-  // A whole match under four busy workers can pass 3 minutes. Triple the limit, no sleeps.
-  test.slow();
+  // A whole match is about five turns a side (the pace rule), and busy workers slow each one.
+  // Allow five times the usual limit, no sleeps.
+  test.setTimeout(5 * test.info().timeout);
   const shot = (name: string): Promise<void> => saveShot(page, browserName, name);
   const startSize = page.viewportSize()!;
   await openGame(page);
@@ -288,14 +293,14 @@ test('a full match keeps the floors on every screen and plays by the rules: aim,
   await shot('tumble');
   m = await snap(page);
   expect(m.stats.PAST.shotsFired).toBe(1);
-  expect(m.baseHp.FUTURE).toBe(90);
+  expect(m.baseHp.FUTURE).toBe(DAMAGE.startingBaseHp - DAMAGE.near);
 
   // Shot 2: a direct hit.
   await waitAiming(page, 1);
   await takeShot(page, 'direct');
   await expect(tid(page, 'reload-modal')).toBeVisible({ timeout: 45_000 });
   m = await snap(page);
-  expect(m.baseHp.FUTURE).toBe(65);
+  expect(m.baseHp.FUTURE).toBe(DAMAGE.startingBaseHp - DAMAGE.near - DAMAGE.direct);
   expect(m.turn).toMatchObject({ phase: 'RELOAD', shotsFired: 2 });
 
   // ----- Reload: nothing can skip it, and the third shot is impossible -----
@@ -315,9 +320,9 @@ test('a full match keeps the floors on every screen and plays by the rules: aim,
   const buttons = await tid(page, 'reload-modal')
     .getByRole('button')
     .evaluateAll((els) => els.map((e) => e.getAttribute('data-testid')));
-  expect(
-    buttons.filter((b) => !/^(reload-(choice-[0-3]|hint)|cover-mute)$/.test(b ?? '')),
-  ).toEqual([]);
+  expect(buttons.filter((b) => !/^(reload-(choice-[0-3]|hint)|cover-mute)$/.test(b ?? ''))).toEqual(
+    [],
+  );
 
   // Right and fast: +2 scrap.
   const first = await answerReload(page, 'right-fast');
@@ -375,7 +380,9 @@ test('a full match keeps the floors on every screen and plays by the rules: aim,
   await readyUp(page);
   await playShots(page, ['direct', 'direct']);
   await expect(tid(page, 'reload-modal')).toBeVisible({ timeout: 45_000 });
-  expect((await snap(page)).baseHp.FUTURE).toBe(15);
+  expect((await snap(page)).baseHp.FUTURE).toBe(
+    DAMAGE.startingBaseHp - DAMAGE.near - 3 * DAMAGE.direct,
+  );
   await answerReload(page, 'right-slow');
   await expect(tid(page, 'reload-feedback')).toContainText('+1 scrap! Nice work!');
   await waitPassScreen(page);
@@ -389,7 +396,10 @@ test('a full match keeps the floors on every screen and plays by the rules: aim,
   await answerReload(page, 'right-fast');
   await waitPassScreen(page);
 
-  // ----- Turn 3, Team Past: the last hit ends the match on the spot -----
+  // ----- Team Past wears the base down until one direct hit is left (the pace rule) -----
+  await wearDown(page);
+
+  // ----- Team Past: the last hit ends the match on the spot -----
   await readyUp(page);
   await takeShot(page, 'direct');
   await expect(tid(page, 'victory')).toBeVisible({ timeout: 45_000 });
@@ -414,7 +424,7 @@ test('a full match keeps the floors on every screen and plays by the rules: aim,
   m = await snap(page);
   expect(m.status).toBe('PLAYING');
   expect(m.seed).toBe(SEED + 1);
-  expect(m.baseHp).toEqual({ PAST: 100, FUTURE: 100 });
+  expect(m.baseHp).toEqual({ PAST: DAMAGE.startingBaseHp, FUTURE: DAMAGE.startingBaseHp });
   expect(m.scrap).toEqual({ PAST: 0, FUTURE: 0 });
   expect(m.turn).toMatchObject({ phase: 'PASS_SCREEN', team: 'FUTURE', turnNumber: 0 });
   expect(m.players.map((p) => p.name)).toEqual(['Alex', 'Sam']);

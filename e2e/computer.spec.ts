@@ -1,5 +1,6 @@
-// The Computer player: one child plays alone. It is behind PRACTICE_BOT.enabled (off) and the
-// ?computer=1 address, so these tests prove both that it works when on and that nothing shows when off.
+// The Computer player: one child plays alone. It is on for everyone (PRACTICE_BOT.enabled), and
+// ?computer=0 on the address switches it off, so these tests prove it works by default and that
+// nothing shows when it is switched off.
 import { expect, test } from './fixtures';
 import { smallTargets, smallText } from './support/audit';
 import {
@@ -15,8 +16,8 @@ import {
 import { saveShot } from './support/shots';
 import './support/globals';
 
-test('flag off: Setup shows no computer choice anywhere', async ({ page }) => {
-  await toSetup(page, '');
+test('switched off (?computer=0): Setup shows no computer choice anywhere', async ({ page }) => {
+  await toSetup(page, '&computer=0');
   await expect(tid(page, 'play-with-computer')).toHaveCount(0);
   await expect(tid(page, 'play-with-person')).toHaveCount(0);
   await expect(tid(page, 'computer-card')).toHaveCount(0);
@@ -27,17 +28,25 @@ test('flag off: Setup shows no computer choice anywhere', async ({ page }) => {
   await expect(tid(page, 'setup-name-FUTURE')).toBeVisible();
 });
 
-test('flag off: only ?computer=1 turns it on (other values do nothing)', async ({ page }) => {
-  await toSetup(page, '&computer=true');
-  await expect(tid(page, 'play-with-computer')).toHaveCount(0);
+test('on by default: Setup offers it with no address flag, Another player first', async ({
+  page,
+}) => {
+  await toSetup(page, '');
+  await expect(tid(page, 'play-with-computer')).toBeVisible();
+  await expect(tid(page, 'play-with-person')).toHaveAttribute('aria-checked', 'true');
 });
 
-test('flag on: pick Computer player and Hard, play a whole match to Victory', async ({
+test('on by default: any other ?computer= value keeps it on', async ({ page }) => {
+  await toSetup(page, '&computer=true');
+  await expect(tid(page, 'play-with-computer')).toBeVisible();
+});
+
+test('pick Computer player and Hard, play a whole match to Victory', async ({
   page,
   browserName,
 }) => {
   test.slow();
-  await toSetup(page, '&computer=1');
+  await toSetup(page, '');
   await expect(tid(page, 'play-with-person')).toHaveAttribute('aria-checked', 'true');
   await saveShot(page, browserName, 'computer-player-setup-choice');
 
@@ -146,8 +155,8 @@ test('flag on: pick Computer player and Hard, play a whole match to Victory', as
   await saveShot(page, browserName, 'computer-player-victory');
 });
 
-test('flag on: the last choice is remembered next time', async ({ page }) => {
-  await toSetup(page, '&computer=1');
+test('the last choice is remembered next time', async ({ page }) => {
+  await toSetup(page, '');
   await tid(page, 'play-with-computer').click();
   await tid(page, 'computer-level-easy').click();
   await tid(page, 'setup-next').click();

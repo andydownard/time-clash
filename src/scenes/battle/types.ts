@@ -51,7 +51,7 @@ export type ViewStatus = {
   activeTeam: Team | null;
   names: Record<Team, string>;
   baseHp: Record<Team, number>;
-  /** Each base's full health. Missing means 100. An upgrade can raise it. */
+  /** Each base's full health. Missing means DAMAGE.startingBaseHp. An upgrade can raise it. */
   maxBaseHp?: Record<Team, number>;
   scrap: Record<Team, number>;
   wind: number;

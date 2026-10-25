@@ -33,7 +33,7 @@ export function e2eEnabled(search: string, mode: string): boolean {
 }
 
 /** Switches a test can flip. Missing means the config default. Only the e2e hook writes it. */
-export type TestFlags = { squads?: boolean };
+export type TestFlags = { squads?: boolean; quickLoad?: boolean };
 export const createFlags = (): TestFlags => ({});
 
 export type LoadFaults = {
@@ -77,6 +77,8 @@ export type HookDeps = {
 
 export function installTestHook(win: { __timeclash?: TimeClashHook }, deps: HookDeps): boolean {
   if (!e2eEnabled(deps.search, deps.mode)) return false;
+  // A test run never waits out the funny Loading screen (TIMING.loadingQuickMs).
+  deps.flags.quickLoad = true;
   const findController = (): MatchController | null => {
     if (deps.session.match) return deps.session.match;
     for (const s of deps.activeScenes()) {

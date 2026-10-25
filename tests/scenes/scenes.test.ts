@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 // Runs the real scene classes against a stand-in for Phaser's scene manager, with the real
 // overlay, audio manager and storage. This is the whole front-of-house flow, minus a canvas.
+import { TIMING } from '../../src/game/config';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 vi.mock('phaser', () => {
@@ -168,7 +169,7 @@ describe('the whole flow', () => {
 
     launch(LoadingScene, afterIntro.data);
     await flush();
-    t.clock.advance(4100);
+    t.clock.advance(TIMING.loadingFirstMinMs + 100);
     await flush();
     t.clock.advance(300);
     expect((await next()).key).toBe(SCENE_KEYS.setup);
@@ -210,7 +211,7 @@ describe('the whole flow', () => {
 
     launch(LoadingScene, loading.data);
     await flush();
-    t.clock.advance(4100);
+    t.clock.advance(TIMING.loadingFirstMinMs + 100);
     await flush();
     t.clock.advance(300);
     const battle = await next();
@@ -255,7 +256,7 @@ describe('the whole flow', () => {
     expect(started).toEqual([]);
     click(q(TEST_IDS.loadingRetry));
     await flush();
-    t.clock.advance(4100);
+    t.clock.advance(TIMING.loadingFirstMinMs + 100);
     await flush();
     t.clock.advance(300);
     expect((await next()).key).toBe(SCENE_KEYS.setup);

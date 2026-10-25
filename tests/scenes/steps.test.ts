@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { TIMING } from '../../src/game/config';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { LOADING } from '../../src/data/copy';
 import { SCENE_KEYS } from '../../src/scenes/registry';
@@ -14,6 +15,11 @@ import { TEST_IDS } from '../../src/ui/types';
 import type { BattleSceneData } from '../../src/scenes/battle/types';
 import { click, flush, q } from '../ui/helpers';
 import { freshCamp, freshLoadout, freshWallet, walletOf, withWallet } from '../../src/game/loadout';
+import { DAMAGE } from '../../src/game/config';
+import { upgradeById } from '../../src/game/upgrades';
+
+/** Base health one tower level adds. */
+const TOWER_STEP = upgradeById('tower')!.perLevel;
 import { campWith } from '../helpers/camp';
 import { loadCamp } from '../../src/storage/storage';
 import { fakeController, makeServices, players, tinyBank } from './fakes';
@@ -86,6 +92,36 @@ describe('intro step', () => {
 });
 
 describe('loading step', () => {
+  it('shows the funny screen for a returning family a little longer than before', async () => {
+    t.storage.set('timeclash.players', players);
+    let done = false;
+    const p = runLoadingStep(t.services, { next: SCENE_KEYS.camp }).then((r) => {
+      done = true;
+      return r;
+    });
+    await flush();
+    t.clock.advance(TIMING.loadingMinMs - 100);
+    await flush();
+    expect(done).toBe(false);
+    t.clock.advance(300);
+    await flush();
+    expect((await p).key).toBe(SCENE_KEYS.camp);
+  });
+  it('a browser test run (the e2e hook is on) only waits the quick time', async () => {
+    t.services.flags = { quickLoad: true };
+    let done = false;
+    const p = runLoadingStep(t.services, { next: SCENE_KEYS.setup }).then((r) => {
+      done = true;
+      return r;
+    });
+    await flush();
+    t.clock.advance(TIMING.loadingQuickMs + 200);
+    await flush();
+    t.clock.advance(300);
+    expect((await p).key).toBe(SCENE_KEYS.setup);
+    expect(done).toBe(true);
+    expect(TIMING.loadingQuickMs).toBeLessThan(TIMING.loadingMinMs);
+  });
   it('waits the minimum time, then goes where it was told', async () => {
     let done = false;
     const setup = { players, seed: 1, firstTeam: 'PAST' as const };
@@ -96,7 +132,7 @@ describe('loading step', () => {
     await flush();
     expect(document.querySelector('[data-screen="loading"]')).not.toBeNull();
     expect(done).toBe(false);
-    t.clock.advance(4100);
+    t.clock.advance(TIMING.loadingFirstMinMs + 100);
     await flush();
     t.clock.advance(200);
     const route = await p;
@@ -127,9 +163,9 @@ describe('loading step', () => {
     expect(document.body.textContent).toContain(LOADING.errorTitle);
     click(q(TEST_IDS.loadingRetry));
     await flush();
-    s.clock.advance(4100);
+    s.clock.advance(TIMING.loadingFirstMinMs + 100);
     await flush();
-    s.clock.advance(4100);
+    s.clock.advance(TIMING.loadingFirstMinMs + 100);
     const route = await p;
     expect(calls).toBe(2);
     expect(route.key).toBe(SCENE_KEYS.setup);
@@ -137,7 +173,7 @@ describe('loading step', () => {
   it('bad data still ends at Setup', async () => {
     const p = runLoadingStep(t.services, undefined);
     await flush();
-    t.clock.advance(4100);
+    t.clock.advance(TIMING.loadingFirstMinMs + 100);
     await flush();
     t.clock.advance(300);
     expect((await p).key).toBe(SCENE_KEYS.setup);
@@ -281,8 +317,8 @@ describe('camp step', () => {
     const match = runCampStep(t.services);
     await clash();
     const data = (await match).data as BattleSceneData;
-    expect(data.match.snapshot().maxBaseHp.PAST).toBe(112);
-    expect(data.match.snapshot().baseHp.PAST).toBe(112);
+    expect(data.match.snapshot().maxBaseHp.PAST).toBe(DAMAGE.startingBaseHp + TOWER_STEP);
+    expect(data.match.snapshot().baseHp.PAST).toBe(DAMAGE.startingBaseHp + TOWER_STEP);
   });
 });
 
@@ -323,7 +359,13 @@ describe('camp step: Battle Plan', () => {
     expect(data.match.layout.biome).toBe('cherry');
     expect(data.match.layout.spot).toBe('skyscraper');
     expect(data.match.layout.bases.FUTURE.y).toBe(330);
-    expect(t.storage.get('timeclash.plan')).toEqual({ biome: 'cherry', spot: 'skyscraper' });
+    // The live game always passes a castle place: Village Wall unless the family picks another.
+    expect(data.match.layout.fort).toBe('villageWall');
+    expect(t.storage.get('timeclash.plan')).toEqual({
+      biome: 'cherry',
+      spot: 'skyscraper',
+      fort: 'villageWall',
+    });
     // Next time, the same plan is picked already.
     void runCampStep(t.services);
     click(q(TEST_IDS.campStart));
@@ -368,7 +410,9 @@ describe('camp step: Build Base and the builder flag', () => {
     expect(q(TEST_IDS.campUpgrade)).toBeNull();
     click(q(TEST_IDS.campBuild));
     await flush();
-    expect(document.querySelector('[data-screen="builder"]')!.getAttribute('data-team')).toBe('PAST');
+    expect(document.querySelector('[data-screen="builder"]')!.getAttribute('data-team')).toBe(
+      'PAST',
+    );
     expect(document.querySelector('[data-screen="upgrade"]')).toBeNull();
     click(q('bb-back'));
     expect(await p).toEqual({ key: SCENE_KEYS.camp });
@@ -380,10 +424,14 @@ describe('camp step: Build Base and the builder flag', () => {
     await flush();
     click(q('bb-team-FUTURE'));
     await flush();
-    expect(document.querySelector('[data-screen="builder"]')!.getAttribute('data-team')).toBe('FUTURE');
+    expect(document.querySelector('[data-screen="builder"]')!.getAttribute('data-team')).toBe(
+      'FUTURE',
+    );
     click(q('bb-team-PAST'));
     await flush();
-    expect(document.querySelector('[data-screen="builder"]')!.getAttribute('data-team')).toBe('PAST');
+    expect(document.querySelector('[data-screen="builder"]')!.getAttribute('data-team')).toBe(
+      'PAST',
+    );
     click(q('bb-back'));
     expect(await p).toEqual({ key: SCENE_KEYS.camp });
     expect(document.querySelector('[data-screen="builder"]')).toBeNull();
@@ -450,8 +498,8 @@ describe('camp step: weapons and upgrades', () => {
     const p = runCampStep(t.services);
     await clash();
     const data = (await p).data as BattleSceneData;
-    expect(data.match.snapshot().maxBaseHp.PAST).toBe(100 + 2 * 12);
-    expect(data.match.snapshot().maxBaseHp.FUTURE).toBe(100);
+    expect(data.match.snapshot().maxBaseHp.PAST).toBe(DAMAGE.startingBaseHp + 2 * TOWER_STEP);
+    expect(data.match.snapshot().maxBaseHp.FUTURE).toBe(DAMAGE.startingBaseHp);
   });
   it('plays a fresh game with Phase 1 numbers when nothing was bought', async () => {
     t.services.session.bank = tinyBank;
@@ -459,7 +507,10 @@ describe('camp step: weapons and upgrades', () => {
     const p = runCampStep(t.services);
     await clash();
     const data = (await p).data as BattleSceneData;
-    expect(data.match.snapshot().maxBaseHp).toEqual({ PAST: 100, FUTURE: 100 });
+    expect(data.match.snapshot().maxBaseHp).toEqual({
+      PAST: DAMAGE.startingBaseHp,
+      FUTURE: DAMAGE.startingBaseHp,
+    });
   });
   it('carries the same effects into the rematch', async () => {
     t.services.session.bank = tinyBank;
@@ -617,7 +668,7 @@ describe('battle data', () => {
     const setup = { players, seed: 3, firstTeam: 'PAST' as const };
     const p = runLoadingStep(t.services, { next: SCENE_KEYS.battle, setup });
     await flush();
-    t.clock.advance(4100);
+    t.clock.advance(TIMING.loadingFirstMinMs + 100);
     await flush();
     t.clock.advance(300);
     return (await p).data as BattleSceneData;
