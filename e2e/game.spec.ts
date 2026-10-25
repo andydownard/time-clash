@@ -3,11 +3,13 @@
 // How the test reaches Victory without editing the app: the ?e2e=1 hook pins the seed and
 // reads state, but it cannot set health. So the test plays it out. For each shot it asks the
 // real game rules (src/game) which angle and power give a direct hit, then types that aim
-// with the arrow keys. Four direct hits (25 each) wipe out a base. Team Future shoots short
-// harmless shots, so it still takes its turns and answers its questions.
+// with the arrow keys. Full health is DAMAGE.startingBaseHp, so Team Past needs about five turns
+// of direct hits and Power Shots (the pace rule). Team Future shoots short harmless shots, so it
+// still takes its turns and answers its questions.
 //
 // Reload answers: the test looks the question up in the bank on disk to know the right
 // choice. "Slow" moves the page clock forward 9 seconds (window.__skew) instead of waiting.
+import { DAMAGE } from '../src/game/config';
 import { expect, test } from './fixtures';
 import {
   FUTURE_SIDE,
@@ -17,6 +19,7 @@ import {
   bannerSeen,
   watchBanner,
   playShots,
+  wearDown,
   readQuestion,
   readyUp,
   snap,
@@ -67,8 +70,9 @@ async function expectCover(page: import('@playwright/test').Page, testId: string
 }
 
 test('plays a full match: aim, fire, reload, pass, win, rematch', async ({ page, browserName }) => {
-  // A whole match under busy workers can pass 3 minutes. Triple the limit, no sleeps.
-  test.slow();
+  // A whole match is about five turns a side (the pace rule), and busy workers slow each one.
+  // Allow five times the usual limit, no sleeps.
+  test.setTimeout(5 * test.info().timeout);
   await toSetup(page);
   await saveShot(page, browserName, 'setup');
   await startMatch(page, PAST_SIDE, FUTURE_SIDE, SEED);
@@ -115,14 +119,14 @@ test('plays a full match: aim, fire, reload, pass, win, rematch', async ({ page,
   await saveShot(page, browserName, 'tumble');
   m = await snap(page);
   expect(m.stats.PAST.shotsFired).toBe(1);
-  expect(m.baseHp.FUTURE).toBe(90);
+  expect(m.baseHp.FUTURE).toBe(DAMAGE.startingBaseHp - DAMAGE.near);
 
   // Shot 2: a direct hit.
   await waitAiming(page, 1);
   await takeShot(page, 'direct');
   await expect(tid(page, 'reload-modal')).toBeVisible({ timeout: 45_000 });
   m = await snap(page);
-  expect(m.baseHp.FUTURE).toBe(65);
+  expect(m.baseHp.FUTURE).toBe(DAMAGE.startingBaseHp - DAMAGE.near - DAMAGE.direct);
   expect(m.turn).toMatchObject({ phase: 'RELOAD', shotsFired: 2 });
 
   // ----- Reload: nothing can skip it, and the third shot is impossible -----
@@ -195,7 +199,9 @@ test('plays a full match: aim, fire, reload, pass, win, rematch', async ({ page,
   await readyUp(page);
   await playShots(page, ['direct', 'direct']);
   await expect(tid(page, 'reload-modal')).toBeVisible({ timeout: 45_000 });
-  expect((await snap(page)).baseHp.FUTURE).toBe(15);
+  expect((await snap(page)).baseHp.FUTURE).toBe(
+    DAMAGE.startingBaseHp - DAMAGE.near - 3 * DAMAGE.direct,
+  );
   await answerReload(page, 'right-slow');
   await expect(tid(page, 'reload-feedback')).toContainText('+1 scrap! Nice work!');
   await waitPassScreen(page);
@@ -209,7 +215,10 @@ test('plays a full match: aim, fire, reload, pass, win, rematch', async ({ page,
   await answerReload(page, 'right-fast');
   await waitPassScreen(page);
 
-  // ----- Turn 3, Team Past: the last hit ends the match on the spot -----
+  // ----- Team Past wears the base down until one direct hit is left (the pace rule) -----
+  await wearDown(page);
+
+  // ----- Team Past: the last hit ends the match on the spot -----
   await readyUp(page);
   await takeShot(page, 'direct');
   await expect(tid(page, 'victory')).toBeVisible({ timeout: 45_000 });
@@ -226,7 +235,7 @@ test('plays a full match: aim, fire, reload, pass, win, rematch', async ({ page,
   m = await snap(page);
   expect(m.status).toBe('PLAYING');
   expect(m.seed).toBe(SEED + 1);
-  expect(m.baseHp).toEqual({ PAST: 100, FUTURE: 100 });
+  expect(m.baseHp).toEqual({ PAST: DAMAGE.startingBaseHp, FUTURE: DAMAGE.startingBaseHp });
   expect(m.scrap).toEqual({ PAST: 0, FUTURE: 0 });
   expect(m.turn).toMatchObject({ phase: 'PASS_SCREEN', team: 'FUTURE', turnNumber: 0 });
   expect(m.players.map((p) => p.name)).toEqual(['Alex', 'Sam']);

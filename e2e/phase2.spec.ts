@@ -64,8 +64,9 @@ test('Team Past places its castle on the Battle Plan by keyboard, and it is reme
   await toCamp(page);
   await tid(page, 'camp-start').click();
   await expect(page.locator('[data-screen="plan"]')).toContainText('Alex, place your castle');
-  // A family with no castle place yet sees none picked (the castle stays where it always was).
-  for (const id of ['hillFort', 'villageWall', 'drawbridge'])
+  // A new family sees Village Wall picked, the default, and only that one.
+  await expect(tid(page, 'plan-fort-villageWall')).toHaveAttribute('aria-checked', 'true');
+  for (const id of ['hillFort', 'drawbridge'])
     await expect(tid(page, `plan-fort-${id}`)).toHaveAttribute('aria-checked', 'false');
   const card = tid(page, 'plan-fort-drawbridge');
   const box = (await card.boundingBox())!;
@@ -73,6 +74,7 @@ test('Team Past places its castle on the Battle Plan by keyboard, and it is reme
   await card.focus();
   await page.keyboard.press('Space');
   await expect(card).toHaveAttribute('aria-checked', 'true');
+  await expect(tid(page, 'plan-fort-villageWall')).toHaveAttribute('aria-checked', 'false');
   await expect(tid(page, 'plan-spot-foodTruck')).toHaveAttribute('aria-checked', 'true');
   await saveShot(page, browserName, 'plan-castle');
   await tid(page, 'plan-go').click();
@@ -187,8 +189,8 @@ test('evasion: the Stone Wall stands during Team Future’s turn, and the turn s
   const s = await snap(page);
   expect(s.turn.team).toBe('FUTURE');
   expect(s.evasion.PAST.phase).toBe('active');
-  // Aspen hill, the food truck wall, and now the stone wall.
-  expect((await layout(page))!.terrain.obstacles).toHaveLength(3);
+  // Aspen hill, the food truck wall, the default Village Wall, and now the stone wall.
+  expect((await layout(page))!.terrain.obstacles).toHaveLength(4);
   // Team Future's own button is the Hoverboard Dodge.
   await expect(button).toHaveAttribute('aria-label', /Hoverboard Dodge: ready/);
 });

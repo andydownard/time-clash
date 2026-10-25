@@ -32,7 +32,7 @@ const status = () => q(TEST_IDS.planStatus)!.textContent;
 
 describe('Battle Plan screen', () => {
   it('has a title, three places and three base spots, with the saved plan picked', () => {
-    open(campWith(0), { biome: 'cherry', spot: 'bridge' });
+    open(campWith(0), { biome: 'cherry', spot: 'bridge', fort: 'hillFort' });
     const screen = document.querySelector('[data-screen="plan"]')!;
     expect(screen.querySelector('h1')!.textContent).toBe(PLAN_COPY.title);
     for (const b of ['aspen', 'cherry', 'temple']) expect(q(TEST_IDS.planBiome(b))).not.toBeNull();
@@ -57,7 +57,7 @@ describe('Battle Plan screen', () => {
     expect(checked(TEST_IDS.planBiome('temple'))).toBe('true');
     click(q(TEST_IDS.planGo));
     await o.done;
-    expect(o.result()).toEqual({ biome: 'temple', spot: 'skyscraper' });
+    expect(o.result()).toEqual({ biome: 'temple', spot: 'skyscraper', fort: 'villageWall' });
     expect(document.querySelector('[data-screen="plan"]')).toBeNull();
   });
 
@@ -101,14 +101,36 @@ describe('Team Past places its castle', () => {
       );
   });
 
-  it('an old plan with no castle place picks none, and Lock it in! adds none', async () => {
-    const o = open(campWith(0), { biome: 'aspen', spot: 'bridge' });
-    for (const id of ['hillFort', 'villageWall', 'drawbridge'])
-      expect(checked(TEST_IDS.planFort(id))).toBe('false');
+  it('a new family sees Village Wall picked, and exactly one castle card checked', () => {
+    open(campWith(0));
+    expect(checked(TEST_IDS.planFort('villageWall'))).toBe('true');
+    const on = qa('[data-screen="plan"] [data-testid^="plan-fort-"]').filter(
+      (el) => el.getAttribute('aria-checked') === 'true',
+    );
+    expect(on.length).toBe(1);
+  });
+
+  it('an old plan with no castle place picks Village Wall, and Lock it in! returns it', async () => {
+    const old = { biome: 'aspen', spot: 'bridge' } as unknown as BattlePlan;
+    const o = open(campWith(0), old);
+    expect(checked(TEST_IDS.planFort('villageWall'))).toBe('true');
+    expect(checked(TEST_IDS.planFort('hillFort'))).toBe('false');
+    expect(checked(TEST_IDS.planFort('drawbridge'))).toBe('false');
     click(q(TEST_IDS.planGo));
     await o.done;
-    expect(o.result()).toEqual({ biome: 'aspen', spot: 'bridge' });
-    expect(o.result()).not.toHaveProperty('fort');
+    expect(o.result()).toEqual({ biome: 'aspen', spot: 'bridge', fort: 'villageWall' });
+  });
+
+  it('a family can go back to Village Wall after picking another place', async () => {
+    const o = open(campWith(0));
+    click(q(TEST_IDS.planFort('drawbridge')));
+    expect(checked(TEST_IDS.planFort('villageWall'))).toBe('false');
+    click(q(TEST_IDS.planFort('villageWall')));
+    expect(checked(TEST_IDS.planFort('villageWall'))).toBe('true');
+    expect(checked(TEST_IDS.planFort('drawbridge'))).toBe('false');
+    click(q(TEST_IDS.planGo));
+    await o.done;
+    expect(o.result()).toEqual(DEFAULT_PLAN);
   });
 
   it('shows the saved castle place picked', () => {

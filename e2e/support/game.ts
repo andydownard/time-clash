@@ -2,6 +2,7 @@
 // The ?e2e=1 hook is used only to pin the seed and to read state (never questions).
 import type { Locator, Page } from '@playwright/test';
 import { expect } from '../fixtures';
+import { BONUS, DAMAGE } from '../../src/game/config';
 import type { AimInput, BlastResult, Match, Subject, Team } from '../../src/game/types';
 import { findAim, pressesFor } from './aim';
 import { rightChoiceIndex } from './bank';
@@ -229,6 +230,33 @@ export async function quietTurn(page: Page): Promise<void> {
   await expect(tid(page, 'reload-modal')).toBeVisible({ timeout: 20_000 });
   await answerReload(page, 'right-fast');
   await waitPassScreen(page);
+}
+
+/**
+ * Full health is several turns of hits (the pace rule), so a test that plays to Victory first
+ * wears the base down. Start on the shooter's pass screen. The shooter lands direct hits and
+ * Power Shots, each only while it leaves the other base above 0, and the other team takes quiet
+ * turns. Ends on the shooter's pass screen with the other base at one direct hit or less.
+ */
+export async function wearDown(page: Page): Promise<void> {
+  const shooter = (await snap(page)).turn.team;
+  const target: Team = shooter === 'PAST' ? 'FUTURE' : 'PAST';
+  const powerHit = Math.round(DAMAGE.direct * BONUS.damageMultiplier);
+  const hp = async (): Promise<number> => (await snap(page)).baseHp[target];
+  const aimFor = async (hit: number): Promise<BlastResult> =>
+    (await hp()) > hit ? 'direct' : 'miss';
+  while ((await hp()) > DAMAGE.direct) {
+    await readyUp(page);
+    await takeShot(page, await aimFor(DAMAGE.direct));
+    await waitAiming(page, 1);
+    await takeShot(page, await aimFor(DAMAGE.direct));
+    await expect(tid(page, 'reload-modal')).toBeVisible({ timeout: 45_000 });
+    await answerReload(page, 'right-fast');
+    await takeBonusShot(page, await aimFor(powerHit));
+    await waitPassScreen(page);
+    await quietTurn(page);
+  }
+  expect(await hp()).toBeGreaterThan(0);
 }
 
 /**

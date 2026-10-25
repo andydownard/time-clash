@@ -56,7 +56,7 @@ describe('Upgrade screen', () => {
       'New Castle Gate',
     ]);
     expect(stats('tower')).toBe(
-      `${upgradeEffect('maxHp', 12)} · ${UPGRADE_COPY.level(0, UPGRADE_MAX_LEVEL)}`,
+      `${upgradeEffect('maxHp', upgradeById('tower')!.perLevel)} · ${UPGRADE_COPY.level(0, UPGRADE_MAX_LEVEL)}`,
     );
     expect(badge('tower')).toBe(UPGRADE_COPY.cost(upgradeById('tower')!.cost[0]));
   });

@@ -19,18 +19,23 @@ const humans: Players = [
 ];
 
 describe('practiceEnabled', () => {
-  it('is off by default and follows the config flag', () => {
-    expect(PRACTICE_BOT.enabled).toBe(false);
-    expect(practiceEnabled('')).toBe(false);
-    expect(practiceEnabled('?e2e=1')).toBe(false);
+  it('is on for everyone and follows the config flag', () => {
+    expect(PRACTICE_BOT.enabled).toBe(true);
+    expect(practiceEnabled('')).toBe(true);
+    expect(practiceEnabled('?e2e=1')).toBe(true);
+    expect(practiceEnabled('', false)).toBe(false);
     expect(practiceEnabled('', true)).toBe(true);
   });
-  it('?computer=1 turns it on, nothing else does', () => {
-    expect(practiceEnabled('?computer=1')).toBe(true);
-    expect(practiceEnabled('?e2e=1&computer=1')).toBe(true);
+  it('?computer=0 turns it off and ?computer=1 turns it on, whatever the flag', () => {
     expect(practiceEnabled('?computer=0')).toBe(false);
-    expect(practiceEnabled('?computer=true')).toBe(false);
-    expect(practiceEnabled('?computer')).toBe(false);
+    expect(practiceEnabled('?e2e=1&computer=0')).toBe(false);
+    expect(practiceEnabled('?computer=0', true)).toBe(false);
+    expect(practiceEnabled('?computer=1', false)).toBe(true);
+    expect(practiceEnabled('?e2e=1&computer=1', false)).toBe(true);
+  });
+  it('any other value falls back to the flag', () => {
+    for (const q of ['?computer=true', '?computer', '?computer=no', '?computer=01'])
+      for (const flag of [true, false]) expect(practiceEnabled(q, flag)).toBe(flag);
   });
 });
 
