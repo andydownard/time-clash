@@ -96,7 +96,7 @@ export function showForge(ctx: UiCtx, options: ForgeOptions): Promise<void> {
     });
     const make = h(doc, 'button', {
       type: 'button',
-      class: 'tc-btn tc-btn-primary tc-forge-make',
+      class: 'tc-btn tc-btn-neutral tc-forge-make',
       'data-testid': TEST_IDS.forgeMake,
       text: `★ ${FORGE_COPY.makeOwn}`,
     });
