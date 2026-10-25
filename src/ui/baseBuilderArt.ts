@@ -162,6 +162,26 @@ export function staticMarkup(id: string, rot: number, left: number, top: number)
   return `<g transform="${placeTransform(def, rot, left, top)}">${art(def.id, def.w * CELL, def.h * CELL)}</g>`;
 }
 
+/**
+ * One brick as a whole SVG document, turned as placed, filling a `width` by `height` picture.
+ * The battle draws built bases with it, so a brick looks the same as in the builder (materials,
+ * patterns and outlines). Pure text: only fixed piece ids go in. Empty for an unknown piece.
+ */
+export function brickSvg(id: string, rot: number, width: number, height: number): string {
+  const def = pieceById(id);
+  if (!def) return '';
+  const f = footprint(def, rot as 0 | 90 | 180 | 270);
+  const W = f.w * CELL;
+  const H = f.h * CELL;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${Math.max(1, Math.round(width))}" height="${Math.max(1, Math.round(height))}" preserveAspectRatio="none">${staticMarkup(id, rot, 0, 0)}</svg>`;
+}
+
+/** A mounted weapon on its round pad, as a whole SVG document `size` px square (battle). */
+export function weaponPadSvg(id: string, size: number): string {
+  const s = Math.max(1, Math.round(size));
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-4 -4 56 56" width="${s}" height="${s}"><circle cx="24" cy="24" r="25" fill="#f7ebcb" stroke="${INK}" stroke-width="4"/><g transform="translate(6 6) scale(0.75)">${weaponInner(id)}</g></svg>`;
+}
+
 /** A tray icon for one brick: the upright piece, fitted to a 100 by 80 box. */
 export function trayIcon(doc: Document, def: PieceDef): SVGElement {
   const W = def.w * CELL;

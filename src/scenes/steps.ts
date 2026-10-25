@@ -6,6 +6,7 @@ import { TIMING } from '../game/config';
 import { creditMatch } from '../game/economy';
 import { TEAMS, type Players, type Team } from '../game/types';
 import { buildLayout } from '../game/battlefield';
+import { battleBasesFor } from '../game/builtBase';
 import { matchAmmoFor, matchEffectsFor, type CampState } from '../game/loadout';
 import { loadBases, loadCamp, loadPlan } from '../storage/storage';
 import type { QuestionBank } from '../questions/types';
@@ -139,6 +140,8 @@ export async function runCampStep(s: AppServices): Promise<SceneRoute> {
   const setup = buildMatchSetup(players, s.newSeed(), matchEffectsFor(camp, names), {
     layout: buildLayout(plan),
     ammo: matchAmmoFor(camp, names),
+    // Each player's chosen base from Build Base goes into battle (BASE_IN_BATTLE).
+    bases: battleBasesFor(loadBases(s.storage), names),
     ...(s.flags?.squads === undefined ? {} : { squads: s.flags.squads }),
     ...(s.flags?.disturbances === undefined ? {} : { disturbances: s.flags.disturbances }),
   });

@@ -15,7 +15,7 @@ import type {
 import type { BIOME_IDS, FORT_IDS, SPOT_IDS } from './config';
 import type { BirdPath, FlightDisturbance } from './disturbance';
 import type { EvasionId, EvasionPhase } from './evasion';
-import type { Placed, ResolvedSpot, SpotRole } from './baseBuilder';
+import type { Placed, ResolvedSpot, Rotation, SpotRole } from './baseBuilder';
 import type { MatchEffects } from './loadout';
 import type { MatchLength } from './matchLength';
 import type { UnitId } from './units';
@@ -297,6 +297,10 @@ export type BrickView = {
   /** In battlefield world px. */
   box: Rect;
   alive: boolean;
+  /** How the brick is turned in the builder (the scene draws it so). */
+  rot?: Rotation;
+  /** True for a brick on the foundation. The base stands while one of these stands. */
+  grounded?: boolean;
 };
 
 export type MountView = {
@@ -318,7 +322,14 @@ export type MountView = {
   canFire: boolean;
 };
 
-export type SpotView = { index: number; x: number; y: number; weapon: string | null };
+export type SpotView = {
+  index: number;
+  x: number;
+  y: number;
+  weapon: string | null;
+  /** The brick the pad sits on (the highest one under it), or null on the foundation. */
+  brick?: BrickId | null;
+};
 
 export type BrickHit = { id: BrickId; damage: number; hp: number; fell: boolean };
 export type MountHit = { team: Team; mount: MountId; damage: number; hp: number };
@@ -610,7 +621,15 @@ export type DashResult = DashOutcome;
  */
 export type StandBonk = Omit<StandBeat, 'target'> & {
   target:
-    | { kind: 'base'; team: Team; damage: number; blocked?: boolean; dodged?: boolean }
+    | {
+        kind: 'base';
+        team: Team;
+        damage: number;
+        blocked?: boolean;
+        dodged?: boolean;
+        /** A built base: what the bonk did to its bricks. */
+        built?: BuiltEvents;
+      }
     | Extract<StandBeat['target'], { kind: 'helper' }>;
 };
 

@@ -37,16 +37,21 @@ import {
   winnerOfUnits,
 } from './damage';
 import {
+  builtHealth,
   createBuilt,
   cutAtWalls,
   flightLayout,
   freshEvents,
+  frontBrick,
   guardFor,
   hasBuilt,
   hitWall,
   isMountId,
   mountAim,
   mountOf,
+  nearestBrick,
+  repairBricks,
+  standsOnGround,
   viewBricks,
   viewMounts,
   viewSpots,
@@ -89,6 +94,7 @@ import type {
   AimInput,
   BlastOutcome,
   BlastResult,
+  ChosenBase,
   CreateMatch,
   DashResult,
   FireOptions,
@@ -135,13 +141,40 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
   const layout = options.layout ?? PHASE1_LAYOUT;
   const firstTeam = options.firstTeam ?? 'PAST';
   const characterHealth = options.characterHealth ?? CHARACTER_HEALTH.enabled;
-  // Built bases only count with character health: the win is still "all fighters out".
-  const baseInBattle = (options.baseInBattle ?? BASE_IN_BATTLE.enabled) && characterHealth;
-  const built = baseInBattle ? createBuilt(options.bases) : null;
+  const effects = options.effects ?? DEFAULT_EFFECTS;
+  // A base's full health with no built base: the upgrades, scaled by the match length.
+  const maxHp: Record<Team, number> = {
+    PAST: scaleHealth(effects.PAST.maxHp, options.matchLength),
+    FUTURE: scaleHealth(effects.FUTURE.maxHp, options.matchLength),
+  };
+  const baseInBattle = options.baseInBattle ?? BASE_IN_BATTLE.enabled;
+  // With character health the win is still "all fighters out". Without it (the live game) the
+  // bricks are the base health: only a base with a brick on the foundation takes part.
+  const brickMode = baseInBattle && !characterHealth;
+  const brickBases: Partial<Record<Team, ChosenBase>> = {};
+  if (brickMode) {
+    for (const t of ['PAST', 'FUTURE'] as const) {
+      if (standsOnGround(options.bases?.[t])) brickBases[t] = options.bases?.[t] as ChosenBase;
+    }
+  }
+  const built = !baseInBattle
+    ? null
+    : brickMode
+      ? brickBases.PAST || brickBases.FUTURE
+        ? createBuilt(brickBases, { layout, flatHp: maxHp })
+        : null
+      : createBuilt(options.bases);
   const builtTeams: Record<Team, boolean> = {
     PAST: built ? hasBuilt(built.PAST) : false,
     FUTURE: built ? hasBuilt(built.FUTURE) : false,
   };
+  /** Base health mode: the teams whose bricks are their base health. */
+  const brickTeam = (t: Team): boolean => brickMode && builtTeams[t];
+  if (built && brickMode) {
+    for (const t of ['PAST', 'FUTURE'] as const) {
+      if (builtTeams[t]) maxHp[t] = builtHealth(built[t]);
+    }
+  }
   const flightLay = built ? flightLayout(layout, builtTeams) : layout;
   const selectedMount: Record<Team, MountId | null> = { PAST: null, FUTURE: null };
   /** Shield generators that already blocked a hit this turn. */
@@ -149,8 +182,8 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
   /** What the shell in the air was fired by, for its damage to bricks. */
   let source: ShellSource | null = null;
 
-  // Squads S1: a launcher and a dasher per side. Off with the flag, with character health, or with built bases.
-  const squadsOn = (options.squads ?? SQUADS.enabled) && !characterHealth && !built;
+  // Squads S1: a launcher and a dasher per side. Off with the flag or with character health.
+  const squadsOn = (options.squads ?? SQUADS.enabled) && !characterHealth;
   /** A dasher's full health: a fighter's, scaled by the match length like a fighter's. */
   const dasherHp = scaleHealth(CHARACTER_HEALTH.hp, options.matchLength);
   let crew: Crew = startingCrew(dasherHp);
@@ -161,8 +194,7 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
    * (its start included) the next own turn; during the enemy's turn, the one after his next, so
    * a tumbled dasher always sits out one full own turn.
    */
-  const readyAfterRest = (team: Team): number =>
-    ownTurns[team] + (turn.team === team ? 1 : 2);
+  const readyAfterRest = (team: Team): number => ownTurns[team] + (turn.team === team ? 1 : 2);
   const requireSquads = (): void => {
     if (!squadsOn) throw new IllegalCommandError('flag_off');
   };
@@ -177,11 +209,6 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
   let shotInTurn = 0;
   let status: Match['status'] = 'PLAYING';
   let winner: Team | null = null;
-  const effects = options.effects ?? DEFAULT_EFFECTS;
-  const maxHp: Record<Team, number> = {
-    PAST: scaleHealth(effects.PAST.maxHp, options.matchLength),
-    FUTURE: scaleHealth(effects.FUTURE.maxHp, options.matchLength),
-  };
   const maxUnitHp = scaleHealth(CHARACTER_HEALTH.hp, options.matchLength);
   let baseHp: Record<Team, number> = { ...maxHp };
   /** Hits each base's force field can still block this match. */
@@ -506,7 +533,19 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
           damage = 0;
           blocked = true;
         }
-        baseHp = { ...baseHp, [target]: Math.max(0, baseHp[target] - damage) };
+        let ev: ReturnType<typeof freshEvents> | null = null;
+        if (brickTeam(target)) {
+          // A built base: the bonk chips the brick on the ground nearest the helper.
+          const bt = (built as NonNullable<typeof built>)[target];
+          ev = freshEvents();
+          const front = frontBrick(bt);
+          if (damage > 0 && front) hitWall(bt, { kind: 'brick', id: front }, damage, ev);
+          const left = builtHealth(bt);
+          damage = baseHp[target] - left;
+          baseHp = { ...baseHp, [target]: left };
+        } else {
+          baseHp = { ...baseHp, [target]: Math.max(0, baseHp[target] - damage) };
+        }
         const won = winnerOf(baseHp);
         if (won) {
           status = 'OVER';
@@ -520,6 +559,7 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
             damage,
             ...(blocked ? { blocked: true } : {}),
             ...(dodged ? { dodged: true } : {}),
+            ...(ev ? { built: ev } : {}),
           },
         });
       }
@@ -687,12 +727,27 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       const target = otherTeam(team);
       const flight = inFlight as ShotResult;
       inFlight = null;
-      if (built) return landBuilt(team, target, flight, isBonus);
+      if (built && characterHealth) return landBuilt(team, target, flight, isBonus);
       if (characterHealth) return landOnFighters(team, target, flight, isBonus);
-      const flewAway = flight.hit.kind === 'out_of_bounds' || flight.hit.kind === 'timeout';
+      // A shell stopped by a brick landed there, whatever its flight would have done after.
+      const flewAway =
+        !flight.stoppedBy && (flight.hit.kind === 'out_of_bounds' || flight.hit.kind === 'timeout');
+      const bricks = brickTeam(target) ? (built as NonNullable<typeof built>)[target] : null;
+      // Base health mode: a shell is scored on the brick it stopped at, or the closest brick.
+      const scoredOn = bricks
+        ? flight.stoppedBy?.kind === 'brick'
+          ? { id: flight.stoppedBy.id, box: null }
+          : nearestBrick(bricks, flight.landing)
+        : null;
       const result: BlastResult = flewAway
         ? 'miss'
-        : classifyBlast(flight.landing, layout.bases[target], radiusScale(inFlightAmmo));
+        : bricks
+          ? !scoredOn
+            ? 'miss'
+            : scoredOn.box
+              ? classifyBlast(flight.landing, scoredOn.box, radiusScale(inFlightAmmo))
+              : 'direct'
+          : classifyBlast(flight.landing, layout.bases[target], radiusScale(inFlightAmmo));
       const tumble = result === 'near';
       const shooter = effects[team];
       const defender = effects[target];
@@ -724,7 +779,17 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
         damage = 0;
         blocked = true;
       }
-      baseHp = { ...baseHp, [target]: Math.max(0, baseHp[target] - damage) };
+      let ev: ReturnType<typeof freshEvents> | null = null;
+      if (bricks) {
+        // The brick takes the hit and falls at 0 with what it held up. The HUD shows what is left.
+        ev = freshEvents();
+        if (damage > 0 && scoredOn) hitWall(bricks, { kind: 'brick', id: scoredOn.id }, damage, ev);
+        const left = builtHealth(bricks);
+        damage = baseHp[target] - left;
+        baseHp = { ...baseHp, [target]: left };
+      } else {
+        baseHp = { ...baseHp, [target]: Math.max(0, baseHp[target] - damage) };
+      }
       if (result === 'direct') stats[team].directHits += 1;
       if (result === 'near') stats[team].nearHits += 1;
       const won = winnerOf(baseHp);
@@ -756,6 +821,7 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
         ...(dodged ? { dodged: true } : {}),
         tumble,
         bubbleIndex,
+        ...(ev ? { built: ev } : {}),
         ...(dasher ? { dasher } : {}),
       };
     },
@@ -792,7 +858,12 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       guardUsed.clear();
       // The squad patches up the base of the team whose turn just ended.
       const repair = effects[ending].repair;
-      if (repair > 0) {
+      if (repair > 0 && brickTeam(ending) && status !== 'OVER') {
+        // A built base: the squad patches its most hurt brick.
+        const bt = (built as NonNullable<typeof built>)[ending];
+        repairBricks(bt, repair);
+        baseHp = { ...baseHp, [ending]: builtHealth(bt) };
+      } else if (repair > 0) {
         baseHp = { ...baseHp, [ending]: Math.min(maxHp[ending], baseHp[ending] + repair) };
       }
       wind = windForTurn(seed, turn.turnNumber);

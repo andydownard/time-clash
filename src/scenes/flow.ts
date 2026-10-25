@@ -52,7 +52,7 @@ export function buildMatchSetup(
   players: Players,
   seed: number,
   effects?: MatchEffects,
-  extra: Pick<MatchOptions, 'layout' | 'ammo' | 'squads' | 'disturbances'> = {},
+  extra: Pick<MatchOptions, 'layout' | 'ammo' | 'squads' | 'disturbances' | 'bases'> = {},
 ): MatchSetup {
   return {
     players,
@@ -61,6 +61,8 @@ export function buildMatchSetup(
     ...(effects ? { effects } : {}),
     ...(extra.layout ? { layout: extra.layout } : {}),
     ...(extra.ammo ? { ammo: extra.ammo } : {}),
+    // Built bases: only a side that chose a base with bricks on the ground brings one.
+    ...(extra.bases && (extra.bases.PAST || extra.bases.FUTURE) ? { bases: extra.bases } : {}),
     ...(extra.squads === undefined ? {} : { squads: extra.squads }),
     ...(extra.disturbances === undefined ? {} : { disturbances: extra.disturbances }),
   };

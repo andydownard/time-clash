@@ -7,6 +7,7 @@ import type { SeedSource } from './flow';
 import type { Session } from './registry';
 import { controllerFrom } from './flow';
 import type { DasherDebug } from './battle/dasherLayer';
+import type { BaseLayerDebug } from './battle/baseLayer';
 
 export type TimeClashHook = {
   version: 1;
@@ -40,6 +41,8 @@ export type TimeClashHook = {
   birds(): { clockMs: number; birds: { x: number; y: number }[] } | null;
   /** Squads: where each walking dasher is drawn on the field (world px), and what he is doing. */
   dashers(): DasherDebug[];
+  /** Built bases: how many bricks each side has drawn, standing and crumbled, and their boxes. */
+  bricks(): BaseLayerDebug[];
 };
 
 export function e2eEnabled(search: string, mode: string): boolean {
@@ -83,6 +86,7 @@ export type ActiveScene = {
     label?: { x: number; y: number; w: number; h: number } | null;
   };
   dasherState?: () => DasherDebug[];
+  builtState?: () => BaseLayerDebug[];
   birdState?: () => { clockMs: number; birds: { x: number; y: number }[] } | null;
 };
 
@@ -135,6 +139,11 @@ export function installTestHook(win: { __timeclash?: TimeClashHook }, deps: Hook
         .find((s) => s.dasherState)
         ?.dasherState?.() ?? [],
     birds: () => deps.activeScenes()[0]?.birdState?.() ?? null,
+    bricks: () =>
+      deps
+        .activeScenes()
+        .find((s) => s.builtState)
+        ?.builtState?.() ?? [],
   };
   return true;
 }

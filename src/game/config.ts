@@ -701,12 +701,13 @@ export const BASE_BUILDER = {
 /**
  * The bricks and weapon spots a player built take part in the match (owner decision, 2026-10-20:
  * "the bricks take hits", weapons on spots are real firing positions, a hit brick falls away, a
- * weapon falls with its brick). Nobody is hurt: bricks puff and tumble. Off until the scene draws
- * it. Read only as the default of `MatchOptions.baseInBattle`; tests pass the option. It only
- * works together with `CHARACTER_HEALTH` (the win is still "all fighters out").
+ * weapon falls with its brick). Nobody is hurt: bricks puff and tumble. Read only as the default of
+ * `MatchOptions.baseInBattle`; tests pass the option. With character health on, the win is still
+ * "all fighters out". With it off (the live game), the bricks are the base health.
  */
 export const BASE_IN_BATTLE = {
-  enabled: false,
+  /** On for everyone (owner decision, 2026-10-25). With character health off it plays in base health. */
+  enabled: true,
   /** Battlefield pixels per build step. The plot is 192 by 88 steps, so 384 by 176 px. */
   scale: 2,
   /** Where the plot's outer edge sits, in world px from its own side of the screen. */
@@ -742,6 +743,21 @@ export const BASE_IN_BATTLE = {
   flierRoles: ['balloon', 'helicopter'] as readonly string[],
   /** The Computer player picks a mounted weapon this often when it has one that can fire. */
   botMountChance: 0.5,
+  /**
+   * Base health mode (character health off): the base is drawn inside the old base footprint, so
+   * the aim, the fighters, the field and the HUD never move. It is never drawn bigger than this
+   * many px a build step (a cell is 8 steps, so 16 px).
+   */
+  fitMaxScale: 2,
+  /**
+   * Base health mode: how much base health a built base starts with (docs/GAME_SPEC.md "How a
+   * built base plays"). The saved brick hit points times `perHp`, held between `band.min` and
+   * `band.max` times the flat full health (400 at Normal, with match length and upgrades), so a
+   * tiny base never makes a match short and a huge one never makes it endless. The bricks on the
+   * foundation share `foundationShare` of it by their strength, the bricks above share the rest.
+   * Perfect aim does 88 a turn, so a foundation of at least 360 needs five turns of hits.
+   */
+  health: { perHp: 1.5, band: { min: 1, max: 1.25 }, foundationShare: 0.9 },
 } as const;
 
 // ---------- Disturbances: birds, gusts and recoil ----------

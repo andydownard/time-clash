@@ -24,6 +24,7 @@ import { createRng } from '../../game/rng';
 import type {
   AimInput,
   BlastOutcome,
+  BuiltEvents,
   MatchController,
   Rng,
   ShotResult,
@@ -398,6 +399,7 @@ export class BattleFlow {
             });
           }
           this.live();
+          await this.playBricks(t.team, t.built);
         } else if (t.tumbled) {
           await this.dasherTumbles(foe, spotOf.get(foe) ?? b.to, t.bubbleIndex);
         }
@@ -537,6 +539,7 @@ export class BattleFlow {
     if ((ammo === 'confetti' || ammo === 'plasma') && outcome.result !== 'miss') impact.kind = ammo;
     await view.playImpact(impact);
     this.live();
+    await this.playBricks(outcome.target, outcome.built);
     await this.deps.wait(IMPACT_BEAT_MS);
     this.live();
 
@@ -1008,6 +1011,15 @@ export class BattleFlow {
   private originFor(team: Team) {
     const { match } = this.deps;
     return firingOrigin(team, match.snapshot().selected[team], match.layout);
+  }
+
+  /** Built bases: the hit bricks show their wear, and fallen ones crumble. Nothing if no bricks changed. */
+  private async playBricks(team: Team, built: BuiltEvents | undefined): Promise<void> {
+    if (!built || (built.brickHits.length === 0 && built.bricksFell.length === 0)) return;
+    const bricks = this.deps.match.snapshot().bricks;
+    if (!bricks) return;
+    await this.deps.view.playBricks?.(team, built.bricksFell, bricks);
+    this.live();
   }
 
   // ---------- helpers ----------

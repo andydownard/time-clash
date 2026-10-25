@@ -8,6 +8,8 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 - None open.
 
 ## P1
+- Built bases (on since 2026-10-25): mounted weapons on the four spots are drawn but do nothing in the base-health game. Next: list them in "Pick one" next to the fighters (a mount is `mount:0` to `mount:3`, rules already in `builtBase.ts`: `firingMounts`, `mountAim`, `volleyAngles`, `guardFor`), let them take hits, let the shield generator guard, draw their shots, and let the Computer player use them. Needs a panel review (one more choice on the bar). See docs/GAME_SPEC.md "How a built base plays".
+- Built bases: a fighter that stood on the old castle (the archer, Team Future's riders) can now stand in the air above a small built base. Owner to decide: keep, lower them onto the top brick, or draw a small stand.
 - Caption times now start at measured pauses in the real clips (`scripts/measure-intro-timings.py`). Exact word timing needs Kokoro timing output. Re-run the script after every voice re-render.
 
 ## P2

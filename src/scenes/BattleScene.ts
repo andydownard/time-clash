@@ -9,6 +9,8 @@ import type {
   AimInput,
   BattleLayout,
   BirdBump,
+  BrickId,
+  BrickView,
   GustHit,
   Rect,
   ShotResult,
@@ -74,6 +76,7 @@ import {
 import { FALL_DX, FALL_MS, REDUCED_FADE_MS, TEAM_COLOR } from './battle/visual';
 import { drawUnits, type UnitArt } from './battle/unitArt';
 import { DasherLayer, type DasherDebug } from './battle/dasherLayer';
+import { builtLayerFor, type BaseLayer, type BaseLayerDebug } from './battle/baseLayer';
 import type { SquadField } from './battle/types';
 import { UNITS, type UnitId } from '../game/units';
 import { ridesBase } from '../game/battlefield';
@@ -130,13 +133,21 @@ export class BattleScene extends Phaser.Scene implements BattleView {
       fontPx: this.fontPx,
     });
 
+    const start = this.data0.match.snapshot();
     for (const team of TEAMS) {
       const base: Rect = layout.bases[team];
       const spot = characterSpot(team, layout);
       const glow = this.add
         .ellipse(base.x + base.w / 2, base.y + base.h, base.w + 90, 46, TEAM_COLOR[team], 0.6)
         .setVisible(false);
-      const art: BaseArt = team === 'PAST' ? drawCastle(this, base) : drawBase(this, base);
+      // A built base is drawn from its bricks (battle/baseLayer.ts) in place of the castle or base.
+      const layer = builtLayerFor(this, team, start, base, () => this.reduced());
+      if (layer) this.builtLayers[team] = layer;
+      const art: BaseArt = layer
+        ? { container: layer.container, sway: [], pulse: [] }
+        : team === 'PAST'
+          ? drawCastle(this, base)
+          : drawBase(this, base);
       this.baseArts[team] = art;
       this.damage[team] = createDamageArt(this, art.container, base, () => this.reduced());
       this.sway.push(...art.sway);
@@ -233,6 +244,8 @@ export class BattleScene extends Phaser.Scene implements BattleView {
     this.statusArt.sync(status);
     this.lastStatus = status;
     for (const t of TEAMS) {
+      // A built base shows its wear on its own bricks.
+      if (this.builtLayers[t]) continue;
       const stage = damageStage(status.baseHp[t], status.maxBaseHp?.[t] ?? 100);
       // Marks only go down here (a new match). Playing a hit adds them after its explosion.
       if (stage < this.damage[t].stage()) this.damage[t].setStage(stage);
@@ -396,7 +409,9 @@ export class BattleScene extends Phaser.Scene implements BattleView {
       ]);
       if (wipedOut) await playBaseBlast(this, base, target);
     }
-    if (wipedOut) {
+    if (this.builtLayers[target]) {
+      // A built base never blows away whole: its bricks crumble one by one (playBricks).
+    } else if (wipedOut) {
       this.blowUpBase(target);
     } else if (status && info.result === 'direct') {
       const stage = damageStage(hp, status.maxBaseHp?.[target] ?? 100);
@@ -569,6 +584,25 @@ export class BattleScene extends Phaser.Scene implements BattleView {
     });
   }
 
+  // ---------- Built bases (battle/baseLayer.ts) ----------
+
+  playBricks(
+    team: Team,
+    fell: readonly BrickId[],
+    bricks: Readonly<Record<BrickId, BrickView>>,
+  ): Promise<void> {
+    return this.builtLayers[team]?.update(bricks, fell) ?? Promise.resolve();
+  }
+
+  /** Read by the e2e hook (never in production). */
+  builtState = (): BaseLayerDebug[] =>
+    TEAMS.flatMap((t) => {
+      const l = this.builtLayers[t];
+      return l ? [l.state()] : [];
+    });
+
+  private builtLayers: Partial<Record<Team, BaseLayer>> = {};
+
   // ---------- Squads: the walking dashers (battle/dasherLayer.ts) ----------
 
   syncSquads(field: SquadField | null): void {
@@ -681,6 +715,8 @@ export class BattleScene extends Phaser.Scene implements BattleView {
     this.wallKey = '[]';
     this.dashers?.destroy();
     this.dashers = null;
+    for (const t of TEAMS) this.builtLayers[t]?.destroy();
+    this.builtLayers = {};
     this.disturb?.destroy();
     this.disturb = null;
     this.dragHandler = null;

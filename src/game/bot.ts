@@ -74,13 +74,16 @@ const solve = (
   mark?: { id: UnitId; box: Rect },
   /** Angles this shooter may use (a mounted weapon). Default: 15 to 85. */
   range?: { min: number; max: number },
+  /** A built base to aim at (base health mode): the box around its standing bricks. */
+  baseBox?: Rect,
 ): AimInput => {
   const perLayout = solutions.get(layout) ?? new Map<string, Solution>();
   solutions.set(layout, perLayout);
-  const key = `${team}|${origin.x}|${origin.y}|${wind}|${speedScale}|${mark?.id ?? 'base'}|${range ? `${range.min}-${range.max}` : 'any'}`;
+  const boxKey = baseBox ? `${baseBox.x},${baseBox.y},${baseBox.w},${baseBox.h}` : 'base';
+  const key = `${team}|${origin.x}|${origin.y}|${wind}|${speedScale}|${mark?.id ?? boxKey}|${range ? `${range.min}-${range.max}` : 'any'}`;
   const cached = perLayout.get(key);
   if (cached) return pickAim(cached, rng);
-  const target = mark ? mark.box : layout.bases[otherTeam(team)];
+  const target = mark ? mark.box : (baseBox ?? layout.bases[otherTeam(team)]);
   const { angleStepDeg, powerStep, fineRadius, fineStep } = PRACTICE_BOT.search;
   const tryAim = (angleDeg: number, power: number): Candidate => {
     const r = simulateShot({
@@ -138,6 +141,26 @@ const withStandingWall = (layout: BattleLayout, state: Match): BattleLayout => {
   return made;
 };
 
+/**
+ * A built base in base health mode: the box around the other team's standing bricks (plain to
+ * see on the field). Undefined when that team has no built base or nothing stands.
+ */
+export const standingBricksBox = (state: Match, foe: Team): Rect | undefined => {
+  if (state.characterHealth || !state.builtBase?.[foe] || !state.bricks) return undefined;
+  let x0 = Infinity;
+  let y0 = Infinity;
+  let x1 = -Infinity;
+  let y1 = -Infinity;
+  for (const b of Object.values(state.bricks)) {
+    if (b.team !== foe || !b.alive) continue;
+    x0 = Math.min(x0, b.box.x);
+    y0 = Math.min(y0, b.box.y);
+    x1 = Math.max(x1, b.box.x + b.box.w);
+    y1 = Math.max(y1, b.box.y + b.box.h);
+  }
+  return Number.isFinite(x0) ? { x: x0, y: y0, w: x1 - x0, h: y1 - y0 } : undefined;
+};
+
 /** Shot choice for any profile (a level, or the scripted player the simulation uses). */
 export const chooseShotWith = (
   state: Match,
@@ -191,6 +214,7 @@ export const chooseShotWith = (
     rng,
     mark,
     mount ? roleAngles(mount.role) : undefined,
+    mark ? undefined : standingBricksBox(state, otherTeam(side)),
   );
   const noisy = clampAim({
     angleDeg: Math.round(ideal.angleDeg + normal(rng) * profile.angleSpreadDeg),
