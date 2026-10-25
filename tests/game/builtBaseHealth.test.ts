@@ -216,7 +216,7 @@ describe('shots hit bricks', () => {
     expect(s.maxBaseHp.FUTURE).toBe(total);
     expect(s.baseHp.FUTURE).toBe(total);
     expect(s.maxBaseHp.PAST).toBe(DAMAGE.startingBaseHp);
-    // No mounted weapons in base health mode yet (BACKLOG.md).
+    // The typical test base has no weapons on its pads.
     expect(s.mounts?.FUTURE).toEqual([]);
   });
 
