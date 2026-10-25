@@ -119,8 +119,6 @@ export const BUTTONS = {
   back: 'Back',
   leaveGame: 'Leave game',
   stay: 'Stay',
-  next: 'Next',
-  ok: 'OK',
 } as const;
 
 // ---------- Pause and leaving a game ----------
@@ -139,7 +137,8 @@ export const TURN_SCREEN = {
 // ---------- Tap to Start ----------
 export const TAP_TO_START = {
   button: 'TAP TO PLAY',
-  helper: 'Tap the big button to start. Sound starts after you tap.',
+  /** The sound promise. The big button already says what to do. */
+  helper: 'Sound starts after you tap.',
 } as const;
 
 // ---------- Intro (How to Play) ----------
@@ -150,7 +149,6 @@ export const INTRO = {
   mute: 'Mute',
   unmute: 'Unmute',
   next: 'Next card',
-  done: "Let's go!",
   cardOf: (n: number, total: number): string => `Card ${n} of ${total}`,
 } as const;
 
@@ -180,7 +178,6 @@ export const LOADING = {
 // ---------- Setup ----------
 export const SETUP = {
   heading: 'Who is fighting?',
-  subtitle: 'Type your name. Pick your grade and subject.',
   nameLabel: 'Name',
   namePlaceholder: 'Type a name',
   gradeLabel: 'Grade',
@@ -193,7 +190,6 @@ export const SETUP = {
   matchLengthChips: { short: 'Short', normal: 'Normal', long: 'Long' } as Record<string, string>,
   matchLengthHelper: 'Short ends sooner. Long takes more hits. Questions stay the same.',
   start: "Let's clash!",
-  matchHelper: 'Questions will match your grade.',
   namesStay: 'Names stay on this device. Nothing is sent anywhere.',
   readBack: (team: string, grade: string, subject: string): string =>
     `${team}: ${grade}, ${subject}`,
@@ -323,7 +319,6 @@ export const HITS = {
   direct: 'Direct hit!',
   near: 'So close!',
   miss: 'Whoosh! Missed.',
-  blocks: 'Boing! Toy blocks everywhere!',
 } as const;
 
 /** More ways to say it. The scene picks with a seeded shuffle bag, so no line repeats back to back. */
@@ -420,7 +415,6 @@ export function tumblePool(team: Team): readonly string[] {
 // ---------- Victory ----------
 export const VICTORY = {
   heading: (name: string): string => `${name} wins!`,
-  teamWins: (team: Team): string => `${TEAM_NAMES[team]} wins!`,
   /**
    * Said by the losing side's fighter in the canvas speech bubble, never by Chrono. Chrono did not
    * fall over, so the line only fits in the mouth of the side that took the wipeout.
@@ -444,15 +438,6 @@ export const VICTORY = {
     scrapCollector: 'Scrap Collector',
     goodSport: 'Good Sport',
   } as Record<AwardId, string>,
-  statsHeading: 'Scoreboard',
-  shotsFired: 'Shots fired',
-  directHits: 'Direct hits',
-  questionsAnswered: 'Questions answered',
-  correctAnswers: 'Right answers',
-  fastestAnswer: 'Fastest answer',
-  fastestValue: (ms: number | null): string =>
-    ms === null ? 'None yet' : `${(Number(ms) / 1000).toFixed(1)} seconds`,
-  scrapEarned: 'Scrap earned',
   rematch: 'Rematch',
   backToCamp: 'Back to Camp',
 } as const;
@@ -471,14 +456,6 @@ export const VICTORY_CHRONO = {
 } as const;
 export type VictoryMood = keyof typeof VICTORY_CHRONO;
 
-// ---------- Errors ----------
-export const ERRORS = {
-  generic: 'Something went wonky. Tap to try again.',
-  tryAgain: 'Try again',
-  noSound: 'Sound is not working here. Captions are on.',
-  saveFailed: 'This browser will not save. The game still works today.',
-} as const;
-
 // ---------- Added by the UI track (additive) ----------
 export const UI_EXTRA = {
   gradeError: 'Pick a grade.',
@@ -492,7 +469,6 @@ export const UI_EXTRA = {
   choicesLabel: 'Answer choices',
   stepsLabel: 'Steps',
   loadingLabel: 'Loading',
-  playerCard: (team: Team): string => `${TEAM_NAMES[team]} player`,
 } as const;
 
 // ---------- Phase 2: Battle Plan, ammo and evasion (additive) ----------

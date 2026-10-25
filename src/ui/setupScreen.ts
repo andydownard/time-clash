@@ -325,7 +325,6 @@ export function showSetup(
       ...(practice ? [practice.card] : []),
     ),
     readBack,
-    h(doc, 'p', { class: 'tc-sr-only', text: SETUP.matchHelper }),
     h(
       doc,
       'div',
@@ -354,7 +353,6 @@ export function showSetup(
     },
     skyline(doc),
     h(doc, 'h1', { class: 'tc-setup-title', text: SETUP.heading }),
-    h(doc, 'p', { class: 'tc-setup-sub', text: SETUP.subtitle }),
     form,
   );
   const close = ctx.openScreen(screen);

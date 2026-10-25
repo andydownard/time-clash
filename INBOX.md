@@ -13,4 +13,4 @@ Raw ideas land here. Triage promotes them to BACKLOG.md. Items expire after 30 d
   - Forge: after buying every item, unlock balloons, chariots and catapults (and a Future set, names still to decide), with several versions of each like the sword, bow and cannon. The Past arrow-maker should be making a bow, not swinging an arrow.
   - Castle and bunkers explode, then are rebuilt, then explode again (a battle idle loop on the design canvas; the real game ends a match on base health).
   - Owner answers (2026-10-21): Future Forge units are Hover Balloon, Rocket Sled and Zap Catapult. The Camp button stays "Build Base". Lasers are Future only. Each team keeps one evasion ability (Past Stone Wall, Future Hoverboard Dodge).
-
+- (2026-10-24) Adversarial UI review: 14 questions for Andy (risk 2 and 3 items, each with a recommendation) are in `docs/panel/2026-10-24-batch.md`, "Adversarial review: what to cut". The risk 1 items were cut.

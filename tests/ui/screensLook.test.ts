@@ -34,8 +34,8 @@ describe('Setup look', () => {
     const vs = grid.querySelector('.tc-vs')!;
     expect(vs.textContent).toBe(SETUP.versus);
     expect(vs.getAttribute('aria-hidden')).toBe('true');
-    expect(document.body.textContent).toContain('Questions will match your grade');
-    expect(SETUP.matchHelper).toBe('Questions will match your grade.');
+    // The grade explanation is said once (on each grade dropdown), not twice.
+    expect(document.body.textContent).not.toContain('Questions will match your grade');
   });
 
   it('names each card for assistive tech and shows the team with a shape and a name', () => {

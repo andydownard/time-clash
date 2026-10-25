@@ -15,7 +15,7 @@ Two teams, two colors. Chrono Blue is the future (pods, neon, interface glow). R
 | `--tc-blue-100` | #e1eaff | Text on Future surfaces |
 | `--tc-blue-300` | #86a9ff | Future labels on dark |
 | `--tc-blue-500` | #2f6bff | Primary. Fills and lines only, not a text background |
-| `--tc-blue-700` | #1a3fb5 | Neon button top, selected chip, focus ring on light |
+| `--tc-blue-700` | #1a3fb5 | Neon button top, focus ring on light |
 | `--tc-blue-900` | #0a1a4f | Future surface, progress track |
 | `--tc-purple-100` | #efe6ff | Light Past tint |
 | `--tc-purple-300` | #bc9cff | Past labels on dark |
@@ -24,7 +24,7 @@ Two teams, two colors. Chrono Blue is the future (pods, neon, interface glow). R
 | `--tc-purple-900` | #25104f | Past surface, wood button bottom |
 | `--tc-ink-deep` | #12102b | Page ink, dark surface |
 | `--tc-parchment-warm` | #f7ebcb | Light surface, text on dark |
-| `--tc-oak` | #7a4a24 | Chip and input borders |
+| `--tc-oak` | #7a4a24 | Input and dropdown borders |
 | `--tc-steel-blue` | #9aa8bd | Art and dividers only. Never text |
 | `--tc-ember` | #ffb23e | Turn banner, gold border, focus ring on dark |
 | `--tc-pulse` | #4fd8ff | Neon edge, progress edge |
@@ -98,7 +98,7 @@ All interactive parts are at least 56px tall and wide (`--tc-tap`).
 
 **Progress bar.** Track `--tc-bar-track`, 3px edge in `--tc-bar-edge`, fill `--tc-bar-fill`, height `--tc-bar-h` (26px). The label above it shows the percent as a number ("64%"), so the fill is never the only signal. Label text is `--tc-on-future` at `--tc-fs-lead`.
 
-**Selector options (`.tc-chip`).** Orbitron 700, `--tc-fs-label`, see-through with a 3px `--tc-sel-edge` outline. Picked: `--tc-chip-picked-bg` (Ember) with `--tc-chip-picked-text` (Ink) and a check mark, so selection is not color-only. Size at least `--tc-chip-min` (56px) square. The older parchment-and-blue chip tokens (`--tc-chip-bg`, `--tc-chip-on-*`) are kept for the contrast table and the Base Builder until it moves over.
+**Selector options (`.tc-chip`).** Orbitron 700, `--tc-fs-label`, see-through with a 3px `--tc-sel-edge` outline. Picked: `--tc-chip-picked-bg` (Ember) with `--tc-chip-picked-text` (Ink) and a check mark, so selection is not color-only. Size at least `--tc-chip-min` (56px) square. The older parchment-and-blue chip tokens (`--tc-chip-bg`, `--tc-chip-on-*`) were removed on 2026-10-24: nothing drew them any more.
 
 **Grade dropdown (Setup).** A native `<select>` per team (`.tc-select` in a `.tc-select-wrap`), K and Grades 1 to 12. It looks like the name field: `--tc-input-bg`, `--tc-input-text`, `--tc-input-border`, at least 56px tall, `--tc-fs-button` text in the plain rounded stack (Orbitron draws 1 as a bar), with a visible "Grade" label and a ▾ arrow drawn by CSS. A native select gives an iPad its own big picker wheel and gives the keyboard arrow keys for free. While a team's grade is K or 1, one quiet line shows under it: "A grown-up can read the questions with you." (no read-aloud).
 
@@ -140,8 +140,7 @@ Computed from the token values by `tests/styles/designPairs.ts` (WCAG 2.1 relati
 | Primary button text on Blue 900 | `--tc-btn-primary-text` #f7ebcb | `--tc-blue-900` #0a1a4f | 13.89:1 | 4.5:1 | pass |
 | Turn banner text on Ember | `--tc-banner-turn-text` #12102b | `--tc-banner-turn-bg` #ffb23e | 10.30:1 | 4.5:1 | pass |
 | Speech bubble text | `--tc-bubble-text` #12102b | `--tc-bubble-bg` #f7ebcb | 15.59:1 | 4.5:1 | pass |
-| Chip text | `--tc-chip-text` #12102b | `--tc-chip-bg` #f7ebcb | 15.59:1 | 4.5:1 | pass |
-| Selected chip text | `--tc-chip-on-text` #ffffff | `--tc-chip-on-bg` #1a3fb5 | 8.66:1 | 4.5:1 | pass |
+| Selector text on ink | `--tc-on-dark` #f7ebcb | `--tc-surface-dark` #12102b | 15.59:1 | 4.5:1 | pass |
 | Picked chip text on Ember | `--tc-chip-picked-text` #12102b | `--tc-chip-picked-bg` #ffb23e | 10.30:1 | 4.5:1 | pass |
 | Chip text on Past card | `--tc-on-dark` #f7ebcb | `--tc-card-past-bg` #25104f | 13.98:1 | 4.5:1 | pass |
 | Chip text on Future card | `--tc-on-future` #e1eaff | `--tc-card-future-bg` #0a1a4f | 13.67:1 | 4.5:1 | pass |
@@ -156,8 +155,9 @@ Computed from the token values by `tests/styles/designPairs.ts` (WCAG 2.1 relati
 | Focus ring on ink | `--tc-focus-on-dark` #ffb23e | `--tc-surface-dark` #12102b | 10.30:1 | 3:1 | pass |
 | Focus ring on Past surface | `--tc-focus-on-dark` #ffb23e | `--tc-surface-past` #25104f | 9.23:1 | 3:1 | pass |
 | Focus ring on Future surface | `--tc-focus-on-dark` #ffb23e | `--tc-surface-future` #0a1a4f | 9.17:1 | 3:1 | pass |
-| Chip border on parchment | `--tc-oak` #7a4a24 | `--tc-chip-bg` #f7ebcb | 6.24:1 | 3:1 | pass |
-| Selected chip fill on parchment | `--tc-chip-on-bg` #1a3fb5 | `--tc-surface-light` #f7ebcb | 7.30:1 | 3:1 | pass |
+| Selector outline on ink | `--tc-sel-edge` #f7ebcb | `--tc-surface-dark` #12102b | 15.59:1 | 3:1 | pass |
+| Selector outline on parchment | `--tc-on-light` #12102b | `--tc-surface-light` #f7ebcb | 15.59:1 | 3:1 | pass |
+| Picked selector fill (Ember) on ink | `--tc-chip-picked-bg` #ffb23e | `--tc-surface-dark` #12102b | 10.30:1 | 3:1 | pass |
 | Input border on white | `--tc-oak` #7a4a24 | `--tc-input-bg` #ffffff | 7.41:1 | 3:1 | pass |
 | Progress edge on ink | `--tc-bar-edge` #4fd8ff | `--tc-surface-dark` #12102b | 11.10:1 | 3:1 | pass |
 | Progress fill (Blue 500) on track | `--tc-blue-500` #2f6bff | `--tc-bar-track` #0a1a4f | 3.66:1 | 3:1 | pass |
@@ -175,7 +175,7 @@ Computed from the token values by `tests/styles/designPairs.ts` (WCAG 2.1 relati
 | Wood button gradient Purple 500 to 700 with cream text | Purple 700 to 900 | Cream on Purple 500 is 4.41:1. It needs 4.5:1. |
 | Grade chips 52px | A 56px grade dropdown | Tap target floor. Thirteen chips took two rows per card; a native dropdown is one row and suits the iPad. |
 | Labels and eyebrows at 14, 16, 18px | 20px | Text floor. |
-| Chip on a team card: see-through, team edge (Purple 300 or Blue 300), cream text. Picked chip: Ember fill, Ink text and border, parchment ring | Same as the board, with a check mark added | The board is already accessible (Ink on Ember is 10.30:1). The check mark means the pick is never shown by color alone. Chips off a team card use Blue 700 with white text (8.66:1). |
+| Chip on a team card: see-through, team edge (Purple 300 or Blue 300), cream text. Picked chip: Ember fill, Ink text and border, parchment ring | Same as the board, with a check mark added | The board is already accessible (Ink on Ember is 10.30:1). The check mark means the pick is never shown by color alone. Since 2026-10-24 every selector uses this look (see "Controls"), with a cream outline off the cards. |
 | Chip digits in Orbitron | The grade dropdown, question numbers and answer numbers use the plain rounded system stack | Orbitron draws 1 as a bar and 7 as a flag, which young readers mix up. Titles and counters keep Orbitron. |
 | A separate shots panel in the middle of the HUD | One control bar at the bottom. Its header names whose turn it is and shows the shot pips (two shots, then Reload) | The Battle board has one bar: badge, Angle, Power, Fire. The banner and the bar already say "shot 1 of 2". |
 | Wind drawn twice (card and sign) | One wind sign, on the canvas. The HUD copy is for screen readers | Two readouts in two type voices confused the top row. |

@@ -231,12 +231,6 @@
   --tc-bubble-bg: var(--tc-parchment-warm);
   --tc-bubble-text: var(--tc-ink-deep);
   --tc-bubble-border: 4px solid var(--tc-ink-deep);
-  --tc-chip-bg: var(--tc-parchment-warm);
-  --tc-chip-text: var(--tc-ink-deep);
-  --tc-chip-border: 3px solid var(--tc-oak);
-  --tc-chip-on-bg: var(--tc-blue-700);
-  --tc-chip-on-text: var(--tc-white);
-  --tc-chip-on-border: 3px solid var(--tc-ember);
   --tc-chip-min: 56px;
   /* Chips on a team card (Setup board): see-through with the team edge. Picked = Ember on Ink. */
   --tc-chip-past-edge: var(--tc-purple-300);
