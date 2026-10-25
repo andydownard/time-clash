@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest';
 import { createMatch } from '../../src/game/match';
 import { IllegalCommandError } from '../../src/game/crew';
-import { SQUADS } from '../../src/game/config';
+import { DAMAGE, SQUADS } from '../../src/game/config';
 import { IllegalTransitionError, type MatchController, type Players } from '../../src/game/types';
 
 const PLAYERS: Players = [
@@ -199,7 +199,7 @@ describe('a dash to the doorstep', () => {
       return [c.snapshot().baseHp.FUTURE, c.snapshot().baseHp.PAST];
     };
     const a = play();
-    expect(a).toEqual([100 - SQUADS.dashBonkDamage, 100]);
+    expect(a).toEqual([DAMAGE.startingBaseHp - SQUADS.dashBonkDamage, DAMAGE.startingBaseHp]);
     expect(play()).toEqual(a);
   });
 });

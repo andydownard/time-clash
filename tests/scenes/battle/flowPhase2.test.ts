@@ -2,7 +2,7 @@
 // staying exactly two shots then a reload (Gate 3).
 import { describe, expect, it } from 'vitest';
 import { buildLayout } from '../../../src/game/battlefield';
-import { EVASION } from '../../../src/game/config';
+import { DAMAGE, EVASION } from '../../../src/game/config';
 import type { Rect, Team } from '../../../src/game/types';
 import { GEAR_COPY } from '../../../src/data/copy';
 import { makeWorld, settle } from './flowHarness';
@@ -148,7 +148,7 @@ describe('BattleFlow: walls and dodges on the field', () => {
     await settle();
     expect(w.extra.dodges).toEqual(['FUTURE']);
     expect(w.impacts.at(-1)!.label).toBe(GEAR_COPY.dodgedLine);
-    expect(w.match.snapshot().baseHp.FUTURE).toBe(100);
+    expect(w.match.snapshot().baseHp.FUTURE).toBe(DAMAGE.startingBaseHp);
     w.flow.destroy();
   });
 });

@@ -1,6 +1,6 @@
 // The Power Shot inside the battle loop: a right answer earns one extra shot, a wrong one does not.
 import { describe, expect, it } from 'vitest';
-import { BONUS } from '../../../src/game/config';
+import { BONUS, DAMAGE } from '../../../src/game/config';
 import { findAim, makeWorld, settle } from './flowHarness';
 
 const SEED = 7;
@@ -59,6 +59,8 @@ describe('BattleFlow: the Power Shot', () => {
     const w = makeWorld({ seed: SEED, script: [miss, miss, direct], answers: ['right'] });
     void w.flow.run();
     await settle();
-    expect(w.match.snapshot().baseHp.FUTURE).toBe(100 - Math.round(25 * BONUS.damageMultiplier));
+    expect(w.match.snapshot().baseHp.FUTURE).toBe(
+      DAMAGE.startingBaseHp - Math.round(DAMAGE.direct * BONUS.damageMultiplier),
+    );
   });
 });

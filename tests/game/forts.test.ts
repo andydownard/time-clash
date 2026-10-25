@@ -1,10 +1,12 @@
 // Team Past's castle places (Hill Fort, Village Wall, Drawbridge): the mirror of Team Future's
-// base spots. Each has its own height and its own solid shapes, every shot path stays open, and
-// no place (the default, and every plan saved before these existed) is the Phase 1 castle.
+// base spots. Each has its own height and its own solid shapes, and every shot path stays open.
+// Village Wall is the default (and what every plan saved before these existed loads as). In the
+// rules code, no place at all (null) is still exactly the Phase 1 castle.
 import { describe, expect, it, vi } from 'vitest';
 import { simulateShot } from '../../src/game/ballistics';
 import {
   BIOME_IDS,
+  DEFAULT_PLAN,
   EVASION,
   FORTS,
   FORT_IDS,
@@ -203,6 +205,23 @@ describe('reachable shot paths', () => {
   }
 });
 
+describe('the default field (Village Wall)', () => {
+  for (const biome of BIOME_IDS)
+    for (const spot of SPOT_IDS)
+      it(`${biome} + ${spot}: both teams can score with no wind`, () => {
+        const l = buildLayout({ ...DEFAULT_PLAN, biome, spot });
+        expect(l.fort).toBe('villageWall');
+        expect(find(l, 'PAST', 'FUTURE', 0, 'direct')).not.toBeNull();
+        expect(find(l, 'FUTURE', 'PAST', 0, 'direct')).not.toBeNull();
+      });
+
+  it('the default plan builds the Village Wall field', () => {
+    const l = buildLayout(DEFAULT_PLAN);
+    expect(l.fort).toBe('villageWall');
+    expect(l.bases.PAST).toEqual(FORTS.villageWall.base);
+  });
+});
+
 describe('cover', () => {
   /** A Future shot that hits the castle in Phase 1 but hits this place's shape instead. */
   const blocked = (fort: FortId, maxAngle: number) => {
@@ -297,16 +316,17 @@ describe('in the full battlefield', () => {
 });
 
 describe('saved plans', () => {
-  it('an old plan with no castle place still loads, with no fort', () => {
+  it('an old plan with no castle place loads at Village Wall', () => {
     const p = normalizePlan({ biome: 'cherry', spot: 'bridge' });
-    expect(p).toEqual({ biome: 'cherry', spot: 'bridge' });
-    expect('fort' in p).toBe(false);
+    expect(p).toEqual({ biome: 'cherry', spot: 'bridge', fort: 'villageWall' });
   });
-  it('keeps a known castle place and drops an unknown one', () => {
+  it('keeps a known castle place and swaps an unknown one for Village Wall', () => {
     expect(normalizePlan({ biome: 'aspen', spot: 'bridge', fort: 'drawbridge' }).fort).toBe(
       'drawbridge',
     );
     for (const bad of ['moat', '', null, 4, {}, 'skyscraper'])
-      expect('fort' in normalizePlan({ biome: 'aspen', spot: 'bridge', fort: bad })).toBe(false);
+      expect(normalizePlan({ biome: 'aspen', spot: 'bridge', fort: bad }).fort).toBe(
+        'villageWall',
+      );
   });
 });

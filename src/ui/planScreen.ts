@@ -5,7 +5,7 @@
 // saves no plan.
 import { PLAN_COPY, TEAM_NAMES } from '../data/copy';
 import { AMMO, type AmmoId } from '../game/ammo';
-import type { BattlePlan } from '../game/battlefield';
+import { normalizePlan, type BattlePlan } from '../game/battlefield';
 import { BIOME_IDS, FORT_IDS, SPOT_IDS } from '../game/config';
 import { unlockAmmo } from '../game/economy';
 import { walletOf, type CampState } from '../game/loadout';
@@ -38,7 +38,8 @@ export function showPlan(ctx: UiCtx, options: PlanOptions): Promise<BattlePlan |
   const { doc } = ctx;
   return new Promise<BattlePlan | null>((resolve) => {
     let camp: CampState = options.camp;
-    const plan: BattlePlan = { ...options.plan };
+    // Always one card checked in each group: a plan with no castle place gets the default one.
+    const plan: BattlePlan = normalizePlan(options.plan);
 
     const status = h(doc, 'p', {
       class: 'tc-plan-status',

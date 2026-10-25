@@ -1993,6 +1993,15 @@ body {
   .tc-victory > .tc-row:last-child {
     margin-top: var(--tc-s-2);
   }
+  /* A full-length match can fill both cards (six medals and a Scrap row with a plus), so
+     Chrono's line gets the smaller face the reload quip uses. The text size does not change. */
+  .tc-chrono-says {
+    padding-block: var(--tc-s-1);
+  }
+  .tc-chrono-says .tc-chrono-face {
+    width: 40px;
+    height: 43px;
+  }
 }
 
 /* ---------- Camp ---------- */

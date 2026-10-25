@@ -24,7 +24,12 @@ export type TimeClashHook = {
   /** Smallest size, in screen pixels, of any label drawn on the canvas, or null. */
   labelPx(): number | null;
   /** What the angle guide on the board shows: the team, its firing point, and its texts. */
-  aim(): { team: string | null; origin: { x: number; y: number } | null; texts: string[] } | null;
+  aim(): {
+    team: string | null;
+    origin: { x: number; y: number } | null;
+    texts: string[];
+    label?: { x: number; y: number; w: number; h: number } | null;
+  } | null;
 };
 
 export function e2eEnabled(search: string, mode: string): boolean {
@@ -61,7 +66,12 @@ export type ActiveScene = {
   scene?: { key?: string };
   controller?: unknown;
   labels?: { minRenderedPx(): number | null } | null;
-  aimState?: () => { team: string | null; origin: { x: number; y: number } | null; texts: string[] };
+  aimState?: () => {
+    team: string | null;
+    origin: { x: number; y: number } | null;
+    texts: string[];
+    label?: { x: number; y: number; w: number; h: number } | null;
+  };
 };
 
 export type HookDeps = {

@@ -31,23 +31,18 @@ test('typing is capped at 12 letters, and a longer name is still refused', async
   await expect(tid(page, 'pass-screen')).toHaveCount(0);
 });
 
+// Setup and src/game/names.ts must refuse the same words ("poop", "butt", "fart" ...).
 test('a rude name is refused, and fixing it lets the match start', async ({ page }) => {
   await toSetup(page);
-  await tid(page, 'setup-name-PAST').fill('Hell');
-  await tid(page, 'setup-next').click();
-  await expect(err(page, 'PAST')).toHaveText("Let's pick a different name.");
+  for (const rude of ['Hell', 'Poop']) {
+    await tid(page, 'setup-name-PAST').fill(rude);
+    await tid(page, 'setup-next').click();
+    await expect(err(page, 'PAST'), rude).toHaveText("Let's pick a different name.");
+  }
   await tid(page, 'setup-name-PAST').fill('Alex');
   await expect(err(page, 'PAST')).toBeEmpty();
   await tid(page, 'setup-next').click();
   await expect(tid(page, 'camp-start')).toBeVisible();
-});
-
-// Setup and src/game/names.ts must refuse the same words ("poop", "butt", "fart" ...).
-test('Setup refuses every word the game rules also refuse', async ({ page }) => {
-  await toSetup(page);
-  await tid(page, 'setup-name-PAST').fill('Poop');
-  await tid(page, 'setup-next').click();
-  await expect(err(page, 'PAST')).toHaveText("Let's pick a different name.");
 });
 
 test('each side keeps its own grade and subject, and they reach the match', async ({ page }) => {

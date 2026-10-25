@@ -93,29 +93,29 @@ describe('placing', () => {
 
 describe('collision uses the filled squares, not the box', () => {
   it('lets a brick sit in the empty corner of the L', () => {
-    const s = must(placePiece(newBuild('PAST'), LID, at(4, 6)));
-    // The L fills column 0 of rows 6 to 8 and column 1 of row 8. Column 1 of rows 6 and 7 is empty.
-    const small = placePiece(s, 'tower', at(5, 6));
+    const s = must(placePiece(newBuild('PAST'), LID, at(4, 8)));
+    // The L fills column 0 of rows 8 to 10 and column 1 of row 10. Column 1 of rows 8 and 9 is empty.
+    const small = placePiece(s, 'tower', at(5, 8));
     expect(small.ok).toBe(true);
   });
   it('refuses a brick on a filled square', () => {
-    const s = must(placePiece(newBuild('PAST'), LID, at(4, 6)));
-    expect(placePiece(s, 'stone', at(4, 8))).toEqual({ ok: false, reason: 'overlap' });
-    expect(placePiece(s, 'stone', at(5, 8))).toEqual({ ok: false, reason: 'overlap' });
+    const s = must(placePiece(newBuild('PAST'), LID, at(4, 8)));
+    expect(placePiece(s, 'stone', at(4, 10))).toEqual({ ok: false, reason: 'overlap' });
+    expect(placePiece(s, 'stone', at(5, 10))).toEqual({ ok: false, reason: 'overlap' });
   });
   it('lets touching edges be', () => {
-    const s = must(placePiece(newBuild('PAST'), LID, at(4, 6)));
-    expect(placePiece(s, 'stone', at(6, 8)).ok).toBe(true);
+    const s = must(placePiece(newBuild('PAST'), LID, at(4, 8)));
+    expect(placePiece(s, 'stone', at(6, 10)).ok).toBe(true);
   });
   it('works one step at a time with Snap off', () => {
-    const s = must(placePiece(newBuild('PAST'), LID, at(4, 6)));
-    const edge: Placed = { piece: 'tower', x: 5, y: 6, ox: 0, oy: 0, rot: 0, hp: 1 };
+    const s = must(placePiece(newBuild('PAST'), LID, at(4, 8)));
+    const edge: Placed = { piece: 'tower', x: 5, y: 8, ox: 0, oy: 0, rot: 0, hp: 1 };
     // One step left of the empty corner starts to cover column 0.
     expect(check(s.pieces, { ...edge, x: 4, ox: S - 1 })).toBe('overlap');
     expect(check(s.pieces, edge)).toBeNull();
   });
   it('two shapes can hook into each other', () => {
-    const s = must(placePiece(newBuild('PAST'), LID, at(4, 6)));
+    const s = must(placePiece(newBuild('PAST'), LID, at(4, 8)));
     // A second L (1 wide arm up) fits into the corner above the first one's foot.
     const hook = customId(
       'PAST',
@@ -124,14 +124,14 @@ describe('collision uses the filled squares, not the box', () => {
         [1, 0],
       ]),
     );
-    expect(placePiece(s, hook, at(5, 7)).ok).toBe(true);
-    expect(placePiece(s, hook, at(4, 7))).toEqual({ ok: false, reason: 'overlap' });
+    expect(placePiece(s, hook, at(5, 9)).ok).toBe(true);
+    expect(placePiece(s, hook, at(4, 9))).toEqual({ ok: false, reason: 'overlap' });
   });
   it('gives one box per filled square', () => {
-    const s = must(placePiece(newBuild('PAST'), LID, at(4, 6)));
+    const s = must(placePiece(newBuild('PAST'), LID, at(4, 8)));
     const boxes = occupiedRects(s.pieces[0]!);
     expect(boxes).toHaveLength(4);
-    expect(boxes[0]).toEqual({ l: 4 * S, t: 6 * S, r: 5 * S, b: 7 * S });
+    expect(boxes[0]).toEqual({ l: 4 * S, t: 8 * S, r: 5 * S, b: 9 * S });
     expect(occupiedRects({ ...s.pieces[0]!, piece: 'stone' })).toHaveLength(1);
     expect(occupiedRects({ ...s.pieces[0]!, piece: 'nope' })).toEqual([]);
   });
@@ -139,7 +139,7 @@ describe('collision uses the filled squares, not the box', () => {
 
 describe('turning', () => {
   it('turns the cells and swaps the box', () => {
-    const s = must(placePiece(newBuild('PAST'), LID, at(4, 6)));
+    const s = must(placePiece(newBuild('PAST'), LID, at(4, 8)));
     const t = turnPiece(s, 0);
     if (!t.ok) throw new Error('turn');
     const p = t.state.pieces[0]!;
@@ -151,7 +151,7 @@ describe('turning', () => {
     expect([...cols].sort()).toEqual([0, 1, 2]);
   });
   it('four turns come back to the start', () => {
-    let s = must(placePiece(newBuild('PAST'), LID, at(8, 6)));
+    let s = must(placePiece(newBuild('PAST'), LID, at(8, 8)));
     const start = occupiedRects(s.pieces[0]!);
     for (let i = 0; i < 4; i++) {
       const t = turnPiece(s, 0);
@@ -162,35 +162,35 @@ describe('turning', () => {
     expect(occupiedRects(s.pieces[0]!)).toEqual(start);
   });
   it('slides to a free spot when a turned shape would hit something', () => {
-    let s = must(placePiece(newBuild('PAST'), LID, at(8, 6)));
-    s = must(placePiece(s, 'long', at(9, 6)));
+    let s = must(placePiece(newBuild('PAST'), LID, at(8, 8)));
+    s = must(placePiece(s, 'long', at(10, 10)));
     const t = turnPiece(s, 0);
     expect(t.ok).toBe(true);
   });
   it('moves like any piece', () => {
-    const s = must(placePiece(newBuild('PAST'), LID, at(4, 6)));
-    expect(movePiece(s, 0, at(10, 6)).ok).toBe(true);
-    expect(movePiece(s, 0, at(23, 6)).ok).toBe(false);
+    const s = must(placePiece(newBuild('PAST'), LID, at(4, 8)));
+    expect(movePiece(s, 0, at(10, 8)).ok).toBe(true);
+    expect(movePiece(s, 0, at(23, 8)).ok).toBe(false);
   });
 });
 
 describe('saving a base with a shape in it', () => {
   it('keeps the id in the save, so old saves are untouched', () => {
-    const s = must(placePiece(newBuild('PAST'), LID, at(4, 6), 90));
+    const s = must(placePiece(newBuild('PAST'), LID, at(4, 9), 90));
     const saved = toSaved(s.pieces);
     expect(saved.p[0]![0]).toBe(LID);
     expect(saved.p[0]![5]).toBe(90);
     expect(JSON.parse(JSON.stringify(saved))).toEqual(saved);
-    const old = toSaved(must(placePiece(newBuild('PAST'), 'stone', at(1, 1))).pieces);
+    const old = toSaved(must(placePiece(newBuild('PAST'), 'stone', at(1, 10))).pieces);
     expect(Object.keys(old)).toEqual(['v', 'p']);
   });
   it('loads again with the shape, even with no saved list at all', () => {
-    const s = must(placePiece(newBuild('PAST'), LID, at(4, 6), 90));
+    const s = must(placePiece(newBuild('PAST'), LID, at(4, 9), 90));
     const back = repairBase(toSaved(s.pieces), 'PAST', ownedPieceIds('PAST', []));
     expect(back).toEqual(s.pieces);
   });
   it('drops a shape for the other side, a bad id, bad hit points and overlaps', () => {
-    const row = (id: string, x: number, hp = 32): unknown[] => [id, x, 6, 0, 0, 0, hp];
+    const row = (id: string, x: number, hp = 32): unknown[] => [id, x, 8, 0, 0, 0, hp];
     const raw = {
       v: 1,
       p: [
@@ -309,7 +309,7 @@ describe('my shapes: saved for each player and side', () => {
   it('deletes only that shape, and leaves a base that uses it alone', () => {
     const r = save();
     if (!r.ok) throw new Error();
-    const built = must(placePiece(newBuild('PAST'), LID, at(4, 6)));
+    const built = must(placePiece(newBuild('PAST'), LID, at(4, 8)));
     let st = saveSlot(r.state, 'Alex', 'PAST', 0, built.pieces);
     st = chooseSlot(st, 'Alex', 'PAST', 0);
     const after = deleteShape(st, 'Alex', 'PAST', '10/10/11');

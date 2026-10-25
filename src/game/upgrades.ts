@@ -38,7 +38,7 @@ export const UPGRADES: readonly Upgrade[] = [
     team: 'PAST',
     name: 'Upgrade the Tower',
     effect: 'maxHp',
-    perLevel: 12,
+    perLevel: 48,
     cost: [6, 10, 14],
   },
   {
@@ -78,7 +78,7 @@ export const UPGRADES: readonly Upgrade[] = [
     team: 'FUTURE',
     name: 'Laser Squad',
     effect: 'repair',
-    perLevel: 2,
+    perLevel: 8,
     cost: [6, 10, 14],
   },
 ];

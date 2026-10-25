@@ -49,11 +49,16 @@ describe('match length in a match (base health)', () => {
     expect(mk('normal')).toEqual(mk());
   });
   it('Short takes fewer direct hits and Long takes more', () => {
-    expect(mk('short').maxBaseHp.PAST).toBe(50);
-    expect(mk('short').baseHp.FUTURE).toBe(50);
-    expect(mk('long').maxBaseHp.PAST).toBe(150);
-    expect(Math.ceil(mk('short').maxBaseHp.PAST / DAMAGE.direct)).toBe(2);
-    expect(Math.ceil(mk('long').maxBaseHp.PAST / DAMAGE.direct)).toBe(6);
+    const full = DAMAGE.startingBaseHp;
+    const { short, long } = MATCH_LENGTH.healthScale;
+    expect(mk('short').maxBaseHp.PAST).toBe(full * short);
+    expect(mk('short').baseHp.FUTURE).toBe(full * short);
+    expect(mk('long').maxBaseHp.PAST).toBe(full * long);
+    const hits = (len: string): number => Math.ceil(mk(len).maxBaseHp.PAST / DAMAGE.direct);
+    expect(hits('short')).toBeLessThan(hits('normal'));
+    expect(hits('long')).toBeGreaterThan(hits('normal'));
+    expect(hits('short')).toBe(Math.ceil((full * short) / DAMAGE.direct));
+    expect(hits('long')).toBe(Math.ceil((full * long) / DAMAGE.direct));
   });
   it('an unknown length plays as Normal', () => {
     expect(mk('epic')).toEqual(mk('normal'));
@@ -69,7 +74,14 @@ describe('match length in a match (base health)', () => {
 
 describe('match length in a match (fighter health)', () => {
   it('scales every fighter and the max the HUD reads', () => {
-    const lens = { short: 2, normal: 3, long: 5 } as const;
+    // Whole health, rounded: four health is 2, 4 and 6.
+    const lens = {
+      short: Math.round(CHARACTER_HEALTH.hp * MATCH_LENGTH.healthScale.short),
+      normal: CHARACTER_HEALTH.hp,
+      long: Math.round(CHARACTER_HEALTH.hp * MATCH_LENGTH.healthScale.long),
+    } as const;
+    expect(lens.short).toBeLessThan(lens.normal);
+    expect(lens.long).toBeGreaterThan(lens.normal);
     for (const len of MATCH_LENGTH.ids) {
       const m = mk(len, true);
       expect(m.maxUnitHp).toBe(lens[len]);
