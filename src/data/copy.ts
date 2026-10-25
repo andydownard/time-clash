@@ -289,7 +289,6 @@ export const goTurnBanner = (name: string, go: number): string =>
 
 export const PASS_SCREEN = {
   heading: 'Pass the screen!',
-  noPeeking: 'No peeking at their question!',
   upNext: (name: string): string => `${name}, you're up!`,
   ready: "I'm ready!",
   /** Shown beside the heading, so the next side is clear without color. */

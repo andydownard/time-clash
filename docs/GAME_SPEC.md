@@ -84,7 +84,7 @@ Because two players share one screen, turns must be unmissable:
 
 ⚬ Massive Turn Banner: Drops down with a cartoon horn sound: "ALEX'S TURN (TEAM PAST) — TAKE AIM!"
 ⚬ Active Player Glow: The current player's side of the screen lights up with bright, animated framing, while the waiting player's side dims slightly.
-⚬ Pass-the-Screen Alert: A prompt appears between turns: "Pass the screen! No peeking at their question!"
+⚬ Pass-the-Screen Alert: A prompt appears between turns: "Pass the screen!" with the next player's name and an "I'm ready!" button. (The "No peeking" line was removed on 2026-10-24.)
 
 E. Slapstick Wipeouts & Recovery
 
