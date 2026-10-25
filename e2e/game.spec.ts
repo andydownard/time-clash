@@ -70,8 +70,9 @@ async function expectCover(page: import('@playwright/test').Page, testId: string
 }
 
 test('plays a full match: aim, fire, reload, pass, win, rematch', async ({ page, browserName }) => {
-  // A whole match under busy workers can pass 3 minutes. Triple the limit, no sleeps.
-  test.slow();
+  // A whole match is about five turns a side (the pace rule), and busy workers slow each one.
+  // Allow five times the usual limit, no sleeps.
+  test.setTimeout(5 * test.info().timeout);
   await toSetup(page);
   await saveShot(page, browserName, 'setup');
   await startMatch(page, PAST_SIDE, FUTURE_SIDE, SEED);
