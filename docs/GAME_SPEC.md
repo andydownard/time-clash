@@ -69,6 +69,7 @@ Weapon Workshop (added 2026-10-24, owner request: "in forge weapons, you can cre
 ⚬ Name it: pick one silly word from each of two lists (such as Wobbly Noodle), or type a name of up to 14 letters, digits and spaces. A typed name with a blocked word, a player's name, or 3 digits in a row is not used: the screen says why, kindly, and keeps the picked words.
 ⚬ Cost: 6 Scrap for the gentlest weapon, up to 24 Scrap for the strongest (the WORKSHOP cost table). Too little Scrap says how much more is needed.
 ⚬ The new weapon is equipped at once and shows in the Forge's "My weapons" section with a star. It levels up like the others (to level 3) and plays like a catalog weapon. Each player keeps up to 6 per team, saved on the device by name.
+⚬ My weapons in Build Base: in Weapons mode, the list for a pad starts with "My weapons", the player's own weapons for that side (picture with a star, name, damage). One goes on a pad for no Scrap, like a catalog weapon. The pad keeps its own copy, so a saved base never breaks. With none made, a quiet link, "Make a weapon in the Forge", opens the Workshop.
 
 C. Base Placement (Futuristic City)
 

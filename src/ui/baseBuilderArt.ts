@@ -313,6 +313,24 @@ export function weaponIcon(doc: Document, id: string, size = 44): SVGElement {
   );
 }
 
+/** Team tokens for a weapon you made, as in the Forge (forgeArt.ts): Past purple-500, Future pulse. */
+const MINE_TINT: Record<Team, string> = { PAST: '#8247e8', FUTURE: '#4fd8ff' };
+/** A five-point star about 14 across, centered on 0,0 (the Forge's "it is yours" badge). */
+const STAR = 'M0,-7 L2,-2.4 L6.8,-2.2 L3,1 L4.3,5.8 L0,3 L-4.3,5.8 L-3,1 L-6.8,-2.2 L-2,-2.4 Z';
+const starAt = (x: number, y: number, scale: number, team: Team): string =>
+  `<g class="tc-bb-myw-star" transform="translate(${x} ${y}) scale(${scale})"><path d="${STAR}" fill="${MINE_TINT[team]}" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/></g>`;
+
+/**
+ * A weapon you made in the Workshop: the picture of its style (`art`, a catalog spot weapon) with
+ * the Forge's star badge, so it reads as yours. Decorative, like the other icons.
+ */
+export function myWeaponIcon(doc: Document, art: string, team: Team, size = 44): SVGElement {
+  return svgFromString(
+    doc,
+    `<svg viewBox="0 0 48 48" width="${size}" height="${size}" aria-hidden="true" class="tc-bb-weapon-icon tc-bb-myw-icon">${weaponInner(art)}${starAt(40, 8, 1, team)}</svg>`,
+  );
+}
+
 const PAD_R = B.spots.padSteps * STEP;
 
 /**
@@ -332,8 +350,11 @@ export function spotsMarkup(
       const cx = sp.x * STEP;
       const cy = sp.y * STEP;
       const on = sp.index === selected;
-      const body = sp.weapon
-        ? `<circle cx="${cx}" cy="${cy}" r="${PAD_R}" fill="#f7ebcb" stroke="${INK}" stroke-width="4"/><g transform="translate(${cx - PAD_R * 0.72} ${cy - PAD_R * 0.72}) scale(${(PAD_R * 1.44) / 48})">${weaponInner(sp.weapon)}</g>`
+      // A weapon of your own is drawn as the catalog weapon of its style, with a star (yours).
+      const art = sp.custom?.art ?? sp.weapon;
+      const star = sp.custom ? starAt(cx + PAD_R * 0.8, cy - PAD_R * 0.8, 1.6, sp.custom.team) : '';
+      const body = art
+        ? `<circle cx="${cx}" cy="${cy}" r="${PAD_R}" fill="#f7ebcb" stroke="${INK}" stroke-width="4"/><g transform="translate(${cx - PAD_R * 0.72} ${cy - PAD_R * 0.72}) scale(${(PAD_R * 1.44) / 48})">${weaponInner(art)}</g>${star}`
         : `<circle cx="${cx}" cy="${cy}" r="${PAD_R}" fill="${INK}" fill-opacity=".85" stroke="#f7ebcb" stroke-width="4" stroke-dasharray="7 5"/><path d="M${cx},${cy - 9} V${cy + 9} M${cx - 9},${cy} H${cx + 9}" stroke="#f7ebcb" stroke-width="4" stroke-linecap="round"/>`;
       const ring = on
         ? `<circle class="tc-bb-spot-ring" cx="${cx}" cy="${cy}" r="${PAD_R + 6}" fill="none" stroke="#ffb23e" stroke-width="6"/>`
