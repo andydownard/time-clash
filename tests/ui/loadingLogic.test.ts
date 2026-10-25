@@ -75,7 +75,7 @@ describe('runLoading', () => {
     const clock = createClock();
     const f = fakeHandle();
     void runLoading({ load: () => Promise.resolve(), handle: f.handle, env: clock });
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < TIMING.loadingMinMs / 100 + 10; i++) {
       clock.advance(100);
       await flush();
     }

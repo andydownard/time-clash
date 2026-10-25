@@ -23,10 +23,15 @@ const flush = async () => {
 
 describe('loading minimum time', () => {
   it('is longer for a new family and short for a returning one', () => {
-    expect(TIMING.loadingFirstMinMs).toBe(4000);
     expect(loadingMinFor(true)).toBe(TIMING.loadingFirstMinMs);
     expect(loadingMinFor(false)).toBe(TIMING.loadingMinMs);
-    expect(TIMING.loadingMinMs).toBeLessThanOrEqual(1500);
+    expect(TIMING.loadingFirstMinMs).toBeGreaterThan(TIMING.loadingMinMs);
+  });
+
+  it('lasts long enough that a child sees several jokes, but not so long it drags', () => {
+    expect(TIMING.loadingMinMs).toBeGreaterThanOrEqual(2 * TIMING.loadingMessageMs);
+    expect(TIMING.loadingFirstMinMs).toBeGreaterThanOrEqual(3 * TIMING.loadingMessageMs);
+    expect(TIMING.loadingFirstMinMs).toBeLessThanOrEqual(10_000);
   });
 
   it('waits the whole first-visit time with the minMs option, then closes', async () => {

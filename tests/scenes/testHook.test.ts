@@ -75,6 +75,16 @@ describe('installTestHook', () => {
     return { win, seeds, faults, flags, storage, installed };
   };
 
+  it('turns on the quick Loading screen so test runs are not slowed by the jokes', () => {
+    const { flags, installed } = make();
+    expect(installed).toBe(true);
+    expect(flags.quickLoad).toBe(true);
+  });
+  it('leaves the real Loading screen alone in a production build', () => {
+    const { flags, installed } = make({ mode: 'production' });
+    expect(installed).toBe(false);
+    expect(flags.quickLoad).toBeUndefined();
+  });
   it('installs nothing in production', () => {
     const t = make({ mode: 'production' });
     expect(t.installed).toBe(false);
