@@ -42,10 +42,10 @@ export const AIM = {
 
 // ---------- Damage and health ----------
 /**
- * Pace (owner, 2026-10-24): a player with perfect aim and a right answer every turn needs about
- * five turns of their own to win, so a match never ends in one or two turns. A perfect turn is
- * two shots and a Power Shot, so full health is about four times the damage of a perfect turn
- * is wrong; it is about five times what one perfect turn does. `tests/game/pace.test.ts` plays it.
+ * Pace (owner, 2026-10-24): a player with perfect aim and a right answer every turn needs five
+ * turns of their own to win, so a match never ends in one or two turns. A perfect turn is two
+ * direct hits and a Power Shot (25 + 25 + 38 = 88), so full health is a little under five
+ * perfect turns. `tests/game/pace.test.ts` plays it.
  */
 export const DAMAGE = {
   startingBaseHp: 400,

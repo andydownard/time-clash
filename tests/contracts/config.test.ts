@@ -35,7 +35,8 @@ describe('config: Phase 1 balance numbers (docs/BUILD.md)', () => {
     expect(DAMAGE.nearRadius).toBe(120);
     expect(DAMAGE.direct).toBe(25);
     expect(DAMAGE.near).toBe(10);
-    expect(DAMAGE.startingBaseHp).toBe(100);
+    // Pace (owner, 2026-10-24): 400, so perfect aim needs about five turns to win.
+    expect(DAMAGE.startingBaseHp).toBe(400);
     expect(RELOAD.fastMs).toBe(8000);
     expect(SCRAP.fastCorrect).toBe(2);
     expect(SCRAP.slowCorrect).toBe(1);

@@ -126,7 +126,7 @@ describe('createMatch: initial state', () => {
     s.aim.PAST.power = 1;
     s.stats.PAST.shotsFired = 9;
     const t = c.snapshot();
-    expect(t.baseHp.PAST).toBe(100);
+    expect(t.baseHp.PAST).toBe(DAMAGE.startingBaseHp);
     expect(t.aim.PAST.power).toBe(AIM.defaultPower);
     expect(t.stats.PAST.shotsFired).toBe(0);
   });
@@ -340,7 +340,7 @@ describe('negative paths: illegal moves throw and change nothing', () => {
 });
 
 describe('shotLanded: damage, tumble, and bubbles', () => {
-  it('direct hit: -25, no tumble, no bubble', () => {
+  it('direct hit: minus DAMAGE.direct, no tumble, no bubble', () => {
     const c = createMatch(opts(11));
     c.ready();
     c.setAim(findAim(c, 'direct'));
@@ -349,26 +349,29 @@ describe('shotLanded: damage, tumble, and bubbles', () => {
     expect(out).toEqual({
       result: 'direct',
       target: 'FUTURE',
-      damage: 25,
+      damage: DAMAGE.direct,
       tumble: false,
       bubbleIndex: null,
     });
-    expect(c.snapshot().baseHp).toEqual({ PAST: 100, FUTURE: 75 });
+    expect(c.snapshot().baseHp).toEqual({
+      PAST: DAMAGE.startingBaseHp,
+      FUTURE: DAMAGE.startingBaseHp - DAMAGE.direct,
+    });
     expect(c.snapshot().stats.PAST.directHits).toBe(1);
   });
 
-  it('near miss: -10, tumble true, bubble index in range', () => {
+  it('near miss: minus DAMAGE.near, tumble true, bubble index in range', () => {
     const c = createMatch(opts(11));
     c.ready();
     c.setAim(findAim(c, 'near'));
     c.fire();
     const out = c.shotLanded();
     expect(out.result).toBe('near');
-    expect(out.damage).toBe(10);
+    expect(out.damage).toBe(DAMAGE.near);
     expect(out.tumble).toBe(true);
     expect(out.bubbleIndex).toBeGreaterThanOrEqual(0);
     expect(out.bubbleIndex).toBeLessThan(TUMBLE_LINE_COUNT);
-    expect(c.snapshot().baseHp.FUTURE).toBe(90);
+    expect(c.snapshot().baseHp.FUTURE).toBe(DAMAGE.startingBaseHp - DAMAGE.near);
     expect(c.snapshot().stats.PAST.nearHits).toBe(1);
   });
 
@@ -385,7 +388,10 @@ describe('shotLanded: damage, tumble, and bubbles', () => {
       tumble: false,
       bubbleIndex: null,
     });
-    expect(c.snapshot().baseHp).toEqual({ PAST: 100, FUTURE: 100 });
+    expect(c.snapshot().baseHp).toEqual({
+      PAST: DAMAGE.startingBaseHp,
+      FUTURE: DAMAGE.startingBaseHp,
+    });
   });
 
   it('no self damage: a shot that drops on your own base hurts nobody', () => {
@@ -396,7 +402,10 @@ describe('shotLanded: damage, tumble, and bubbles', () => {
     expect(r.hit).toEqual({ kind: 'base', team: 'PAST' });
     const out = c.shotLanded();
     expect(out.result).toBe('miss');
-    expect(c.snapshot().baseHp).toEqual({ PAST: 100, FUTURE: 100 });
+    expect(c.snapshot().baseHp).toEqual({
+      PAST: DAMAGE.startingBaseHp,
+      FUTURE: DAMAGE.startingBaseHp,
+    });
   });
 
   it('a shot that leaves the world scores as a miss even if it ends near the base', () => {
@@ -564,11 +573,26 @@ describe('reloadDone: scrap and stats', () => {
   });
 });
 
+/** Direct hits that take a fresh base from full health to 0 (no Power Shots, no upgrades). */
+const DIRECTS_TO_WIN = Math.ceil(DAMAGE.startingBaseHp / DAMAGE.direct);
+/** Near misses that do the same. */
+const NEARS_TO_WIN = Math.ceil(DAMAGE.startingBaseHp / DAMAGE.near);
+/** Whole Team Past turns of two direct hits that come before its winning turn. */
+const TURNS_BEFORE_WIN = Math.ceil(DIRECTS_TO_WIN / 2) - 1;
+
+/** Team Past lands two direct hits a turn and Team Future misses, `turns` times each. */
+function pastHitsFor(c: MatchController, turns: number): void {
+  for (let t = 0; t < turns; t++) {
+    playTurn(c, 'direct');
+    playTurn(c, 'miss');
+  }
+}
+
 describe('winning', () => {
-  it('four direct hits end the match: status OVER, winner set, hp 0, never negative', () => {
+  it('enough direct hits end the match: status OVER, winner set, hp 0, never negative', () => {
     const c = createMatch(opts(13));
     let guard = 0;
-    while (c.snapshot().status === 'PLAYING' && guard++ < 20) {
+    while (c.snapshot().status === 'PLAYING' && guard++ < 2 * DIRECTS_TO_WIN) {
       const s = c.snapshot();
       playTurn(c, s.turn.team === 'PAST' || guard % 2 === 1 ? 'direct' : 'miss');
     }
@@ -580,10 +604,11 @@ describe('winning', () => {
     expect(s.baseHp[s.winner!]).toBeGreaterThan(0);
   });
 
-  it('Team Past wins on its second turn at shot 2 with no reload after the final hit', () => {
+  it('Team Past wins at shot 2 of its last turn with no reload after the final hit', () => {
+    // Two direct hits a turn: the base must fall on a second shot for this script.
+    expect(DIRECTS_TO_WIN % 2).toBe(0);
     const c = createMatch(opts(13));
-    playTurn(c, 'direct');
-    playTurn(c, 'miss');
+    pastHitsFor(c, TURNS_BEFORE_WIN);
     c.ready();
     c.setAim(findAim(c, 'direct'));
     c.fire();
@@ -592,23 +617,25 @@ describe('winning', () => {
     c.setAim(findAim(c, 'direct'));
     c.fire();
     const out = c.shotLanded();
-    expect(out.damage).toBe(25);
+    expect(out.damage).toBe(DAMAGE.direct);
     const s = c.snapshot();
     expect(s.baseHp.FUTURE).toBe(0);
     expect(s.status).toBe('OVER');
     expect(s.winner).toBe('PAST');
-    expect(s.turn.turnNumber).toBe(2);
+    expect(s.turn.turnNumber).toBe(2 * TURNS_BEFORE_WIN);
+    expect(() => c.reloadDone(WRONG)).toThrow(MatchOverError);
   });
 
   it('a win on shot 1 ends right there', () => {
+    expect(DIRECTS_TO_WIN % 2).toBe(0);
     const c = createMatch(opts(14));
-    // 3 directs over two turns (Future just misses), then the 4th ends it on shot 1.
-    playTurn(c, 'direct'); // Past: 2 hits
-    playTurn(c, 'miss');
+    // All but the last direct hit (Future just misses), then the last one ends it on shot 1.
+    pastHitsFor(c, TURNS_BEFORE_WIN);
     c.ready();
     c.setAim(findAim(c, 'direct'));
     c.fire();
-    c.shotLanded(); // 3rd hit (FUTURE hp 25)
+    c.shotLanded(); // one hit from the end (FUTURE hp is one direct hit)
+    expect(c.snapshot().baseHp.FUTURE).toBe(DAMAGE.direct);
     c.setAim(findAim(c, 'miss'));
     c.fire();
     c.shotLanded();
@@ -628,7 +655,7 @@ describe('winning', () => {
   it('after the match is over every action throws MatchOverError, but snapshot still works', () => {
     const c = createMatch(opts(13));
     let guard = 0;
-    while (c.snapshot().status === 'PLAYING' && guard++ < 20)
+    while (c.snapshot().status === 'PLAYING' && guard++ < 2 * DIRECTS_TO_WIN)
       playTurn(c, c.snapshot().turn.team === 'PAST' ? 'direct' : 'miss');
     const before = c.snapshot();
     expect(() => c.ready()).toThrow(MatchOverError);
@@ -643,11 +670,11 @@ describe('winning', () => {
   it('hp never goes negative when overkill is possible', () => {
     const c = createMatch(opts(15));
     let guard = 0;
-    while (c.snapshot().status === 'PLAYING' && guard++ < 30)
+    while (c.snapshot().status === 'PLAYING' && guard++ < NEARS_TO_WIN + 2)
       playTurn(c, c.snapshot().turn.team === 'PAST' ? 'near' : 'miss');
     const hp = c.snapshot().baseHp;
     expect(hp.FUTURE).toBeGreaterThanOrEqual(0);
-    expect(hp.FUTURE).toBe(0); // 10 near hits drain 100 exactly
+    expect(hp.FUTURE).toBe(0); // near hits drain full health to exactly 0
     expect(c.snapshot().winner).toBe('PAST');
   });
 });
@@ -733,7 +760,7 @@ describe('property loops: random seeded matches keep every invariant', () => {
           const hp = c.snapshot().baseHp;
           expect(hp.PAST).toBeGreaterThanOrEqual(0);
           expect(hp.FUTURE).toBeGreaterThanOrEqual(0);
-          expect(hp.PAST).toBeLessThanOrEqual(100);
+          expect(hp.PAST).toBeLessThanOrEqual(DAMAGE.startingBaseHp);
           if (c.snapshot().status === 'OVER') break;
         }
         if (c.snapshot().status === 'OVER') break;
