@@ -99,6 +99,8 @@ export const TEST_IDS = {
   dashSpot: (spot: string) => `dash-${spot}`,
   helperBack: 'helper-back',
   helperHear: 'helper-hear',
+  helperRecall: 'helper-recall',
+  dasherResting: 'dasher-resting',
   goHint: 'go-hint',
   wind: 'wind',
   baseHp: (team: Team) => `base-hp-${team}`,
@@ -180,8 +182,10 @@ export type HudSquads = {
   goesDone: number;
   helpers: ReadonlyArray<{ id: string; name: string; kind: 'launcher' | 'dasher' }>;
   picked: string;
-  /** Ground spots the picked dasher may roll to. Empty for a launcher. */
+  /** The ground spot the picked dasher walks out to (one at most). Empty for a launcher. */
   targets: readonly string[];
+  /** The active team's dasher: home and ready, out on the field, or resting. Missing means home. */
+  dasher?: { state: 'home' | 'out' | 'resting'; hp: number; maxHp: number };
   /** True on a side's first go in a match: show the pointing finger and the words. */
   hint?: boolean;
 };
@@ -206,8 +210,10 @@ export type HudHandlers = {
   onEvasion?: () => void;
   /** Squads S1: pick a helper (free). */
   onHelper?: (id: string) => void;
-  /** Squads S1: roll the picked dasher to a ground spot. That is the whole go. */
+  /** Squads S1: walk the picked dasher out to his ground spot. That is the whole go. */
   onDash?: (spot: string) => void;
+  /** Squads S1: Come back. The dasher on the field walks home. That is the whole go. */
+  onRecall?: () => void;
   /** Squads S1: Chrono says the picked helper's name and what it does, with a caption. */
   onHearHelper?: () => void;
 };

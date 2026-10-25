@@ -17,7 +17,9 @@ export type SfxName =
   | 'thud' // shot hits ground or base (soft, toy-like)
   | 'click' // button press
   | 'cheer' // victory
-  | 'bonus'; // fast answer: two bright coin pings
+  | 'bonus' // fast answer: two bright coin pings
+  | 'bonk' // a dasher bonks: a hollow foam knock
+  | 'step'; // a dasher walks: a few soft pitter-patter steps
 
 export const SFX_NAMES: readonly SfxName[] = [
   'launch',
@@ -30,6 +32,8 @@ export const SFX_NAMES: readonly SfxName[] = [
   'click',
   'cheer',
   'bonus',
+  'bonk',
+  'step',
 ];
 
 export type Caption = { text: string; startMs: number };

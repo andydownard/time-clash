@@ -17,6 +17,8 @@ All nine effects are made in code with the browser's WebAudio. There are no soun
 | thud | soft toy-like landing | synthesized in code | original |
 | click | tiny button tick | synthesized in code | original |
 | cheer | four happy rising notes | synthesized in code | original |
+| bonk | a dasher's hollow foam knock | synthesized in code | original |
+| step | a dasher's soft pitter-patter steps | synthesized in code | original |
 
 ## Music
 

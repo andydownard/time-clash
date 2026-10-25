@@ -253,39 +253,54 @@ export const windLabel = (wind: number): string => {
     : `Wind: ${'←'.repeat(level)} ${word} (${n})`;
 };
 
-// ---------- Squads S1 (behind SQUADS.enabled) ----------
-/** Words for the helper pick. Short, third-grade, with a caption for every line Chrono says. */
+// ---------- Squads S1 (SQUADS.enabled) ----------
+/** Words for the helpers. Short, third-grade, with a caption for every line Chrono says. */
 export const SQUAD_COPY = {
   pick: 'Pick a helper',
-  where: 'Roll to a spot',
-  noSpots: 'No spot is free. Pick another helper.',
+  where: 'Walk out',
+  noSpots: 'No spot is free. Press Fire!',
   helperName: {
     'PAST-launcher': 'Cannon Crew',
-    'PAST-dasher': 'Chariot Archers',
+    'PAST-dasher': 'Sir Bonk',
     'FUTURE-launcher': 'Rocket Button',
-    'FUTURE-dasher': 'Tank Button',
+    'FUTURE-dasher': 'Robo Bonk',
   } as Record<string, string>,
   /** What each helper does, said once under the name. */
-  helperKind: { launcher: 'Fire!', dasher: 'Roll!' } as Record<string, string>,
-  spotLabel: (n: number): string => `Spot ${n}`,
-  spotAria: (n: number): string => `Roll to spot ${n}`,
-  rolled: (name: string, spot: number): string => `${name} rolls to spot ${spot}.`,
+  helperKind: { launcher: 'Fire!', dasher: 'Walk!' } as Record<string, string>,
+  /** The one spot button: the dasher walks out to it. */
+  spotLabel: 'Walk out!',
+  spotAria: (n: number): string => `Walk out to spot ${n}`,
+  /** Replaces Walk out while the dasher is on the field. A whole go. */
+  recall: 'Come back',
+  recallIcon: '\uD83C\uDFE0',
+  /** Shown in place of Walk out while the dasher rests. */
+  resting: 'Resting. Back soon.',
+  walked: (name: string): string => `${name} walks out. He bonks every turn!`,
+  cameBack: (name: string): string => `${name} walks home.`,
+  /** The word that pops up on the field with every bonk. */
+  bonkWord: 'Bonk!',
+  bonkBase: (name: string): string => `${name}: Bonk! The base wobbles.`,
+  bonkHelper: (name: string): string => `${name}: Bonk! Bonk!`,
+  bonkBlocked: 'Bonk! The force field says no.',
+  bonkDodged: 'Whoosh! The base slid out of the way.',
+  /** A shell lands near a dasher. Nobody is hurt: he wobbles, or loses a heart. */
+  wobble: (name: string): string => `${name} wobbles.`,
+  loseHeart: (name: string): string => `Bop! ${name} loses a heart.`,
+  tumbleHome: (name: string): string => `${name} tumbles and walks home dizzy.`,
+  /** Read by a screen reader on the health pips. */
+  hearts: (n: number, max: number): string => `${n} of ${max} hearts`,
   back: 'Back',
   hear: 'Hear it',
   backIcon: '\u21A9',
   hearIcon: '\uD83D\uDD0A',
   /** The first-go hint. The finger is drawn beside it, so a pre-reader can follow the picture. */
-  firstGo: 'Press Fire! Or pick a helper and roll to a spot.',
+  firstGo: 'Press Fire! Or pick a helper and tap Walk out!',
   fingerIcon: '\uD83D\uDC46',
   /** What Chrono says on Hear it. Plain words, one short line per kind of helper. */
   hearLine: (kind: string, name: string): string =>
     kind === 'dasher'
-      ? `${name} rolls to a spot. Tap a spot to roll.`
+      ? `${name} walks to the other side and bonks every turn. Tap Walk out!`
       : `${name} fires a ball. Press Fire!`,
-  bonkBase: 'Bonk! The base wobbles.',
-  bonkHelper: 'Bonk! A helper tumbles home.',
-  bonkBlocked: 'Bonk! The force field says no.',
-  bonkDodged: 'Whoosh! The base slid out of the way.',
 } as const;
 
 // ---------- Turn banner and pass screen ----------
@@ -294,9 +309,8 @@ export const turnBanner = (name: string, shot: number | 'POWER'): string =>
     ? `${String(name).toUpperCase()}, POWER SHOT!`
     : `${String(name).toUpperCase()}, YOUR TURN! (SHOT ${shot} OF ${TURN.shotsPerTurn})`;
 
-/** The turn strip words when Squads is on: a go, not a shot. */
-export const goTurnBanner = (name: string, go: number): string =>
-  `${String(name).toUpperCase()}, YOUR TURN! (GO ${go} OF ${TURN.shotsPerTurn})`;
+/** The turn strip words when Squads is on. "GO 1 OF 2" and its dots sit right beside them. */
+export const goTurnBanner = (name: string): string => `${String(name).toUpperCase()}, YOUR TURN!`;
 
 export const PASS_SCREEN = {
   heading: 'Pass the screen!',

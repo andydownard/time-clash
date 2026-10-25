@@ -314,12 +314,14 @@ export function createHud(ctx: UiCtx) {
       'data-testid': TEST_IDS.turnBanner,
       role: 'status',
     });
+    const squadBar = createSquadBar(doc, () => handlers);
     const strip = h(
       doc,
       'div',
       { class: 'tc-turn-strip' },
       h(doc, 'span', { class: 'tc-turn-chev', 'aria-hidden': 'true', text: '\u00AB\u00AB\u00AB' }),
       turnText,
+      squadBar.goRow,
       pips,
     );
     const aimPanel = h(doc, 'div', { class: 'tc-aim' }, a.row, p.row);
@@ -346,7 +348,6 @@ export function createHud(ctx: UiCtx) {
       ammo: (id) => h_.onAmmo?.(id),
       evasion: () => h_.onEvasion?.(),
     });
-    const squadBar = createSquadBar(doc, () => handlers);
     const root = h(
       doc,
       'div',
@@ -367,6 +368,7 @@ export function createHud(ctx: UiCtx) {
         squadBar.root,
         units,
         aimPanel,
+        squadBar.panel,
         fire,
         hint,
         wind,
@@ -429,6 +431,11 @@ export function createHud(ctx: UiCtx) {
       parts.power.disabled = !canFire;
       dasherUp = parts.squadBar.update(state.squads, canFire);
       parts.fire.disabled = !canFire || dasherUp;
+      // A walk needs no aim: the dasher panel takes the aim panel's place while he is picked.
+      parts.aimPanel.hidden = dasherUp;
+      // With Squads on, the helper row sits where the coach line was. The first-go hint replaces it.
+      if (state.squads) parts.hint.hidden = true;
+      parts.strip.toggleAttribute('data-squads', Boolean(state.squads));
       if (canFire) delete parts.fire.dataset.charging;
       if (state.activeTeam) parts.fire.dataset.team = state.activeTeam;
       else delete parts.fire.dataset.team;
@@ -465,7 +472,7 @@ export function createHud(ctx: UiCtx) {
         ? state.computerTeam === who
           ? computerTurnBanner(turnShot)
           : state.squads && !state.bonus
-            ? goTurnBanner(state.names[who], shot)
+            ? goTurnBanner(state.names[who])
             : turnBanner(state.names[who], turnShot)
         : '';
       paintPips(parts.pips, state.shotsLeft, state.bonus);

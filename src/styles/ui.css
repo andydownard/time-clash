@@ -4766,24 +4766,83 @@ button.tc-forge-row[aria-disabled='true'],
   transform: rotate(-90deg);
 }
 
-/* ---------- Squads S1: the helper bar (only drawn when SQUADS.enabled) ---------- */
-.tc-squad-bar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 12px;
-  background: var(--tc-ink-deep);
+/* ---------- Squads S1: the helper controls (SQUADS.enabled) ----------
+   The helper row floats in the band under the ground line, between the two base health tags,
+   so the control bar keeps its two rows and never climbs over the fighters. "GO 1 OF 2" sits in
+   the turn strip, and the dasher panel takes the aim panel's slot while the dasher is picked. */
+.tc-squad-bar,
+.tc-dasher-panel {
   color: var(--tc-on-dark);
-  border: 4px solid var(--tc-ember);
-  border-radius: var(--tc-r-card);
-  padding: 6px 10px;
   font-family: var(--tc-font-voice-new);
   font-weight: var(--tc-fw-new);
   letter-spacing: var(--tc-ls-caps);
   text-transform: uppercase;
   font-size: 20px;
 }
-.tc-go-row,
+.tc-hud-bottom > .tc-squad-bar {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: max-content;
+}
+.tc-squad-bar[hidden],
+.tc-dasher-panel[hidden],
+.tc-go-row[hidden] {
+  display: none;
+}
+/* Portrait has room under the picture, so the helper row takes its own line there. */
+@media (orientation: portrait) {
+  .tc-hud-bottom > .tc-squad-bar {
+    position: static;
+    transform: none;
+    margin: 0;
+    flex: 1 1 100%;
+    justify-content: center;
+  }
+}
+.tc-dasher-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--tc-ink-deep);
+  border: 4px solid var(--tc-ember);
+  border-radius: var(--tc-r-card);
+  box-shadow: 0 3px 0 var(--tc-purple-900);
+  padding: 4px 14px;
+  flex: 1 1 340px;
+  max-width: 460px;
+  min-width: 340px;
+  align-self: stretch;
+}
+.tc-dasher-panel button {
+  white-space: nowrap;
+}
+.tc-dasher-panel .tc-dash-none {
+  text-align: center;
+}
+/* In the turn strip: the go count and its dots. The strip's shot circles step aside for it. */
+.tc-go-row {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.tc-turn-strip[data-squads] .tc-pips > :not(.tc-pip-reload):not(.tc-pip-bonus) {
+  display: none;
+}
+.tc-turn-strip .tc-go-dot {
+  border-color: var(--tc-ink-deep);
+}
+.tc-turn-strip .tc-go-dot[data-used='true'] {
+  background: var(--tc-ink-deep);
+  border-color: var(--tc-ink-deep);
+}
 .tc-helpers,
 .tc-dash-spots {
   display: flex;
@@ -4825,12 +4884,16 @@ button.tc-forge-row[aria-disabled='true'],
 }
 .tc-helper {
   display: flex;
-  flex-direction: column;
   align-items: center;
+  gap: 6px;
   line-height: 1.1;
+  white-space: nowrap;
 }
-.tc-helper-kind {
-  color: var(--tc-parchment-warm);
+/* Tighter letters and padding, so the row fits between the health tags at 1024 wide. */
+.tc-squad-bar .tc-helper,
+.tc-squad-bar .tc-helper-hear {
+  padding: 4px 8px;
+  letter-spacing: 0.03em;
 }
 .tc-helper[aria-checked='true'] {
   border-width: 7px;
@@ -4860,7 +4923,19 @@ button.tc-forge-row[aria-disabled='true'],
   display: none;
 }
 .tc-go-hint {
-  flex-basis: 100%;
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 6px;
+  width: max-content;
+  max-width: 90vw;
+  padding: 4px 12px;
+  background: var(--tc-surface-dark);
+  border: 2px solid var(--tc-steel-blue);
+  border-radius: var(--tc-radius);
+  font-size: var(--tc-text-min);
+  text-transform: none;
   display: flex;
   align-items: center;
   gap: 8px;

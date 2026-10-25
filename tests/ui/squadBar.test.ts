@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-// Squads S1 helper bar in the HUD: GO banner, helper pick, dash spots, Fire gating.
+// Squads S1 helper bar in the HUD: GO banner, helper pick, Walk out, Come back, Fire gating.
 import { readFileSync } from 'node:fs';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { SQUAD_COPY, goTurnBanner } from '../../src/data/copy';
@@ -47,6 +47,7 @@ const show = (over: Partial<HudState>): string[] => {
     onSelect: () => {},
     onHelper: (id) => calls.push(`helper:${id}`),
     onDash: (spot) => calls.push(`dash:${spot}`),
+    onRecall: () => calls.push('recall'),
     onHearHelper: () => calls.push('hear'),
   };
   s.overlay.showHud(h);
@@ -71,7 +72,7 @@ describe('flag on', () => {
     s.overlay.updateHud(state({ squads: squads({ goesDone: 1 }), shotsLeft: 1 }));
     expect(q(TEST_IDS.goBanner)!.textContent).toBe('GO 2 OF 2');
     expect(qa('.tc-go-dot[data-used="true"]')).toHaveLength(1);
-    expect(q(TEST_IDS.turnBanner)!.textContent).toBe(goTurnBanner('Alex', 2));
+    expect(q(TEST_IDS.turnBanner)!.textContent).toBe(goTurnBanner('Alex'));
   });
   it('shows both helpers by name and marks the picked one in the markup', () => {
     show({ squads: squads() });
@@ -93,6 +94,45 @@ describe('flag on', () => {
     click(q(TEST_IDS.dashSpot('g2')));
     expect(calls).toEqual(['dash:g2']);
     expect(q(TEST_IDS.dashSpot('g2'))!.getAttribute('aria-label')).toBe(SQUAD_COPY.spotAria(3));
+  });
+  it('the spot button says Walk out!', () => {
+    show({ squads: squads({ picked: 'PAST-dasher', targets: ['g3'] }) });
+    expect(q(TEST_IDS.dashSpot('g3'))!.textContent).toBe(SQUAD_COPY.spotLabel);
+  });
+  it('while the dasher is out, Come back replaces Walk out and calls home', () => {
+    const calls = show({
+      squads: squads({
+        picked: 'PAST-dasher',
+        targets: [],
+        dasher: { state: 'out', hp: 2, maxHp: 3 },
+      }),
+    });
+    expect(qa('[data-testid^="dash-g"]')).toHaveLength(0);
+    const back = q(TEST_IDS.helperRecall)!;
+    expect(back.textContent).toContain(SQUAD_COPY.recall);
+    expect((q(TEST_IDS.fireButton) as HTMLButtonElement).disabled).toBe(true);
+    click(back);
+    expect(calls).toEqual(['recall']);
+  });
+  it('while the dasher rests, says so and offers no move', () => {
+    show({
+      squads: squads({
+        picked: 'PAST-dasher',
+        targets: [],
+        dasher: { state: 'resting', hp: 0, maxHp: 3 },
+      }),
+    });
+    expect(q(TEST_IDS.dasherResting)!.textContent).toBe(SQUAD_COPY.resting);
+    expect(q(TEST_IDS.helperRecall)).toBeNull();
+    expect(qa('[data-testid^="dash-g"]')).toHaveLength(0);
+  });
+  it('Come back does nothing while a cover is up or a shot flies', () => {
+    const calls = show({
+      canFire: false,
+      squads: squads({ picked: 'PAST-dasher', dasher: { state: 'out', hp: 3, maxHp: 3 } }),
+    });
+    click(q(TEST_IDS.helperRecall));
+    expect(calls).toEqual([]);
   });
   it('says so kindly when no spot is free', () => {
     show({ squads: squads({ picked: 'PAST-dasher', targets: [] }) });
@@ -169,9 +209,9 @@ describe('Back, Hear it and the first-go hint', () => {
   });
 });
 
-describe('flag off pins', () => {
-  it('ships with Squads off and no new control shows without squad state', () => {
-    expect(SQUADS.enabled).toBe(false);
+describe('the flag', () => {
+  it('ships with Squads on, and no helper control shows without squad state', () => {
+    expect(SQUADS.enabled).toBe(true);
     show({});
     expect(document.querySelector('.tc-squad-bar')!.hasAttribute('hidden')).toBe(true);
     expect(q(TEST_IDS.turnBanner)!.textContent).toBe('ALEX, YOUR TURN! (SHOT 1 OF 2)');
