@@ -17,6 +17,7 @@ import {
   toSetup,
   waitAiming,
   waitPassScreen,
+  wearDown,
 } from './support/game';
 import { saveShot } from './support/shots';
 
@@ -223,6 +224,8 @@ test('every screen keeps the floors (UPDATE_SCREENSHOTS=1 also retakes the scree
   await answerReload(page, 'right-fast');
   await waitPassScreen(page);
 
+  // Full health takes several turns (the pace rule): wear it down to one hit.
+  await wearDown(page);
   await readyUp(page);
   await takeShot(page, 'direct');
   await expect(tid(page, 'victory')).toBeVisible({ timeout: 45_000 });
