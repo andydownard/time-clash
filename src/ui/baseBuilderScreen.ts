@@ -34,7 +34,7 @@ import {
   shapesOf,
   slotPieces,
   slotSpots,
-  spotWeaponById,
+  spotDef,
   spotWeaponsOf,
   spotsUsed,
   turnPiece,
@@ -63,6 +63,7 @@ import {
   type Cell,
   type Material,
 } from '../game/customShapes';
+import { customMountWeapons } from '../game/customMounts';
 import { unlockPiece, unlockSpotWeapon } from '../game/economy';
 import { walletOf, type CampState } from '../game/loadout';
 import { TEAMS, type Team } from '../game/types';
@@ -73,6 +74,7 @@ import {
   CELL,
   ghostIcon,
   materialIcon,
+  myWeaponIcon,
   nodesFromMarkup,
   placedMarkup,
   plotScene,
@@ -89,6 +91,7 @@ import { isBlockedName } from './nameBlocklist';
 import { radioGroup } from './selector';
 import { svgFromString } from './svg';
 import { TEST_IDS, type BuilderOptions } from './types';
+import { showWorkshop } from './workshopScreen';
 
 /** How far a pointer moves before a press becomes a drag. Smaller is a tap. */
 const DRAG_START_PX = 6;
@@ -97,6 +100,12 @@ const DRAG_START_PX = 6;
  * inside, at the nearest legal place. Farther out, the drag is put back.
  */
 const EDGE_GRACE_PX = 28;
+/** The weapon list's usual width (the CSS min(264px, 34%)) and the most it grows with My weapons. */
+const LIST_USUAL_PX = 264;
+const LIST_USUAL_SHARE = 0.34;
+const LIST_MAX_PX = 440;
+/** Air between the list and the plot's edge or the chosen pad (the CSS --tc-s-3). */
+const LIST_GAP_PX = 12;
 
 type Box = { left: number; top: number; width: number; height: number };
 
@@ -373,6 +382,13 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
       h(doc, 'span', { text: BUILDER_COPY.clearSpot }),
     );
     clearSpotBtn.setAttribute('aria-label', BUILDER_COPY.clearSpot);
+    /** With no weapons of your own yet: one quiet link to the Forge Workshop. */
+    const makeLink = h(doc, 'button', {
+      type: 'button',
+      class: 'tc-link tc-bb-make',
+      'data-testid': 'bb-make-weapon',
+      text: BUILDER_COPY.makeInForge,
+    });
     const weaponPanel = h(
       doc,
       'section',
@@ -896,8 +912,8 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
 
     // ---------- Weapon spots ----------
     const spotName = (i: number): string | null => {
-      const id = build.spots[i]?.weapon;
-      return id ? (spotWeaponById(id)?.name ?? null) : null;
+      const spot = build.spots[i];
+      return spot ? (spotDef(spot)?.name ?? null) : null;
     };
 
     /** The pads on the plot. Tap circles are at least 56px on screen, whatever the plot size. */
@@ -935,7 +951,31 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
       weaponPanel.setAttribute('data-side', pad && pad.x * STEP < PLOT_W / 2 ? 'right' : 'left');
       weaponPanel.setAttribute('aria-label', BUILDER_COPY.spotPanel(n));
       panelTitle.textContent = BUILDER_COPY.spotTitle(n);
+      // "My weapons": the player's own Workshop weapons for this side, first, two to a row.
+      const mine = customMountWeapons(camp, name, team);
+      weaponPanel.setAttribute('data-mine', mine.length ? 'some' : 'none');
+      sizeList(pad ? pad.x * STEP : PLOT_W / 2, mine.length > 0);
+      const mineGroup = mine.length
+        ? h(
+            doc,
+            'div',
+            {
+              class: 'tc-bb-myw',
+              role: 'group',
+              'aria-label': BUILDER_COPY.myWeapons,
+              'data-testid': 'bb-mine',
+            },
+            h(doc, 'h3', { class: 'tc-bb-group-title', text: BUILDER_COPY.myWeapons }),
+            h(doc, 'div', { class: 'tc-bb-myw-grid' }, ...mine.map((def) => myTile(def, here))),
+          )
+        : makeLink;
+      // A thin line, then the base weapons. The words are for a screen reader only.
+      const catalogTitle = mine.length
+        ? [h(doc, 'h3', { class: 'tc-bb-group-line', text: BUILDER_COPY.campWeapons })]
+        : [];
       panelList.replaceChildren(
+        mineGroup,
+        ...catalogTitle,
         ...spotWeaponsOf(team).map((def) => {
           const open = have.has(def.id);
           const on = here === def.id;
@@ -974,6 +1014,79 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
       );
       clearSpotBtn.setAttribute('aria-label', BUILDER_COPY.clearSpotLabel(n));
       clearSpotBtn.setAttribute('aria-disabled', String(here === undefined));
+    }
+
+    /**
+     * With My weapons showing, the list takes the room on the far side of the chosen pad (never
+     * over the pad), from its usual width up to LIST_MAX_PX. `padX` is in picture units.
+     */
+    function sizeList(padX: number, wide: boolean): void {
+      weaponPanel.style.removeProperty('--bb-list-w');
+      const wrap = plotWrap.getBoundingClientRect();
+      const art = plotBox();
+      if (!wide || wrap.width === 0 || art.width === 0) return;
+      const { scale } = plotPoint(art, 0, 0);
+      const offX = (art.width - PLOT_W * scale) / 2;
+      const middle = art.left + offX + padX * scale;
+      // The ring around a chosen pad, and a little air.
+      const reach = (B.spots.padSteps * STEP + 9) * scale + LIST_GAP_PX;
+      const room =
+        weaponPanel.getAttribute('data-side') === 'right'
+          ? wrap.right - LIST_GAP_PX - (middle + reach)
+          : middle - reach - (wrap.left + LIST_GAP_PX);
+      const usual = Math.min(LIST_USUAL_PX, wrap.width * LIST_USUAL_SHARE);
+      const width = Math.floor(Math.max(usual, Math.min(LIST_MAX_PX, room)));
+      weaponPanel.style.setProperty('--bb-list-w', `${width}px`);
+    }
+
+    /** One weapon of your own: its picture with a star, its name and its damage. No Scrap. */
+    function myTile(def: SpotWeaponDef, here: string | undefined): HTMLButtonElement {
+      const on = here === def.id;
+      const b = h(doc, 'button', {
+        type: 'button',
+        class: 'tc-bb-weapon tc-bb-myw-tile',
+        'data-weapon': def.id,
+        'data-state': on ? 'on' : 'owned',
+        'aria-pressed': String(on),
+        'aria-label': BUILDER_COPY.myWeaponLabel(def.name, def.damage, on),
+        'data-testid': `bb-mine-${def.id}`,
+      });
+      // Picture and name on top, the damage on its own line under both.
+      b.append(
+        myWeaponIcon(doc, def.art ?? '', team, 32),
+        h(doc, 'span', { class: 'tc-bb-weapon-name', text: def.name }),
+        h(doc, 'span', { class: 'tc-bb-myw-damage', text: BUILDER_COPY.myDamage(def.damage) }),
+      );
+      // On this spot: a check mark as well as the color, so it is never color alone.
+      if (on) {
+        b.append(
+          svgFromString(
+            doc,
+            '<svg viewBox="0 0 24 24" width="22" height="22" class="tc-bb-myw-check" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#f7ebcb" stroke="currentColor" stroke-width="2"/><path d="M6,12.5 L10.5,17 L18,7.5" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+          ),
+        );
+      }
+      b.addEventListener('click', () => pickWeapon(def));
+      return b;
+    }
+
+    /** Opens the Forge Workshop over the builder for this side, then back to the same spot. */
+    function openWorkshop(): void {
+      screen.setAttribute('inert', '');
+      void showWorkshop(ctx, { camp, names: options.names, team, save: options.saveCamp }).then(
+        (result) => {
+          screen.removeAttribute('inert');
+          camp = result.camp;
+          renderPanel();
+          const made = customMountWeapons(camp, name, team).at(-1);
+          if (result.made && made) {
+            say(BUILDER_COPY.madeInForge(result.made));
+            weaponPanel.querySelector<HTMLElement>(`[data-weapon="${made.id}"]`)?.focus();
+          } else {
+            (weaponPanel.querySelector<HTMLElement>('.tc-bb-make') ?? weaponPanel).focus();
+          }
+        },
+      );
     }
 
     function renderMode(): void {
@@ -1030,7 +1143,7 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
       if (selSpot === null) return;
       const n = selSpot + 1;
       const had = doc.activeElement;
-      if (!ownedWeapons().has(def.id)) {
+      if (!def.mine && !ownedWeapons().has(def.id)) {
         const outcome = unlockSpotWeapon(camp, name, team, def.id);
         if (outcome.ok) {
           camp = outcome.camp;
@@ -1044,7 +1157,13 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
         keepFocus(had, () => undefined);
         return;
       }
-      const result = assignWeapon(build, selSpot, def.id, ownedWeapons());
+      const result = assignWeapon(
+        build,
+        selSpot,
+        def.id,
+        ownedWeapons(),
+        walletOf(camp, name).loadout[team].custom,
+      );
       if (!result.ok) return;
       if (result.state !== build) {
         build = result.state;
@@ -1589,8 +1708,8 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
         return;
       }
       if (!weaponPanel.contains(target)) return;
-      const rows = [...weaponPanel.querySelectorAll<HTMLElement>('.tc-bb-weapon')];
-      const at = rows.indexOf(target.closest('.tc-bb-weapon') as HTMLElement);
+      const rows = [...weaponPanel.querySelectorAll<HTMLElement>('.tc-bb-weapon, .tc-bb-make')];
+      const at = rows.indexOf(target.closest('.tc-bb-weapon, .tc-bb-make') as HTMLElement);
       if (k === 'ArrowDown' || k === 'ArrowUp') {
         e.preventDefault();
         rows[(at + (k === 'ArrowDown' ? 1 : -1) + rows.length) % rows.length]?.focus();
@@ -1959,6 +2078,7 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
       resolve(next);
     };
     back.addEventListener('click', () => finish());
+    makeLink.addEventListener('click', () => openWorkshop());
     doneBtn.addEventListener('click', () => finish());
     teamPicker.addEventListener('click', (e) => {
       const chip = (e.target as Element).closest<HTMLElement>('[data-team]');
