@@ -14,6 +14,7 @@ import {
   findSpot,
   footprint,
   freshBases,
+  heldUp,
   movePiece,
   newBuild,
   ownedPieceIds,
@@ -111,7 +112,7 @@ describe('placing', () => {
     }
   });
   it('never changes the state it was given', () => {
-    const r = placePiece(empty, 'stone', at(3, 3));
+    const r = placePiece(empty, 'stone', at(3, groundRow));
     expect(empty.pieces).toHaveLength(0);
     expect(r.ok && r.state).not.toBe(empty);
   });
@@ -124,35 +125,42 @@ describe('placing', () => {
       reason: 'outside',
     });
     expect(placePiece(empty, 'stone', at(B.cols - 2, groundRow)).ok).toBe(true);
-    expect(placePiece(empty, 'stone', at(0, 0)).ok).toBe(true);
+    expect(placePiece(empty, 'stone', at(0, groundRow)).ok).toBe(true);
   });
   it('refuses a free offset that pushes the brick out', () => {
     const r = placePiece(empty, 'stone', { x: B.cols - 2, y: 3, ox: 1, oy: 0 });
     expect(r).toEqual({ ok: false, reason: 'outside' });
   });
   it('refuses two bricks in the same spot, but touching edges are fine', () => {
-    const one = placeAll(empty, [['stone', 3, 5]]);
-    expect(placePiece(one, 'stone', at(3, 5))).toEqual({ ok: false, reason: 'overlap' });
-    expect(placePiece(one, 'stone', at(4, 5))).toEqual({ ok: false, reason: 'overlap' });
-    expect(placePiece(one, 'stone', at(5, 5)).ok).toBe(true);
-    expect(placePiece(one, 'stone', at(3, 6)).ok).toBe(true);
-    expect(placePiece(one, 'stone', at(3, 4)).ok).toBe(true);
+    const one = placeAll(empty, [['stone', 3, groundRow]]);
+    expect(placePiece(one, 'stone', at(3, groundRow))).toEqual({ ok: false, reason: 'overlap' });
+    expect(placePiece(one, 'stone', at(4, groundRow))).toEqual({ ok: false, reason: 'overlap' });
+    expect(placePiece(one, 'stone', at(5, groundRow)).ok).toBe(true);
+    expect(placePiece(one, 'stone', at(1, groundRow)).ok).toBe(true);
+    expect(placePiece(one, 'stone', at(3, groundRow - 1)).ok).toBe(true);
   });
-  it('lets a brick stand on another, hang beside a wall, and float with no support', () => {
+  it('lets a brick stand on another, but not hang beside a wall or float with no support', () => {
     const wall = placeAll(empty, [['tower', 5, groundRow - 1]]);
-    expect(placePiece(wall, 'stone', at(6, groundRow - 1)).ok).toBe(true);
-    expect(placePiece(wall, 'stone', at(3, groundRow - 1)).ok).toBe(true);
-    expect(placePiece(wall, 'plank', at(10, 0)).ok).toBe(true);
+    expect(placePiece(wall, 'stone', at(5, groundRow - 2)).ok).toBe(true);
+    expect(placePiece(wall, 'stone', at(6, groundRow - 1))).toEqual({
+      ok: false,
+      reason: 'floating',
+    });
+    expect(placePiece(wall, 'stone', at(3, groundRow - 1))).toEqual({
+      ok: false,
+      reason: 'floating',
+    });
+    expect(placePiece(wall, 'plank', at(10, 0))).toEqual({ ok: false, reason: 'floating' });
   });
   it('lets a free offset sit between whole cells, and still refuses a real overlap', () => {
-    const tight = placeAll(empty, [['tower', 2, 5]]);
-    expect(placePiece(tight, 'tower', { x: 3, y: 5, ox: 4, oy: 0 }).ok).toBe(true);
-    expect(placePiece(tight, 'tower', { x: 2, y: 5, ox: 4, oy: 0 })).toEqual({
+    const tight = placeAll(empty, [['tower', 2, groundRow - 1]]);
+    expect(placePiece(tight, 'tower', { x: 3, y: groundRow - 1, ox: 4, oy: 0 }).ok).toBe(true);
+    expect(placePiece(tight, 'tower', { x: 2, y: groundRow - 1, ox: 4, oy: 0 })).toEqual({
       ok: false,
       reason: 'overlap',
     });
-    expect(placePiece(tight, 'tower', { x: 3, y: 6, ox: 0, oy: 4 }).ok).toBe(true);
-    expect(placePiece(tight, 'tower', { x: 2, y: 6, ox: 0, oy: 4 })).toEqual({
+    expect(placePiece(tight, 'tower', { x: 2, y: groundRow - 3, ox: 0, oy: 0 }).ok).toBe(true);
+    expect(placePiece(tight, 'tower', { x: 2, y: groundRow - 3, ox: 0, oy: 4 })).toEqual({
       ok: false,
       reason: 'overlap',
     });
@@ -194,7 +202,7 @@ describe('placing', () => {
 
 describe('turning', () => {
   it('turns about the middle and goes through four turns back to where it began', () => {
-    let s = placeAll(newBuild('PAST'), [['long', 8, 5]]);
+    let s = placeAll(newBuild('PAST'), [['long', 8, groundRow]]);
     const start = s.pieces[0]!;
     for (let i = 0; i < 4; i++) {
       const r = turnPiece(s, 0);
@@ -205,8 +213,6 @@ describe('turning', () => {
   });
   it('a quarter turn swaps the footprint and stays inside the plot at every edge', () => {
     const spots: Array<[number, number]> = [
-      [0, 0],
-      [B.cols - 4, 0],
       [0, groundRow],
       [B.cols - 4, groundRow],
     ];
@@ -226,19 +232,18 @@ describe('turning', () => {
     }
   });
   it('slides to the nearest free spot when the turned brick would overlap', () => {
+    // A standing tower turned flat would reach into the stone beside it.
     const s = placeAll(newBuild('PAST'), [
-      ['long', 4, 5],
-      ['stone', 5, 4],
+      ['tower', 5, groundRow - 1],
+      ['stone', 6, groundRow],
     ]);
     const r = turnPiece(s, 0);
     expect(r.ok).toBe(true);
-    if (r.ok)
-      expect(
-        check(
-          r.state.pieces.filter((_, i) => i !== 0),
-          r.state.pieces[0]!,
-        ),
-      ).toBeNull();
+    if (r.ok) {
+      const rest = r.state.pieces.filter((_, i) => i !== 0);
+      expect(check(rest, r.state.pieces[0]!)).toBeNull();
+      expect(heldUp(r.state.pieces).every(Boolean)).toBe(true);
+    }
   });
   it('says no when there is no room anywhere near', () => {
     // Fill the whole plot with stones, then free one stone and try to turn a long brick in it.
@@ -246,8 +251,9 @@ describe('turning', () => {
     for (let y = 0; y <= groundRow; y++)
       for (let x = 0; x < B.cols; x += 2)
         pieces.push({ piece: 'stone', x, y, ox: 0, oy: 0, rot: 0, hp: 1 });
-    pieces = pieces.filter((p) => !(p.y === 3 && p.x >= 4 && p.x <= 6));
-    pieces.push({ piece: 'plank', x: 4, y: 3, ox: 0, oy: 0, rot: 0, hp: 1 });
+    // The plank is on the top row, so nothing rests on it: the only problem is room.
+    pieces = pieces.filter((p) => !(p.y === 0 && p.x >= 4 && p.x <= 6));
+    pieces.push({ piece: 'plank', x: 4, y: 0, ox: 0, oy: 0, rot: 0, hp: 1 });
     pieces = pieces.slice(0, B.maxPieces + 100);
     const s: BuildState = { team: 'PAST', pieces, spots: emptySpots(), undo: [] };
     const idx = pieces.length - 1;
@@ -261,18 +267,19 @@ describe('turning', () => {
 describe('moving, removing, clearing and undo', () => {
   it('moves a brick, refuses an overlap, and ignores itself', () => {
     const s = placeAll(newBuild('PAST'), [
-      ['stone', 2, 5],
-      ['stone', 8, 5],
+      ['stone', 2, groundRow],
+      ['stone', 8, groundRow],
     ]);
-    expect(movePiece(s, 0, at(2, 6)).ok).toBe(true);
-    expect(movePiece(s, 0, at(3, 5)).ok).toBe(true);
-    expect(movePiece(s, 0, at(7, 5))).toEqual({ ok: false, reason: 'overlap' });
+    expect(movePiece(s, 0, at(3, groundRow)).ok).toBe(true);
+    expect(movePiece(s, 0, at(8, groundRow - 1)).ok).toBe(true);
+    expect(movePiece(s, 0, at(7, groundRow))).toEqual({ ok: false, reason: 'overlap' });
+    expect(movePiece(s, 0, at(2, groundRow - 2))).toEqual({ ok: false, reason: 'floating' });
     expect(movePiece(s, 5, at(1, 1))).toEqual({ ok: false, reason: 'nothing' });
   });
   it('removes one brick', () => {
     const s = placeAll(newBuild('PAST'), [
-      ['stone', 2, 5],
-      ['stone', 8, 5],
+      ['stone', 2, groundRow],
+      ['stone', 8, groundRow],
     ]);
     const r = removePiece(s, 0);
     expect(r.ok && r.state.pieces.map((p) => p.x)).toEqual([8]);
@@ -280,8 +287,8 @@ describe('moving, removing, clearing and undo', () => {
   });
   it('Clear takes everything off and Undo brings it back', () => {
     const s = placeAll(newBuild('PAST'), [
-      ['stone', 2, 5],
-      ['stone', 8, 5],
+      ['stone', 2, groundRow],
+      ['stone', 8, groundRow],
     ]);
     const cleared = clearBuild(s);
     expect(cleared.pieces).toHaveLength(0);
@@ -290,26 +297,27 @@ describe('moving, removing, clearing and undo', () => {
   });
   it('Undo walks back one step at a time and stops at the start', () => {
     const s0 = newBuild('PAST');
-    const s1 = placeAll(s0, [['stone', 2, 5]]);
-    const s2 = placeAll(s1, [['stone', 8, 5]]);
+    const s1 = placeAll(s0, [['stone', 2, groundRow]]);
+    const s2 = placeAll(s1, [['stone', 8, groundRow]]);
     expect(undoBuild(s2).pieces).toHaveLength(1);
     expect(undoBuild(undoBuild(s2)).pieces).toHaveLength(0);
     expect(undoBuild(undoBuild(undoBuild(s2)))).toEqual(undoBuild(undoBuild(s2)));
     expect(undoBuild(s0)).toBe(s0);
   });
   it('Undo reverses a turn and a move', () => {
-    const s = placeAll(newBuild('PAST'), [['long', 8, 5]]);
+    const s = placeAll(newBuild('PAST'), [['long', 8, groundRow]]);
     const turned = turnPiece(s, 0);
     if (!turned.ok) throw new Error('turn');
     expect(undoBuild(turned.state).pieces[0]!.rot).toBe(0);
-    const moved = movePiece(s, 0, at(2, 2));
+    const moved = movePiece(s, 0, at(2, groundRow));
     if (!moved.ok) throw new Error('move');
     expect(undoBuild(moved.state).pieces[0]!.x).toBe(8);
   });
   it('remembers at most undoDepth steps', () => {
     let s = newBuild('PAST');
     for (let i = 0; i < B.undoDepth + 10; i++) {
-      const r = movePiece(i === 0 ? placeAll(s, [['stone', 0, 0]]) : s, 0, at(i % 2 ? 4 : 2, 0));
+      const start = i === 0 ? placeAll(s, [['stone', 0, groundRow]]) : s;
+      const r = movePiece(start, 0, at(i % 2 ? 4 : 2, groundRow));
       if (!r.ok) throw new Error('move');
       s = r.state;
     }
@@ -339,8 +347,8 @@ describe('positions', () => {
     ).toBeNull();
   });
   it('finds the nearest free spot, or null when none is near', () => {
-    const s = placeAll(newBuild('PAST'), [['stone', 5, 5]]);
-    const cand: Placed = { piece: 'stone', ...at(5, 5), rot: 0, hp: 1 };
+    const s = placeAll(newBuild('PAST'), [['stone', 5, groundRow]]);
+    const cand: Placed = { piece: 'stone', ...at(5, groundRow), rot: 0, hp: 1 };
     const spot = findSpot(s.pieces, cand, null)!;
     expect(check(s.pieces, { ...cand, ...spot })).toBeNull();
     expect(findSpot(s.pieces, { ...cand, piece: 'nope' }, null)).toBeNull();
@@ -384,9 +392,10 @@ describe('saving and bad saved data', () => {
         ['stone', 8, 8, 0, 0, 0, 20],
       ],
     };
+    // Both good bricks were floating in an old save, so they drop to the ground.
     expect(repairBase(raw, 'PAST').map((p) => [p.piece, p.x, p.y])).toEqual([
-      ['stone', 1, 1],
-      ['stone', 8, 8],
+      ['stone', 1, groundRow],
+      ['stone', 8, groundRow],
     ]);
   });
   it('caps hit points at full strength and fills a bad value', () => {
@@ -427,7 +436,7 @@ describe('saving and bad saved data', () => {
 });
 
 describe('three saved bases per player and side', () => {
-  const one = placeAll(newBuild('PAST'), [['stone', 2, 5]]).pieces;
+  const one = placeAll(newBuild('PAST'), [['stone', 2, groundRow]]).pieces;
 
   it('starts with three empty slots and slot 1 chosen', () => {
     const t = basesOf(freshBases(), 'Alex', 'PAST');
