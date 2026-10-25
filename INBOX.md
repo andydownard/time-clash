@@ -2,6 +2,7 @@
 
 Raw ideas land here. Triage promotes them to BACKLOG.md. Items expire after 30 days.
 
+- (2026-10-24) Re-record How to Play cards 3 and 4 with the "2 goes" words in docs/NARRATION.md (Squads is on; the clips still say "two shots"). Then add the copy lint words from the Squads plan (missile, soldier, army, troops, war, shoot) once no screen uses them. "weapon" cannot join the list while the Camp has Forge Weapon.
 - (2026-10-15) Follow-up from the review fixes. Andy to sign off: if the question card breaks, the turn still reloads with no scrap and Chrono says so (`flow.ts reload()`).
 - (2026-10-17) Two-iPad play, kid accounts, matching and a labeled bot: parked. Andy (2026-10-21): this stays a web app. An iPad app can come later. Plan stays in `docs/plans/2026-10-17-two-player-ipad-plan.md`.
 - (2026-10-19) Owner design comments from the canvas (https://claude.ai/artifact/KVA45RChVvDHQsJezUur1v), not yet in the game. Triage into BACKLOG.md and docs/GAME_SPEC.md:

@@ -64,6 +64,22 @@ export type ViewStatus = {
   firingOrigin?: Vec2;
 };
 
+/** Squads: one dasher as the field shows him. `at` is where his feet are, on the ground. */
+export type DasherSprite = {
+  team: Team;
+  at: Vec2;
+  state: 'home' | 'out' | 'resting';
+  hp: number;
+  maxHp: number;
+};
+
+/** Squads: both dashers, the ground spot markers, and the spot the picked dasher would walk to. */
+export type SquadField = {
+  dashers: readonly DasherSprite[];
+  spots: ReadonlyArray<{ id: string; at: Vec2; doorstepOf: Team | null }>;
+  target: Vec2 | null;
+};
+
 /** The drawing side of the scene. BattleScene implements it with Phaser; tests use a fake. */
 export interface BattleView {
   /** Redraw health bars, shots icons, wind, dial and meter. */
@@ -90,6 +106,14 @@ export interface BattleView {
   setWalls?(walls: readonly Rect[]): void;
   /** Phase 2: the base zips aside and back (a Hoverboard Dodge). Resolves when it is back. */
   playDodge?(team: Team): Promise<void>;
+  /** Squads: draw the dashers and spot markers where the rules say (null hides them). Optional for older fakes. */
+  syncSquads?(field: SquadField | null): void;
+  /** Squads: a dasher walks the ground line from `from` to `to`, over any obstacle. */
+  walkDasher?(team: Team, from: Vec2, to: Vec2, dizzy: boolean): Promise<void>;
+  /** Squads: a dasher swings his toy at `toward`, with a puff and the word. */
+  playDasherBonk?(team: Team, toward: Vec2, word: string): Promise<void>;
+  /** Squads: a shell landed close to a dasher. He wobbles, or tumbles at 0 health. */
+  playDasherHit?(team: Team, how: 'wobble' | 'tumble', label: string | null): Promise<void>;
   /** Disturbances: draw this turn's birds and start the bird clock at 0. null clears them. */
   showBirds?(birds: readonly BirdPath[] | null): void;
   /** ms on the bird clock since showBirds. The shot is fired with it, so it meets the birds drawn. */

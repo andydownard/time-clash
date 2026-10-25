@@ -42,7 +42,9 @@ describe('BattleFlow with Squads on', () => {
     w.handlers()!.onHelper!('PAST-dasher');
     w.handlers()!.onHearHelper!();
     const line = w.spoken.find((l) => l.id === 'squad-hear-PAST-dasher')!;
-    expect(line.text).toBe(SQUAD_COPY.hearLine('dasher', 'Chariot Archers'));
+    expect(line.text).toBe(
+      SQUAD_COPY.hearLine('dasher', SQUAD_COPY.helperName['PAST-dasher'] as string),
+    );
     expect(line.noClip).toBe(true);
     w.flow.destroy();
   });
@@ -76,7 +78,7 @@ describe('BattleFlow with Squads on', () => {
   });
 
   it('with the flag off there is no hint, no squad state and nothing spoken', async () => {
-    const w = makeWorld({ seed: SEED });
+    const w = makeWorld({ seed: SEED, matchOptions: { squads: false } });
     void w.flow.run();
     await settle();
     expect(w.hudStates.every((h) => h.squads === undefined)).toBe(true);
