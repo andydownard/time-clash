@@ -169,6 +169,14 @@ Screen 3: Battle Screen & Turn Transition
 ⚬ Environment: Left side shows an ornate medieval castle; right side shows a futuristic Austin cyber-base tucked under a glowing solar skyway.
 ⚬ Active Indicator: Prominent comic banner at top center reading: "PLAYER 1: ALEX — YOUR TURN! (SHOT 1 OF 2)" with glowing directional arrows.
 ⚬ Slapstick Moment: A character who was just knocked over lies hilariously flat on their stomach with arms spread out, a cartoon speech bubble above them saying: "Just checking the lawn for four-leaf clovers!"
+## Disturbances: birds, gusts and recoil (on)
+Owner request, 2026-10-24: shots were too predictable. Three things now nudge a shot, the same way for both teams. All numbers are in `DISTURBANCE` (`src/game/config.ts`).
+- **Birds.** One or two cartoon birds fly across the sky each turn on a path the player can see before firing. A shell that touches a bird gets bumped off course (a feather puff, "Squawk!" and a squawk). The bird is never hurt. A bird bumps a shell at most once and never right at the muzzle.
+- **Gust.** The wind is still set at the start of a turn. On top of it, one gust per turn shoves the shell sideways for a moment in mid-flight (streaks, an arrow, "Whoosh!" and a whoosh).
+- **Recoil.** After a shot, the Angle and Power dials slide a little: about 3 degrees and 5 power for the catapult and missile bunkers, almost nothing for the archer and laser gun. The sliders show it, so the player re-aims for the next shot.
+- **The preview stays honest.** The dotted preview and the angle guide show plain wind only. The full arc left after a shot shows what really happened.
+- **Fair and never stuck.** Both teams get the same chances. A direct hit can always be reached by trying again (`tests/game/matchDisturbance.test.ts`). Disturbances make matches a little longer on average, never endless.
+
 ## Practice opponent
 
 A rules-based opponent so one child can play alone, and later fill a seat when no second player is there. Pure logic in `src/game/bot.ts` (and `botPlay.ts` for simulated matches, `practice.ts` for turn ownership and pacing). Off by default: `PRACTICE_BOT.enabled = false` in `src/game/config.ts`. `?computer=1` on the address shows the choice for testing before the panel review. With it off the game is exactly as before.
