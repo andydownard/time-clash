@@ -1,7 +1,7 @@
 // Every user-facing string lives here. Kids read these, so: short words, short sentences.
 // Vocabulary table in AGENTS.md applies. Banned words are checked by tests/contracts/copy.test.ts.
 // Intro narration text lives in src/data/introScript.ts (from docs/NARRATION.md).
-import { TURN } from '../game/config';
+import { DAMAGE, TURN } from '../game/config';
 import type { AwardId } from '../game/awards';
 import { windLevel } from '../game/wind';
 import type { Subject, Team } from '../game/types';
@@ -233,7 +233,8 @@ export const HUD = {
   yourTurn: 'Your turn',
   angleValue: (deg: number): string => `${Math.round(deg)}°`,
   powerValue: (p: number): string => `${Math.round(p)}`,
-  hpValue: (hp: number, max = 100): string => `${Math.round(hp)} / ${Math.round(max)}`,
+  hpValue: (hp: number, max: number = DAMAGE.startingBaseHp): string =>
+    `${Math.round(hp)} / ${Math.round(max)}`,
   shotsValue: (n: number): string => `${n} of ${TURN.shotsPerTurn}`,
 } as const;
 
