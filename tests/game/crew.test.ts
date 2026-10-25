@@ -1,19 +1,34 @@
-// Squads S1 rules: a launcher and one dasher per side, dash on the ground spots.
+// Squads S1 rules: a launcher and one walking dasher per side. The dasher walks out over any
+// obstacle, stops next to the first enemy thing in front, and bonks it at the start of every turn.
 import { describe, expect, it } from 'vitest';
 import {
   IllegalCommandError,
+  attackSpotOf,
   dashTargets,
+  dasherBox,
+  dasherHomePoint,
+  dasherOf,
   doorstepOf,
   goLabel,
   groundSpotIds,
+  groundSpotPoint,
   helperId,
+  hitDasher,
   planDash,
+  planRecall,
+  planStand,
   startingCrew,
+  wakeDashers,
   type Crew,
+  type Helper,
 } from '../../src/game/crew';
-import { SQUADS } from '../../src/game/config';
+import { CHARACTER_HEALTH, PHASE1_LAYOUT, SQUADS } from '../../src/game/config';
+import { buildLayout } from '../../src/game/battlefield';
+import type { Team } from '../../src/game/types';
 
+const HP = CHARACTER_HEALTH.hp;
 const bubble = () => 7;
+const REST = { PAST: 10, FUTURE: 20 } as Record<Team, number>;
 const reason = (fn: () => unknown): string | null => {
   try {
     fn();
@@ -23,27 +38,23 @@ const reason = (fn: () => unknown): string | null => {
   }
   return null;
 };
-/** A crew with the two dashers moved to chosen spots. */
-const crewAt = (past: string, future: string): Crew => {
-  const c = startingCrew();
-  return dashing({
-    ...c,
-    helpers: c.helpers.map((h) =>
-      h.id === 'PAST-dasher'
-        ? { ...h, spot: past }
-        : h.id === 'FUTURE-dasher'
-          ? { ...h, spot: future }
-          : h,
-    ),
-  });
+/** Change one side's dasher. */
+const withDasher = (c: Crew, team: Team, patch: Partial<Helper>): Crew => ({
+  ...c,
+  helpers: c.helpers.map((h) => (h.id === `${team}-dasher` ? { ...h, ...patch } : h)),
+});
+/** Both dashers out on chosen spots (null leaves that side home). Both sides pick the dasher. */
+const crewAt = (past: string | null, future: string | null, hp = HP): Crew => {
+  let c = startingCrew(hp);
+  if (past) c = withDasher(c, 'PAST', { spot: past, state: 'out' });
+  if (future) c = withDasher(c, 'FUTURE', { spot: future, state: 'out' });
+  return { ...c, picked: { PAST: 'PAST-dasher', FUTURE: 'FUTURE-dasher' } };
 };
-/** The same crew with both sides' dashers picked. */
-const dashing = (c: Crew): Crew => ({
+const dasher = (c: Crew, team: Team): Helper => dasherOf(c, team);
+const picking = (c: Crew): Crew => ({
   ...c,
   picked: { PAST: 'PAST-dasher', FUTURE: 'FUTURE-dasher' },
 });
-const spotOf = (c: Crew, id: string): string | null =>
-  c.helpers.find((h) => h.id === id)?.spot ?? null;
 
 describe('the starting crew', () => {
   it('gives each side a launcher and one dasher, and no more', () => {
@@ -54,131 +65,285 @@ describe('the starting crew', () => {
       'FUTURE-launcher',
       'FUTURE-dasher',
     ]);
-    expect(c.helpers.filter((h) => h.kind === 'launcher').every((h) => h.spot === null)).toBe(true);
+    expect(c.helpers.every((h) => h.spot === null)).toBe(true);
   });
-  it('starts the dashers at home and picks the launcher', () => {
+  it('starts the dashers at home with full health and picks the launcher', () => {
     const c = startingCrew();
-    expect(spotOf(c, 'PAST-dasher')).toBe('g1');
-    expect(spotOf(c, 'FUTURE-dasher')).toBe('g3');
+    expect(dasher(c, 'PAST')).toMatchObject({ state: 'home', hp: HP, spot: null });
+    expect(dasher(c, 'FUTURE')).toMatchObject({ state: 'home', hp: HP, spot: null });
     expect(c.picked).toEqual({ PAST: 'PAST-launcher', FUTURE: 'FUTURE-launcher' });
   });
-  it('has five ground spots with a doorstep at each end', () => {
+  it('takes a full health for longer matches', () => {
+    expect(dasher(startingCrew(6), 'PAST').hp).toBe(6);
+  });
+  it('has five ground spots with a doorstep at each end and an attack spot beside each', () => {
     expect(groundSpotIds()).toEqual(['g0', 'g1', 'g2', 'g3', 'g4']);
     expect(groundSpotIds()).toHaveLength(SQUADS.groundSpots);
     expect(doorstepOf('g0')).toBe('PAST');
     expect(doorstepOf('g4')).toBe('FUTURE');
     expect(doorstepOf('g2')).toBeNull();
+    expect(attackSpotOf('PAST')).toBe('g3');
+    expect(attackSpotOf('FUTURE')).toBe('g1');
   });
   it('is a fresh copy every time', () => {
     expect(startingCrew()).not.toBe(startingCrew());
   });
 });
 
-describe('dash targets', () => {
-  it('lists free spots within range, never the own doorstep', () => {
-    // Past dasher on g1 reaches g0..g3. g0 is its own doorstep. g3 holds the Future dasher.
-    expect(dashTargets(dashing(startingCrew()), 'PAST')).toEqual(['g2']);
+describe('where the spots are on the field', () => {
+  it('runs left to right along the ground, between the two bases', () => {
+    const xs = groundSpotIds().map((s) => groundSpotPoint(s, PHASE1_LAYOUT).x);
+    expect([...xs].sort((a, b) => a - b)).toEqual(xs);
+    const past = PHASE1_LAYOUT.bases.PAST;
+    const future = PHASE1_LAYOUT.bases.FUTURE;
+    expect(xs[0]).toBe(past.x + past.w + SQUADS.spotInset.door);
+    expect(xs[1]).toBe(past.x + past.w + SQUADS.spotInset.attack);
+    expect(xs[3]).toBe(future.x - SQUADS.spotInset.attack);
+    expect(xs[4]).toBe(future.x - SQUADS.spotInset.door);
+    for (const s of groundSpotIds())
+      expect(groundSpotPoint(s, PHASE1_LAYOUT).y).toBe(PHASE1_LAYOUT.terrain.ground[0]!.y);
   });
-  it('lets a dasher reach the enemy doorstep when it is in range', () => {
-    expect(dashTargets(crewAt('g2', 'g3'), 'PAST')).toEqual(['g1', 'g4']);
+  it('stays on the ground line even when a base sits high on a tower or rock', () => {
+    const high = buildLayout({ biome: 'temple', spot: 'skyscraper', fort: 'hillFort' });
+    const ground = high.terrain.ground[0]!.y;
+    for (const s of groundSpotIds()) expect(groundSpotPoint(s, high).y).toBe(ground);
+    expect(dasherHomePoint('FUTURE', high).y).toBe(ground);
   });
-  it('is empty for a launcher (fire needs no spot)', () => {
+  it('puts each home inside its own base, behind its doorstep', () => {
+    expect(dasherHomePoint('PAST', PHASE1_LAYOUT).x).toBeLessThan(
+      groundSpotPoint('g0', PHASE1_LAYOUT).x,
+    );
+    expect(dasherHomePoint('FUTURE', PHASE1_LAYOUT).x).toBeGreaterThan(
+      groundSpotPoint('g4', PHASE1_LAYOUT).x,
+    );
+  });
+  it('gives a dasher the fighter hit box, standing on the ground at his spot', () => {
+    const box = dasherBox('g3', PHASE1_LAYOUT);
+    const at = groundSpotPoint('g3', PHASE1_LAYOUT);
+    expect(box.w).toBe(CHARACTER_HEALTH.box.w);
+    expect(box.h).toBe(CHARACTER_HEALTH.box.h);
+    expect(box.x + box.w / 2).toBe(at.x);
+    expect(box.y + box.h).toBe(at.y);
+  });
+});
+
+describe('walking out (dash targets)', () => {
+  it('walks all the way to the attack spot when the enemy dasher is home', () => {
+    expect(dashTargets(picking(startingCrew()), 'PAST')).toEqual(['g3']);
+    expect(dashTargets(picking(startingCrew()), 'FUTURE')).toEqual(['g1']);
+  });
+  it('the middle obstacle never blocks the walk: the stop does not depend on the field', () => {
+    // The walk is a ground line. The hill, mound or pillar is only drawn over.
+    expect(dashTargets(picking(startingCrew()), 'PAST')).toEqual([attackSpotOf('PAST')]);
+  });
+  it('stops on the spot just before an enemy dasher who is out', () => {
+    expect(dashTargets(crewAt(null, 'g1'), 'PAST')).toEqual(['g0']);
+    expect(dashTargets(crewAt(null, 'g2'), 'PAST')).toEqual(['g1']);
+    expect(dashTargets(crewAt('g3', null), 'FUTURE')).toEqual(['g4']);
+  });
+  it('is empty for a launcher, for a dasher already out, and for a resting dasher', () => {
     expect(dashTargets(startingCrew(), 'PAST', 'PAST-launcher')).toEqual([]);
+    expect(dashTargets(crewAt('g3', null), 'PAST')).toEqual([]);
+    const resting = withDasher(picking(startingCrew()), 'PAST', { state: 'resting', readyAt: 3 });
+    expect(dashTargets(resting, 'PAST')).toEqual([]);
   });
 });
 
 describe('planDash', () => {
-  it('moves the dasher and bonks nothing when no enemy is next door', () => {
-    const r = planDash(crewAt('g1', 'g4'), 'PAST', 'g2', bubble);
-    expect(r.outcome.bonk).toBeNull();
-    expect(r.outcome.from).toBe('g1');
-    expect(r.outcome.to).toBe('g2');
-    expect(spotOf(r.crew, 'PAST-dasher')).toBe('g2');
+  it('sends the dasher out to his stop with full health', () => {
+    const start = withDasher(picking(startingCrew()), 'PAST', { hp: 1 });
+    const r = planDash(start, 'PAST', 'g3', HP);
+    expect(r.outcome).toEqual({ helper: 'PAST-dasher', to: 'g3' });
+    expect(dasher(r.crew, 'PAST')).toMatchObject({ state: 'out', spot: 'g3', hp: HP });
   });
-  it('bonks an enemy helper next door and sends it home with a tumble line', () => {
-    // The Future dasher stands on g1, away from its home g3. Past rolls in next to it on g2.
-    const r = planDash(crewAt('g3', 'g1'), 'PAST', 'g2', bubble);
-    expect(r.outcome.bonk).toEqual({
-      kind: 'helper',
-      helper: 'FUTURE-dasher',
-      from: 'g1',
-      to: 'g3',
-      bubbleIndex: 7,
-    });
-    expect(spotOf(r.crew, 'FUTURE-dasher')).toBe('g3');
-  });
-  it('leaves a bonked helper where it is when its home is taken', () => {
-    const r = planDash(crewAt('g1', 'g2'), 'PAST', 'g3', bubble);
-    const bonk = r.outcome.bonk;
-    expect(bonk?.kind).toBe('helper');
-    expect(bonk?.kind === 'helper' && bonk.to).toBe('g2');
-    expect(spotOf(r.crew, 'FUTURE-dasher')).toBe('g2');
-  });
-  it('takes base health when it lands on the enemy doorstep', () => {
-    const r = planDash(crewAt('g2', 'g3'), 'PAST', 'g4', bubble);
-    expect(r.outcome.bonk).toEqual({
-      kind: 'base',
-      target: 'FUTURE',
-      damage: SQUADS.dashBonkDamage,
-    });
-  });
-  it('works the same for Team Future, mirrored', () => {
-    const r = planDash(crewAt('g1', 'g2'), 'FUTURE', 'g0', bubble);
-    expect(r.outcome.bonk).toEqual({ kind: 'base', target: 'PAST', damage: SQUADS.dashBonkDamage });
+  it('bonks nothing when he arrives: bonks come at the start of each turn', () => {
+    const r = planDash(picking(startingCrew()), 'PAST', 'g3', HP);
+    expect(dasher(r.crew, 'FUTURE')).toMatchObject({ state: 'home', hp: HP });
   });
   it('does not change the crew it was given', () => {
-    const c = dashing(startingCrew());
+    const c = picking(startingCrew());
     const before = JSON.stringify(c);
-    planDash(c, 'PAST', 'g2', bubble);
+    planDash(c, 'PAST', 'g3', HP);
     expect(JSON.stringify(c)).toBe(before);
-  });
-  it('asks the bubble bag only when a helper tumbles', () => {
-    let calls = 0;
-    const count = () => ++calls;
-    planDash(crewAt('g1', 'g4'), 'PAST', 'g2', count);
-    expect(calls).toBe(0);
-    planDash(crewAt('g3', 'g1'), 'PAST', 'g2', count);
-    expect(calls).toBe(1);
   });
 });
 
 describe('illegal dashes', () => {
-  it('refuses a spot that is out of range', () => {
-    expect(reason(() => planDash(crewAt('g1', 'g3'), 'PAST', 'g4', bubble))).toBe('out_of_range');
+  it('refuses any spot but the stop', () => {
+    expect(reason(() => planDash(picking(startingCrew()), 'PAST', 'g2', HP))).toBe('out_of_range');
+    expect(reason(() => planDash(picking(startingCrew()), 'PAST', 'g9', HP))).toBe('out_of_range');
+    expect(reason(() => planDash(picking(startingCrew()), 'PAST', 's1', HP))).toBe('out_of_range');
   });
-  it('refuses a spot that is not on the ground', () => {
-    expect(reason(() => planDash(dashing(startingCrew()), 'PAST', 'g9', bubble))).toBe(
-      'out_of_range',
-    );
-    expect(reason(() => planDash(dashing(startingCrew()), 'PAST', 's1', bubble))).toBe(
-      'out_of_range',
-    );
+  it('refuses when there is no free spot in front (an enemy stands on the own doorstep)', () => {
+    // Play never makes this board (a dasher never steps on the enemy doorstep). The rules still refuse it.
+    const c = crewAt(null, 'g0');
+    expect(dashTargets(c, 'PAST')).toEqual([]);
+    expect(reason(() => planDash(c, 'PAST', 'g0', HP))).toBe('no_free_spot');
   });
-  it('refuses a spot someone stands on', () => {
-    expect(reason(() => planDash(dashing(startingCrew()), 'PAST', 'g3', bubble))).toBe(
-      'spot_taken',
-    );
-  });
-  it('refuses the own doorstep', () => {
-    expect(reason(() => planDash(dashing(startingCrew()), 'PAST', 'g0', bubble))).toBe(
-      'own_doorstep',
-    );
-    expect(reason(() => planDash(crewAt('g3', 'g2'), 'FUTURE', 'g4', bubble))).toBe('own_doorstep');
-  });
-  it('refuses to dash where it already stands', () => {
-    expect(reason(() => planDash(dashing(startingCrew()), 'PAST', 'g1', bubble))).toBe(
-      'spot_taken',
-    );
+  it('refuses a dasher who is already out, or resting', () => {
+    expect(reason(() => planDash(crewAt('g3', null), 'PAST', 'g3', HP))).toBe('already_out');
+    const resting = withDasher(picking(startingCrew()), 'PAST', { state: 'resting', readyAt: 3 });
+    expect(reason(() => planDash(resting, 'PAST', 'g3', HP))).toBe('resting');
   });
   it('refuses a launcher (wrong unit)', () => {
-    expect(
-      reason(() => planDash(dashing(startingCrew()), 'PAST', 'g2', bubble, 'PAST-launcher')),
-    ).toBe('wrong_command');
+    expect(reason(() => planDash(startingCrew(), 'PAST', 'g3', HP, 'PAST-launcher'))).toBe(
+      'wrong_command',
+    );
   });
   it("refuses the other side's dasher (wrong unit)", () => {
-    expect(
-      reason(() => planDash(dashing(startingCrew()), 'PAST', 'g2', bubble, 'FUTURE-dasher')),
-    ).toBe('not_your_helper');
+    expect(reason(() => planDash(picking(startingCrew()), 'PAST', 'g3', HP, 'FUTURE-dasher'))).toBe(
+      'not_your_helper',
+    );
+  });
+});
+
+describe('planRecall (Come back)', () => {
+  it('walks an out dasher home; he is ready again on the given own turn', () => {
+    const r = planRecall(crewAt('g3', null), 'PAST', 4);
+    expect(r.outcome).toEqual({ helper: 'PAST-dasher', from: 'g3' });
+    expect(dasher(r.crew, 'PAST')).toMatchObject({ state: 'resting', spot: null, readyAt: 4 });
+  });
+  it('refuses a dasher who is not out', () => {
+    expect(reason(() => planRecall(picking(startingCrew()), 'PAST', 4))).toBe('not_out');
+  });
+  it('refuses a launcher pick and the other side', () => {
+    const c = { ...crewAt('g3', null), picked: { PAST: 'PAST-launcher', FUTURE: 'FUTURE-dasher' } };
+    expect(reason(() => planRecall(c as Crew, 'PAST', 4))).toBe('wrong_command');
+    expect(reason(() => planRecall(crewAt('g3', null), 'PAST', 4, 'FUTURE-dasher'))).toBe(
+      'not_your_helper',
+    );
+  });
+});
+
+describe('wakeDashers', () => {
+  it('brings a resting dasher home once his own turn count reaches readyAt', () => {
+    const c = withDasher(startingCrew(), 'PAST', { state: 'resting', readyAt: 3, hp: 0 });
+    expect(dasher(wakeDashers(c, 'PAST', 2, HP), 'PAST').state).toBe('resting');
+    expect(dasher(wakeDashers(c, 'PAST', 3, HP), 'PAST')).toMatchObject({ state: 'home', hp: HP });
+  });
+  it('only wakes the team whose turn starts', () => {
+    const c = withDasher(startingCrew(), 'FUTURE', { state: 'resting', readyAt: 1 });
+    expect(dasher(wakeDashers(c, 'PAST', 5, HP), 'FUTURE').state).toBe('resting');
+  });
+});
+
+describe('planStand: the bonk at the start of every turn', () => {
+  it('a dasher at the enemy base bonks it for standBonkDamage', () => {
+    const r = planStand(crewAt('g3', null), 'FUTURE', REST, bubble);
+    expect(r.beats).toEqual([
+      {
+        helper: 'PAST-dasher',
+        team: 'PAST',
+        from: 'g3',
+        to: 'g3',
+        target: { kind: 'base', team: 'FUTURE', damage: SQUADS.standBonkDamage },
+      },
+    ]);
+  });
+  it('bonks on both teams turns, the same each time', () => {
+    for (const active of ['PAST', 'FUTURE'] as const) {
+      const r = planStand(crewAt(null, 'g1'), active, REST, bubble);
+      expect(r.beats[0]!.target).toEqual({
+        kind: 'base',
+        team: 'PAST',
+        damage: SQUADS.standBonkDamage,
+      });
+    }
+  });
+  it('two dashers side by side bonk each other at the same time, not the bases', () => {
+    const r = planStand(crewAt('g3', 'g4'), 'PAST', REST, bubble);
+    expect(r.beats.map((b) => [b.helper, b.target.kind])).toEqual([
+      ['PAST-dasher', 'helper'],
+      ['FUTURE-dasher', 'helper'],
+    ]);
+    expect(dasher(r.crew, 'PAST').hp).toBe(HP - SQUADS.duelBonkHp);
+    expect(dasher(r.crew, 'FUTURE').hp).toBe(HP - SQUADS.duelBonkHp);
+  });
+  it('a dasher bonked to 0 tumbles, walks home and rests until his restAt turn', () => {
+    const c = withDasher(crewAt('g3', 'g4'), 'FUTURE', { hp: SQUADS.duelBonkHp });
+    const r = planStand(c, 'PAST', REST, bubble);
+    const hit = r.beats.find((b) => b.helper === 'PAST-dasher')!.target;
+    expect(hit).toEqual({
+      kind: 'helper',
+      helper: 'FUTURE-dasher',
+      hp: 0,
+      tumbled: true,
+      bubbleIndex: 7,
+    });
+    expect(dasher(r.crew, 'FUTURE')).toMatchObject({
+      state: 'resting',
+      spot: null,
+      hp: 0,
+      readyAt: REST.FUTURE,
+    });
+  });
+  it('with nothing next to him he walks on to the next thing in front, then bonks it', () => {
+    // His foe tumbled home last turn, so he walks on from g1 to the attack spot.
+    const r = planStand(crewAt('g1', null), 'PAST', REST, bubble);
+    expect(r.beats).toEqual([
+      {
+        helper: 'PAST-dasher',
+        team: 'PAST',
+        from: 'g1',
+        to: 'g3',
+        target: { kind: 'base', team: 'FUTURE', damage: SQUADS.standBonkDamage },
+      },
+    ]);
+    expect(dasher(r.crew, 'PAST').spot).toBe('g3');
+  });
+  it('lists the team whose turn starts first', () => {
+    const r = planStand(crewAt('g3', 'g4'), 'FUTURE', REST, bubble);
+    expect(r.beats.map((b) => b.team)).toEqual(['FUTURE', 'PAST']);
+  });
+  it('does nothing when no dasher is out', () => {
+    let calls = 0;
+    const r = planStand(startingCrew(), 'PAST', REST, () => ++calls);
+    expect(r.beats).toEqual([]);
+    expect(calls).toBe(0);
+  });
+});
+
+describe('hitDasher: a shell near a dasher', () => {
+  const at = (spot: string) => {
+    const p = groundSpotPoint(spot, PHASE1_LAYOUT);
+    return { x: p.x, y: p.y - 10 };
+  };
+  it('a direct hit costs directHit health, a Power Shot costs powerHit', () => {
+    const c = crewAt('g3', null);
+    const one = hitDasher(c, 'PAST', at('g3'), PHASE1_LAYOUT, false, 9, bubble);
+    expect(one.hit).toMatchObject({
+      helper: 'PAST-dasher',
+      result: 'direct',
+      damage: CHARACTER_HEALTH.directHit,
+      hp: HP - CHARACTER_HEALTH.directHit,
+      tumbled: false,
+    });
+    const two = hitDasher(c, 'PAST', at('g3'), PHASE1_LAYOUT, true, 9, bubble);
+    expect(two.hit?.damage).toBe(CHARACTER_HEALTH.powerHit);
+  });
+  it('a near miss costs nothing, but he wobbles', () => {
+    const c = crewAt('g3', null);
+    const p = groundSpotPoint('g3', PHASE1_LAYOUT);
+    const near = { x: p.x + CHARACTER_HEALTH.box.w / 2 + 60, y: p.y };
+    const r = hitDasher(c, 'PAST', near, PHASE1_LAYOUT, false, 9, bubble);
+    expect(r.hit).toMatchObject({ result: 'near', damage: 0, hp: HP, tumbled: false });
+    expect(dasher(r.crew, 'PAST').hp).toBe(HP);
+  });
+  it('far away misses him', () => {
+    const r = hitDasher(crewAt('g3', null), 'PAST', at('g0'), PHASE1_LAYOUT, false, 9, bubble);
+    expect(r.hit).toBeNull();
+  });
+  it('at 0 he tumbles with a line from the bag and rests until readyAt', () => {
+    const c = withDasher(crewAt('g3', null), 'PAST', { hp: CHARACTER_HEALTH.directHit });
+    const r = hitDasher(c, 'PAST', at('g3'), PHASE1_LAYOUT, false, 9, bubble);
+    expect(r.hit).toMatchObject({ hp: 0, tumbled: true, bubbleIndex: 7, at: 'g3' });
+    expect(dasher(r.crew, 'PAST')).toMatchObject({ state: 'resting', spot: null, readyAt: 9 });
+  });
+  it('a dasher walking home (resting) or at home cannot be hit', () => {
+    const resting = withDasher(startingCrew(), 'PAST', { state: 'resting', readyAt: 3 });
+    const home = dasherHomePoint('PAST', PHASE1_LAYOUT);
+    expect(hitDasher(resting, 'PAST', home, PHASE1_LAYOUT, false, 9, bubble).hit).toBeNull();
+    expect(hitDasher(startingCrew(), 'PAST', home, PHASE1_LAYOUT, false, 9, bubble).hit).toBeNull();
   });
 });
 

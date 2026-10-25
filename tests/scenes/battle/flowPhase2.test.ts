@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import { buildLayout } from '../../../src/game/battlefield';
 import { DAMAGE, EVASION } from '../../../src/game/config';
 import type { Rect, Team } from '../../../src/game/types';
-import { GEAR_COPY } from '../../../src/data/copy';
+import { GEAR_COPY, SQUAD_COPY } from '../../../src/data/copy';
 import { makeWorld, settle } from './flowHarness';
 
 type Extra = {
@@ -71,7 +71,9 @@ describe('BattleFlow: gear in the HUD', () => {
     w.handlers()!.onEvasion!();
     expect(w.match.snapshot().evasion.PAST.phase).toBe('armed');
     expect(w.hudStates.at(-1)!.gear!.evasion.phase).toBe('armed');
-    expect(w.extra.spoken).toEqual([GEAR_COPY.armedLine.barricade]);
+    expect(w.extra.spoken.filter((t) => t !== SQUAD_COPY.firstGo)).toEqual([
+      GEAR_COPY.armedLine.barricade,
+    ]);
     expect(w.captions).toContain(GEAR_COPY.armedLine.barricade);
     w.handlers()!.onEvasion!();
     expect(w.match.snapshot().evasion.PAST.phase).toBe('ready');

@@ -1,31 +1,43 @@
 # Phase 5: Squads (plan)
 
-Status: S1 is built behind `SQUADS.enabled` (off in production). S2 and later are plan only. Items marked **Andy's call** need his explicit OK before code starts. Squads comes **after** the Look and Feel phase, which is the next phase Andy asked for. Its art uses that new look.
+Status: S1 is built and ON for everyone (`SQUADS.enabled`, owner decision 2026-10-24): the walking helper, Sir Bonk and Robo Bonk. S2 and later are plan only. Items marked **Andy's call** need his explicit OK before code starts. Squads comes **after** the Look and Feel phase, which is the next phase Andy asked for. Its art uses that new look.
 
 > **Update 2026-10-17.** Andy's canvas comments and chat now answer some open questions below. See [DESIGN_GUIDANCE.md](./DESIGN_GUIDANCE.md). In short: five units at most per side (A to E, 1 to 5), not four. One unit acts at a time (rule 2 stands). A right answer should earn an extra turn with more powerful damage (a change to the protected turn shape, to be sized before any code). This plan has not been rewritten yet. Until it is, treat the crew tables in section 3 as out of date.
 
-> **Built so far.** Five fighters per side with per-fighter origin, range and damage scales, `selectUnit`, a "Pick one" selector, and `selected` in the match snapshot (see the Fighters section of [ARCHITECTURE.md](../ARCHITECTURE.md)). S1 (a dasher helper per side) is in, behind the flag (next section). Fly and the rest of the crew are not.
+> **Built so far.** Five fighters per side with per-fighter origin, range and damage scales, `selectUnit`, a "Pick one" selector, and `selected` in the match snapshot (see the Fighters section of [ARCHITECTURE.md](../ARCHITECTURE.md)). S1 (a walking helper per side) is in and on (next section). Fly and the rest of the crew are not.
 
 Read with: [AGENTS.md](../AGENTS.md), [GAME_SPEC.md](./GAME_SPEC.md), [BUILD.md](./BUILD.md), [CONTRACTS.md](./CONTRACTS.md).
 
-## S1 as built (flag off)
+## S1 as built (on)
 
-S1 is in the code behind `SQUADS.enabled` (off). Rules: `src/game/crew.ts`, wired into `src/game/match.ts`. Screen: `src/ui/squadBar.ts` and one hook each in `src/ui/hudView.ts` and `src/scenes/battle/flow.ts`. Tests: `tests/game/crew.test.ts`, `tests/game/crewMatch.test.ts`, `tests/ui/squadBar.test.ts`, `tests/scenes/battle/flowSquads.test.ts`, `e2e/squads.spec.ts`.
+S1 is on for everyone (`SQUADS.enabled = true`, owner decision 2026-10-24). Rules: `src/game/crew.ts`, wired into `src/game/match.ts`. Screen: `src/ui/squadBar.ts`, one hook each in `src/ui/hudView.ts` and `src/scenes/battle/flow.ts`, and the battlefield art in `src/scenes/battle/dasherArt.ts` (pure shapes and timelines) and `src/scenes/battle/dasherLayer.ts` (Phaser). Tests: `tests/game/crew.test.ts`, `tests/game/crewMatch.test.ts`, `tests/game/squadWalk.test.ts`, `tests/game/squadPace.test.ts`, `tests/game/squadGolden.test.ts`, `tests/ui/squadBar.test.ts`, `tests/scenes/battle/flowSquads.test.ts`, `tests/scenes/battle/flowDasher.test.ts`, `tests/scenes/battle/dasherArt.test.ts`, `e2e/squads.spec.ts`.
 
-Choices made where this plan was unclear (the simplest option each time). Andy can overrule any of them.
+**The rules in plain words.** Each side has a launcher (the fighter that shoots) and one walking helper, the dasher: Sir Bonk for Team Past (pink foam mallet) and Robo Bonk for Team Future (glow noodle). A turn is 2 goes, then the reload question.
+- **Walk out (one go).** He walks along the ground from his base, over the hill, mound, pillar, tower or wall. The walk is a ground line that ignores obstacle shapes; he is only drawn in front of them. He stops next to the first enemy thing in front: the enemy dasher, or the enemy base. He bonks nothing on arrival.
+- **He stays and keeps bonking.** At the start of every turn, both teams' turns, every dasher out on the field walks on if nothing is next to him, then bonks. A dasher at his attack spot bonks the enemy base for `standBonkDamage` (12). The gate cut (`nearCut`, never below 1), a Hoverboard Dodge and a force field all stop it like a shot. Two dashers side by side bonk each other at once for `duelBonkHp` (1 health each) and leave the bases alone. A bonk can win the match.
+- **Health.** A dasher has fighter health (`CHARACTER_HEALTH.hp`), drawn as a heart and pips above him. Only enemy shells hurt him: a direct hit near him costs `directHit` (1), a Power Shot `powerHit` (2), a near miss nothing (he wobbles). The hit box is the fighter box (`CHARACTER_HEALTH.box`) at his spot. At 0 he tumbles (silly fall, puff, a line from the wipeout bag, a caption), walks home dizzy, and sits out one full own turn of his team. Nobody is hurt.
+- **Come back (one go).** While he is out, Come back replaces Walk out. He walks home and is ready again on his team's next turn.
+- **Character health and built bases.** Squads stays off with either flag, as before.
+
+Choices made where the owner's words left room (the simplest option each time). Andy can overrule any of them.
 1. **Launcher is today's shot.** The launcher helper is the existing fighter and aim. Past calls it Cannon Crew, Future calls it Rocket Button, for now only as a name. The five-fighter selector is unchanged.
-2. **A dash is one call.** `dash(spot)` does the work of `fire()` and `shotLanded()`, so the turn machine and its tests do not change.
-3. **Five ground spots g0 to g4.** g0 is Team Past's doorstep and g4 is Team Future's. Dashers start on g1 (Past) and g3 (Future) and may roll up to 2 spots to a free spot. A side may not stand on its own doorstep.
-4. **Bonk rules.** Landing on the enemy doorstep takes 12 base health (`dashBonkDamage`), and a Hoverboard Dodge or force field can stop it like a shot. Otherwise an enemy dasher on a next-door spot tumbles (seeded bubble line) and walks home. It stays put if its home spot is taken.
-5. **No Power Shot dash.** The Power Shot is the launcher's. A right answer resets the pick to the launcher.
-6. **The dasher is shown as buttons, not canvas art.** The helper bar has the GO banner, two dots, two helper buttons and the spot buttons (56px, 20px text). There is no dasher sprite or spot marker on the battlefield yet. That art waits for the S1 art pass.
-7. **Stats and awards.** A dash adds nothing to `shotsFired`, `directHits` or `nearHits`.
-8. **Keyboard.** Tab to a helper or spot, Enter or Space to press it. Space does not fire while the dasher is picked. No letter keys, since A to E already pick fighters.
-9. **Doc wording.** AGENTS.md, GAME_SPEC.md and NARRATION.md still say "shots", because the flag is off and players still see shots. The "2 goes" rewrite lands when the flag turns on. The copy lint banned-list additions (missile, soldier, army, troops, war, shoot, weapon) also wait for that, since the old fighter names use some of them.
-10. **Back and Hear it.** Two 56px buttons with 20px text sit at the right end of the helper bar. Hear it is always there. Chrono says the picked helper's name and what it does, with a caption. It only speaks on a tap, asks for no network clip, and costs no go. Back shows while the dasher is picked and returns to the launcher (there is no "nothing picked" state in S1). Both do nothing while a cover is up or a shot flies. Escape and H are not wired (Escape pauses the game, see Regressions row 4). Tab and Enter reach both.
-11. **First-go hint.** A drawn finger (an emoji, so no new art) and the words "Press Fire! Or pick a helper and roll to a spot." show on each side's first go of a match, never for the Computer player. Chrono says the line once, with the same words as a caption. The finger bounces, and holds still under reduced motion. It is per match, not per family, since a "first squad match" needs a new storage key. That waits for Andy.
-12. **E2E switch.** With `?e2e=1` (never in a production build) `window.__timeclash.setSquads(true)` turns Squads on for matches started after it; `null` goes back to the config default. `e2e/squads.spec.ts` plays 2 goes (a dash and a shot), the covered reload with a wrong answer, then the other side with its full crew. It also pins that the default page has no helper bar.
-13. **Still open:** dasher art and ground spot markers on the battlefield, the doorstep no-stalemate walk test, a per-family first-match hint, Escape and H keys, and the "2 goes" doc rewrite when the flag turns on.
+2. **A dash and a recall are one call each.** `dash(spot)` and `recall()` do the work of `fire()` and `shotLanded()`, so the turn machine and its tests do not change. `ready()` returns the start-of-turn bonks.
+3. **Five ground spots g0 to g4.** g0 is Team Past's doorstep and g4 is Team Future's. Only a side's own dasher may stand on its doorstep (to guard it). The attack spot is the one just before the enemy doorstep (g3 for Past, g1 for Future). The doorstep and attack spot sit `spotInset` px from each base's inner edge, on the ground line, whatever the place or base spot.
+4. **Where he stops.** The last free spot before the first enemy dasher, or the attack spot when the way is clear. So a dasher who walks out against an attacker guards his own doorstep, and the two bonk each other. If the very first spot holds an enemy (play never makes this board), the walk is refused (`no_free_spot`). There is always exactly one target, so the spot list shows one Walk out! button.
+5. **Who bonks first.** The team whose turn starts is listed first. Base bonks are applied in that order, so both bases can never reach 0 at once.
+6. **Bonk damage.** `standBonkDamage` is 12: about 12 percent of a perfect-aim turn at the new base health of 400 (owner pace decision). At today's 100 it is still one bonk in eight of a base. The gate upgrade (`nearCut`) cuts it because the bonk lands at the gate.
+7. **Rest.** A dasher who tumbles at the start of his own turn (a bonk from the dasher beside him) sits that whole turn out and is ready on his team's next turn. One who tumbles during the enemy's turn sits out his team's next turn and is ready on the one after. Either way he misses one full own turn. A recalled dasher is ready on his team's next turn.
+8. **No Power Shot dash.** The Power Shot is the launcher's. A right answer resets the pick to the launcher. Walk out and Come back only work in AIMING.
+9. **Stats and awards.** A dash, a recall and a bonk add nothing to `shotsFired`, `directHits` or `nearHits`.
+10. **Keyboard.** Tab to a helper or a button, Enter or Space to press it. Space does not fire while the dasher is picked. No letter keys, since A to E already pick fighters.
+11. **Where the controls sit.** The helper row (the two helpers and a speaker button for Hear it) floats in the band under the ground line, between the two base health tags, where the coach line sat (the first-go hint replaces the coach line). "GO 1 OF 2" and two dots sit in the turn strip in place of its shot circles. While the dasher is picked, the dasher panel (Walk out!, Come back or "Resting. Back soon.", and Back) takes the aim panel's place. So the control bar keeps its two rows and never reaches over the fighters. In portrait the helper row takes its own line.
+12. **Back and Hear it.** Both 56px. Hear it is always there; Chrono says the picked helper's name and what it does, with a caption. It only speaks on a tap, asks for no network clip, and costs no go. Back shows while the dasher is picked and returns to the launcher. Escape and H are not wired (Escape pauses the game, see Regressions row 4).
+13. **First-go hint.** A drawn finger and the words "Press Fire! Or pick a helper and tap Walk out!" show on each side's first go of a match, never for the Computer player. Chrono says the line once, with the same words as a caption. Per match, not per family.
+14. **Art and sound.** Sir Bonk and Robo Bonk are drawn in code (original). Walking has a step cycle and a small bounce; a bonk winds up, swings, lunges a little, and shows "Bonk!" and a puff; a tumble flops over with a puff, then a dizzy, swaying walk home with stars. Reduced motion: he fades out and appears at the new spot, nothing spins or lunges. Spot markers are flat rings on the ground; the spot he would walk to gets a thick ring and an arrow (not color alone). Two sounds are made in code with WebAudio: `step` and `bonk`, only after a tap and never when muted.
+15. **The Computer player** leaves its dasher home and plays as before. A bot match still ends (`tests/game/squadWalk.test.ts`).
+16. **Pace.** Perfect-aim bots that keep their dashers out every turn still need at least 9 turns in all at base health 400, and a dasher saves at most one own turn (`tests/game/squadPace.test.ts`).
+17. **E2E switch.** With `?e2e=1` (never in a production build) `window.__timeclash.setSquads(false)` turns Squads off for matches started after it; `null` goes back to the config default (on). `window.__timeclash.dashers()` says where each dasher is drawn and what he is doing.
+18. **Still open:** a per-family first-match hint, Escape and H keys, re-recording intro cards 3 and 4 with "2 goes" (docs/NARRATION.md), and the copy lint words from section 7 (the Camp's "Forge Weapon" still uses "weapon").
 
 ## 1. Goal and the "super simple" rules
 
@@ -370,6 +382,15 @@ Andy answered yes to Open Questions 1 to 4:
 2. A turn is 2 goes, then the reload question. This approves the change to the protected turn rule. The S1 PR updates AGENTS.md, GAME_SPEC, ARCHITECTURE, CONTRACTS and NARRATION to match.
 3. Keep the Slingshot Squire (Past crew stays at 4).
 4. Merges stand: glow-sword rider on the Tank Button, and one Space Plane for the spaceship and airplane.
+
+## Owner decisions (2026-10-24)
+Andy: "Make the guys actually move and attack and then come back." And: "people can, when they attack, go over any obstacles ... the soldier walks forward and starts attacking the enemy base or fights whatever's in the front. And then it keeps attacking even when the enemy has a turn."
+1. S1 is finished and on for everyone. A turn is 2 goes, then the reload question (approved 2026-10-15).
+2. The dasher walks out along the ground over any obstacle, stops next to the enemy thing he fights, and attacks with a silly swing, a puff and a "Bonk!".
+3. He stays and bonks at the start of every turn, the enemy's too, until he is knocked down or called home. Come back is a go; he is ready again next turn.
+4. He has fighter health, shown as a heart and pips. At 0 he tumbles, walks home dizzy, and is back after one full own turn.
+5. The start-of-turn bonk replaces the old "bonk on landing, then return" rule.
+This replaces rule 4 and rule 6 of section 1 for the dasher ("Nothing moves on its own" and "Helpers have no health").
 
 Added after the plan was written (not yet folded into the sections above):
 - Each unit wears a label to pick it by. Past: letters A to D on a shield. Future: numbers 1 to 4. Tap the unit or press its key.

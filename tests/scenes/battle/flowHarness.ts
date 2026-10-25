@@ -22,6 +22,7 @@ import type {
   BattleView,
   ImpactInfo,
   PreviewDot,
+  SquadField,
   ViewStatus,
 } from '../../../src/scenes/battle/types';
 import type { UnitId } from '../../../src/game/units';
@@ -93,6 +94,8 @@ export function makeWorld(
   const histories: PickHistory[] = [];
   const levelsSaved: Levels[] = [];
   const results: BattleResult[] = [];
+  /** Squads: every field the flow asked the view to draw. */
+  const fields: Array<SquadField | null> = [];
   let cover: 'pass' | 'reload' | null = null;
   const coverViolations: string[] = [];
   let handlers: HudHandlers | null = null;
@@ -158,6 +161,19 @@ export function makeWorld(
     showScrapPopup: (team, amount) => {
       scrapPopups.push({ team, amount });
       log.push(`scrap:${team}:${amount}`);
+    },
+    syncSquads: (f) => void fields.push(f),
+    walkDasher: async (team, from, to, dizzy) => {
+      guard('walkDasher');
+      log.push(`walk:${team}:${Math.round(from.x)}>${Math.round(to.x)}${dizzy ? ':dizzy' : ''}`);
+    },
+    playDasherBonk: async (team, toward, word) => {
+      guard('playDasherBonk');
+      log.push(`bonk:${team}:${Math.round(toward.x)}:${word}`);
+    },
+    playDasherHit: async (team, how) => {
+      guard('playDasherHit');
+      log.push(`dasherHit:${team}:${how}`);
     },
   };
 
@@ -270,6 +286,7 @@ export function makeWorld(
     histories,
     levelsSaved,
     results,
+    fields,
     coverViolations,
     handlers: () => handlers,
     drag: (aim: AimInput) => dragHandler?.(aim),

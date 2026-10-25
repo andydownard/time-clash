@@ -252,9 +252,11 @@ describe('BattleFlow: hits', () => {
     const w = makeWorld({ seed: SEED, script: [near, miss], clips: true });
     void w.flow.run();
     await settle();
-    expect(w.spoken).toHaveLength(1);
-    expect(w.spoken[0]!.text).toBe(w.bubbles[0]!.text);
-    expect(w.spoken[0]!.captions[0]!.text).toBe(w.bubbles[0]!.text);
+    // The first-go helper hint is spoken too when Squads is on; this test is about the funny line.
+    const lines = w.spoken.filter((l) => l.id === 'tumble-line');
+    expect(lines).toHaveLength(1);
+    expect(lines[0]!.text).toBe(w.bubbles[0]!.text);
+    expect(lines[0]!.captions[0]!.text).toBe(w.bubbles[0]!.text);
     expect(w.log.indexOf('speak')).toBeLessThan(w.log.indexOf('bubble:FUTURE'));
   });
 
@@ -265,7 +267,7 @@ describe('BattleFlow: hits', () => {
     void w.flow.run();
     await settle();
     expect(w.bubbles).toHaveLength(1);
-    expect(w.spoken).toHaveLength(0);
+    expect(w.spoken.filter((l) => l.id === 'tumble-line')).toHaveLength(0);
   });
 
   it('a near miss makes the defender tumble and say a line from copy.ts', async () => {

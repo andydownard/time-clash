@@ -73,6 +73,8 @@ import {
 } from './battle/types';
 import { FALL_DX, FALL_MS, REDUCED_FADE_MS, TEAM_COLOR } from './battle/visual';
 import { drawUnits, type UnitArt } from './battle/unitArt';
+import { DasherLayer, type DasherDebug } from './battle/dasherLayer';
+import type { SquadField } from './battle/types';
 import { UNITS, type UnitId } from '../game/units';
 import { ridesBase } from '../game/battlefield';
 
@@ -157,6 +159,7 @@ export class BattleScene extends Phaser.Scene implements BattleView {
     }
     const chosen = this.data0.match.snapshot().selected;
     for (const t of TEAMS) this.setSelectedUnit(t, chosen[t]);
+    this.dashers = new DasherLayer(this, this.fontPx, () => this.reduced());
 
     this.startAmbient(backdrop);
     // Canvas text draws in the fallback font until MedievalSharp and Orbitron arrive. Redraw then.
@@ -566,6 +569,29 @@ export class BattleScene extends Phaser.Scene implements BattleView {
     });
   }
 
+  // ---------- Squads: the walking dashers (battle/dasherLayer.ts) ----------
+
+  syncSquads(field: SquadField | null): void {
+    this.dashers?.sync(field);
+  }
+
+  walkDasher(team: Team, from: Vec2, to: Vec2, dizzy: boolean): Promise<void> {
+    return this.dashers?.walk(team, from, to, dizzy) ?? Promise.resolve();
+  }
+
+  playDasherBonk(team: Team, toward: Vec2, word: string): Promise<void> {
+    return this.dashers?.bonk(team, toward, word) ?? Promise.resolve();
+  }
+
+  playDasherHit(team: Team, how: 'wobble' | 'tumble', label: string | null): Promise<void> {
+    return this.dashers?.hit(team, how, label) ?? Promise.resolve();
+  }
+
+  /** Read by the e2e hook (never in production). */
+  dasherState = (): DasherDebug[] => this.dashers?.state() ?? [];
+
+  private dashers: DasherLayer | null = null;
+
   showScrapPopup(team: Team, amount: number): void {
     const spot: Vec2 = characterSpot(team, this.layout);
     floatLabel(this, { x: spot.x, y: spot.y - 150 }, `+${amount}`, 'scrap', this.fontPx);
@@ -653,6 +679,8 @@ export class BattleScene extends Phaser.Scene implements BattleView {
     this.walls?.destroy();
     this.walls = null;
     this.wallKey = '[]';
+    this.dashers?.destroy();
+    this.dashers = null;
     this.disturb?.destroy();
     this.disturb = null;
     this.dragHandler = null;

@@ -6,6 +6,7 @@ import type { TypedStorage } from '../storage/types';
 import type { SeedSource } from './flow';
 import type { Session } from './registry';
 import { controllerFrom } from './flow';
+import type { DasherDebug } from './battle/dasherLayer';
 
 export type TimeClashHook = {
   version: 1;
@@ -37,6 +38,8 @@ export type TimeClashHook = {
   } | null;
   /** The birds drawn on the board right now and the bird clock, or null. */
   birds(): { clockMs: number; birds: { x: number; y: number }[] } | null;
+  /** Squads: where each walking dasher is drawn on the field (world px), and what he is doing. */
+  dashers(): DasherDebug[];
 };
 
 export function e2eEnabled(search: string, mode: string): boolean {
@@ -79,6 +82,7 @@ export type ActiveScene = {
     texts: string[];
     label?: { x: number; y: number; w: number; h: number } | null;
   };
+  dasherState?: () => DasherDebug[];
   birdState?: () => { clockMs: number; birds: { x: number; y: number }[] } | null;
 };
 
@@ -125,6 +129,11 @@ export function installTestHook(win: { __timeclash?: TimeClashHook }, deps: Hook
     players: () => deps.storage.get('timeclash.players'),
     labelPx: () => deps.activeScenes()[0]?.labels?.minRenderedPx() ?? null,
     aim: () => deps.activeScenes()[0]?.aimState?.() ?? null,
+    dashers: () =>
+      deps
+        .activeScenes()
+        .find((s) => s.dasherState)
+        ?.dasherState?.() ?? [],
     birds: () => deps.activeScenes()[0]?.birdState?.() ?? null,
   };
   return true;

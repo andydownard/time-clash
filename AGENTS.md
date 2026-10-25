@@ -10,7 +10,7 @@
 **Read first:** [QUICKSTART.md](./QUICKSTART.md) → this file → [ARCHITECTURE.md](./ARCHITECTURE.md) → [docs/GAME_SPEC.md](./docs/GAME_SPEC.md) → [docs/BUILD.md](./docs/BUILD.md). For UI or audio work also read [docs/DESIGN_BRIEF.md](./docs/DESIGN_BRIEF.md) and [docs/NARRATION.md](./docs/NARRATION.md).
 
 ## What this is
-Two players share one computer and take turns. One commands a Medieval castle (Team Past). The other commands a secret base in futuristic Austin (Team Future). Each turn has 2 shots. After shot 2, the player answers a reading or math question to reload. A right answer earns one Power Shot (a bonus shot that hits 1.5 times as hard, with no question of its own). Tone is slapstick. No gore, no blood, ever.
+Two players share one computer and take turns. One commands a Medieval castle (Team Past). The other commands a secret base in futuristic Austin (Team Future). Each turn has 2 goes. A go is a shot from the launcher, or a move by the walking helper. After go 2, the player answers a reading or math question to reload. A right answer earns one Power Shot (a bonus shot from the launcher that hits 1.5 times as hard, with no question of its own). Tone is slapstick. No gore, no blood, ever.
 
 The game is **free**. No ads. No accounts. No purchases. No tracking. The players are children.
 
@@ -37,6 +37,10 @@ test: `npm test` · lint: `npm run lint` · typecheck: `npm run typecheck` · bu
 | Rematch | `rematch` | retry, play again |
 | How to Play | `intro` | tutorial |
 | Build Base | `builder` / `upgrade` (code names kept) | Upgrade Base (retired), Build Castle, buy, shop |
+| Go (one of the 2 per turn) | `action` / a shot or a dash (`turn.shotsFired` counts both) | shot (in banners when Squads is on) |
+| Helper | `helper` (`launcher` or `dasher` in `src/game/crew.ts`) | soldier, army, troops |
+| Sir Bonk, Robo Bonk (the walking helper) | `dasher` | soldier, warrior |
+| Walk out, Come back | `dash`, `recall` | attack, retreat |
 
 ## Top damage risks
 1. **Anything gory, scary, or mean.** Wipeouts are silly and nobody is hurt. Copy lint blocks banned words (`kill`, `die`, `dead`, `blood`, `gore`, `defeat`, `buy`, `price`).
@@ -75,7 +79,7 @@ test: `npm test` · lint: `npm run lint` · typecheck: `npm run typecheck` · bu
 Allowed: splitting files, extracting shared styles, renaming internals, adding types, adding tests, reorganizing folders.
 Not allowed without Andy:
 - Removing the intro voice, captions, Skip, or Replay.
-- Removing the pass-the-mouse cover or the 2-shots-then-reload turn shape (a right answer earns one Power Shot).
+- Removing the pass-the-mouse cover or the 2-goes-then-reload turn shape (a right answer earns one Power Shot, always the launcher's).
 - Adding network calls, analytics, ads, accounts, or purchases.
 - Making any wipeout, hit, or message scary.
 - Adding back question read-aloud (a Hear it button on the reload card) or any question that can only be answered by hearing. The owner removed both on purpose on 2026-10-23.
@@ -85,7 +89,7 @@ When you find one of these, check the files you touched for every instance:
 1. Question text visible while the other player can see the screen.
 2. Audio that plays before a user tap.
 3. Speech without a caption. Any code that speaks question text (it must not exist).
-4. Missing negative-path tests (illegal turn moves, a third shot, a skipped reload).
+4. Missing negative-path tests (illegal turn moves, a third go, a skipped reload).
 5. Unseeded randomness in game logic.
 6. Phaser imports inside `src/game/`.
 7. Hex colors or fonts that drift from the design system. Tokens and rules are in [docs/DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md).
@@ -134,7 +138,7 @@ Phases 1 to 3 are built and live on Railway. Phase 4 (two iPads) and signed-in p
 
 **Pace.** Owner rule (2026-10-24): a player with perfect aim who answers every reload right needs five turns of their own to win, so nobody loses everything in one or two turns. A base starts with 400 health (`DAMAGE.startingBaseHp`), and a fighter with 4 when character health is on. Hit damage did not change (direct 25, near 10, Power Shot 1.5 times), so weapons, ammo and upgrades keep their meaning. The two health upgrades grew with it: Upgrade the Tower adds 48 a level and Laser Squad heals 8 a turn. `tests/game/pace.test.ts` plays 40 perfect-aim matches for each health mode and checks none ends before turn 9 (both teams' turns counted).
 
-**The loop.** Tap to Play (new families only), How to Play (5 cards, about 40 seconds, captions, Skip, Replay, Mute), Loading (5 seconds, 8 for a new family, so the jokes and balloon riders get seen; `TIMING` in `src/game/config.ts`; browser test runs use `loadingQuickMs`), Setup, the Camp, the Battle Plan, Battle, Victory and Rematch. A returning family lands on the Camp with no Tap to Play screen. A turn is 2 shots, then the covered reload, then a Power Shot after a right answer (1.5x damage, size still Andy's call). Fire! winds up for a moment before each shot. Each side has five fighters and a "Pick one" selector. Hits, explosions, base damage marks and funny falls are in. Chrono's reload quip and Victory line carry his name.
+**The loop.** Tap to Play (new families only), How to Play (5 cards, about 40 seconds, captions, Skip, Replay, Mute), Loading (5 seconds, 8 for a new family, so the jokes and balloon riders get seen; `TIMING` in `src/game/config.ts`; browser test runs use `loadingQuickMs`), Setup, the Camp, the Battle Plan, Battle, Victory and Rematch. A returning family lands on the Camp with no Tap to Play screen. A turn is 2 goes, then the covered reload, then a Power Shot after a right answer (1.5x damage, size still Andy's call). Fire! winds up for a moment before each shot. Each side has five fighters and a "Pick one" selector. Hits, explosions, base damage marks and funny falls are in. Chrono's reload quip and Victory line carry his name.
 
 **Sound and voice.** Sound effects and music are made in code with WebAudio (cannon boom for Team Past, laser pew for Team Future, one music loop in two flavors). The five How to Play cards are recorded Kokoro clips in `public/audio/voice/` (`.m4a`, voice `am_michael`). Reload questions and wipeout lines for grades K to 12 are recorded clips in `db/voice-*.sqlite`, served by the app server at `/v1/clips/:id` on the same origin. A clip that fails falls back to the browser voice, and every line has a caption. Test runs are silent (`tests/setup/silent.ts`, `e2e/support/silent.ts`).
 
@@ -146,9 +150,11 @@ Phases 1 to 3 are built and live on Railway. Phase 4 (two iPads) and signed-in p
 
 **Base builder (on).** `BASE_BUILDER.enabled` is on (owner, 2026-10-23): The Camp has one Build Base button (right side, like Forge Weapon on the left). It opens the builder, which has a Team Past and Team Future picker like the Forge, and no small picture of the bases on the Camp. The top bar holds Back, the three saved bases and Scrap; a rail left of the plot holds Team, then Build and Weapons and the spots count; the right rail holds Turn, Undo, Clear, Snap and Done. Nothing sits on the plot. Every brick must stand on the ground or on a brick that does, overlapping it by at least half a cell (owner, 2026-10-24). A brick that holds another cannot be taken off or moved away. An old base with floating bricks is set down when it opens. `?builder=0` shows the old shop screen instead. Built bases are saved but not yet used in battle.
 
+**Squads (on).** `SQUADS.enabled` is on for everyone (owner, 2026-10-24). Each side has its launcher and one walking helper: Sir Bonk (Team Past) and Robo Bonk (Team Future), `dasher` in code. Walk out is one go: he walks along the ground, over the hill, mound, pillar or wall, and stops next to the first enemy thing in front. From then on he bonks it at the start of every turn, the enemy's turn too: the enemy base (`SQUADS.standBonkDamage`, shields and cuts apply) or the enemy helper next to him (1 health). He has fighter health (`CHARACTER_HEALTH.hp`, heart and pips above him). A shell near him costs 1 (2 for a Power Shot); at 0 he tumbles, walks home dizzy, and sits out one full own turn. Come back (one go) walks him home; he is ready again next turn. Rules: `src/game/crew.ts`. Art: `src/scenes/battle/dasherArt.ts` and `dasherLayer.ts`. See [docs/SQUADS_PLAN.md](./docs/SQUADS_PLAN.md).
+
 **Computer player (on).** One child can play alone against the Computer player (`PRACTICE_BOT.enabled`, on since 2026-10-24; `?computer=0` hides it). Setup has "Play with: Another player / Computer player", with Another player picked first. The child keeps the screen (no pass-the-mouse cover) and still answers every own reload question.
 
-**Behind flags (all off in production).** `CHARACTER_HEALTH.enabled`: 4 health per fighter in place of base health. `BASE_IN_BATTLE.enabled`: built bases take hits in a match (needs character health, and the scene does not draw it yet). `SQUADS.enabled`: Squads S1 (a dasher helper per side). Each flag has tests and a section in [docs/GAME_SPEC.md](./docs/GAME_SPEC.md) or [docs/SQUADS_PLAN.md](./docs/SQUADS_PLAN.md). Open polish and content items are in `BACKLOG.md`.
+**Behind flags (all off in production).** `CHARACTER_HEALTH.enabled`: 4 health per fighter in place of base health. `BASE_IN_BATTLE.enabled`: built bases take hits in a match (needs character health, and the scene does not draw it yet). Each flag has tests and a section in [docs/GAME_SPEC.md](./docs/GAME_SPEC.md). Open polish and content items are in `BACKLOG.md`.
 
 ## Pre-merge checklist
 1. `npm test`, `npm run lint`, `npm run typecheck`, `npm run build` pass with zero failures.
@@ -184,7 +190,7 @@ New ideas go in [INBOX.md](./INBOX.md) (raw, 30-day expiry). Triage moves them t
 | Design tokens and rules | [docs/DESIGN_SYSTEM.md](./docs/DESIGN_SYSTEM.md) |
 | Shared types, functions and decisions | [docs/CONTRACTS.md](./docs/CONTRACTS.md) |
 | How to write and check questions | [docs/QUESTION_BANK.md](./docs/QUESTION_BANK.md) |
-| Squads plan (Phase 5, S1 built behind a flag) | [docs/SQUADS_PLAN.md](./docs/SQUADS_PLAN.md) |
+| Squads plan (Phase 5, S1 on: the walking helper) | [docs/SQUADS_PLAN.md](./docs/SQUADS_PLAN.md) |
 | Two-iPad, accounts and matching proposal | [docs/plans/2026-10-17-two-player-ipad-plan.md](./docs/plans/2026-10-17-two-player-ipad-plan.md) |
 | Voice clip databases | [db/README.md](./db/README.md) |
 | Panel review of the 2026-10-23 and 2026-10-24 batch | [docs/panel/2026-10-24-batch.md](./docs/panel/2026-10-24-batch.md) |

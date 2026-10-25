@@ -182,6 +182,48 @@ export function playSynth(ctx: Ctx, name: SfxName, level: number): void {
         t,
       );
       break;
+    case 'bonk': // a hollow foam knock: a quick high tap that drops, then a soft low bump
+      voice(
+        ctx,
+        master,
+        'triangle',
+        [
+          [660, 0],
+          [240, 0.08],
+        ],
+        0.12,
+        0.8,
+        t,
+      );
+      voice(
+        ctx,
+        master,
+        'sine',
+        [
+          [150, 0],
+          [90, 0.12],
+        ],
+        0.16,
+        0.7,
+        t + 0.03,
+      );
+      break;
+    case 'step': // four soft pitter-patter steps
+      for (let i = 0; i < 4; i++) {
+        voice(
+          ctx,
+          master,
+          'sine',
+          [
+            [i % 2 === 0 ? 220 : 190, 0],
+            [110, 0.05],
+          ],
+          0.06,
+          0.45,
+          t + i * 0.16,
+        );
+      }
+      break;
     case 'click':
       voice(
         ctx,

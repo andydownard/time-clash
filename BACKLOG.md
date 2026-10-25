@@ -26,8 +26,8 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 - Phase 3 crafting that is still open: hybrid weapons and recipes (the Forge and Build Base are built). Phase 4 iPad play with room codes.
 
 ## Phase 5: Squads
-Plan: docs/SQUADS_PLAN.md. S1 (a dasher helper per side) is built behind `SQUADS.enabled`, which is off. S2 onward is not built. Each milestone ships behind the same flag.
-- P1: S1 follow-ups. Hear it, Back, the first-go hint and an e2e switch are built behind the flag. Still to do: dasher art and ground spot markers on the battlefield, the no-stalemate walk test, and a once-per-family first-match hint (needs a storage key, Andy's call).
+Plan: docs/SQUADS_PLAN.md. S1 (the walking helper, Sir Bonk and Robo Bonk) is on for everyone (owner, 2026-10-24). S2 onward is not built.
+- P1: S1 follow-ups. A once-per-family first-match hint (needs a storage key, Andy's call), Escape and H keys for Back and Hear it, re-recorded intro cards 3 and 4 (see INBOX), and a panel pass on Sir Bonk, Robo Bonk and every new line.
 - P2: S3 Full crew of 4. Slingshot Squire, Laser Zapper, and Rocket Button, with fairness and no-stalemate tests.
 - P2: Unit tags. Team Past units wear letters A to D on a shield. Team Future units wear numbers 1 to 4. Pick a unit by tapping it or pressing its key.
 - P3: Easy crew option per side at Camp, set by a parent (just the launcher).

@@ -58,10 +58,15 @@ import {
   IllegalCommandError,
   dashTargets,
   helperId,
+  hitDasher,
   planDash,
+  planRecall,
+  planStand,
   startingCrew,
+  wakeDashers,
   type Crew,
   type HelperId,
+  type RecallOutcome,
 } from './crew';
 import {
   birdsForTurn,
@@ -95,6 +100,7 @@ import type {
   ReloadInput,
   ReloadResult,
   ShotResult,
+  StandBonk,
   Team,
   TeamStats,
   TurnEvent,
@@ -145,7 +151,18 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
 
   // Squads S1: a launcher and a dasher per side. Off with the flag, with character health, or with built bases.
   const squadsOn = (options.squads ?? SQUADS.enabled) && !characterHealth && !built;
-  let crew: Crew = startingCrew();
+  /** A dasher's full health: a fighter's, scaled by the match length like a fighter's. */
+  const dasherHp = scaleHealth(CHARACTER_HEALTH.hp, options.matchLength);
+  let crew: Crew = startingCrew(dasherHp);
+  /** Own turns each team has started. A resting dasher wakes by this count. */
+  const ownTurns: Record<Team, number> = { PAST: 0, FUTURE: 0 };
+  /**
+   * The own turn a dasher who tumbles or is called home now is ready again. During his own turn
+   * (its start included) the next own turn; during the enemy's turn, the one after his next, so
+   * a tumbled dasher always sits out one full own turn.
+   */
+  const readyAfterRest = (team: Team): number =>
+    ownTurns[team] + (turn.team === team ? 1 : 2);
   const requireSquads = (): void => {
     if (!squadsOn) throw new IllegalCommandError('flag_off');
   };
@@ -433,6 +450,8 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
               crew: { helpers: crew.helpers.map((h) => ({ ...h })), picked: { ...crew.picked } },
               picked: { ...crew.picked },
               go: Math.min(SQUADS.goesPerTurn, turn.shotsFired + 1) as 1 | 2,
+              maxHp: dasherHp,
+              ownTurns: { ...ownTurns },
             },
           }
         : {}),
@@ -450,9 +469,61 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
 
     currentLayout,
 
-    ready(): void {
+    ready(): StandBonk[] {
       guard('get ready');
       step({ type: 'READY' });
+      if (!squadsOn) return [];
+      const team = turn.team;
+      ownTurns[team] += 1;
+      crew = wakeDashers(crew, team, ownTurns[team], dasherHp);
+      const stand = planStand(
+        crew,
+        team,
+        { PAST: readyAfterRest('PAST'), FUTURE: readyAfterRest('FUTURE') },
+        nextBubble,
+      );
+      crew = stand.crew;
+      const out: StandBonk[] = [];
+      for (const beat of stand.beats) {
+        if (beat.target.kind !== 'base') {
+          out.push({ ...beat, target: beat.target });
+          continue;
+        }
+        // Once the match is over, nobody bonks.
+        if (status === 'OVER') break;
+        const target = beat.target.team;
+        // A bonk lands at the gate: the gate's cut applies, never below 1, then the same shields as a shot.
+        let damage = Math.max(1, beat.target.damage - effects[target].nearCut);
+        let dodged = false;
+        let blocked = false;
+        if (dodgesNow(evasion[target])) {
+          evasion = { ...evasion, [target]: spend(evasion[target]) };
+          damage = 0;
+          dodged = true;
+        }
+        if (damage > 0 && shield[target] > 0) {
+          shield[target] -= 1;
+          damage = 0;
+          blocked = true;
+        }
+        baseHp = { ...baseHp, [target]: Math.max(0, baseHp[target] - damage) };
+        const won = winnerOf(baseHp);
+        if (won) {
+          status = 'OVER';
+          winner = won;
+        }
+        out.push({
+          ...beat,
+          target: {
+            kind: 'base',
+            team: target,
+            damage,
+            ...(blocked ? { blocked: true } : {}),
+            ...(dodged ? { dodged: true } : {}),
+          },
+        });
+      }
+      return out;
     },
 
     setAim(input: AimInput): AimInput {
@@ -539,42 +610,22 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       guard('dash');
       requireSquads();
       if (turn.phase !== 'AIMING') throw new IllegalTransitionError(turn.phase, 'DASH');
-      const team = turn.team;
-      const target = otherTeam(team);
-      const planned = planDash(crew, team, to, nextBubble);
+      const planned = planDash(crew, turn.team, to, dasherHp);
       step({ type: 'FIRE' });
       step({ type: 'SHOT_LANDED' });
       crew = planned.crew;
-      const { bonk } = planned.outcome;
-      let damage = 0;
-      let blocked = false;
-      let dodged = false;
-      if (bonk?.kind === 'base') {
-        damage = bonk.damage;
-        // Same shields as a shot: a Hoverboard Dodge first, then the force field.
-        if (damage > 0 && dodgesNow(evasion[target])) {
-          evasion = { ...evasion, [target]: spend(evasion[target]) };
-          damage = 0;
-          dodged = true;
-        }
-        if (damage > 0 && shield[target] > 0) {
-          shield[target] -= 1;
-          damage = 0;
-          blocked = true;
-        }
-        baseHp = { ...baseHp, [target]: Math.max(0, baseHp[target] - damage) };
-        const won = winnerOf(baseHp);
-        if (won) {
-          status = 'OVER';
-          winner = won;
-        }
-      }
-      return {
-        ...planned.outcome,
-        damage,
-        ...(blocked ? { blocked: true } : {}),
-        ...(dodged ? { dodged: true } : {}),
-      };
+      return planned.outcome;
+    },
+
+    recall(): RecallOutcome {
+      guard('call a helper home');
+      requireSquads();
+      if (turn.phase !== 'AIMING') throw new IllegalTransitionError(turn.phase, 'RECALL');
+      const planned = planRecall(crew, turn.team, readyAfterRest(turn.team));
+      step({ type: 'FIRE' });
+      step({ type: 'SHOT_LANDED' });
+      crew = planned.crew;
+      return planned.outcome;
     },
 
     fire(fireOptions?: FireOptions): ShotResult {
@@ -681,6 +732,22 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
         status = 'OVER';
         winner = won;
       }
+      const bubbleIndex = tumble ? nextBubble() : null;
+      // Squads: the enemy dasher, if he stands near where it landed. Own shells never hit him.
+      let dasher: BlastOutcome['dasher'];
+      if (squadsOn && !flewAway) {
+        const hit = hitDasher(
+          crew,
+          target,
+          flight.landing,
+          layout,
+          isBonus,
+          readyAfterRest(target),
+          nextBubble,
+        );
+        crew = hit.crew;
+        if (hit.hit) dasher = hit.hit;
+      }
       return {
         result,
         target,
@@ -688,7 +755,8 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
         ...(blocked ? { blocked: true } : {}),
         ...(dodged ? { dodged: true } : {}),
         tumble,
-        bubbleIndex: tumble ? nextBubble() : null,
+        bubbleIndex,
+        ...(dasher ? { dasher } : {}),
       };
     },
 

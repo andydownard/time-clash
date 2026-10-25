@@ -123,7 +123,7 @@ async function pressAxis(page: Page, from: number, to: number, up: string, down:
 }
 
 /** Up/Down change the angle, Right/Left change the power. Shift moves by 5. */
-async function enterAim(page: Page, team: Team, to: AimInput): Promise<void> {
+export async function enterAim(page: Page, team: Team, to: AimInput): Promise<void> {
   const from = (await snap(page)).aim[team];
   // Keys are ignored while a button has focus, so start from the page itself.
   await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());

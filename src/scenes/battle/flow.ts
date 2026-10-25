@@ -21,15 +21,32 @@ import { BALLISTICS, DISTURBANCE, EVASION, PRACTICE_BOT, RNG_SALT, TURN } from '
 import type { AmmoId } from '../../game/ammo';
 import { createShuffleBag } from '../../game/bag';
 import { createRng } from '../../game/rng';
-import type { AimInput, MatchController, Rng, ShotResult, Team } from '../../game/types';
+import type {
+  AimInput,
+  BlastOutcome,
+  MatchController,
+  Rng,
+  ShotResult,
+  StandBonk,
+  Team,
+  Vec2,
+} from '../../game/types';
 import {
   GEAR_COPY,
   HIT_LINES,
   RELOAD as RELOAD_COPY,
   RELOAD_QUIPS,
   SQUAD_COPY,
+  tumblePool,
 } from '../../data/copy';
-import type { HelperId } from '../../game/crew';
+import {
+  dasherHomePoint,
+  dasherOf,
+  doorstepOf,
+  groundSpotIds,
+  groundSpotPoint,
+  type HelperId,
+} from '../../game/crew';
 import { timeCaptions } from '../../data/introScript';
 import {
   effectiveGrade,
@@ -46,7 +63,7 @@ import { bubbleAnchor, bubbleTailTarget } from './geometry';
 import { describeImpact } from './impact';
 import { previewDots, traceDots } from './trajectory';
 import { bubbleText, tumblingTeam } from './tumble';
-import type { BattleResult, BattleView, ViewStatus } from './types';
+import type { BattleResult, BattleView, SquadField, ViewStatus } from './types';
 import { IMPACT_BEAT_MS, SCRAP_POPUP_MS, WIN_BEAT_MS } from './visual';
 
 /** One flight step in ms (the path has one point per step). */
@@ -102,6 +119,10 @@ export class BattleFlow {
   private awaitingFire: (() => void) | null = null;
   /** Squads S1: the spot a player chose for a dash. It ends the wait like Fire does. */
   private pendingDash: string | null = null;
+  /** Squads S1: the player pressed Come back. It ends the wait like Fire does. */
+  private pendingRecall = false;
+  /** While above 0 a dasher animation is playing, so status pushes leave the dashers alone. */
+  private fieldHeld = 0;
   /** Squads S1: sides that already took a go in this match, so the first-go hint shows once each. */
   private readonly hintDone = new Set<Team>();
   /** The Computer player's own random stream and the time it has spent thinking this turn. */
@@ -172,12 +193,18 @@ export class BattleFlow {
       this.live();
     }
     this.thinkingSpentMs = 0;
-    match.ready();
+    const beats = match.ready();
     // This turn's birds take off now, so the player can watch them while aiming.
     const birds = match.snapshot().birds ?? [];
     if (birds.length > 0) view.showBirds?.(birds);
     view.setActiveTeam(team);
     this.deps.audio?.setMusicTeam?.(team);
+    // Squads: every dasher out on the field bonks at the start of the turn, on both sides' turns.
+    await this.playStand(beats);
+    if (match.snapshot().status === 'OVER') {
+      await this.finish();
+      return true;
+    }
 
     for (const shot of [1, 2] as const) {
       await this.gate();
@@ -223,9 +250,15 @@ export class BattleFlow {
       this.live();
       this.hintDone.add(team);
       const spot = this.pendingDash;
+      const recall = this.pendingRecall;
       this.pendingDash = null;
+      this.pendingRecall = false;
       if (spot) {
         await this.dashGo(team, spot);
+        return;
+      }
+      if (recall) {
+        await this.recallGo(team);
         return;
       }
     }
@@ -277,32 +310,192 @@ export class BattleFlow {
     }
   }
 
-  /** Squads S1: one dash go. The rules apply it now. The scene only says what happened, with a caption. */
+  /** Squads S1: one dash go. The rules apply it now; the dasher walks out over anything in the way. */
   private async dashGo(team: Team, spot: string): Promise<void> {
     const { match, view, overlay, audio } = this.deps;
     view.setAimDragHandler(null);
     view.showPreview(team, null);
     const out = match.dash(spot);
-    audio?.playSfx('thud');
-    this.pushStatus(false);
     const name = SQUAD_COPY.helperName[out.helper] ?? '';
-    const lines = [SQUAD_COPY.rolled(name, Number(out.to.slice(1)) + 1)];
-    if (out.bonk?.kind === 'base') {
-      lines.push(
-        out.dodged
-          ? SQUAD_COPY.bonkDodged
-          : out.blocked
-            ? SQUAD_COPY.bonkBlocked
-            : SQUAD_COPY.bonkBase,
-      );
-    } else if (out.bonk) {
-      lines.push(SQUAD_COPY.bonkHelper);
-    }
-    const text = lines.join(' ');
-    overlay.setCaption(text);
+    overlay.setCaption(SQUAD_COPY.walked(name));
+    audio?.playSfx('step');
+    await this.holdField(async () => {
+      this.pushStatus(false);
+      await view.walkDasher?.(team, this.home(team), this.spotAt(out.to), false);
+    });
+    this.live();
+    this.pushStatus(false);
     await this.deps.wait(IMPACT_BEAT_MS);
     this.live();
     overlay.setCaption(null);
+  }
+
+  /** Squads S1: one Come back go. The dasher walks home and is ready again next turn. */
+  private async recallGo(team: Team): Promise<void> {
+    const { match, view, overlay, audio } = this.deps;
+    view.setAimDragHandler(null);
+    view.showPreview(team, null);
+    const back = match.recall();
+    const name = SQUAD_COPY.helperName[back.helper] ?? '';
+    overlay.setCaption(SQUAD_COPY.cameBack(name));
+    audio?.playSfx('step');
+    await this.holdField(async () => {
+      this.pushStatus(false);
+      await view.walkDasher?.(team, this.spotAt(back.from), this.home(team), false);
+    });
+    this.live();
+    this.pushStatus(false);
+    await this.deps.wait(IMPACT_BEAT_MS);
+    this.live();
+    overlay.setCaption(null);
+  }
+
+  /** The bonks at the start of a turn, one after another, each with a caption. */
+  private async playStand(beats: readonly StandBonk[]): Promise<void> {
+    if (beats.length === 0) return;
+    const { view, overlay, audio, match } = this.deps;
+    // A duel lists both dashers. Each one's spot is where the other bonks.
+    const spotOf = new Map(beats.map((b) => [b.team, b.to]));
+    await this.holdField(async () => {
+      for (const b of beats) {
+        await this.gate();
+        const name = SQUAD_COPY.helperName[b.helper] ?? '';
+        if (b.from !== b.to) {
+          audio?.playSfx('step');
+          await view.walkDasher?.(b.team, this.spotAt(b.from), this.spotAt(b.to), false);
+          this.live();
+        }
+        const t = b.target;
+        const foe: Team = b.team === 'PAST' ? 'FUTURE' : 'PAST';
+        const toward =
+          t.kind === 'base' ? this.baseFront(t.team) : this.spotAt(spotOf.get(foe) ?? b.to);
+        audio?.playSfx('bonk');
+        overlay.setCaption(
+          t.kind === 'helper'
+            ? SQUAD_COPY.bonkHelper(name)
+            : t.dodged
+              ? SQUAD_COPY.bonkDodged
+              : t.blocked
+                ? SQUAD_COPY.bonkBlocked
+                : SQUAD_COPY.bonkBase(name),
+        );
+        await view.playDasherBonk?.(b.team, toward, SQUAD_COPY.bonkWord);
+        this.live();
+        if (t.kind === 'base') {
+          if (t.dodged) await view.playDodge?.(t.team);
+          // The base health tag and the HUD show the new number.
+          this.pushStatus(false);
+          if (t.damage > 0) {
+            await view.playImpact({
+              kind: 'puff',
+              position: toward,
+              target: t.team,
+              shooter: b.team,
+              result: match.snapshot().baseHp[t.team] <= 0 ? 'direct' : 'near',
+              damage: t.damage,
+              scale: 0.5,
+              label: '',
+            });
+          }
+          this.live();
+        } else if (t.tumbled) {
+          await this.dasherTumbles(foe, spotOf.get(foe) ?? b.to, t.bubbleIndex);
+        }
+      }
+    });
+    this.live();
+    this.pushStatus(false);
+    await this.deps.wait(IMPACT_BEAT_MS);
+    this.live();
+    overlay.setCaption(null);
+  }
+
+  /** A shell landed near a dasher: he wobbles, loses a heart, or tumbles home dizzy. */
+  private async dasherShellHit(hit: NonNullable<BlastOutcome['dasher']>): Promise<void> {
+    const { view, overlay, audio } = this.deps;
+    const name = SQUAD_COPY.helperName[hit.helper] ?? '';
+    await this.holdField(async () => {
+      if (hit.tumbled) {
+        await this.dasherTumbles(hit.team, hit.at, hit.bubbleIndex);
+        return;
+      }
+      audio?.playSfx('boing');
+      overlay.setCaption(hit.damage > 0 ? SQUAD_COPY.loseHeart(name) : SQUAD_COPY.wobble(name));
+      await view.playDasherHit?.(hit.team, 'wobble', null);
+    });
+    this.live();
+    this.pushStatus(false);
+  }
+
+  /** A dasher at 0: a silly tumble, a funny line (spoken when clips are on, always captioned), then a dizzy walk home. */
+  private async dasherTumbles(team: Team, spot: string, bubbleIndex: number | null): Promise<void> {
+    const { view, overlay, audio } = this.deps;
+    const name = SQUAD_COPY.helperName[`${team}-dasher`] ?? '';
+    audio?.playSfx('boing');
+    const line = bubbleIndex === null ? null : (tumblePool(team)[bubbleIndex] ?? null);
+    const text = line ? `${SQUAD_COPY.tumbleHome(name)} ${line}` : SQUAD_COPY.tumbleHome(name);
+    overlay.setCaption(text);
+    if (line && audio?.clipsEnabled) {
+      const durationMs = Math.max(1500, line.split(/\s+/).length * 450);
+      audio.speak({
+        id: 'tumble-line',
+        text: line,
+        captions: [{ text: line, startMs: 0 }],
+        durationMs,
+      });
+    }
+    await view.playDasherHit?.(team, 'tumble', null);
+    this.live();
+    await view.walkDasher?.(team, this.spotAt(spot), this.home(team), true);
+    this.live();
+  }
+
+  /** Runs `fn` while status pushes leave the dashers where the animation put them. */
+  private async holdField(fn: () => Promise<void>): Promise<void> {
+    this.fieldHeld++;
+    try {
+      await fn();
+    } finally {
+      this.fieldHeld--;
+    }
+  }
+
+  private spotAt(spot: string): Vec2 {
+    return groundSpotPoint(spot, this.deps.match.layout);
+  }
+
+  private home(team: Team): Vec2 {
+    return dasherHomePoint(team, this.deps.match.layout);
+  }
+
+  /** The ground in front of a base, where a bonk lands. */
+  private baseFront(team: Team): Vec2 {
+    const b = this.deps.match.layout.bases[team];
+    const y = this.deps.match.layout.terrain.ground[0]?.y ?? b.y + b.h;
+    return { x: team === 'PAST' ? b.x + b.w : b.x, y: y - 40 };
+  }
+
+  /** What the field shows for Squads: both dashers, the spot markers, and the target spot. */
+  private squadField(canFire: boolean): SquadField | null {
+    const { match } = this.deps;
+    const s = match.snapshot();
+    if (!s.squads) return null;
+    const crew = s.squads.crew;
+    const target = canFire ? match.helperTargets()[0] : undefined;
+    return {
+      dashers: (['PAST', 'FUTURE'] as const).map((team) => {
+        const d = dasherOf(crew, team);
+        return {
+          team,
+          at: d.state === 'out' && d.spot ? this.spotAt(d.spot) : this.home(team),
+          state: d.state,
+          hp: d.hp,
+          maxHp: s.squads!.maxHp,
+        };
+      }),
+      spots: groundSpotIds().map((id) => ({ id, at: this.spotAt(id), doorstepOf: doorstepOf(id) })),
+      target: target ? this.spotAt(target) : null,
+    };
   }
 
   /** Fire the shot already aimed in the rules layer, fly it, and apply it. */
@@ -346,6 +539,8 @@ export class BattleFlow {
     this.live();
     await this.deps.wait(IMPACT_BEAT_MS);
     this.live();
+
+    if (outcome.dasher) await this.dasherShellHit(outcome.dasher);
 
     const tumbler = tumblingTeam(outcome);
     if (tumbler) {
@@ -600,6 +795,13 @@ export class BattleFlow {
         this.awaitingFire = null;
         go();
       },
+      onRecall: () => {
+        const go = this.awaitingFire;
+        if (!go || this.stopped) return;
+        this.pendingRecall = true;
+        this.awaitingFire = null;
+        go();
+      },
     };
   }
 
@@ -763,12 +965,18 @@ export class BattleFlow {
                 })),
               picked: s.squads.picked[team],
               targets: canFire ? match.helperTargets() : [],
+              dasher: {
+                state: dasherOf(s.squads.crew, team).state,
+                hp: dasherOf(s.squads.crew, team).hp,
+                maxHp: s.squads.maxHp,
+              },
               hint: canFire && this.showsHint(team, s.turn.shotsFired),
             },
           }
         : {}),
     };
     overlay.updateHud(hud);
+    if (this.fieldHeld === 0) view.syncSquads?.(this.squadField(canFire));
     // A stone wall stands only while a barricade guards its base.
     view.setWalls?.(
       (['PAST', 'FUTURE'] as const)
