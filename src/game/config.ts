@@ -536,10 +536,10 @@ export const PRACTICE_BOT = {
   displayName: 'Computer player',
   levels: {
     easy: {
-      angleSpreadDeg: 7.5,
-      powerSpreadPct: 12,
-      windSkill: 0.3,
-      reloadAccuracy: 0.65,
+      angleSpreadDeg: 6,
+      powerSpreadPct: 10.5,
+      windSkill: 0.35,
+      reloadAccuracy: 0.7,
       thinkScale: 1.4,
     },
     medium: {
@@ -550,10 +550,10 @@ export const PRACTICE_BOT = {
       thinkScale: 1,
     },
     hard: {
-      angleSpreadDeg: 2,
-      powerSpreadPct: 4,
-      windSkill: 0.9,
-      reloadAccuracy: 0.92,
+      angleSpreadDeg: 4.25,
+      powerSpreadPct: 8.5,
+      windSkill: 0.65,
+      reloadAccuracy: 0.85,
       thinkScale: 0.8,
     },
   } as Readonly<Record<BotLevel, BotProfile>>,
