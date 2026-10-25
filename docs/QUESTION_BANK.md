@@ -5,7 +5,7 @@ For anyone who writes or checks questions. The checker is `npm run check:questio
 ## Files
 One JSON array per subject and grade, in `src/questions/bank/`. The name is `<subject>-<grade>.json`. Kindergarten is grade 0.
 
-Examples: `math-0.json`, `math-5.json`, `reading-12.json`. The bank holds 2,358 questions in 26 files (checked 2026-10-24).
+Examples: `math-0.json`, `math-5.json`, `reading-12.json`. The bank holds 2,460 questions in 26 files (checked 2026-10-25).
 
 ## Fields
 Each question follows `src/questions/types.ts`.
