@@ -74,7 +74,7 @@ Team Past gets the same kind of choice for its castle (added 2026-10-23, owner r
 ⚬ Hill Fort: high on a solid rock. The best view. Low shots thud into the rock.
 ⚬ Village Wall: on the ground, behind a low stone wall out in front.
 ⚬ Drawbridge: low, behind a raised wooden drawbridge that stops flat shots, so players lob.
-⚬ No pick (every plan saved before this) keeps the castle where it always was, with no cover.
+⚬ Village Wall is the default (owner decision, 2026-10-24), the way Food Trucks is for Team Future. A new family, and every plan saved before castle places, starts at Village Wall. One castle card is always picked.
 
 Every blocking shape is drawn as the thing it is (stone courses, moss and grass, cherry petals, temple vines, tower windows with neon trim, a steel truss, a taco truck, oak planks with iron bands), never a plain dark box. The picture and the solid shape are the same outline, so a shell hits exactly what a child sees.
 

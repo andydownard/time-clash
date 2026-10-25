@@ -360,8 +360,11 @@ export const BIOMES: Record<(typeof BIOME_IDS)[number], BiomeConfig> = {
   },
 };
 
-/** What a new family's first Battle Plan shows picked. Food Trucks keeps the Phase 1 base spot. */
-export const DEFAULT_PLAN = { biome: 'aspen', spot: 'foodTruck' } as const;
+/**
+ * What a new family's first Battle Plan shows picked. Food Trucks keeps the Phase 1 base spot, and
+ * Village Wall is Team Past's matching default castle place (owner decision, 2026-10-24).
+ */
+export const DEFAULT_PLAN = { biome: 'aspen', spot: 'foodTruck', fort: 'villageWall' } as const;
 
 // ---------- Evasion (Phase 2) ----------
 /**

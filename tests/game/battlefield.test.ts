@@ -71,6 +71,7 @@ describe('normalizePlan', () => {
     expect(normalizePlan({ biome: 'cherry', spot: 'bridge' })).toEqual({
       biome: 'cherry',
       spot: 'bridge',
+      fort: 'villageWall',
     });
   });
 });
