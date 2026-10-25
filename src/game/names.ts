@@ -43,18 +43,20 @@ const LEET: Readonly<Record<string, string>> = {
 const normalize = (s: string): string =>
   s.toLowerCase().replace(/[013457@$]/g, (c) => LEET[c] ?? c);
 
+/** True when the text holds a word from the list above (any length; also used for weapon names). */
+export function hasBlockedWord(text: string): boolean {
+  const clean = normalize(text);
+  const words = clean.split(/[^a-z]+/).filter(Boolean);
+  const squashed = clean.replace(/[^a-z]/g, '');
+  return (
+    words.some((w) => BLOCKED_WORDS.has(w)) || BLOCKED_ANYWHERE.some((b) => squashed.includes(b))
+  );
+}
+
 export const validateName: ValidateName = (raw) => {
   const name = typeof raw === 'string' ? raw.trim() : '';
   if (name.length < NAME.minLength) return { ok: false, reason: 'empty' };
   if ([...name].length > NAME.maxLength) return { ok: false, reason: 'too_long' };
-  const clean = normalize(name);
-  const words = clean.split(/[^a-z]+/).filter(Boolean);
-  const squashed = clean.replace(/[^a-z]/g, '');
-  if (
-    words.some((w) => BLOCKED_WORDS.has(w)) ||
-    BLOCKED_ANYWHERE.some((b) => squashed.includes(b))
-  ) {
-    return { ok: false, reason: 'blocked' };
-  }
+  if (hasBlockedWord(name)) return { ok: false, reason: 'blocked' };
   return { ok: true, name };
 };

@@ -714,3 +714,69 @@ export const BASE_IN_BATTLE = {
   /** The Computer player picks a mounted weapon this often when it has one that can fire. */
   botMountChance: 0.5,
 } as const;
+
+// ---------- Weapon Workshop (make your own Forge weapon) ----------
+/**
+ * The Forge's "Make my own weapon" pad (owner request, 2026-10-24). A player picks a style (the
+ * team's three catalog weapons are the three styles), then spends `budget` points on three stats.
+ * Each stat holds `minPoints` to `maxPoints`. The numbers are set so that no custom weapon ever
+ * beats the best catalog weapon of its team: see `powerScore` in src/game/customWeapons.ts and
+ * the sweep in tests/game/customWeapons.test.ts. A weapon's score is
+ * `direct + near + reachWeight * (speedScale - 1)`. reachWeight 20 counts the catalog's +0.2 launch
+ * speed (Royal Sword to Iron Cannon) as 4 damage, about two Forge levels of direct damage.
+ * Best catalog score: Iron Cannon 32 + 12 + 4 = 48. Best custom score: 43 (Power 5, Splash 4).
+ */
+export const WORKSHOP = {
+  /** Custom weapons one player can keep for one side. */
+  maxPerTeam: 6,
+  /** Points to spend on Power, Reach and Splash together. */
+  budget: 10,
+  minPoints: 1,
+  maxPoints: 5,
+  /** Power: direct-hit damage = base + perPoint x points (19 to 31). */
+  power: { base: 16, perPoint: 3 },
+  /** Splash: near-miss damage = base + perPoint x points (6 to 14). */
+  splash: { base: 4, perPoint: 2 },
+  /** Reach: launch speed scale = base + perPoint x points (1.0 to 1.2, like the catalog). */
+  reach: { base: 0.95, perPoint: 0.05 },
+  /** Score weight of launch speed above 1 (see above). */
+  reachWeight: 20,
+  /** The points each style starts with. The player moves them freely after that. */
+  presets: {
+    short: { power: 3, reach: 1, splash: 1 },
+    long: { power: 1, reach: 3, splash: 1 },
+    heavy: { power: 1, reach: 1, splash: 3 },
+  },
+  /**
+   * Scrap to forge, by score: the first row whose `upTo` the score is not above. The cheapest
+   * matches the Forge's first level-up (6 Scrap). Scores run 25 to 43.
+   */
+  cost: [
+    { upTo: 30, scrap: 6 },
+    { upTo: 36, scrap: 12 },
+    { upTo: 40, scrap: 18 },
+    { upTo: 999, scrap: 24 },
+  ] as ReadonlyArray<{ upTo: number; scrap: number }>,
+  /** A typed name: this many characters at most, letters, digits and spaces only. */
+  typedNameMax: 14,
+  /** A saved name (a picked pair of words or a typed name) is never longer than this. */
+  savedNameMax: 24,
+  /** Longest run of digits allowed in a typed name, so no phone or house number fits. */
+  maxDigitRun: 2,
+  /** Highest serial number in a custom weapon id ("custom:P:7"). */
+  maxSerial: 999,
+  /**
+   * As a base-builder spot weapon (for a later "My weapons" section in Build Base). Damage =
+   * (damageBase + damagePerPower x Power points) x roleScale, rounded. Health = hpBase +
+   * hpPerSparePower x (maxPoints - Power points), so a gentle hitter is sturdier.
+   */
+  mount: {
+    roles: { short: 'direct', long: 'volley', heavy: 'lob' },
+    damageBase: 8,
+    damagePerPower: 3,
+    /** A volley fires several shells, so each one is smaller (like the Archer post). */
+    roleScale: { direct: 1, volley: 0.5, lob: 1 },
+    hpBase: 20,
+    hpPerSparePower: 2,
+  },
+} as const;

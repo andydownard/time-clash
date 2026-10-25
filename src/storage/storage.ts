@@ -21,7 +21,8 @@ import {
   type BasesState,
 } from '../game/baseBuilder';
 import { isMatchLength, normalizeMatchLength, type MatchLength } from '../game/matchLength';
-import { FORGE, WEAPONS, type WeaponId } from '../game/weapons';
+import { FORGE, WEAPONS, type AnyWeaponId } from '../game/weapons';
+import { cleanCustomList } from '../game/customWeapons';
 import { UPGRADES, UPGRADE_MAX_LEVEL, type UpgradeId } from '../game/upgrades';
 import { CALIBRATION, type CalibrationState, type Levels } from '../questions/calibration';
 import type { PickHistory, QuestionSubject } from '../questions/types';
@@ -148,15 +149,22 @@ const wholeBetween = (v: unknown, lo: number, hi: number): number | null =>
 function parseLoadout(v: unknown, team: Team): TeamLoadout {
   const fresh = freshLoadout(team);
   if (!isObject(v)) return fresh;
-  const owned: Partial<Record<WeaponId, number>> = { ...fresh.owned };
+  const owned: Partial<Record<AnyWeaponId, number>> = { ...fresh.owned };
   if (isObject(v.owned)) {
     for (const w of WEAPONS.filter((x) => x.team === team)) {
       const level = wholeBetween(v.owned[w.id], 1, FORGE.maxLevel);
       if (level !== null) owned[w.id] = level;
     }
   }
-  const wanted = WEAPONS.find((w) => w.id === v.weapon && w.team === team);
-  const weapon = wanted && owned[wanted.id] ? wanted.id : fresh.weapon;
+  // Weapons of your own: each one checked, a bad one dropped. Each is owned (level 1 if unsure).
+  const custom = cleanCustomList(v.custom, team);
+  for (const c of custom) {
+    owned[c.id] = (isObject(v.owned) && wholeBetween(v.owned[c.id], 1, FORGE.maxLevel)) || 1;
+  }
+  const wanted =
+    WEAPONS.find((w) => w.id === v.weapon && w.team === team)?.id ??
+    custom.find((c) => c.id === v.weapon)?.id;
+  const weapon = wanted && owned[wanted] ? wanted : fresh.weapon;
   const upgrades: Partial<Record<UpgradeId, number>> = {};
   if (isObject(v.upgrades)) {
     for (const u of UPGRADES.filter((x) => x.team === team)) {
@@ -192,6 +200,7 @@ function parseLoadout(v: unknown, team: Team): TeamLoadout {
     ...(pieces.length > 0 ? { pieces } : {}),
     ...(mounts.length > 0 ? { mounts } : {}),
     ...(ammo.length > 0 ? { ammo } : {}),
+    ...(custom.length > 0 ? { custom } : {}),
   };
 }
 
