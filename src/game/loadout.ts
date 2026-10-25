@@ -3,14 +3,22 @@
 import type { AmmoId } from './ammo';
 import { DAMAGE, SCRAP } from './config';
 import type { Team } from './types';
+import { customAsWeapon, findCustom, type CustomWeapon } from './customWeapons';
 import { upgradeValue, UPGRADES, type UpgradeId } from './upgrades';
-import { STARTER, weaponById, weaponStats, type WeaponId } from './weapons';
+import {
+  asForgeWeapon,
+  STARTER,
+  weaponById,
+  weaponStats,
+  type AnyWeaponId,
+  type ForgeWeapon,
+} from './weapons';
 
 export type TeamLoadout = {
-  /** The weapon in use. It is always an owned weapon. */
-  weapon: WeaponId;
-  /** Owned weapons and the level of each (1 to 3). */
-  owned: Partial<Record<WeaponId, number>>;
+  /** The weapon in use. It is always an owned weapon (a catalog one or one of `custom`). */
+  weapon: AnyWeaponId;
+  /** Owned weapons and the level of each (1 to 3). Custom weapons are listed here too. */
+  owned: Partial<Record<AnyWeaponId, number>>;
   /** Upgrade levels (1 to 3). Missing means level 0. */
   upgrades: Partial<Record<UpgradeId, number>>;
   /** Special ammo kinds unlocked for this side. Missing means none. Uses reset every match. */
@@ -19,6 +27,8 @@ export type TeamLoadout = {
   pieces?: string[];
   /** Weapons for base spots unlocked with Scrap. The free ones are never listed. */
   mounts?: string[];
+  /** Weapons made in the Weapon Workshop (customWeapons.ts). Missing means none. */
+  custom?: CustomWeapon[];
 };
 
 /**
@@ -91,12 +101,23 @@ export const withWallet = (camp: CampState, wallet: Wallet): CampState => ({
   wallets: { ...camp.wallets, [walletKey(wallet.name)]: wallet },
 });
 
+/**
+ * A weapon this side can use: a catalog weapon of the side, or one of the loadout's own custom
+ * weapons. Null for anything else (the other side's weapon, a custom id not in the list, junk).
+ */
+export function weaponFor(team: Team, loadout: TeamLoadout, id: unknown): ForgeWeapon | null {
+  const catalog = typeof id === 'string' ? weaponById(id) : null;
+  if (catalog) return catalog.team === team ? asForgeWeapon(catalog) : null;
+  const mine = findCustom(loadout.custom, id);
+  const weapon = mine ? customAsWeapon(mine) : null;
+  return weapon && weapon.team === team ? weapon : null;
+}
+
 /** The numbers for one team. An unknown weapon falls back to the starter, so it never throws. */
 export function effectsFor(team: Team, loadout: TeamLoadout): TeamEffects {
   const weapon =
-    weaponById(loadout.weapon)?.team === team
-      ? (weaponById(loadout.weapon) as NonNullable<ReturnType<typeof weaponById>>)
-      : (weaponById(STARTER[team]) as NonNullable<ReturnType<typeof weaponById>>);
+    weaponFor(team, loadout, loadout.weapon) ??
+    asForgeWeapon(weaponById(STARTER[team]) as NonNullable<ReturnType<typeof weaponById>>);
   const level = loadout.owned[weapon.id] ?? 1;
   const stats = weaponStats(weapon, level);
   const total = (effect: string): number =>

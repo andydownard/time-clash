@@ -7,6 +7,11 @@ import type { Team } from './types';
 export type WeaponId =
   'royalSword' | 'elderLongbow' | 'ironCannon' | 'plasmaBlade' | 'laserRifle' | 'railCannon';
 
+/** A weapon made in the Weapon Workshop: "custom:" + side letter + ":" + serial (customWeapons.ts). */
+export type CustomWeaponId = `custom:${string}`;
+/** A catalog weapon or one of your own. */
+export type AnyWeaponId = WeaponId | CustomWeaponId;
+
 export type RangeLabel = 'short' | 'long' | 'far';
 
 export type Weapon = {
@@ -102,12 +107,17 @@ export const weaponsOf = (team: Team): Weapon[] => WEAPONS.filter((w) => w.team 
 
 export const weaponById = (id: string): Weapon | null => WEAPONS.find((w) => w.id === id) ?? null;
 
+/** A row in the Forge: a catalog weapon, or one of your own (`mine`) drawn like its `base` style. */
+export type ForgeWeapon = Omit<Weapon, 'id'> & { id: AnyWeaponId; base: WeaponId; mine: boolean };
+
+export const asForgeWeapon = (w: Weapon): ForgeWeapon => ({ ...w, base: w.id, mine: false });
+
 const clampLevel = (level: number): number =>
   Math.min(FORGE.maxLevel, Math.max(1, Math.floor(Number.isFinite(level) ? level : 1)));
 
 /** What a weapon does at a level (1 to 3). A bad level counts as level 1. */
 export function weaponStats(
-  weapon: Weapon,
+  weapon: Pick<Weapon, 'direct' | 'near' | 'speedScale'>,
   level: number,
 ): { direct: number; near: number; speedScale: number } {
   const extra = clampLevel(level) - 1;
