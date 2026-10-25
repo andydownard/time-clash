@@ -8,7 +8,6 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 - None open.
 
 ## P1
-- Built bases (on since 2026-10-25): mounted weapons on the four spots are drawn but do nothing in the base-health game. Next: list them in "Pick one" next to the fighters (a mount is `mount:0` to `mount:3`, rules already in `builtBase.ts`: `firingMounts`, `mountAim`, `volleyAngles`, `guardFor`), let them take hits, let the shield generator guard, draw their shots, and let the Computer player use them. Needs a panel review (one more choice on the bar). See docs/GAME_SPEC.md "How a built base plays".
 - Built bases: a fighter that stood on the old castle (the archer, Team Future's riders) can now stand in the air above a small built base. Owner to decide: keep, lower them onto the top brick, or draw a small stand.
 - Caption times now start at measured pauses in the real clips (`scripts/measure-intro-timings.py`). Exact word timing needs Kokoro timing output. Re-run the script after every voice re-render.
 
@@ -22,6 +21,8 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 - Reading in grades 4 to 12 has 79 to 90 items and math 100 to 110. Reading in K to 3 is lower now (see the next items). Families who play many rematches will still see repeats. A later pass could grow reading toward 100 per grade and add more variety in the upper grades.
 - P2: Question-clip voice databases and files are unused; delete in a separate cleanup (`db/voice-k4.sqlite` question rows, later volumes, question clips in `public/audio` if any, and the Python voice scripts' question handling).
 - P2: K to 2 reading count dropped after removing sight-word listening items (K 50, grade 1 51, grade 2 54, grade 3 64); add read-only questions. Owner decides the new questions.
+- P2: Weapons on the base pads (built 2026-10-25), panel follow-ups. Team Future's fighter token in the weapons view shows a number, like the spot numbers on the weapon tokens (a small person picture would tell them apart better). A Hear it line for what each weapon does (direct, lob, volley). A "pew-boing" sound for the pad flash. Owner to decide whether a Ballista or Catapult should hit harder than a fighter: the pace rule caps every weapon at a fighter's standard shot (`BASE_IN_BATTLE.baseHealthMount.maxScale`). See docs/GAME_SPEC.md "Weapons on the pads".
+- P2: Pace gap found while building the weapons: a fighter with `damageScale` 1.3 (the Spearman and the Saber Robot) does 33 + 33 + 50 = 116 in a perfect turn, so perfect aim with it can win on its fourth turn (7 total) against the flat 400 or the smallest built base. `tests/game/pace.test.ts` only plays the default fighters. Owner to decide: cap fighter damage too, or accept it.
 - P2: Battle simplification, next steps. Health shows in both the top chips and the base pills, so one of them can go. The richer scenery on the Battle board belongs to Phase 5 (Squads). The five-fighter picker is built.
 
 ## P3
