@@ -2,6 +2,7 @@
 // saving, and returns where to go next. Phaser scenes just run a step and follow the route.
 import { LOADING } from '../data/copy';
 import { baseBuilderOn } from '../game/baseBuilder';
+import { TIMING } from '../game/config';
 import { creditMatch } from '../game/economy';
 import { TEAMS, type Players, type Team } from '../game/types';
 import { buildLayout } from '../game/battlefield';
@@ -53,7 +54,9 @@ export async function runLoadingStep(s: AppServices, data: unknown): Promise<Sce
     handle,
     env: s.env,
     // A family with no saved players is new. The intro already marks introSeen before Loading.
-    minMs: loadingMinFor(s.storage.get('timeclash.players') == null),
+    minMs: s.flags?.quickLoad
+      ? TIMING.loadingQuickMs
+      : loadingMinFor(s.storage.get('timeclash.players') == null),
     load: async (report) => {
       loaded.bank = await loadAssets(s.loadBank, report);
     },
