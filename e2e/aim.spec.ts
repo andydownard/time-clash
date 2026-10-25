@@ -46,7 +46,12 @@ test('battle: power is only in the bottom bar and the guide starts at the muzzle
 
 test('battle: screenshots of the angle guide', async ({ page }, info) => {
   const size = info.project.name.replace(/^[a-z]+-/, '');
-  test.skip(!info.project.name.startsWith('chromium'), 'screenshots come from Chromium');
+  // Like saveShot, it writes tracked files, so it runs only when asked. The Team Future guide is
+  // also checked in the full match in e2e/look.spec.ts.
+  test.skip(
+    process.env.UPDATE_SCREENSHOTS !== '1' || !info.project.name.startsWith('chromium'),
+    'screenshots are retaken only with UPDATE_SCREENSHOTS=1, in Chromium',
+  );
   await toSetup(page);
   await startMatch(page);
   await tid(page, 'pass-ready').click();
