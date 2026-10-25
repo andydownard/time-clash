@@ -46,6 +46,8 @@ export type SimOptions = {
   layout?: BattleLayout;
   /** Team Past raises its Stone Wall (about half its turns while it is ready). */
   raiseWall?: boolean;
+  /** Birds, gusts and recoil on or off. Default: the game's own setting (DISTURBANCE). */
+  disturbances?: boolean;
 };
 
 /** Plays one match to the end (or to the safety cap). */
@@ -59,6 +61,7 @@ export const playBotMatch = (opts: SimOptions): SimResult => {
     ...(opts.baseInBattle === undefined ? {} : { baseInBattle: opts.baseInBattle }),
     ...(opts.bases ? { bases: opts.bases } : {}),
     ...(opts.layout ? { layout: opts.layout } : {}),
+    ...(opts.disturbances === undefined ? {} : { disturbances: opts.disturbances }),
   });
   const rng = createRng((opts.seed ^ 0x626f74) >>> 0);
   const shoot = (team: Team): boolean => {

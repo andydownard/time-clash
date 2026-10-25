@@ -20,7 +20,7 @@ const PLAYERS: Players = [
   { name: 'Alex', team: 'PAST', grade: 5, subject: 'math' },
   { name: 'Sam', team: 'FUTURE', grade: 2, subject: 'reading' },
 ];
-const make = (seed = 3): MatchController => createMatch({ players: PLAYERS, seed });
+const make = (seed = 3): MatchController => createMatch({ disturbances: false, players: PLAYERS, seed });
 /** A wrong answer: no Power Shot, so these tests keep their exact numbers. */
 const FAST = { correct: false, elapsedMs: 1000 };
 
@@ -207,7 +207,7 @@ describe('firing from the chosen fighter', () => {
     '%s starts its flight at its own origin',
     (_id, u) => {
       // Make it the right team's turn first.
-      const c = createMatch({ players: PLAYERS, seed: 5, firstTeam: u.team });
+      const c = createMatch({ disturbances: false, players: PLAYERS, seed: 5, firstTeam: u.team });
       c.ready();
       c.selectUnit(u.id);
       const r = c.fire();
@@ -246,7 +246,7 @@ describe('firing from the chosen fighter', () => {
 describe('fighter damage', () => {
   /** Score one direct hit with the given fighter on a fresh match; return the damage. */
   function directDamage(id: string, team: 'PAST' | 'FUTURE'): number {
-    const c = createMatch({ players: PLAYERS, seed: 4, firstTeam: team });
+    const c = createMatch({ disturbances: false, players: PLAYERS, seed: 4, firstTeam: team });
     c.ready();
     c.selectUnit(id as never);
     c.setAim(findAim(c, 'direct'));
@@ -267,7 +267,7 @@ describe('fighter damage', () => {
   });
 
   it('scales near misses too', () => {
-    const c = createMatch({ players: PLAYERS, seed: 4 });
+    const c = createMatch({ disturbances: false, players: PLAYERS, seed: 4 });
     c.ready();
     c.selectUnit('E');
     c.setAim(findAim(c, 'near'));

@@ -2,6 +2,7 @@
 // Phase 1 numbers come from docs/BUILD.md. Tune here only.
 import type { Settings } from '../storage/types';
 import type { BattleLayout, Polygon, Rect, Team, Topic, Vec2 } from './types';
+import type { UnitRole } from './units';
 
 // ---------- Physics ----------
 export const BALLISTICS = {
@@ -694,4 +695,81 @@ export const BASE_IN_BATTLE = {
   flierRoles: ['balloon', 'helicopter'] as readonly string[],
   /** The Computer player picks a mounted weapon this often when it has one that can fire. */
   botMountChance: 0.5,
+} as const;
+
+// ---------- Disturbances: birds, gusts and recoil ----------
+/**
+ * Shots were too predictable (owner request, 2026-10-24). Three seeded nudges make each shot a
+ * little different, the same for both teams:
+ * - Birds fly across the sky on a path the player can see before firing. A shell that touches
+ *   one gets bumped (a feather puff and a squawk). The bird is never hurt.
+ * - One gust per turn shoves the shell sideways for a moment during its flight.
+ * - Recoil: after a shot, the Angle and Power dials slide a little, by fighter.
+ * The dotted preview and the aim guide stay plain wind only, so the arc a child learns from is
+ * honest. The flag is read only as the default of `MatchOptions.disturbances`; tests pass the
+ * option and never change this constant.
+ */
+export const DISTURBANCE = {
+  enabled: true,
+  /** Salts mixed into the match seed so each stream is separate but repeatable. */
+  salt: { birds: 0x42495244, gust: 0x47555354, recoil: 0x4b49434b },
+  birds: {
+    /** Birds per turn, picked between these (inclusive). */
+    minCount: 1,
+    maxCount: 2,
+    /** A shell whose center comes this close to a bird's center bumps it (world px). */
+    hitRadius: 26,
+    /** Flying speed range, px/s. Slow enough to track while aiming (about 20 s to cross). */
+    minSpeed: 40,
+    maxSpeed: 70,
+    /** The sky band birds fly in (world px, y grows down). Never at ground level. */
+    minY: 170,
+    maxY: 420,
+    /** A gentle up-and-down bob while flying. */
+    bobPx: 14,
+    bobPeriodMs: 1800,
+    /** Birds wrap around this far past each edge, so one is almost always in view. */
+    edgeMarginPx: 60,
+    /** Two birds in one turn start at least this far apart (px), so they never overlap. */
+    minGapPx: 260,
+    /** A bump turns the shell this many degrees (up if it skims over, down if it clips under). */
+    nudgeDeg: 16,
+    /** And keeps this share of its speed. */
+    speedKeep: 0.85,
+    /** No bump this soon after launch, so a bird can never stop a shot at the muzzle. */
+    launchGraceMs: 250,
+  },
+  gust: {
+    /** Extra sideways push while the gust blows, px/s² (the turn's wind is -80 to 80). */
+    minPush: 150,
+    maxPush: 250,
+    /** How long the gust blows, ms. */
+    durationMs: 400,
+    /**
+     * When it starts, as a share of the shell's plain flight time (picked between these). A share,
+     * not a fixed time, so a fast flat shot meets the gust as surely as a high lob does.
+     */
+    earliestShare: 0.2,
+    latestShare: 0.5,
+  },
+  /**
+   * Recoil after a shot: the dials slide by up to this much (a seeded whole number between minus
+   * and plus the value). Mirror pairs share a row, so both teams get the same kick. Heavy weapons
+   * kick the most, the archer and the laser gun barely at all.
+   */
+  recoil: {
+    balloon: { angleDeg: 1, power: 2 },
+    helicopter: { angleDeg: 1, power: 2 },
+    archer: { angleDeg: 1, power: 1 },
+    laserGun: { angleDeg: 1, power: 1 },
+    cannon: { angleDeg: 2, power: 4 },
+    tank: { angleDeg: 2, power: 4 },
+    catapult: { angleDeg: 3, power: 5 },
+    bunker: { angleDeg: 3, power: 5 },
+    spear: { angleDeg: 2, power: 3 },
+    saber: { angleDeg: 2, power: 3 },
+  } as Readonly<Record<UnitRole, { angleDeg: number; power: number }>>,
+  /** The dials slide to the kicked aim over this long, in this many steps (reduced motion: one jump). */
+  recoilSlideMs: 320,
+  recoilSlideSteps: 8,
 } as const;

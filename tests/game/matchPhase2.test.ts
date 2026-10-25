@@ -24,7 +24,7 @@ const PLAYERS: Players = [
 ];
 
 const make = (extra: Partial<MatchOptions> = {}): MatchController =>
-  createMatch({ players: PLAYERS, seed: 31, ...extra });
+  createMatch({ disturbances: false, players: PLAYERS, seed: 31, ...extra });
 
 /** An aim that scores `want` for the team now aiming, on the field as it stands now. */
 function findAim(c: MatchController, want: BlastResult, ammo?: AmmoId): AimInput {
@@ -307,7 +307,7 @@ describe('Hoverboard Dodge (Team Future)', () => {
   });
 
   it('dodges before the force field, so the shield is kept', () => {
-    const effects = createMatch({ players: PLAYERS, seed: 31 }).rematchOptions().effects;
+    const effects = createMatch({ disturbances: false, players: PLAYERS, seed: 31 }).rematchOptions().effects;
     const shielded = {
       PAST: effects!.PAST,
       FUTURE: { ...effects!.FUTURE, shieldHits: 1 },

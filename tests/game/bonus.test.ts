@@ -83,7 +83,7 @@ function toBonus(
   return c.reloadDone(answer);
 }
 
-const make = (seed = 5, effects?: MatchEffects) => createMatch({ players: PLAYERS, seed, effects });
+const make = (seed = 5, effects?: MatchEffects) => createMatch({ disturbances: false, players: PLAYERS, seed, effects });
 
 describe('the Power Shot is offered', () => {
   it('after a fast right answer', () => {
