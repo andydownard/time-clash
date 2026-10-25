@@ -1,5 +1,7 @@
 // Build Base (old shop, ?builder=0): opens from the Camp, spends Scrap, and the upgrade shows up in the next match.
 import { expect, test } from './fixtures';
+import { DAMAGE } from '../src/game/config';
+import { upgradeById } from '../src/game/upgrades';
 import { giveScrap } from './support/camp';
 import {
   FUTURE_SIDE,
@@ -71,11 +73,13 @@ test('Upgrade the Tower gives more base health in the next match, shown in the H
   await clashFromCamp(page);
   await expect(tid(page, 'pass-screen')).toBeVisible({ timeout: 10_000 });
   const m = await snap(page);
-  expect(m.maxBaseHp).toEqual({ PAST: 112, FUTURE: 100 });
-  expect(m.baseHp.PAST).toBe(112);
+  const full = DAMAGE.startingBaseHp;
+  const tower = full + upgradeById('tower')!.perLevel;
+  expect(m.maxBaseHp).toEqual({ PAST: tower, FUTURE: full });
+  expect(m.baseHp.PAST).toBe(tower);
   await tid(page, 'pass-ready').click();
-  await expect(tid(page, 'base-hp-PAST')).toContainText('112 / 112');
-  await expect(tid(page, 'base-hp-FUTURE')).toContainText('100 / 100');
+  await expect(tid(page, 'base-hp-PAST')).toContainText(`${tower} / ${tower}`);
+  await expect(tid(page, 'base-hp-FUTURE')).toContainText(`${full} / ${full}`);
 });
 
 test('the keyboard can use Build Base', async ({ page }) => {

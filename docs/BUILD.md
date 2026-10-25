@@ -73,7 +73,7 @@ Camp, the Battle Plan, and biomes arrived in Phase 2. In Phase 1 the Future base
 6. **Turn state machine.** States: `PASS_SCREEN → AIMING → SHOT_1 → AIMING → SHOT_2 → RELOAD → NEXT_PLAYER`. A turn always has exactly 2 shots. A right answer adds `RELOAD → BONUS_AIMING → BONUS_SHOT → NEXT_PLAYER`: one Power Shot (`turn.bonus`, not shot 3, `BONUS.damageMultiplier` in `src/game/config.ts`). Done when: tests prove illegal transitions throw and a turn cannot be skipped.
 7. **Turn indicators.** Massive banner with horn ("ALEX, YOUR TURN! (SHOT 1 OF 2)"), active-side glow, waiting side dims, and the Pass-the-Mouse cover between turns. Done when: the cover fully hides the board and any question text.
 8. **Reload modal.** Appears right after shot 2. Reading and math question from the bank by grade band. Wrong answers show the right answer and still reload. Fast answers earn +2 scrap, others +1. The fast limit depends on the question kind (for example 8 seconds for a math fact, 20 seconds for a main idea passage, and 4 seconds more in grades K and 1), see `RELOAD.fastMsByKind` in `src/game/config.ts`. A wrong answer waits for Got it, with a 20 second cap. Done when: the other player's view never shows the question (the whole board is covered while the modal is up).
-9. **Base health and tumble.** Each base has 100 HP. A direct hit deals 25. A near miss within the blast radius deals 10 and triggers the Awkward Tumble animation plus a random speech bubble. First base at 0 HP loses. No gore. Walls turn into bouncy blocks. Done when: the damage table is unit tested, and the tumble plays with each of the 12 bubble lines.
+9. **Base health and tumble.** Each base has 400 HP (100 in Phase 1; raised for the 2026-10-24 pace rule, see docs/GAME_SPEC.md "Pace"). A direct hit deals 25. A near miss within the blast radius deals 10 and triggers the Awkward Tumble animation plus a random speech bubble. First base at 0 HP loses. No gore. Walls turn into bouncy blocks. Done when: the damage table is unit tested, and the tumble plays with each of the 12 bubble lines.
 10. **Victory screen.** Winner, stats, Rematch, Main Menu. No "dead" or "defeat" words (test with a copy lint over `src/`).
 11. **Sound.** Slide whistle on launch, boing on tumble, horn on turn banner, clunk on reload. All original or CC0. Global mute and volume saved.
 12. **Accessibility.** Keyboard play (arrow keys for angle and power, Space to fire). Tap targets 56px or more. Captions on all speech. Reduced-motion support. Contrast 4.5:1.
@@ -81,6 +81,7 @@ Camp, the Battle Plan, and biomes arrived in Phase 2. In Phase 1 the Future base
 ### Phase 1 balance numbers (tune later in one config file `src/game/config.ts`)
 - Gravity 600 px/s². Max launch speed 900 px/s at power 100. Wind range -80 to +80 px/s², changes every turn.
 - Blast radius: direct 48 px, near 120 px. Hit damage: direct 25, near 10.
+- Base health 400 (`DAMAGE.startingBaseHp`). It was 100 until the pace rule (owner, 2026-10-24): perfect aim needs five turns of its own to win, so a match never ends in one or two turns.
 - Reload timer for the fast-answer bonus: 8 seconds. No penalty for slow answers.
 - Starting scrap 0. No scrap spending until Phase 3.
 

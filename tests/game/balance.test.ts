@@ -1,6 +1,9 @@
 // Balance guard (docs/BUILD.md Phase 3): no single purchase wins the game alone. We count how
 // many direct hits it takes to wipe a base out, with the shooter's weapon and the defender's
-// walls, health and force field. One purchase may change that count by one hit at most.
+// walls, health and force field. Every bound is a share of the fresh-game count, so the guard
+// still holds when full health changes (pace, owner 2026-10-24: 400 health, 16 direct hits).
+// One purchase level may change a count by a quarter of the fresh count at most (one hit of
+// four when full health was 100).
 import { describe, expect, it } from 'vitest';
 import {
   effectsFor,
@@ -30,6 +33,15 @@ function hitsToWipe(shooter: TeamEffects, defender: TeamEffects): number {
 
 const baseline = (team: Team): TeamEffects => effectsFor(team, freshLoadout(team));
 
+/** Direct hits to win a fresh game (no purchases on either side). */
+const FRESH_HITS = Math.ceil(DAMAGE.startingBaseHp / DAMAGE.direct);
+/** A single purchase still leaves a real match: at least half the fresh count to win with it... */
+const MIN_HITS = Math.ceil(FRESH_HITS / 2);
+/** ...and the other side still wins within seven quarters of the fresh count against it. */
+const MAX_HITS = Math.floor((FRESH_HITS * 7) / 4);
+/** One more level of one choice moves either count by at most this many hits. */
+const MAX_STEP = Math.ceil(FRESH_HITS / 4);
+
 /** Every loadout one purchase away from a fresh one (any weapon or upgrade, at any level). */
 function singlePurchases(team: Team): Array<{ what: string; loadout: TeamLoadout }> {
   const out: Array<{ what: string; loadout: TeamLoadout }> = [];
@@ -54,8 +66,8 @@ function singlePurchases(team: Team): Array<{ what: string; loadout: TeamLoadout
 }
 
 describe('balance: a fresh game', () => {
-  it('takes four direct hits to win, for both teams', () => {
-    for (const t of TEAMS) expect(hitsToWipe(baseline(t), baseline(otherTeam(t)))).toBe(4);
+  it('takes full health over direct damage hits to win, the same for both teams', () => {
+    for (const t of TEAMS) expect(hitsToWipe(baseline(t), baseline(otherTeam(t)))).toBe(FRESH_HITS);
   });
 });
 
@@ -64,16 +76,19 @@ describe('balance: no single purchase wins the game alone', () => {
     singlePurchases(t).map((p) => [t, p.what, p.loadout] as const),
   );
 
-  it.each(cases)('%s %s still leaves a real match (2 to 7 hits)', (team, _what, loadout) => {
-    const mine = effectsFor(team, loadout);
-    const foe = baseline(otherTeam(team));
-    // Attacking with it: a direct-hit win never takes fewer than 2 hits.
-    expect(hitsToWipe(mine, foe)).toBeGreaterThanOrEqual(2);
-    // Defending with it: the other side still wins within 7 hits.
-    expect(hitsToWipe(foe, mine)).toBeLessThanOrEqual(7);
-  });
+  it.each(cases)(
+    '%s %s still leaves a real match (half to 7/4 of the fresh hits)',
+    (team, _what, loadout) => {
+      const mine = effectsFor(team, loadout);
+      const foe = baseline(otherTeam(team));
+      // Attacking with it: a direct-hit win never takes fewer than half the fresh count.
+      expect(hitsToWipe(mine, foe)).toBeGreaterThanOrEqual(MIN_HITS);
+      // Defending with it: the other side still wins within 7/4 of the fresh count.
+      expect(hitsToWipe(foe, mine)).toBeLessThanOrEqual(MAX_HITS);
+    },
+  );
 
-  it('each next level of one choice changes either hit count by at most one hit', () => {
+  it('each next level of one choice changes either hit count by at most a quarter of the fresh count', () => {
     for (const team of TEAMS) {
       const foe = baseline(otherTeam(team));
       const steps = new Map<string, Array<{ attack: number; defend: number }>>();
@@ -89,10 +104,10 @@ describe('balance: no single purchase wins the game alone', () => {
           const now = list[i] as { attack: number; defend: number };
           const before = list[i - 1] as { attack: number; defend: number };
           expect(Math.abs(now.attack - before.attack), `${team} ${key} attack`).toBeLessThanOrEqual(
-            1,
+            MAX_STEP,
           );
           expect(Math.abs(now.defend - before.defend), `${team} ${key} defend`).toBeLessThanOrEqual(
-            1,
+            MAX_STEP,
           );
         }
       }
@@ -122,9 +137,10 @@ describe('balance: everything bought on both sides', () => {
     const futureWins = hitsToWipe(future, past);
     const ratio = Math.max(pastWins, futureWins) / Math.min(pastWins, futureWins);
     expect(ratio).toBeLessThanOrEqual(1.5);
-    // A match is still short: about a handful of direct hits, never a grind.
-    expect(Math.max(pastWins, futureWins)).toBeLessThanOrEqual(8);
-    expect(Math.min(pastWins, futureWins)).toBeGreaterThanOrEqual(3);
+    // Still a match of the same size: never twice the fresh count (a grind), never under
+    // three quarters of it (a blowout). With 100 health these were 8 and 3 of 4.
+    expect(Math.max(pastWins, futureWins)).toBeLessThanOrEqual(2 * FRESH_HITS);
+    expect(Math.min(pastWins, futureWins)).toBeGreaterThanOrEqual(Math.ceil((FRESH_HITS * 3) / 4));
   });
 });
 

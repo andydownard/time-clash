@@ -32,7 +32,7 @@ test: `npm test` · lint: `npm run lint` · typecheck: `npm run typecheck` · bu
 | Reload | `reload` | quiz, test, exam |
 | Camp | `camp` | lobby, menu |
 | Wipeout | `tumble` | death, kill, die, dead, defeat |
-| Health (per character, 3 each) | `unitHp` | lives |
+| Health (per character, 4 each) | `unitHp` | lives |
 | Base health (replaced by per-character health when `CHARACTER_HEALTH` is on) | `baseHp` | lives |
 | Rematch | `rematch` | retry, play again |
 | How to Play | `intro` | tutorial |
@@ -124,9 +124,12 @@ Check this list before coding. If your change touches a listed area, read the ex
 | 15 | The tumble bubble tail pointed at empty sky, away from the speaker. | `tests/ui/hud.test.ts` (tail shift) and `tests/scenes/battle/geometry.test.ts` (`bubbleTailTarget`). |
 | 16 | Leaving a game from Pause left the reused Battle scene marked paused, so the next match never reached its first turn. | `e2e/navigation.spec.ts` (Leave game, then a new match starts). `BattleScene.cleanup` resets `paused`. |
 | 17 | The fighter selector made the control bar wrap to three rows, so the bar reached over the ground fighters. The system voice read the intro aloud during scripted browser runs (`--mute-audio` does not mute it). | `e2e/layout.spec.ts` (bar starts below the ground line, selector, sliders and Fire share one row). `tests/scenes/services.test.ts` (no speech in a browser driven by a test tool). |
+| 18 | A perfect-aim player could end a match in 1 to 2 turns (a base had 100 health). | `tests/game/pace.test.ts` (perfect aim never wins before its fifth turn, both health modes; the realistic player's median is at least 9 turns). `tests/game/balance.test.ts` bounds are shares of the fresh-game hit count. |
 
-## Current state (2026-10-23)
+## Current state (2026-10-24)
 Phases 1 to 3 are built and live on Railway. Phase 4 (two iPads) and signed-in players with a database are planned, not built.
+
+**Pace.** Owner rule (2026-10-24): a player with perfect aim who answers every reload right needs five turns of their own to win, so nobody loses everything in one or two turns. A base starts with 400 health (`DAMAGE.startingBaseHp`), and a fighter with 4 when character health is on. Hit damage did not change (direct 25, near 10, Power Shot 1.5 times), so weapons, ammo and upgrades keep their meaning. The two health upgrades grew with it: Upgrade the Tower adds 48 a level and Laser Squad heals 8 a turn. `tests/game/pace.test.ts` plays 40 perfect-aim matches for each health mode and checks none ends before turn 9 (both teams' turns counted).
 
 **The loop.** Tap to Play (new families only), How to Play (5 cards, about 40 seconds, captions, Skip, Replay, Mute), Loading (5 seconds, 8 for a new family, so the jokes and balloon riders get seen; `TIMING` in `src/game/config.ts`; browser test runs use `loadingQuickMs`), Setup, the Camp, the Battle Plan, Battle, Victory and Rematch. A returning family lands on the Camp with no Tap to Play screen. A turn is 2 shots, then the covered reload, then a Power Shot after a right answer (1.5x damage, size still Andy's call). Fire! winds up for a moment before each shot. Each side has five fighters and a "Pick one" selector. Hits, explosions, base damage marks and funny falls are in. Chrono's reload quip and Victory line carry his name.
 
@@ -142,7 +145,7 @@ Phases 1 to 3 are built and live on Railway. Phase 4 (two iPads) and signed-in p
 
 **Computer player (on).** One child can play alone against the Computer player (`PRACTICE_BOT.enabled`, on since 2026-10-24; `?computer=0` hides it). Setup has "Play with: Another player / Computer player", with Another player picked first. The child keeps the screen (no pass-the-mouse cover) and still answers every own reload question.
 
-**Behind flags (all off in production).** `CHARACTER_HEALTH.enabled`: 3 health per fighter in place of base health. `BASE_IN_BATTLE.enabled`: built bases take hits in a match (needs character health, and the scene does not draw it yet). `SQUADS.enabled`: Squads S1 (a dasher helper per side). Each flag has tests and a section in [docs/GAME_SPEC.md](./docs/GAME_SPEC.md) or [docs/SQUADS_PLAN.md](./docs/SQUADS_PLAN.md). Open polish and content items are in `BACKLOG.md`.
+**Behind flags (all off in production).** `CHARACTER_HEALTH.enabled`: 4 health per fighter in place of base health. `BASE_IN_BATTLE.enabled`: built bases take hits in a match (needs character health, and the scene does not draw it yet). `SQUADS.enabled`: Squads S1 (a dasher helper per side). Each flag has tests and a section in [docs/GAME_SPEC.md](./docs/GAME_SPEC.md) or [docs/SQUADS_PLAN.md](./docs/SQUADS_PLAN.md). Open polish and content items are in `BACKLOG.md`.
 
 ## Pre-merge checklist
 1. `npm test`, `npm run lint`, `npm run typecheck`, `npm run build` pass with zero failures.
