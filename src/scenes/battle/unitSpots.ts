@@ -37,6 +37,8 @@ export function chronoBox(feet: { x: number; y: number }): Rect {
 export const TOKEN_RADIUS = 17;
 /** Gap between the top of a fighter and its token. */
 export const TOKEN_GAP = 8;
+/** The selected marker floats this far above the token's top edge. */
+export const ARROW_RISE = 38;
 
 export type UnitSpot = {
   id: UnitId;
