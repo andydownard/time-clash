@@ -27,8 +27,10 @@ import {
   rectOf,
   removePiece,
   resolveSpots,
+  nextShapeName,
   saveShape,
   saveSlot,
+  savedShapes,
   shapesOf,
   slotPieces,
   slotSpots,
@@ -47,7 +49,20 @@ import {
   type Rotation,
 } from '../game/baseBuilder';
 import { BASE_BUILDER as B } from '../game/config';
-import { cellsFromKey, customId, shapeKey, shapeProblem, type Cell } from '../game/customShapes';
+import {
+  cellsFromKey,
+  defaultMaterial,
+  forTeam,
+  isCustomId,
+  materialsOf,
+  shapeHp,
+  shapeKey,
+  shapeNameProblem,
+  shapeProblem,
+  tidyName,
+  type Cell,
+  type Material,
+} from '../game/customShapes';
 import { unlockPiece, unlockSpotWeapon } from '../game/economy';
 import { walletOf, type CampState } from '../game/loadout';
 import { TEAMS, type Team } from '../game/types';
@@ -57,6 +72,7 @@ import {
   baseThumb,
   CELL,
   ghostIcon,
+  materialIcon,
   nodesFromMarkup,
   placedMarkup,
   plotScene,
@@ -69,6 +85,8 @@ import {
   staticMarkup,
   trayIcon,
 } from './baseBuilderArt';
+import { isBlockedName } from './nameBlocklist';
+import { radioGroup } from './selector';
 import { svgFromString } from './svg';
 import { TEST_IDS, type BuilderOptions } from './types';
 
@@ -404,24 +422,26 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
       doneBtn,
     );
 
-    const tray = h(doc, 'section', { class: 'tc-bb-tray', 'aria-label': BUILDER_COPY.tray });
-    const shapesTray = h(doc, 'section', {
-      class: 'tc-bb-shapes',
-      'aria-label': SHAPE_COPY.group,
-      'data-testid': 'bb-shapes',
+    /** The main bar: the side's bricks, then the player's saved shapes, then "My shape" last. */
+    const tray = h(doc, 'section', {
+      class: 'tc-bb-tray',
+      'aria-label': BUILDER_COPY.tray,
+      'data-testid': 'bb-tray',
     });
 
-    // The drawing pad: a small grid of big squares. It covers the plot while it is open.
+    // The drawing pad: a grid of big squares, a material picker and a name. It covers the plot,
+    // the tools and the bar while it is open.
+    const PAD = B.shapePad;
     const padSquares: HTMLButtonElement[] = [];
-    for (let r = 0; r < B.shapePad; r++) {
-      for (let c = 0; c < B.shapePad; c++) {
+    for (let r = 0; r < PAD; r++) {
+      for (let c = 0; c < PAD; c++) {
         padSquares.push(
           h(doc, 'button', {
             type: 'button',
             class: 'tc-bb-sq',
             'data-r': String(r),
             'data-c': String(c),
-            'aria-label': SHAPE_COPY.square(r + 1, c + 1, false),
+            'aria-label': SHAPE_COPY.square(r + 1, c + 1, null),
             'data-testid': `bb-sq-${r + 1}-${c + 1}`,
           }),
         );
@@ -433,6 +453,27 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
       { class: 'tc-bb-pad-grid', role: 'group', 'aria-label': SHAPE_COPY.grid },
       ...padSquares,
     );
+    padGrid.style.setProperty('--bb-pad-n', String(PAD));
+    /** The material the next filled square gets. */
+    let padMat: Material = defaultMaterial(team);
+    const matPicker = radioGroup<Material>(doc, {
+      label: SHAPE_COPY.material,
+      values: materialsOf(team),
+      current: () => padMat,
+      set: (m) => (padMat = m),
+      option: (m) => ({
+        text: SHAPE_COPY.materials[m],
+        testId: `bb-mat-${m}`,
+        ariaLabel: SHAPE_COPY.materialLabel(SHAPE_COPY.materials[m], B.materialHp[m]),
+      }),
+      optionClass: 'tc-chip-wide tc-bb-mat',
+    });
+    matPicker.chips.forEach((chip, i) => {
+      const m = materialsOf(team)[i]!;
+      chip.setAttribute('data-mat', m);
+      chip.prepend(materialIcon(doc, m, 30, 'tc-bb-mat-icon'));
+    });
+    matPicker.el.classList.add('tc-bb-mats');
     const padPreview = h(doc, 'div', {
       class: 'tc-bb-pad-preview',
       role: 'img',
@@ -440,11 +481,32 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
       'data-testid': 'bb-pad-preview',
     });
     const padCount = h(doc, 'p', { class: 'tc-bb-pad-count', 'data-testid': 'bb-pad-count' });
+    const padStrength = h(doc, 'p', {
+      class: 'tc-bb-pad-count',
+      'data-testid': 'bb-pad-strength',
+    });
     const padMsg = h(doc, 'p', {
       class: 'tc-bb-pad-msg',
       role: 'status',
       'aria-live': 'polite',
       'data-testid': 'bb-pad-msg',
+    });
+    const padName = h(doc, 'input', {
+      type: 'text',
+      id: 'tc-bb-pad-name',
+      class: 'tc-input tc-bb-pad-name',
+      maxlength: String(B.shapeNameMax),
+      autocomplete: 'off',
+      autocapitalize: 'words',
+      spellcheck: 'false',
+      'aria-describedby': 'tc-bb-pad-name-msg',
+      'data-testid': 'bb-pad-name',
+    }) as HTMLInputElement;
+    const padNameMsg = h(doc, 'p', {
+      id: 'tc-bb-pad-name-msg',
+      class: 'tc-bb-pad-name-msg',
+      'aria-live': 'polite',
+      'data-testid': 'bb-pad-name-msg',
     });
     const padBtn = (id: string, text: string, label: string, extra = ''): HTMLButtonElement =>
       h(doc, 'button', {
@@ -467,14 +529,38 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
         'data-testid': 'bb-pad',
         hidden: true,
       },
-      h(doc, 'h2', { class: 'tc-bb-pad-title', text: SHAPE_COPY.pad }),
+      h(
+        doc,
+        'div',
+        { class: 'tc-bb-pad-head' },
+        h(doc, 'h2', { class: 'tc-bb-pad-title', text: SHAPE_COPY.pad }),
+        h(doc, 'p', { class: 'tc-bb-pad-help', text: SHAPE_COPY.help }),
+      ),
+      matPicker.el,
       padGrid,
       h(
         doc,
         'div',
         { class: 'tc-bb-pad-side' },
-        h(doc, 'p', { class: 'tc-bb-pad-help', text: SHAPE_COPY.help }),
-        h(doc, 'div', { class: 'tc-bb-pad-row' }, padPreview, padCount),
+        h(
+          doc,
+          'div',
+          { class: 'tc-bb-pad-field' },
+          h(doc, 'label', {
+            class: 'tc-bb-pad-label',
+            for: 'tc-bb-pad-name',
+            text: SHAPE_COPY.name,
+          }),
+          padName,
+        ),
+        padNameMsg,
+        h(
+          doc,
+          'div',
+          { class: 'tc-bb-pad-row' },
+          padPreview,
+          h(doc, 'div', { class: 'tc-bb-pad-nums' }, padCount, padStrength),
+        ),
         padMsg,
         h(doc, 'div', { class: 'tc-bb-pad-actions' }, padClear, padSave, padClose),
       ),
@@ -495,13 +581,18 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
       },
       h(doc, 'h1', { class: 'tc-sr-only', text: BUILDER_COPY.title[team] }),
       h(doc, 'header', { class: 'tc-bb-top' }, back, slotNav, scrapBox),
-      h(doc, 'div', { class: 'tc-bb-main' }, rail, plotWrap, tools, pad),
-      status,
+      h(
+        doc,
+        'div',
+        { class: 'tc-bb-body' },
+        h(doc, 'div', { class: 'tc-bb-main' }, rail, plotWrap, tools),
+        status,
+        tray,
+        pad,
+      ),
       keys,
       spotKeys,
       padKeys,
-      tray,
-      shapesTray,
       ghost,
     );
 
@@ -516,13 +607,20 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
       options.saveBases(bases);
     };
 
-    const nameOf = (id: string): string => pieceById(id)?.name ?? '';
+    /** The name of a piece: a saved shape by the name it was given, or "Your shape" once deleted. */
+    const nameOf = (id: string): string => {
+      if (isCustomId(id)) {
+        const mine = savedShapes(bases, name, team).find((x) => x.id === id);
+        return mine?.name ?? SHAPE_COPY.placedName;
+      }
+      return pieceById(id)?.name ?? '';
+    };
 
     // ---------- Drawing ----------
     function renderPlot(): void {
       const nodes = build.pieces.flatMap((p, i) => {
         const def = pieceById(p.piece);
-        const label = def ? BUILDER_COPY.pieceLabel(def.name, p.x, p.y) : '';
+        const label = def ? BUILDER_COPY.pieceLabel(nameOf(def.id), p.x, p.y) : '';
         return nodesFromMarkup(doc, placedMarkup(p, i, label));
       });
       piecesLayer.replaceChildren(...nodes);
@@ -594,6 +692,8 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
       const have = owned();
       const scrap = walletOf(camp, name).scrap;
       scrapValue.textContent = String(scrap);
+      const focusedId = (doc.activeElement as HTMLElement | null)?.getAttribute?.('data-testid');
+      closeAsk = null;
       tray.replaceChildren(
         ...piecesOf(team).map((def) => {
           const open = have.has(def.id);
@@ -612,7 +712,7 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
             h(doc, 'span', {
               class: 'tc-bb-brick-name',
               text: open
-                ? def.name.replace(/^Long stone$/, 'Long')
+                ? def.name.replace(/^Long stone$/, 'Long').replace(/^Solar panel$/, 'Solar')
                 : BUILDER_COPY.unlockCost(cost ?? 0),
             }),
           );
@@ -635,11 +735,19 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
           });
           return b;
         }),
+        ...savedShapes(bases, name, team).map((shape, i) =>
+          shapeTile(shape.key, shape.id, shape.name, i + 1),
+        ),
+        ownTile,
       );
-      renderShapes();
+      tray.setAttribute('data-count', String(tray.children.length));
+      // A redraw keeps the keyboard where it was (the tiles are new elements).
+      if (focusedId && !doc.activeElement?.isConnected) {
+        tray.querySelector<HTMLElement>(`[data-testid="${focusedId}"]`)?.focus();
+      }
     }
 
-    /** The "My own shape" tile at the end of the tray. */
+    /** The "My shape" tile: always the last one in the bar. It opens the drawing pad. */
     const ownTile = h(doc, 'button', {
       type: 'button',
       class: 'tc-bb-own',
@@ -649,74 +757,131 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
     ownTile.append(
       svgFromString(
         doc,
-        '<svg viewBox="0 0 48 48" width="36" height="36" class="tc-bb-own-icon" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"><rect x="5" y="5" width="38" height="38" rx="8" stroke-dasharray="8 6"/><path d="M24,14 V34 M14,24 H34"/></svg>',
+        '<svg viewBox="0 0 48 48" width="48" height="48" class="tc-bb-own-icon" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round"><rect x="5" y="5" width="38" height="38" rx="8" stroke-dasharray="8 6"/><path d="M24,14 V34 M14,24 H34"/></svg>',
       ),
-      h(doc, 'span', { class: 'tc-bb-own-name', text: SHAPE_COPY.ownTile }),
+      h(doc, 'span', { class: 'tc-bb-brick-name', text: SHAPE_COPY.ownTile }),
     );
     ownTile.addEventListener('click', () => openPad());
 
-    /** The saved shapes, as tiles that drag like bricks, each with a delete button. */
-    function renderShapes(): void {
-      const keys = shapesOf(bases, name, team);
-      shapesTray.replaceChildren(
-        ownTile,
-        h(doc, 'h2', {
-          class: keys.length > 3 ? 'tc-bb-shapes-title tc-sr-only' : 'tc-bb-shapes-title',
-          text: SHAPE_COPY.group,
-        }),
-        ...keys.map((key, i) => {
-          const id = customId(team, key);
-          const cells = cellsFromKey(key) ?? [];
-          const tile = h(doc, 'button', {
-            type: 'button',
-            class: 'tc-bb-mine',
-            'data-piece': id,
-            'data-state': 'owned',
-            'aria-pressed': String(armed?.id === id),
-            'aria-label': SHAPE_COPY.shapeLabel(i + 1, cells.length),
-            'data-testid': `bb-shape-${i + 1}`,
-          });
-          tile.append(shapeIcon(doc, team, cells, 48));
-          tile.addEventListener('click', (e) => {
-            if (e.detail === 0) pickWithKeyboard(pieceById(id)!);
-          });
-          tile.addEventListener('pointerdown', (e) => {
-            if ((e.button ?? 0) !== 0) return;
-            startDrag(e, { kind: 'new', id, rot: armed?.id === id ? armed.rot : 0 });
-          });
-          const del = h(doc, 'button', {
-            type: 'button',
-            class: 'tc-bb-mine-del',
-            'aria-label': SHAPE_COPY.deleteLabel(i + 1),
-            'data-testid': `bb-shape-del-${i + 1}`,
-          });
-          del.append(
-            svgFromString(
-              doc,
-              '<svg viewBox="0 0 48 48" width="32" height="32" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M10,14 H38 M19,14 V8 H29 V14 M14,14 L16,40 H32 L34,14"/></svg>',
-            ),
-          );
-          del.addEventListener('click', () =>
-            ask(SHAPE_COPY.deleteAsk, SHAPE_COPY.deleteYes, SHAPE_COPY.deleteNo, del, () =>
-              removeShape(key),
-            ),
-          );
-          return h(doc, 'div', { class: 'tc-bb-mine-wrap' }, tile, del);
-        }),
+    /** Puts back the one tile that is asking "Delete?", if any. Only one tile asks at a time. */
+    let closeAsk: (() => void) | null = null;
+
+    /**
+     * A saved shape: a tile that drags like a brick, with its name under it and a trash can at its
+     * upper right. The trash asks first, inside the tile, because a delete cannot be undone.
+     */
+    function shapeTile(key: string, id: string, label: string, n: number): HTMLElement {
+      const cells = cellsFromKey(key, team) ?? [];
+      const tile = h(doc, 'button', {
+        type: 'button',
+        class: 'tc-bb-mine',
+        'data-piece': id,
+        'data-state': 'owned',
+        'aria-pressed': String(armed?.id === id),
+        'aria-label': label,
+        'data-testid': `bb-shape-${n}`,
+      });
+      tile.append(
+        shapeIcon(doc, team, cells, 52),
+        h(doc, 'span', { class: 'tc-bb-brick-name tc-bb-mine-name', text: label }),
       );
+      tile.addEventListener('click', (e) => {
+        if (e.detail === 0) pickWithKeyboard(pieceById(id)!);
+      });
+      tile.addEventListener('pointerdown', (e) => {
+        if ((e.button ?? 0) !== 0) return;
+        startDrag(e, { kind: 'new', id, rot: armed?.id === id ? armed.rot : 0 });
+      });
+      const del = h(doc, 'button', {
+        type: 'button',
+        class: 'tc-bb-mine-del',
+        'aria-label': SHAPE_COPY.deleteLabel(label),
+        'data-testid': `bb-shape-del-${n}`,
+      });
+      del.append(h(doc, 'span', { class: 'tc-bb-mine-can', 'aria-hidden': 'true' }));
+      del.firstElementChild!.append(
+        svgFromString(
+          doc,
+          '<svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M10,14 H38 M19,14 V8 H29 V14 M14,14 L16,40 H32 L34,14"/></svg>',
+        ),
+      );
+      const yes = h(doc, 'button', {
+        type: 'button',
+        class: 'tc-btn tc-btn-neutral tc-bb-mine-yes',
+        'aria-label': SHAPE_COPY.deleteYesLabel(label),
+        'data-testid': `bb-shape-yes-${n}`,
+        text: SHAPE_COPY.deleteYes,
+      });
+      const no = h(doc, 'button', {
+        type: 'button',
+        class: 'tc-btn tc-btn-primary tc-bb-mine-no',
+        'aria-label': SHAPE_COPY.deleteNoLabel(label),
+        'data-testid': `bb-shape-no-${n}`,
+        text: SHAPE_COPY.deleteNo,
+      });
+      const ask = h(
+        doc,
+        'div',
+        {
+          class: 'tc-bb-mine-ask',
+          role: 'group',
+          'aria-label': SHAPE_COPY.deleteAskLabel(label),
+          'data-testid': `bb-shape-ask-${n}`,
+          hidden: true,
+        },
+        h(doc, 'p', { class: 'tc-bb-mine-ask-text', text: SHAPE_COPY.deleteAsk }),
+        h(doc, 'div', { class: 'tc-bb-mine-ask-row' }, yes, no),
+      );
+      const wrap = h(
+        doc,
+        'div',
+        { class: 'tc-bb-mine-wrap', 'data-asking': 'false', 'data-testid': `bb-shape-wrap-${n}` },
+        tile,
+        del,
+        ask,
+      );
+      const setAsking = (on: boolean): void => {
+        ask.hidden = !on;
+        wrap.setAttribute('data-asking', String(on));
+        tile.toggleAttribute('inert', on);
+        del.toggleAttribute('inert', on);
+        closeAsk = on ? () => setAsking(false) : null;
+      };
+      del.addEventListener('click', () => {
+        closeAsk?.();
+        setAsking(true);
+        // The safe choice gets the keyboard.
+        no.focus();
+      });
+      no.addEventListener('click', () => {
+        setAsking(false);
+        del.focus();
+      });
+      ask.addEventListener('keydown', (e) => {
+        if (e.key !== 'Escape') return;
+        e.preventDefault();
+        e.stopPropagation();
+        setAsking(false);
+        del.focus();
+      });
+      yes.addEventListener('click', () => removeShape(key, id, label, n));
+      return wrap;
     }
 
-    function removeShape(key: string): void {
+    function removeShape(key: string, id: string, label: string, n: number): void {
+      closeAsk = null;
       bases = deleteShape(bases, name, team, key);
       options.saveBases(bases);
-      if (armed?.id === customId(team, key)) {
+      if (armed?.id === id) {
         armed = null;
         cursor = null;
         drawArmed();
       }
-      say(SHAPE_COPY.deleted);
-      renderShapes();
-      (shapesTray.querySelector<HTMLElement>('.tc-bb-mine') ?? ownTile).focus();
+      say(SHAPE_COPY.deleted(label));
+      renderTray();
+      renderPlot();
+      // The keyboard goes to the shape that took this one's place, or to "My shape".
+      (tray.querySelector<HTMLElement>(`[data-testid="bb-shape-${n}"]`) ?? ownTile).focus();
     }
 
     function renderTools(): void {
@@ -1271,9 +1436,7 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
         return;
       }
       // Dropped off the plot. A placed brick dropped on the tray comes off. Anything else cancels.
-      const overTray =
-        within(tray.getBoundingClientRect(), e.clientX, e.clientY) ||
-        within(shapesTray.getBoundingClientRect(), e.clientX, e.clientY);
+      const overTray = within(tray.getBoundingClientRect(), e.clientX, e.clientY);
       if (d.kind === 'move' && overTray) doRemove(d.index);
       else {
         say(BUILDER_COPY.cancelled);
@@ -1549,63 +1712,101 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
       [1, 2],
     ];
     let padOpen = false;
-    /** Filled squares as "column,row". */
-    let padOn = new Set<string>();
+    /** Filled squares, "column,row" to material. */
+    let padOn = new Map<string, Material>();
     /** The one square that Tab reaches (the arrow keys move it). */
     let padAt = { r: 0, c: 0 };
-    let paint: boolean | null = null;
+    /** While a finger or mouse paints: the material it lays down, or 'erase'. */
+    let paint: Material | 'erase' | null = null;
     let skipClick: Element | null = null;
+    /** The name the pad filled in. A typed name that cannot be used falls back to it. */
+    let padDefaultName = '';
 
-    const sqAt = (r: number, c: number): HTMLButtonElement | undefined =>
-      padSquares[r * B.shapePad + c];
+    const sqAt = (r: number, c: number): HTMLButtonElement | undefined => padSquares[r * PAD + c];
     const padCells = (): Cell[] =>
-      [...padOn].map((k) => {
+      [...padOn].map(([k, m]) => {
         const [c, r] = k.split(',').map(Number);
-        return [c!, r!] as Cell;
+        return [c!, r!, m] as Cell;
       });
+    /** What a tap on this square does: a new material fills it, the same material empties it. */
+    const tapValue = (r: number, c: number): Material | 'erase' =>
+      padOn.get(`${c},${r}`) === padMat ? 'erase' : padMat;
 
     /** Can this drawing be saved? If not, the plain words that say why. */
     function padStatus(): { ok: boolean; text: string } {
       const cells = padCells();
-      const problem = shapeProblem(cells);
+      const problem = shapeProblem(cells, team);
       if (problem) return { ok: false, text: SHAPE_COPY.problem[problem] };
       const have = shapesOf(bases, name, team);
-      if (have.includes(shapeKey(cells))) return { ok: false, text: SHAPE_COPY.problem.duplicate };
+      if (have.includes(shapeKey(forTeam(team, cells))))
+        return { ok: false, text: SHAPE_COPY.problem.duplicate };
       if (have.length >= B.maxShapes) return { ok: false, text: SHAPE_COPY.problem.full };
       return { ok: true, text: SHAPE_COPY.ok };
     }
 
+    /** Why the typed name is not used (with the name used instead), or '' when it is fine. */
+    function nameStatus(): string {
+      const typed = tidyName(padName.value);
+      if (typed === '') return '';
+      const problem =
+        shapeNameProblem(typed, [options.names.PAST, options.names.FUTURE]) ??
+        (isBlockedName(typed) ? 'blocked' : null);
+      return problem
+        ? `${SHAPE_COPY.nameProblem[problem]} ${SHAPE_COPY.willUse(padDefaultName)}`
+        : '';
+    }
+    /** The name a Save would use. */
+    const padFinalName = (): string =>
+      tidyName(padName.value) && !nameStatus() ? tidyName(padName.value) : padDefaultName;
+
     function syncInert(): void {
       const weapons = mode === 'weapons';
       tray.toggleAttribute('inert', weapons || padOpen);
-      shapesTray.toggleAttribute('inert', weapons || padOpen);
       plotWrap.toggleAttribute('inert', padOpen);
       tools.toggleAttribute('inert', padOpen);
+      rail.toggleAttribute('inert', padOpen);
+      screen.setAttribute('data-pad', padOpen ? 'open' : 'closed');
     }
 
     function renderPad(): void {
       for (const [i, sq] of padSquares.entries()) {
-        const r = Math.floor(i / B.shapePad);
-        const c = i % B.shapePad;
-        const on = padOn.has(`${c},${r}`);
-        sq.setAttribute('aria-pressed', String(on));
-        sq.setAttribute('aria-label', SHAPE_COPY.square(r + 1, c + 1, on));
+        const r = Math.floor(i / PAD);
+        const c = i % PAD;
+        const mat = padOn.get(`${c},${r}`) ?? null;
+        sq.setAttribute('aria-pressed', String(mat !== null));
+        sq.setAttribute(
+          'aria-label',
+          SHAPE_COPY.square(r + 1, c + 1, mat && SHAPE_COPY.materials[mat]),
+        );
+        if ((sq.getAttribute('data-mat') ?? null) !== mat) {
+          if (mat) sq.setAttribute('data-mat', mat);
+          else sq.removeAttribute('data-mat');
+          sq.replaceChildren(...(mat ? [materialIcon(doc, mat, 54, 'tc-bb-sq-art')] : []));
+        }
         sq.tabIndex = r === padAt.r && c === padAt.c ? 0 : -1;
       }
       const cells = padCells();
-      padPreview.replaceChildren(...(cells.length ? [shapeIcon(doc, team, cells, 72)] : []));
+      padPreview.replaceChildren(
+        ...(cells.length ? [shapeIcon(doc, team, forTeam(team, cells), 72)] : []),
+      );
       padCount.textContent = SHAPE_COPY.count(padOn.size);
+      padStrength.textContent = SHAPE_COPY.strength(shapeHp(team, cells));
       const st = padStatus();
       padMsg.textContent = st.text;
       padMsg.setAttribute('data-ok', String(st.ok));
       padSave.setAttribute('aria-disabled', String(!st.ok));
+      padNameMsg.textContent = nameStatus();
     }
 
-    function setSquare(r: number, c: number, on: boolean): void {
+    function setSquare(r: number, c: number, value: Material | 'erase'): void {
       const k = `${c},${r}`;
-      if (padOn.has(k) === on) return;
-      if (on) padOn.add(k);
-      else padOn.delete(k);
+      if (value === 'erase') {
+        if (!padOn.has(k)) return;
+        padOn.delete(k);
+      } else {
+        if (padOn.get(k) === value) return;
+        padOn.set(k, value);
+      }
       padAt = { r, c };
       renderPad();
     }
@@ -1615,8 +1816,12 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
       cursor = null;
       selected = null;
       drawArmed();
-      padOn = new Set(STARTER.map(([c, r]) => `${c},${r}`));
+      padMat = defaultMaterial(team);
+      matPicker.paint();
+      padOn = new Map(STARTER.map(([c, r]) => [`${c},${r}`, padMat]));
       padAt = { r: 0, c: 0 };
+      padDefaultName = nextShapeName(bases, name, team);
+      padName.value = padDefaultName;
       padOpen = true;
       pad.hidden = false;
       syncInert();
@@ -1638,7 +1843,7 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
         padMsg.textContent = st.text;
         return;
       }
-      const result = saveShape(bases, name, team, padCells());
+      const result = saveShape(bases, name, team, padCells(), padFinalName());
       if (!result.ok) {
         padMsg.textContent = SHAPE_COPY.problem[result.reason];
         return;
@@ -1647,8 +1852,8 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
       options.saveBases(bases);
       closePad(false);
       renderAll();
-      say(SHAPE_COPY.saved);
-      const tile = [...shapesTray.querySelectorAll<HTMLElement>('.tc-bb-mine')].find(
+      say(SHAPE_COPY.saved(result.name));
+      const tile = [...tray.querySelectorAll<HTMLElement>('.tc-bb-mine')].find(
         (t) => t.getAttribute('data-piece') === result.id,
       );
       tile?.focus();
@@ -1663,7 +1868,7 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
       doc.defaultView?.setTimeout(() => (skipClick = null), 0);
     }
 
-    /** Dragging across the pad fills (or empties) every square the pointer crosses. */
+    /** Dragging across the pad paints (or empties) every square the pointer crosses. */
     function onPaint(e: PointerEvent): void {
       if (paint === null) return;
       const under = doc.elementFromPoint?.(e.clientX, e.clientY)?.closest?.('.tc-bb-sq');
@@ -1678,14 +1883,14 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
       if (!sq) return;
       const r = Number(sq.getAttribute('data-r'));
       const c = Number(sq.getAttribute('data-c'));
-      paint = !padOn.has(`${c},${r}`);
+      paint = tapValue(r, c);
       skipClick = sq;
       setSquare(r, c, paint);
       doc.addEventListener('pointermove', onPaint);
       doc.addEventListener('pointerup', endPaint);
       doc.addEventListener('pointercancel', endPaint);
     });
-    // A key press (Space) or a tap that sent no pointer events toggles here.
+    // A key press (Space) or a tap that sent no pointer events fills or empties here.
     padGrid.addEventListener('click', (e) => {
       const sq = (e.target as Element | null)?.closest?.('.tc-bb-sq');
       if (!sq) return;
@@ -1695,21 +1900,29 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
       }
       const r = Number(sq.getAttribute('data-r'));
       const c = Number(sq.getAttribute('data-c'));
-      setSquare(r, c, !padOn.has(`${c},${r}`));
+      setSquare(r, c, tapValue(r, c));
     });
     padClear.addEventListener('click', () => {
-      padOn = new Set();
+      padOn = new Map();
       renderPad();
       sqAt(padAt.r, padAt.c)?.focus();
     });
     padSave.addEventListener('click', savePad);
     padClose.addEventListener('click', () => closePad());
+    padName.addEventListener('input', () => {
+      padNameMsg.textContent = nameStatus();
+    });
 
     function padKeyDown(e: KeyboardEvent): void {
       const k = e.key;
       if (k === 'Escape') {
         e.preventDefault();
         closePad();
+        return;
+      }
+      if (k === 'Enter' && e.target === padName) {
+        e.preventDefault();
+        savePad();
         return;
       }
       const sq = (e.target as Element).closest?.('.tc-bb-sq');
@@ -1725,8 +1938,8 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
       const dir = move[k];
       if (dir) {
         e.preventDefault();
-        const nr = Math.min(Math.max(r + dir[1], 0), B.shapePad - 1);
-        const nc = Math.min(Math.max(c + dir[0], 0), B.shapePad - 1);
+        const nr = Math.min(Math.max(r + dir[1], 0), PAD - 1);
+        const nc = Math.min(Math.max(c + dir[0], 0), PAD - 1);
         padAt = { r: nr, c: nc };
         renderPad();
         sqAt(nr, nc)?.focus();

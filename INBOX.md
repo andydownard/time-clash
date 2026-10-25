@@ -10,7 +10,7 @@ Raw ideas land here. Triage promotes them to BACKLOG.md. Items expire after 30 d
   - Team Past horseman: comes more often, can stab, and pushes a person along with him. The pushed person says "Ah, yeah, this is funny."
   - Helicopter crew lose 2 health when they fall, then must shoot the enemy. Once they are hit down, the helicopter and the tank reappear.
   - In the base builder, players choose where their cannon, catapult or person stands (weapon spots are in; unit placement is not).
-  - Base builder "make your own shapes": built (the "My own shape" pad).
+  - Base builder "make your own shapes": built (the "My shape" tile at the end of the bar: a 6 by 6 pad with materials and a name, 2026-10-25).
   - Forge: after buying every item, unlock balloons, chariots and catapults (and a Future set, names still to decide), with several versions of each like the sword, bow and cannon. The Past arrow-maker should be making a bow, not swinging an arrow.
   - Castle and bunkers explode, then are rebuilt, then explode again (a battle idle loop on the design canvas; the real game ends a match on base health).
   - Owner answers (2026-10-21): Future Forge units are Hover Balloon, Rocket Sled and Zap Catapult. The Camp button stays "Build Base". Lasers are Future only. Each team keeps one evasion ability (Past Stone Wall, Future Hoverboard Dodge).

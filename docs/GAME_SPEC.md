@@ -274,7 +274,7 @@ Owner decision (2026-10-20): "the bricks take hits", the weapons on the four spo
 
 **Layout.** The build plot (24 by 12 cells, 192 by 88 steps) maps to the battlefield at `BASE_IN_BATTLE.scale` (2 px per step, so 384 by 176 px). Team Past builds from the left (`margin` 40 px from the edge). Team Future is mirrored and sits on the right, so both face each other. The plot's bottom edge is the ground line. The snapshot holds each brick's box (`bricks`) and the four spots (`spots`), all in battlefield px. A shape of your own is drawn as its box, but it rests on (and holds up) other bricks by its filled squares.
 
-**Brick hit points.** Each brick starts with the `hp` saved in the base. A shell that reaches a brick box bursts there (a direct hit) and does damage in brick hit points. A near miss (a shell that lands next to a wall) does 0. One hit per shell.
+**Brick hit points.** Each brick starts with the `hp` saved in the base. A shape of your own has the sum of its squares, and each square counts by its material (`BASE_BUILDER.materialHp`: glass 3, wood 5, jelly 6, stone and panel 8, metal 12). It takes hits as one brick, and it rests by its filled squares whatever they are made of. A shell that reaches a brick box bursts there (a direct hit) and does damage in brick hit points. A near miss (a shell that lands next to a wall) does 0. One hit per shell.
 
 | Shot | Damage to a brick or weapon |
 |---|---|

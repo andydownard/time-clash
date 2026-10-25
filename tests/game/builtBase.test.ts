@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest';
 import {
   assignWeapon,
   newBuild,
+  pieceById,
   placePiece,
   resolveSpots,
   spotWeaponsOf,
@@ -11,6 +12,7 @@ import {
   type Rotation,
 } from '../../src/game/baseBuilder';
 import { chooseShot } from '../../src/game/bot';
+import { customId } from '../../src/game/customShapes';
 import { playBotMatch } from '../../src/game/botPlay';
 import { BASE_IN_BATTLE, BONUS, PHASE1_LAYOUT, PRACTICE_BOT } from '../../src/game/config';
 import {
@@ -223,6 +225,26 @@ describe('bricks fall and take what they hold up', () => {
     const b = freshEvents();
     hitWall(built.PAST, { kind: 'brick', id: 'PAST:1' }, 99, b);
     expect(b.bricksFell).toEqual(['PAST:1', 'PAST:2']);
+  });
+
+  it('a shape of many materials rests by its filled squares and has their hit points', () => {
+    // An L of wood, glass, stone and jelly on the foundation, a stone on its foot, and a tower
+    // in its empty corner (resting on the foot, beside the arm).
+    const mixed = customId('PAST', 'w0/g0/1j');
+    const hp = pieceById(mixed)!.hp;
+    expect(hp).toBe(5 + 3 + 8 + 6);
+    const built = createBuilt({
+      PAST: baseOf([brick(mixed, 4, 8, hp), brick('tower', 5, 8, 35), brick('stone', 0, 10, 20)]),
+    });
+    const [shape, tower] = built.PAST.bricks;
+    expect(shape!.grounded).toBe(true);
+    expect(shape!.hp).toBe(22);
+    expect(tower!.grounded).toBe(false);
+    expect(tower!.below).toEqual([0]);
+    expect(tower!.anchored).toBe(false);
+    const ev = freshEvents();
+    hitWall(built.PAST, { kind: 'brick', id: 'PAST:0' }, 99, ev);
+    expect(ev.bricksFell).toEqual(['PAST:0', 'PAST:1']);
   });
 
   it('the order is the same every time', () => {
@@ -689,7 +711,12 @@ describe('Computer player', () => {
   });
 
   it('without built bases the choice is exactly what it was', () => {
-    const c = createMatch({ disturbances: false, players: PLAYERS, seed: 3, characterHealth: true });
+    const c = createMatch({
+      disturbances: false,
+      players: PLAYERS,
+      seed: 3,
+      characterHealth: true,
+    });
     c.ready();
     const shot = chooseShot(c.snapshot(), 'PAST', 'medium', createRng(4));
     expect(shot.mount).toBeUndefined();

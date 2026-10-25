@@ -634,14 +634,27 @@ export const BASE_BUILDER = {
   maxPieces: 60,
   /** Steps Undo can go back. */
   undoDepth: 50,
-  /** Your own shapes: the drawing pad is this many squares on a side. */
-  shapePad: 4,
-  /** Most squares in one shape of your own. */
-  maxShapeCells: 8,
+  /**
+   * Your own shapes: the drawing pad is this many squares on a side. 6 by 6 fits beside the
+   * material picker at 1024 by 768 with 56px squares.
+   */
+  shapePad: 6,
+  /** Most squares in one shape of your own (the piece size cap). */
+  maxShapeCells: 12,
   /** Most shapes of your own a player keeps for each side. */
-  maxShapes: 6,
-  /** Hit points for each square of a shape of your own (the shape has squares times this). */
-  hpPerCell: 8,
+  maxShapes: 8,
+  /** Longest name for a shape of your own (letters, numbers and spaces). */
+  shapeNameMax: 14,
+  /**
+   * Sturdiness: hit points for each square of a shape of your own, by material. A shape has the
+   * sum of its squares. Stone and panel are each side's first material (the old look, 8 a square).
+   */
+  materialHp: { stone: 8, wood: 5, panel: 8, metal: 12, glass: 3, jelly: 6 },
+  /** The materials each side draws with. The first is the side's default. */
+  teamMaterials: {
+    PAST: ['stone', 'wood', 'glass', 'jelly'],
+    FUTURE: ['panel', 'metal', 'glass', 'jelly'],
+  },
   /** How far (in cells) Turn looks for a free spot when a turned brick would overlap. */
   turnSearchRadius: 3,
   /** Scrap to unlock a locked piece, by piece id. */

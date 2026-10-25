@@ -4,6 +4,9 @@ import { describe, expect, it } from 'vitest';
 import {
   basesOf,
   check,
+  defaultShapeName,
+  nextShapeName,
+  savedShapes,
   chooseSlot,
   chosenBase,
   deleteShape,
@@ -52,7 +55,7 @@ describe('a shape of your own as a piece', () => {
     expect(def.free).toBe(true);
     expect(pieceScrap(def)).toBeNull();
     expect([def.w, def.h]).toEqual([2, 3]);
-    expect(def.hp).toBe(4 * B.hpPerCell);
+    expect(def.hp).toBe(4 * B.materialHp.stone);
     expect(def.cells).toHaveLength(4);
   });
   it('is not a piece when the id is bad', () => {
@@ -69,7 +72,7 @@ describe('a shape of your own as a piece', () => {
 describe('placing', () => {
   it('places and keeps full hit points', () => {
     const s = must(placePiece(newBuild('PAST'), LID, at(4, 8)));
-    expect(s.pieces[0]).toMatchObject({ piece: LID, x: 4, y: 8, hp: 4 * B.hpPerCell });
+    expect(s.pieces[0]).toMatchObject({ piece: LID, x: 4, y: 8, hp: 4 * B.materialHp.stone });
   });
   it('refuses the other side', () => {
     const r = placePiece(newBuild('FUTURE'), LID, at(4, 8));
@@ -249,13 +252,14 @@ describe('my shapes: saved for each player and side', () => {
     ).toBe('apart');
     expect(
       reason(
-        [0, 1, 2, 3].flatMap((c): Cell[] => [
+        [0, 1, 2, 3, 4].flatMap((c): Cell[] => [
           [c, 0],
           [c, 1],
           [c, 2],
         ]),
       ),
     ).toBe('big');
+    expect(reason([[0, 0, 'metal']])).toBe('material');
     expect(reason([[9, 9]])).toBe('outside');
   });
   it('refuses a duplicate, wherever it was drawn on the pad', () => {
@@ -348,5 +352,145 @@ describe('my shapes: saved for each player and side', () => {
     if (!r.ok) throw new Error();
     const back = parseBases(JSON.parse(JSON.stringify(r.state)));
     expect(shapesOf(back!, 'Alex', 'PAST')).toEqual(['10/10/11']);
+  });
+});
+
+describe('shapes made of many materials', () => {
+  const MIXED: Cell[] = [
+    [0, 0, 'wood'],
+    [0, 1, 'glass'],
+    [0, 2],
+    [1, 2, 'jelly'],
+  ];
+  const MID = customId('PAST', shapeKey(MIXED));
+
+  it('has the hit points of its squares added up', () => {
+    expect(MID).toBe('own:P:w0/g0/1j');
+    const def = pieceById(MID)!;
+    expect(def.hp).toBe(
+      B.materialHp.wood + B.materialHp.glass + B.materialHp.stone + B.materialHp.jelly,
+    );
+    const s = must(placePiece(newBuild('PAST'), MID, at(4, 8)));
+    expect(s.pieces[0]!.hp).toBe(def.hp);
+  });
+  it('collides and rests by its filled squares, whatever they are made of', () => {
+    const s = must(placePiece(newBuild('PAST'), MID, at(4, 8)));
+    expect(occupiedRects(s.pieces[0]!)).toEqual(occupiedRects({ ...s.pieces[0]!, piece: LID }));
+    expect(placePiece(s, 'tower', at(5, 8)).ok).toBe(true);
+    expect(placePiece(s, 'stone', at(4, 7)).ok).toBe(true);
+  });
+  it('a shape of one material is its own shape, apart from the stone one', () => {
+    let st = freshBases();
+    for (const cells of [L, MIXED]) {
+      const r = saveShape(st, 'Alex', 'PAST', cells);
+      if (!r.ok) throw new Error(r.reason);
+      st = r.state;
+    }
+    expect(shapesOf(st, 'Alex', 'PAST')).toEqual(['10/10/11', 'w0/g0/1j']);
+  });
+  it('a stone square written by name is the same as the plain one', () => {
+    const r = saveShape(freshBases(), 'Alex', 'PAST', [
+      [0, 0, 'stone'],
+      [1, 0],
+    ]);
+    if (!r.ok) throw new Error(r.reason);
+    expect(r.key).toBe('11');
+  });
+  it('refuses a material from the other side', () => {
+    expect(saveShape(freshBases(), 'Alex', 'FUTURE', MIXED)).toEqual({
+      ok: false,
+      reason: 'material',
+    });
+  });
+  it('placed copies keep their materials after the shape is deleted', () => {
+    const r = saveShape(freshBases(), 'Alex', 'PAST', MIXED);
+    if (!r.ok) throw new Error(r.reason);
+    const built = must(placePiece(newBuild('PAST'), MID, at(4, 9), 90));
+    const st = chooseSlot(saveSlot(r.state, 'Alex', 'PAST', 0, built.pieces), 'Alex', 'PAST', 0);
+    const after = deleteShape(st, 'Alex', 'PAST', r.key);
+    expect(shapesOf(after, 'Alex', 'PAST')).toEqual([]);
+    const base = chosenBase(parseBases(JSON.parse(JSON.stringify(after)))!, 'Alex', 'PAST');
+    expect(base).toEqual(built.pieces);
+    expect(pieceById(base[0]!.piece)!.cells).toEqual(pieceById(MID)!.cells);
+  });
+});
+
+describe('shape names', () => {
+  it('a saved shape keeps the name it was given', () => {
+    const r = saveShape(freshBases(), 'Alex', 'PAST', L, '  Big   tower ');
+    if (!r.ok) throw new Error(r.reason);
+    expect(r.name).toBe('Big tower');
+    expect(savedShapes(r.state, 'Alex', 'PAST')).toEqual([
+      { key: '10/10/11', id: LID, name: 'Big tower' },
+    ]);
+  });
+  it('an empty, long, odd or unkind name becomes the next Shape N, so Save always works', () => {
+    for (const bad of [
+      '',
+      '   ',
+      'A name that is too long',
+      'Hi!',
+      'poop',
+      'Alex fort',
+      undefined,
+    ]) {
+      const r = saveShape(freshBases(), 'Alex', 'PAST', L, bad);
+      if (!r.ok) throw new Error(r.reason);
+      expect(r.name).toBe('Shape 1');
+    }
+  });
+  it('the next name skips one already used', () => {
+    let st = freshBases();
+    const a = saveShape(st, 'Alex', 'PAST', [[0, 0]], 'Shape 2');
+    if (!a.ok) throw new Error();
+    st = a.state;
+    expect(nextShapeName(st, 'Alex', 'PAST')).toBe('Shape 3');
+    expect(defaultShapeName(0)).toBe('Shape 1');
+  });
+  it('a shape saved before names loads with Shape N by its place', () => {
+    const st = parseBases({
+      players: { alex: { PAST: { chosen: 0, slots: [], shapes: ['1', '11'] } } },
+    })!;
+    expect(savedShapes(st, 'alex', 'PAST').map((x) => x.name)).toEqual(['Shape 1', 'Shape 2']);
+  });
+  it('drops a hand-edited bad name or a name for a shape that is not saved', () => {
+    const st = parseBases({
+      players: {
+        alex: {
+          PAST: {
+            chosen: 0,
+            slots: [],
+            shapes: ['1', '11', '111'],
+            shapeNames: { '1': 'Good one', '11': '<script>', '111': 7, '1111': 'Lost' },
+          },
+        },
+      },
+    })!;
+    expect(savedShapes(st, 'alex', 'PAST').map((x) => x.name)).toEqual([
+      'Good one',
+      'Shape 2',
+      'Shape 3',
+    ]);
+    expect(basesOf(st, 'alex', 'PAST').shapeNames).toEqual({ '1': 'Good one' });
+  });
+  it('deleting a shape takes its name away too, and the rest keep theirs', () => {
+    let st = freshBases();
+    for (const [cells, label] of [
+      [[[0, 0]], 'One'],
+      [L, 'Two'],
+    ] as const) {
+      const r = saveShape(st, 'Alex', 'PAST', cells, label);
+      if (!r.ok) throw new Error();
+      st = r.state;
+    }
+    const after = deleteShape(st, 'Alex', 'PAST', '1');
+    expect(savedShapes(after, 'Alex', 'PAST').map((x) => x.name)).toEqual(['Two']);
+    expect(basesOf(after, 'Alex', 'PAST').shapeNames).toEqual({ '10/10/11': 'Two' });
+  });
+  it('round trips names through JSON', () => {
+    const r = saveShape(freshBases(), 'Alex', 'PAST', L, 'Hook');
+    if (!r.ok) throw new Error();
+    const back = parseBases(JSON.parse(JSON.stringify(r.state)))!;
+    expect(savedShapes(back, 'Alex', 'PAST')[0]!.name).toBe('Hook');
   });
 });
