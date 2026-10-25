@@ -8,24 +8,21 @@ import type { BattleLayout, BiomeId, FortIdValue, Polygon, Rect, SpotIdValue, Ve
 import { firingOrigin, ridesBase, type UnitDef } from './units';
 
 /**
- * What the family picks on the Battle Plan screen. `fort` is optional: a plan saved before Team Past
- * had castle places has none, and no fort means the Phase 1 castle.
+ * What the family picks on the Battle Plan screen. Every plan has a castle place: a plan saved
+ * before Team Past had castle places loads with DEFAULT_PLAN's (Village Wall).
  */
-export type BattlePlan = { biome: BiomeId; spot: SpotIdValue; fort?: FortIdValue };
+export type BattlePlan = { biome: BiomeId; spot: SpotIdValue; fort: FortIdValue };
 
 export const isBiomeId = (value: unknown): value is BiomeId =>
   typeof value === 'string' && (BIOME_IDS as readonly string[]).includes(value);
 
-/**
- * A clean plan: a missing or unknown place or spot comes from DEFAULT_PLAN. A missing or unknown
- * castle place is left out, so an old saved plan loads as the Phase 1 castle.
- */
+/** A clean plan: a missing or unknown place, spot or castle place comes from DEFAULT_PLAN. */
 export function normalizePlan(value: unknown): BattlePlan {
   const v = typeof value === 'object' && value !== null ? (value as Record<string, unknown>) : {};
   return {
     biome: isBiomeId(v.biome) ? v.biome : DEFAULT_PLAN.biome,
     spot: isSpotId(v.spot) ? v.spot : DEFAULT_PLAN.spot,
-    ...(isFortId(v.fort) ? { fort: v.fort } : {}),
+    fort: isFortId(v.fort) ? v.fort : DEFAULT_PLAN.fort,
   };
 }
 

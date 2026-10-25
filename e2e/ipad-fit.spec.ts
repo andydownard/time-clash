@@ -11,12 +11,17 @@ const SIZES = [
 ];
 const MARGIN = 12;
 
-for (const size of SIZES) {
-  test.describe(`${size.name} landscape`, () => {
-    test.use({ hasTouch: true, viewport: { width: size.width, height: size.height } });
+// One page per check, resized through every iPad size: the layout is CSS, so a resize is the same
+// as opening the screen at that size, and the screen is reached only once.
+test.describe('iPad landscape, touch', () => {
+  test.use({ hasTouch: true, viewport: { width: SIZES[0]!.width, height: SIZES[0]!.height } });
 
-    test('Setup fits with a bottom margin, Clear my data included', async ({ page }) => {
-      await toSetup(page);
+  test('Setup fits with a bottom margin, Clear my data included, at every size', async ({
+    page,
+  }) => {
+    await toSetup(page);
+    for (const size of SIZES) {
+      await page.setViewportSize({ width: size.width, height: size.height });
       await page.evaluate(() => document.fonts.ready);
       const r = await page.evaluate(() => {
         const el = document.querySelector<HTMLElement>('[data-screen="setup"]')!;
@@ -25,21 +30,26 @@ for (const size of SIZES) {
           .map((b) => b.getBoundingClientRect().bottom);
         return { scrolls: el.scrollHeight - el.clientHeight, lowest: Math.max(...bottoms) };
       });
-      expect(r.scrolls).toBeLessThanOrEqual(1);
-      expect(r.lowest).toBeLessThanOrEqual(size.height - MARGIN);
-    });
-
-    test('the Leave dialog text is at least 20px', async ({ page }) => {
-      await toSetup(page);
-      await startMatch(page);
-      await readyUp(page);
-      await tid(page, 'pause').click();
-      await tid(page, 'pause-leave').click();
-      await expect(page.locator('#tc-pause-heading')).toHaveText('Leave this game?');
-      expect(await smallText(page)).toEqual([]);
-    });
+      expect.soft(r.scrolls, `${size.name}: Setup scrolls`).toBeLessThanOrEqual(1);
+      expect
+        .soft(r.lowest, `${size.name}: lowest button`)
+        .toBeLessThanOrEqual(size.height - MARGIN);
+    }
   });
-}
+
+  test('the Leave dialog text is at least 20px at every size', async ({ page }) => {
+    await toSetup(page);
+    await startMatch(page);
+    await readyUp(page);
+    await tid(page, 'pause').click();
+    await tid(page, 'pause-leave').click();
+    await expect(page.locator('#tc-pause-heading')).toHaveText('Leave this game?');
+    for (const size of SIZES) {
+      await page.setViewportSize({ width: size.width, height: size.height });
+      expect.soft(await smallText(page), `${size.name}: text under 20px`).toEqual([]);
+    }
+  });
+});
 
 test('the page uses the full screen and pads for the home bar', async ({ page, request }) => {
   const html = await (await request.get('/')).text();

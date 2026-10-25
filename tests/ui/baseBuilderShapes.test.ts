@@ -261,7 +261,9 @@ describe('a saved shape is a brick', () => {
     pointer(q('bb-shape-1')!, 'pointerdown', 10, 760);
     pointer(document, 'pointerup', 10, 760);
     expect(q('bb-shape-1')!.getAttribute('aria-pressed')).toBe('true');
+    // The L is 2 by 3: its middle here puts its foot on the ground.
     pointer(q('bb-plot')!, 'pointerdown', 6 * 40 + 40, 8 * 40 + 60);
+    pointer(document, 'pointerup', 6 * 40 + 40, 8 * 40 + 60);
     expect(pieces()).toHaveLength(1);
   });
 });

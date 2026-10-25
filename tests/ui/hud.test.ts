@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { BUTTONS, HUD, tumblePool, windLabel, turnBanner } from '../../src/data/copy';
-import { AIM, TIMING } from '../../src/game/config';
+import { AIM, DAMAGE, TIMING } from '../../src/game/config';
 import type { HudHandlers, HudState } from '../../src/ui/types';
 import { TEST_IDS, Z } from '../../src/ui/types';
 import { click, flush, key, q, qa, setup } from './helpers';
@@ -697,12 +697,14 @@ describe('HUD bar and coach line', () => {
 });
 
 describe('HUD health with a raised maximum (Rebuild the Tower)', () => {
-  it('shows health out of 100 when no maximum is given (a fresh game)', () => {
+  it('shows health out of the starting base health when no maximum is given (a fresh game)', () => {
+    const full = DAMAGE.startingBaseHp;
     s.overlay.showHud(handlers());
-    s.overlay.updateHud(state({ baseHp: { PAST: 100, FUTURE: 75 } }));
-    expect(q(TEST_IDS.baseHp('PAST'))!.textContent).toContain('100 / 100');
+    s.overlay.updateHud(state({ baseHp: { PAST: full, FUTURE: 75 } }));
+    expect(q(TEST_IDS.baseHp('PAST'))!.textContent).toContain(`${full} / ${full}`);
     const meter = document.querySelector('[data-team="PAST"] [role="meter"]')!;
-    expect(meter.getAttribute('aria-valuemax')).toBe('100');
+    expect(meter.getAttribute('aria-valuemax')).toBe(String(full));
+    expect(HUD.hpValue(full)).toBe(`${full} / ${full}`);
   });
 
   it('shows health out of the raised maximum, and the bar is full at the maximum', () => {

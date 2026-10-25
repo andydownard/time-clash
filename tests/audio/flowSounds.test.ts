@@ -1,7 +1,7 @@
 // The battle loop picks the launch sound by team and tells the music whose turn it is.
 import { describe, expect, it } from 'vitest';
 import type { SfxName } from '../../src/audio/types';
-import { findAim, makeWorld, settle } from '../scenes/battle/flowHarness';
+import { QUICK_END, findAim, makeWorld, settle } from '../scenes/battle/flowHarness';
 
 const SEED = 7;
 
@@ -51,7 +51,11 @@ describe('battle sounds', () => {
   it('stops the music when the match ends', async () => {
     const dP = (turn: number) => findAim(SEED, turn, 'PAST', 'direct');
     const dF = (turn: number) => findAim(SEED, turn, 'FUTURE', 'miss');
-    const w = makeWorld({ seed: SEED, script: [dP(0), dP(0), dF(1), dF(1), dP(2), dP(2)] });
+    const w = makeWorld({
+      seed: SEED,
+      script: [dP(0), dP(0), dF(1), dF(1), dP(2), dP(2)],
+      matchOptions: QUICK_END,
+    });
     const calls = withMusicLog(w);
     void w.flow.run();
     await settle();

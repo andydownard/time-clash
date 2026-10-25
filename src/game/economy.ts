@@ -3,14 +3,36 @@
 // bad input (wrong team, unknown id, NaN, an empty name) changes nothing.
 import { ammoById, isSpecialAmmo, type AmmoId } from './ammo';
 import { pieceById, pieceScrap, spotWeaponById } from './baseBuilder';
-import { walletOf, withWallet, walletKey, type CampState, type Wallet } from './loadout';
+import { WORKSHOP } from './config';
+import {
+  customCost,
+  designProblem,
+  isCustomWeaponId,
+  nameProblem,
+  nextCustomId,
+  parseCustomWeaponId,
+  tidyName,
+  type WeaponDesign,
+} from './customWeapons';
+import { walletOf, weaponFor, withWallet, walletKey, type CampState, type Wallet } from './loadout';
 import type { Team } from './types';
 import { TEAMS } from './types';
 import { upgradeById, upgradeCost, UPGRADE_MAX_LEVEL, type UpgradeId } from './upgrades';
-import { forgeCost, weaponById, type WeaponId } from './weapons';
+import { forgeCost, weaponById, type AnyWeaponId, type WeaponId } from './weapons';
 
 export type Refusal =
-  'unknown' | 'wrong_team' | 'already_owned' | 'not_owned' | 'max_level' | 'not_enough_scrap';
+  | 'unknown'
+  | 'wrong_team'
+  | 'already_owned'
+  | 'not_owned'
+  | 'max_level'
+  | 'not_enough_scrap'
+  /** Workshop: points out of range or over the budget, or an unknown style. */
+  | 'bad_design'
+  /** Workshop: a name that is empty, too long, odd, blocked, or personal. */
+  | 'bad_name'
+  /** Workshop: this player already has WORKSHOP.maxPerTeam weapons of their own for this side. */
+  | 'too_many';
 
 export type Outcome = { ok: true; camp: CampState } | { ok: false; reason: Refusal };
 
@@ -72,15 +94,65 @@ export function buyWeapon(camp: CampState, name: string, team: Team, id: WeaponI
   };
 }
 
-export function equipWeapon(camp: CampState, name: string, team: Team, id: WeaponId): Outcome {
+/** Puts an owned weapon (a catalog one or one of your own) in use. */
+export function equipWeapon(camp: CampState, name: string, team: Team, id: AnyWeaponId): Outcome {
+  const custom = parseCustomWeaponId(id);
   const weapon = weaponById(id);
-  if (!hasName(name) || !isTeam(team) || !weapon) return { ok: false, reason: 'unknown' };
-  if (weapon.team !== team) return { ok: false, reason: 'wrong_team' };
+  if (!hasName(name) || !isTeam(team) || (!weapon && !custom)) {
+    return { ok: false, reason: 'unknown' };
+  }
+  if ((weapon?.team ?? custom?.team) !== team) return { ok: false, reason: 'wrong_team' };
   const wallet = walletOf(camp, name);
-  if (!wallet.loadout[team].owned[id]) return { ok: false, reason: 'not_owned' };
+  const loadout = wallet.loadout[team];
+  if (!loadout.owned[id] || (isCustomWeaponId(id) && !weaponFor(team, loadout, id))) {
+    return { ok: false, reason: 'not_owned' };
+  }
   return {
     ok: true,
     camp: withWallet(camp, withLoadout({ ...wallet, name: name.trim() }, team, { weapon: id })),
+  };
+}
+
+/**
+ * Forges a weapon of your own (the Weapon Workshop). It costs Scrap by its strength, joins the
+ * side's list with a fresh id (a repeated name is fine), is owned at level 1, and is put in use.
+ * `weaponName` is checked again here; it never carries the player's own name.
+ */
+export function forgeCustomWeapon(
+  camp: CampState,
+  name: string,
+  team: Team,
+  design: WeaponDesign,
+  weaponName: string,
+): Outcome {
+  if (!hasName(name) || !isTeam(team)) return { ok: false, reason: 'unknown' };
+  const problem = designProblem(design, team);
+  if (problem) return { ok: false, reason: problem };
+  if (nameProblem(weaponName, [name]) !== null) return { ok: false, reason: 'bad_name' };
+  const wallet = walletOf(camp, name);
+  const list = wallet.loadout[team].custom ?? [];
+  if (list.length >= WORKSHOP.maxPerTeam) return { ok: false, reason: 'too_many' };
+  const paid = pay(wallet, customCost(design));
+  if (!paid) return { ok: false, reason: 'not_enough_scrap' };
+  const id = nextCustomId(team, list);
+  const made = {
+    id,
+    base: design.base,
+    name: tidyName(weaponName),
+    power: design.power,
+    reach: design.reach,
+    splash: design.splash,
+  };
+  return {
+    ok: true,
+    camp: withWallet(
+      camp,
+      withLoadout({ ...paid, name: name.trim() }, team, {
+        custom: [...list, made],
+        owned: { ...paid.loadout[team].owned, [id]: 1 },
+        weapon: id,
+      }),
+    ),
   };
 }
 

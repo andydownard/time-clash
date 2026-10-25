@@ -34,20 +34,6 @@ export function angleArc(angleDeg: number, facing: 1 | -1): { start: number; end
   return facing === 1 ? { start: -a, end: 0 } : { start: Math.PI, end: Math.PI + a };
 }
 
-/** Where the small angle number sits: just past the tip, pushed out away from the launcher. */
-export function angleLabelSpot(
-  origin: Vec2,
-  angleDeg: number,
-  facing: 1 | -1,
-): { x: number; y: number; anchorX: 0 | 1 } {
-  const tip = guideTip(origin, angleDeg, facing);
-  return {
-    x: tip.x + facing * DIAL.labelGap,
-    y: tip.y,
-    anchorX: facing === 1 ? 0 : 1,
-  };
-}
-
 /**
  * The angle for a pointer position, whole degrees, kept in range. Power is not set by dragging.
  * A pointer on the muzzle or a bad number keeps the current angle.

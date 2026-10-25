@@ -1993,6 +1993,15 @@ body {
   .tc-victory > .tc-row:last-child {
     margin-top: var(--tc-s-2);
   }
+  /* A full-length match can fill both cards (six medals and a Scrap row with a plus), so
+     Chrono's line gets the smaller face the reload quip uses. The text size does not change. */
+  .tc-chrono-says {
+    padding-block: var(--tc-s-1);
+  }
+  .tc-chrono-says .tc-chrono-face {
+    width: 40px;
+    height: 43px;
+  }
 }
 
 /* ---------- Camp ---------- */
@@ -2435,6 +2444,232 @@ button.tc-forge-row[aria-disabled='true'],
 }
 .tc-forge-status:empty {
   visibility: hidden;
+}
+/* Under the list: My weapons, Make my own weapon, and (in My weapons) Level up. */
+.tc-forge-foot {
+  width: min(960px, 100%);
+  margin-left: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--tc-s-3);
+}
+.tc-forge-foot .tc-btn {
+  min-height: var(--tc-tap);
+  padding-inline: var(--tc-s-4);
+  font-size: var(--tc-text-min);
+  white-space: nowrap;
+}
+.tc-forge-make[aria-disabled='true'] {
+  border-style: dashed;
+  cursor: not-allowed;
+}
+/* My weapons: two cards a row, so six fit without scrolling. */
+.tc-forge-list[data-view='mine'] {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--tc-s-2) var(--tc-s-3);
+}
+.tc-forge-card .tc-forge-pick {
+  gap: var(--tc-s-3);
+  padding-block: 0;
+}
+.tc-forge-card .tc-forge-namerow {
+  flex-wrap: wrap;
+  gap: var(--tc-s-2);
+}
+.tc-forge-card .tc-forge-badge {
+  padding: 2px var(--tc-s-2);
+}
+
+/* ---------- Weapon Workshop (make your own weapon) ---------- */
+.tc-workshop .tc-forge-status {
+  align-self: stretch;
+  min-height: 0;
+}
+.tc-workshop .tc-forge-title {
+  font-size: calc(var(--tc-text-min) * 1.6);
+}
+.tc-workshop .tc-forge-back {
+  white-space: nowrap;
+}
+.tc-ws-body {
+  width: min(1100px, 100%);
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: var(--tc-s-4);
+  align-items: start;
+}
+.tc-ws-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tc-s-3);
+  padding: var(--tc-s-3) var(--tc-s-4);
+  border: 4px solid var(--tc-purple-500);
+  border-radius: 18px;
+  background: var(--tc-ink-deep);
+  color: var(--tc-parchment-warm);
+}
+.tc-workshop[data-team='FUTURE'] .tc-ws-panel {
+  border-color: var(--tc-blue-700);
+  color: var(--tc-blue-100);
+}
+.tc-ws-head {
+  margin: 0;
+  font-family: var(--tc-font-voice-old);
+  font-weight: 400;
+  font-size: var(--tc-fs-lead);
+}
+.tc-workshop[data-team='FUTURE'] .tc-ws-head {
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+}
+.tc-ws-styles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--tc-s-2);
+}
+.tc-ws-style {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: var(--tc-tap);
+  padding: var(--tc-s-1) var(--tc-s-2);
+  border: 3px solid var(--tc-purple-500);
+  border-radius: 14px;
+  background: var(--tc-parchment-warm);
+  color: var(--tc-ink-deep);
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: var(--tc-text-min);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.tc-ws-style .tc-weapon-icon {
+  width: 64px;
+  height: 32px;
+}
+.tc-ws-style[aria-checked='true'] {
+  border: 4px solid var(--tc-ink-deep);
+  background: var(--tc-ember);
+  box-shadow: 0 0 0 4px var(--tc-purple-500);
+}
+.tc-workshop[data-team='FUTURE'] .tc-ws-style {
+  border-color: var(--tc-blue-700);
+}
+.tc-workshop[data-team='FUTURE'] .tc-ws-style[aria-checked='true'] {
+  border-color: var(--tc-ink-deep);
+  background: var(--tc-blue-100);
+  box-shadow: 0 0 0 4px var(--tc-pulse);
+}
+.tc-ws-style-name {
+  white-space: nowrap;
+}
+.tc-ws-points {
+  margin: 0;
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: var(--tc-text-min);
+  letter-spacing: var(--tc-ls-caps);
+  text-transform: uppercase;
+  color: var(--tc-ember);
+}
+.tc-workshop[data-team='FUTURE'] .tc-ws-points {
+  color: var(--tc-pulse);
+}
+.tc-ws-stat {
+  display: grid;
+  /* One label width for all three rows, so the plus and minus buttons line up. */
+  grid-template-columns: 8.5em var(--tc-tap) 2ch var(--tc-tap) minmax(0, 1fr);
+  align-items: center;
+  gap: var(--tc-s-2);
+  font-size: var(--tc-text-min);
+}
+.tc-ws-label {
+  display: flex;
+  flex-direction: column;
+  white-space: nowrap;
+}
+.tc-ws-stat-name {
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: var(--tc-fs-lead);
+}
+.tc-ws-help,
+.tc-ws-effect {
+  font-size: var(--tc-text-min);
+}
+.tc-ws-effect {
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new);
+  text-transform: uppercase;
+}
+.tc-ws-value {
+  text-align: center;
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: var(--tc-fs-lead);
+}
+.tc-ws-step {
+  width: var(--tc-tap);
+  height: var(--tc-tap);
+  border: 3px solid var(--tc-ember);
+  border-radius: 14px;
+  background: var(--tc-purple-700);
+  color: var(--tc-white);
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: var(--tc-text-young);
+  line-height: 1;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.tc-workshop[data-team='FUTURE'] .tc-ws-step {
+  border-color: var(--tc-pulse);
+  background: var(--tc-blue-700);
+}
+.tc-ws-step[aria-disabled='true'] {
+  border-style: dashed;
+  cursor: not-allowed;
+}
+.tc-ws-words {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--tc-s-2);
+}
+.tc-ws-select,
+.tc-ws-typed {
+  width: 100%;
+  min-height: var(--tc-tap);
+  padding: var(--tc-s-1) var(--tc-s-3);
+  border: 3px solid var(--tc-ember);
+  border-radius: 12px;
+  background: var(--tc-parchment-warm);
+  color: var(--tc-ink-deep);
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: var(--tc-text-min);
+}
+.tc-workshop[data-team='FUTURE'] .tc-ws-select,
+.tc-workshop[data-team='FUTURE'] .tc-ws-typed {
+  border-color: var(--tc-pulse);
+}
+.tc-ws-typed::placeholder {
+  color: var(--tc-oak);
+  opacity: 1;
+}
+.tc-ws-preview {
+  cursor: default;
+  min-height: 0;
+  padding: var(--tc-s-2) var(--tc-s-3);
+  gap: var(--tc-s-3);
+}
+.tc-ws-forge {
+  min-height: var(--tc-tap);
+  font-size: var(--tc-text-min);
 }
 /* The pictures move: the bowyer and her chips, the press, sparks. Reduced motion stops it all. */
 /* Future Forge: the operator's thumb presses three buttons in turn (each glows), and a thin pulse

@@ -1,7 +1,7 @@
 // Every user-facing string lives here. Kids read these, so: short words, short sentences.
 // Vocabulary table in AGENTS.md applies. Banned words are checked by tests/contracts/copy.test.ts.
 // Intro narration text lives in src/data/introScript.ts (from docs/NARRATION.md).
-import { TURN } from '../game/config';
+import { DAMAGE, TURN } from '../game/config';
 import type { AwardId } from '../game/awards';
 import { windLevel } from '../game/wind';
 import type { Subject, Team } from '../game/types';
@@ -36,6 +36,97 @@ export const FORGE_COPY = {
   forged: (name: string, level: number): string => `${name} is now level ${level}!`,
   needMore: (n: number): string => `Not yet. You need ${n} more Scrap.`,
   atTop: 'This weapon is at the top level.',
+  /** The Weapon Workshop button, and the "My weapons" section (your own weapons). */
+  makeOwn: 'Make my own weapon',
+  myWeapons: (n: number): string => `My weapons · ${n}`,
+  allWeapons: 'All weapons',
+  /** The star badge on a weapon you made, in words for a screen reader. */
+  mine: 'Made by you',
+  /** The Level up button for one of your own weapons sits under the list. */
+  levelUpMine: (name: string, text: string): string => `${name}: ${text}`,
+  full: (max: number): string => `You have ${max} of your own. That is the most.`,
+} as const;
+
+// ---------- Weapon Workshop (make your own weapon) ----------
+export const WORKSHOP_COPY = {
+  title: 'Weapon Workshop',
+  back: 'Back',
+  pickStyle: 'Pick a style',
+  /** A style is named after the catalog weapon it is like. */
+  styles: {
+    royalSword: 'Sword',
+    elderLongbow: 'Longbow',
+    ironCannon: 'Cannon',
+    plasmaBlade: 'Blade',
+    laserRifle: 'Rifle',
+    railCannon: 'Rail Cannon',
+  } as Readonly<Record<string, string>>,
+  pointsLeft: (n: number): string => (n === 1 ? '1 point left' : `${n} points left`),
+  stats: {
+    power: { name: 'Power', help: 'Hits hard' },
+    reach: { name: 'Reach', help: 'Throws far' },
+    splash: { name: 'Splash', help: 'Near misses hurt' },
+  },
+  more: (stat: string): string => `More ${stat}`,
+  less: (stat: string): string => `Less ${stat}`,
+  /** What a stat's points do, in words. */
+  power: (n: number): string => `Damage ${n}`,
+  reach: (range: string): string => `Range ${range}`,
+  splash: (n: number): string => `Near miss ${n}`,
+  statLabel: (stat: string, n: number, max: number): string => `${stat} ${n} of ${max}`,
+  atMost: (stat: string): string => `${stat} is full.`,
+  atLeast: (stat: string): string => `${stat} is as low as it goes.`,
+  noPoints: 'No points left. Take one from another.',
+  nameIt: 'Name it',
+  firstWord: 'First word',
+  secondWord: 'Second word',
+  typeName: 'Or type a name',
+  /** Silly, friendly words. A weapon's name is one of each, or a typed name. */
+  adjectives: [
+    'Wobbly',
+    'Giggly',
+    'Bouncy',
+    'Sparkly',
+    'Mighty',
+    'Fuzzy',
+    'Zippy',
+    'Jolly',
+    'Sneaky',
+    'Rumbly',
+    'Sleepy',
+    'Shiny',
+    'Speedy',
+    'Silly',
+  ] as readonly string[],
+  nouns: [
+    'Noodle',
+    'Pickle',
+    'Muffin',
+    'Thunder',
+    'Banana',
+    'Teapot',
+    'Waffle',
+    'Bubble',
+    'Taco',
+    'Puddle',
+    'Gizmo',
+    'Sock',
+    'Pancake',
+    'Rocket',
+  ] as readonly string[],
+  /** Why a typed name is not used. The picked words are kept, so nothing is lost. */
+  nameProblem: {
+    empty: '',
+    long: 'That name is too long.',
+    letters: 'Use only letters, numbers and spaces.',
+    blocked: 'Let us pick a friendlier name.',
+    private: 'Keep your own name a secret.',
+    digits: 'Use fewer numbers in a row.',
+  },
+  keepPicked: (name: string): string => `We will use ${name}.`,
+  forge: (cost: number): string => `Forge it! · ${cost} Scrap`,
+  forged: (name: string): string => `You made ${name}! It is equipped.`,
+  needMore: (n: number): string => `Not yet. You need ${n} more Scrap.`,
 } as const;
 
 // ---------- Build Base (the old shop screen, shown when the base builder is off) ----------
@@ -233,7 +324,8 @@ export const HUD = {
   yourTurn: 'Your turn',
   angleValue: (deg: number): string => `${Math.round(deg)}°`,
   powerValue: (p: number): string => `${Math.round(p)}`,
-  hpValue: (hp: number, max = 100): string => `${Math.round(hp)} / ${Math.round(max)}`,
+  hpValue: (hp: number, max: number = DAMAGE.startingBaseHp): string =>
+    `${Math.round(hp)} / ${Math.round(max)}`,
   shotsValue: (n: number): string => `${n} of ${TURN.shotsPerTurn}`,
 } as const;
 
@@ -622,6 +714,12 @@ export const BUILDER_COPY = {
   nothingToUndo: 'Nothing to undo.',
   pickFirst: 'Tap a brick first, then tap Turn.',
   noRoom: 'No room there. Try another spot.',
+  /** A brick let go in mid-air, or beside a wall with nothing under it. */
+  floating: 'Build on something that touches the ground.',
+  /** Taking away, moving or turning a brick that another brick rests on. */
+  holding: 'Something is sitting on that brick. Take the top one off first.',
+  /** Once, when an old base had floating bricks and the builder set them down. */
+  settled: 'Chrono here! Some bricks were floating. I set them down.',
   full: 'This base is full of bricks.',
   cancelled: 'Put back. Nothing changed.',
   selected: (name: string): string => `${name} chosen. Tap Turn to spin it.`,
@@ -632,6 +730,8 @@ export const BUILDER_COPY = {
   unlocked: (name: string): string => `You unlocked ${name}!`,
   ghostAt: (name: string, x: number, y: number): string =>
     `${name} at column ${x + 1}, row ${y + 1}. Enter puts it down.`,
+  /** The column left of the plot with the team and mode buttons. */
+  rail: 'Team and mode',
   // Weapon spots
   mode: 'Mode',
   modeBuild: 'Build',

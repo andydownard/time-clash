@@ -153,7 +153,9 @@ describe('selectUnit', () => {
 
   it('throws MatchOverError after the match ends', () => {
     const c = make();
-    for (let i = 0; i < 12 && c.snapshot().status === 'PLAYING'; i++) {
+    // Every shot is a direct hit, so the first team wins within this many turns of both sides.
+    const turns = 2 * Math.ceil(DAMAGE.startingBaseHp / DAMAGE.direct);
+    for (let i = 0; i < turns && c.snapshot().status === 'PLAYING'; i++) {
       c.ready();
       for (let s = 0; s < 2 && c.snapshot().status === 'PLAYING'; s++) {
         c.setAim(findAim(c, 'direct'));

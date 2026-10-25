@@ -138,7 +138,7 @@ describe('assign, replace and clear', () => {
   });
   it('a weapon is not touched when bricks are placed', () => {
     const s = ok(assignWeapon(newBuild('PAST'), 0, 'cannon'));
-    const r = placePiece(s, 'stone', { x: 4, y: 9, ox: 0, oy: 0 });
+    const r = placePiece(s, 'stone', { x: 4, y: 10, ox: 0, oy: 0 });
     if (!r.ok) throw new Error('place');
     expect(r.state.spots[0]?.weapon).toBe('cannon');
   });
@@ -158,9 +158,9 @@ describe('where the pads sit', () => {
     }
   });
   it('rests on top of the built base: a tall tower lifts a pad above the foundation row', () => {
-    const r = placePiece(newBuild('PAST'), 'tower', { x: 11, y: 8, ox: 0, oy: 0 });
+    const r = placePiece(newBuild('PAST'), 'long', { x: 8, y: 10, ox: 0, oy: 0 });
     if (!r.ok) throw new Error('place');
-    const far = placePiece(r.state, 'long', { x: 8, y: 10, ox: 0, oy: 0 });
+    const far = placePiece(r.state, 'tower', { x: 11, y: 8, ox: 0, oy: 0 });
     if (!far.ok) throw new Error('place');
     const pads = resolveSpots(far.state.pieces, far.state.spots);
     const low = PLOT_STEPS.h - B.spots.padSteps;
@@ -215,7 +215,7 @@ describe('Undo covers weapons', () => {
   });
   it('undoes bricks and weapons in the order they were done', () => {
     const s = ok(assignWeapon(newBuild('PAST'), 0, 'cannon'));
-    const r = placePiece(s, 'stone', { x: 2, y: 3, ox: 0, oy: 0 });
+    const r = placePiece(s, 'stone', { x: 2, y: 10, ox: 0, oy: 0 });
     if (!r.ok) throw new Error('place');
     const back = undoBuild(r.state);
     expect(back.pieces).toHaveLength(0);
@@ -277,11 +277,11 @@ describe('unlocking a weapon with Scrap', () => {
 
 describe('saving and loading', () => {
   const piece = (() => {
-    const r = placePiece(newBuild('PAST'), 'stone', { x: 2, y: 3, ox: 0, oy: 0 });
+    const r = placePiece(newBuild('PAST'), 'stone', { x: 2, y: 10, ox: 0, oy: 0 });
     if (!r.ok) throw new Error('place');
     return r.state.pieces;
   })();
-  const stoneRow = ['stone', 2, 3, 0, 0, 0, 20];
+  const stoneRow = ['stone', 2, 10, 0, 0, 0, 20];
 
   it('leaves `s` out of the save when no spot has anything, so a plain base is unchanged', () => {
     expect(toSaved(piece)).toEqual({ v: 1, p: [stoneRow] });

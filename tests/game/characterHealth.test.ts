@@ -1,4 +1,4 @@
-// Character health: every fighter has 3 health and it REPLACES base health for the win.
+// Character health: every fighter has CHARACTER_HEALTH.hp health and it REPLACES base health for the win.
 // The flag is off by default. These tests turn it on through MatchOptions, never the constant.
 import { describe, expect, it } from 'vitest';
 import { simulateShot } from '../../src/game/ballistics';
@@ -7,6 +7,7 @@ import { playBotMatch } from '../../src/game/botPlay';
 import {
   BONUS,
   CHARACTER_HEALTH,
+  DAMAGE,
   PHASE1_LAYOUT,
   PRACTICE_BOT,
   TEAM_FACING,
@@ -40,6 +41,9 @@ const PLAYERS: Players = [
   { name: 'Sam', team: 'FUTURE', grade: 3, subject: 'math' },
 ];
 const RIGHT = { correct: true, elapsedMs: 1000 };
+/** Health each fighter starts with, and the base health that stays untouched with the flag on. */
+const HP = CHARACTER_HEALTH.hp;
+const FULL_BASE = { PAST: DAMAGE.startingBaseHp, FUTURE: DAMAGE.startingBaseHp };
 const WRONG = { correct: false, elapsedMs: 1000 };
 
 const mk = (characterHealth: boolean, seed = 5): MatchController =>
@@ -120,7 +124,8 @@ function hitTimes(c: MatchController, target: UnitId, times: number): BlastOutco
 describe('the flag', () => {
   it('is off by default, with the owner numbers', () => {
     expect(CHARACTER_HEALTH.enabled).toBe(false);
-    expect(CHARACTER_HEALTH.hp).toBe(3);
+    // Pace (owner, 2026-10-24): four health, so a perfect team needs about five turns.
+    expect(CHARACTER_HEALTH.hp).toBe(4);
     expect(CHARACTER_HEALTH.directHit).toBe(1);
     expect(CHARACTER_HEALTH.nearHit).toBe(0);
   });
@@ -136,17 +141,17 @@ describe('the flag', () => {
 });
 
 describe('start of a match', () => {
-  it('gives all ten fighters 3 health, five alive per team', () => {
+  it('gives all ten fighters full health, five alive per team', () => {
     const s = mk(true).snapshot();
     expect(s.characterHealth).toBe(true);
     expect(Object.keys(s.unitHp).sort()).toEqual([...UNIT_IDS].sort());
-    for (const id of UNIT_IDS) expect(s.unitHp[id]).toBe(3);
-    expect(s.maxUnitHp).toBe(3);
+    for (const id of UNIT_IDS) expect(s.unitHp[id]).toBe(HP);
+    expect(s.maxUnitHp).toBe(HP);
     expect(s.aliveCount).toEqual({ PAST: 5, FUTURE: 5 });
     expect(UNITS).toHaveLength(10);
   });
   it('keeps baseHp in the snapshot at full', () => {
-    expect(mk(true).snapshot().baseHp).toEqual({ PAST: 100, FUTURE: 100 });
+    expect(mk(true).snapshot().baseHp).toEqual(FULL_BASE);
   });
   it('a rematch keeps the setting', () => {
     expect(createMatch(mk(true).rematchOptions()).snapshot().characterHealth).toBe(true);
@@ -210,25 +215,25 @@ describe('hits in a match', { timeout: 120_000 }, () => {
     expect(out.damage).toBe(1);
     expect(out.units?.find((u) => u.unit === '1')).toMatchObject({
       damage: 1,
-      hp: 2,
+      hp: HP - 1,
       knockedOut: false,
     });
     const s = c.snapshot();
-    expect(s.unitHp['1']).toBe(2);
+    expect(s.unitHp['1']).toBe(HP - 1);
     expect(s.aliveCount.FUTURE).toBe(5);
-    expect(s.baseHp).toEqual({ PAST: 100, FUTURE: 100 });
+    expect(s.baseHp).toEqual(FULL_BASE);
     expect(s.stats.PAST.directHits).toBe(1);
     expect(s.status).toBe('PLAYING');
   });
 
-  it('three direct hits knock a fighter out, reported once', () => {
+  it('full health in direct hits knocks a fighter out, reported once', () => {
     const c = mk(true);
-    const outs = hitTimes(c, '1', 3);
-    expect(outs.map((o) => o.units?.find((u) => u.unit === '1')?.hp)).toEqual([2, 1, 0]);
-    expect(outs[0]!.knockedOut).toEqual([]);
-    expect(outs[1]!.knockedOut).toEqual([]);
-    expect(outs[2]!.knockedOut).toEqual(['1']);
-    const last = outs[2]!.units?.find((u) => u.unit === '1');
+    const outs = hitTimes(c, '1', HP);
+    const countdown = Array.from({ length: HP }, (_, i) => HP - 1 - i);
+    expect(outs.map((o) => o.units?.find((u) => u.unit === '1')?.hp)).toEqual(countdown);
+    for (const o of outs.slice(0, -1)) expect(o.knockedOut).toEqual([]);
+    expect(outs[HP - 1]!.knockedOut).toEqual(['1']);
+    const last = outs[HP - 1]!.units?.find((u) => u.unit === '1');
     expect(last).toMatchObject({ knockedOut: true, tumble: true });
     expect(last?.bubbleIndex).not.toBeNull();
     const s = c.snapshot();
@@ -248,18 +253,21 @@ describe('hits in a match', { timeout: 120_000 }, () => {
     c.reloadDone(RIGHT);
     expect(c.snapshot().turn.phase).toBe('BONUS_AIMING');
     const out = shoot(c, { direct: '1' });
-    expect(out.damage).toBe(2);
-    expect(c.snapshot().unitHp['1']).toBe(1);
+    expect(out.damage).toBe(CHARACTER_HEALTH.powerHit);
+    expect(c.snapshot().unitHp['1']).toBe(HP - CHARACTER_HEALTH.powerHit);
   });
 
   it('a Power Shot can finish a fighter on 1 health (no negative health)', () => {
     const c = mk(true);
-    hitTimes(c, '1', 2);
-    // Turn state: shot 2 landed, now RELOAD. Take the Power Shot.
+    hitTimes(c, '1', HP - 1);
+    // Finish Team Past's turn with harmless lobs, then take the Power Shot.
+    while (c.snapshot().turn.phase === 'AIMING') lob(c);
+    expect(c.snapshot().turn.phase).toBe('RELOAD');
+    expect(c.snapshot().unitHp['1']).toBe(1);
     c.reloadDone(RIGHT);
     const out = shoot(c, { direct: '1' });
     expect(out.units?.find((u) => u.unit === '1')).toMatchObject({
-      damage: 2,
+      damage: CHARACTER_HEALTH.powerHit,
       hp: 0,
       knockedOut: true,
     });
@@ -276,13 +284,13 @@ describe('hits in a match', { timeout: 120_000 }, () => {
     expect(out.bubbleIndex).not.toBeNull();
     expect(out.units?.every((u) => u.damage === 0 && u.tumble && !u.knockedOut)).toBe(true);
     const s = c.snapshot();
-    for (const id of UNIT_IDS) expect(s.unitHp[id]).toBe(3);
+    for (const id of UNIT_IDS) expect(s.unitHp[id]).toBe(HP);
     expect(s.stats.PAST.nearHits).toBe(1);
   });
 
   it('a knocked-out fighter takes no more hits, cannot be picked, and the pick moves on', () => {
     const c = mk(true);
-    hitTimes(c, '1', 3);
+    hitTimes(c, '1', HP);
     const s = c.snapshot();
     expect(s.selected.FUTURE).not.toBe('1');
     expect(aliveUnitIds(s.unitHp, 'FUTURE')).not.toContain('1');
@@ -302,7 +310,7 @@ describe('hits in a match', { timeout: 120_000 }, () => {
 
   it('a team with one fighter left still gets its 2 shots and a reload', () => {
     const c = mk(true);
-    for (const id of ['1', '2', '3', '4'] as const) hitTimes(c, id, 3);
+    for (const id of ['1', '2', '3', '4'] as const) hitTimes(c, id, HP);
     expect(c.snapshot().aliveCount.FUTURE).toBe(1);
     expect(c.snapshot().selected.FUTURE).toBe('5');
     drive(
@@ -325,15 +333,15 @@ describe('hits in a match', { timeout: 120_000 }, () => {
 describe('win condition', { timeout: 120_000 }, () => {
   it('a team loses when ALL its fighters are knocked out, and base health is ignored', () => {
     const c = mk(true);
-    for (const id of ['1', '2', '3', '4'] as const) hitTimes(c, id, 3);
+    for (const id of ['1', '2', '3', '4'] as const) hitTimes(c, id, HP);
     expect(c.snapshot().status).toBe('PLAYING');
-    const last = hitTimes(c, '5', 3);
-    expect(last[2]!.knockedOut).toEqual(['5']);
+    const last = hitTimes(c, '5', HP);
+    expect(last[HP - 1]!.knockedOut).toEqual(['5']);
     const s = c.snapshot();
     expect(s.status).toBe('OVER');
     expect(s.winner).toBe('PAST');
     expect(s.aliveCount).toEqual({ PAST: 5, FUTURE: 0 });
-    expect(s.baseHp).toEqual({ PAST: 100, FUTURE: 100 });
+    expect(s.baseHp).toEqual(FULL_BASE);
     expect(() => c.pass()).toThrow(MatchOverError);
   });
 
@@ -379,8 +387,8 @@ describe('flag off behaves as before', () => {
     expect(out.units).toBeUndefined();
     expect(out.knockedOut).toBeUndefined();
     const s = c.snapshot();
-    expect(s.baseHp.FUTURE).toBeLessThan(100);
-    for (const id of UNIT_IDS) expect(s.unitHp[id]).toBe(3);
+    expect(s.baseHp.FUTURE).toBeLessThan(DAMAGE.startingBaseHp);
+    for (const id of UNIT_IDS) expect(s.unitHp[id]).toBe(HP);
     expect(s.aliveCount).toEqual({ PAST: 5, FUTURE: 5 });
   });
 
@@ -396,7 +404,7 @@ describe('determinism', { timeout: 120_000 }, () => {
   it('the same seed and the same shots give the same outcomes', () => {
     const run = (): string => {
       const c = mk(true, 11);
-      return JSON.stringify([hitTimes(c, '1', 3), c.snapshot()]);
+      return JSON.stringify([hitTimes(c, '1', HP), c.snapshot()]);
     };
     expect(run()).toBe(run());
   });

@@ -1,17 +1,28 @@
-// Base builder with a finger on an iPad-sized screen (WebKit, 1024x768). Playwright cannot drag
-// with a real touch in WebKit, so the drag is sent as touch pointer events (the same events a
-// finger makes) and the taps use the real touchscreen.
+// Base builder with a finger. WebKit at 1024x768 (an iPad size): Playwright cannot drag with a
+// real touch in WebKit, so the drag is sent as touch pointer events (the same events a finger
+// makes) and the taps use the real touchscreen. Chromium at 1280x800 and 1024x768 also runs the
+// "real finger" tests below, which slide with true touch events (fingerSlide).
 import type { Page } from '@playwright/test';
 import { expect, test } from './fixtures';
-import { bricks, cellPoint, chooseSpot, spotPad, toBuilderCamp } from './support/builder';
+import {
+  GROUND_ROW,
+  bricks,
+  cellPoint,
+  chooseSpot,
+  fingerSlide,
+  middleOf,
+  spotPad,
+  toBuilderCamp,
+} from './support/builder';
 import { giveScrap } from './support/camp';
 import { tid } from './support/game';
 
-test.use({ hasTouch: true, viewport: { width: 1024, height: 768 } });
+test.use({ hasTouch: true });
+const TOUCH_PROJECTS = ['webkit-1024x768', 'chromium-1280x800', 'chromium-1024x768'];
 test.beforeEach(({ browserName }, info) => {
   test.skip(
-    browserName !== 'webkit' || info.project.name !== 'webkit-1024x768',
-    'The touch check runs once, in WebKit at 1024x768',
+    !TOUCH_PROJECTS.includes(info.project.name) || !info.project.name.startsWith(browserName),
+    'The touch checks run in WebKit at 1024x768 and in Chromium at 1280x800 and 1024x768',
   );
 });
 
@@ -74,16 +85,16 @@ test('touch: drag a brick on, turn, undo, save to slot 2, reload and see it agai
   await tid(page, 'bb-slot-2').tap();
   await expect(tid(page, 'bb-slot-2')).toHaveAttribute('aria-pressed', 'true');
 
-  await fingerDrop(page, 'stone', 6, 9, 2, 1);
+  await fingerDrop(page, 'stone', 6, 10, 2, 1);
   await expect(bricks(page)).toHaveCount(1);
   await tid(page, 'bb-turn').tap();
   await expect(bricks(page).first()).toHaveAttribute('transform', /rotate\(90\)/);
 
-  await fingerDrop(page, 'tower', 12, 8, 1, 2);
+  await fingerDrop(page, 'tower', 12, 9, 1, 2);
   await expect(bricks(page)).toHaveCount(2);
   await tid(page, 'bb-undo').tap();
   await expect(bricks(page)).toHaveCount(1);
-  await fingerDrop(page, 'tower', 12, 8, 1, 2);
+  await fingerDrop(page, 'tower', 12, 9, 1, 2);
   await expect(bricks(page)).toHaveCount(2);
 
   // A finger drag that ends off the plot puts the brick back.
@@ -99,6 +110,99 @@ test('touch: drag a brick on, turn, undo, save to slot 2, reload and see it agai
   await expect(tid(page, 'bb-slot-2')).toHaveAttribute('aria-pressed', 'true');
   await expect(bricks(page)).toHaveCount(2);
   await expect(bricks(page).first()).toHaveAttribute('transform', /rotate\(90\)/);
+});
+
+test.describe('a real finger (Chromium touch events)', () => {
+  test.beforeEach(({ browserName }) => {
+    test.skip(browserName !== 'chromium', 'True touch slides need the Chromium touch protocol');
+  });
+
+  test('finger: mid-air is refused, a second layer works, the bottom brick stays', async ({
+    page,
+  }) => {
+    await toBuilderCamp(page);
+    await page.getByTestId('camp-build').tap();
+    await expect(page.locator('[data-screen="builder"]')).toBeVisible();
+    // Into the sky: while the finger is still down the outline says no, and nothing is placed.
+    const lift = await fingerSlide(
+      page,
+      await middleOf(page, 'bb-brick-stone'),
+      await cellPoint(page, 6, 3, 2, 1),
+      { hold: true },
+    );
+    await expect(page.locator('.tc-bb-ghost')).toBeVisible();
+    await expect(page.locator('.tc-bb-drop')).toHaveAttribute('data-ok', 'false');
+    await lift();
+    await expect(bricks(page)).toHaveCount(0);
+    await expect(tid(page, 'bb-status')).toHaveText('Build on something that touches the ground.');
+    // A first layer and a second layer.
+    await fingerSlide(
+      page,
+      await middleOf(page, 'bb-brick-stone'),
+      await cellPoint(page, 6, GROUND_ROW, 2, 1),
+    );
+    await fingerSlide(
+      page,
+      await middleOf(page, 'bb-brick-stone'),
+      await cellPoint(page, 6, GROUND_ROW - 1, 2, 1),
+    );
+    await expect(bricks(page)).toHaveCount(2);
+    // The bottom one cannot be slid away, and a slide to the tray does not take it off.
+    const bottom = await cellPoint(page, 6, GROUND_ROW, 2, 1);
+    await fingerSlide(page, bottom, await cellPoint(page, 16, GROUND_ROW, 2, 1));
+    await expect(bricks(page).first()).toHaveAttribute('aria-label', /column 7, row 11\./);
+    await expect(tid(page, 'bb-status')).toHaveText(
+      'Something is sitting on that brick. Take the top one off first.',
+    );
+    await fingerSlide(page, bottom, await middleOf(page, 'bb-brick-plank'));
+    await expect(bricks(page)).toHaveCount(2);
+  });
+
+  test('finger: tap Antenna, tap the plot; slide a placed brick; tap chooses it', async ({
+    page,
+  }) => {
+    await toBuilderCamp(page);
+    await page.getByTestId('camp-build').tap();
+    await tid(page, 'bb-team-FUTURE').tap();
+    await expect(page.locator('[data-screen="builder"][data-team="FUTURE"]')).toBeVisible();
+    await tid(page, 'bb-brick-antenna').tap();
+    await expect(tid(page, 'bb-brick-antenna')).toHaveAttribute('aria-pressed', 'true');
+    // A tap in the sky is refused and Antenna stays picked.
+    const sky = await cellPoint(page, 4, 2, 1, 2);
+    await page.touchscreen.tap(sky.x, sky.y);
+    await expect(bricks(page)).toHaveCount(0);
+    await expect(tid(page, 'bb-brick-antenna')).toHaveAttribute('aria-pressed', 'true');
+    const spot = await cellPoint(page, 4, GROUND_ROW - 1, 1, 2);
+    await page.touchscreen.tap(spot.x, spot.y);
+    await expect(bricks(page)).toHaveCount(1);
+    await expect(bricks(page).first()).toHaveAttribute('aria-label', /Antenna, column 5, row 10\./);
+    // Picked again, a finger can slide it around the plot and let go where it should land.
+    await tid(page, 'bb-brick-panel').tap();
+    await fingerSlide(
+      page,
+      await cellPoint(page, 10, 3, 2, 1),
+      await cellPoint(page, 12, GROUND_ROW, 2, 1),
+    );
+    await expect(bricks(page)).toHaveCount(2);
+    await expect(bricks(page).nth(1)).toHaveAttribute('aria-label', /Panel, column 13, row 11\./);
+    // Slide the placed panel along the ground.
+    await fingerSlide(
+      page,
+      await cellPoint(page, 12, GROUND_ROW, 2, 1),
+      await cellPoint(page, 18, GROUND_ROW, 2, 1),
+    );
+    await expect(bricks(page).nth(1)).toHaveAttribute('aria-label', /column 19, row 11\./);
+    // A tap chooses it (the dashed outline), and Turn works.
+    const now = await cellPoint(page, 18, GROUND_ROW, 2, 1);
+    await page.touchscreen.tap(now.x, now.y);
+    await expect(page.locator('.tc-bb-select')).toHaveCount(1);
+    await tid(page, 'bb-turn').tap();
+    await expect(bricks(page).nth(1)).toHaveAttribute('transform', /rotate\(90\)/);
+    // Weapons mode still works with a finger.
+    await chooseSpot(page, 1, true);
+    await tid(page, 'bb-weapon-laser').tap();
+    await expect(spotPad(page, 1)).toHaveAttribute('aria-label', 'Spot 1, laser, selected');
+  });
 });
 
 test('touch: every tool and tray brick is at least 56px, and text is at least 20px', async ({
@@ -132,7 +236,7 @@ test('touch: every tool and tray brick is at least 56px, and text is at least 20
     return s.scrollHeight > s.clientHeight + 1 || s.scrollWidth > s.clientWidth + 1;
   });
   expect(overflow).toBe(false);
-  expect(box!.width).toBe(1024);
+  expect(box!.width).toBe(page.viewportSize()!.width);
 });
 
 test('touch: tap Weapons, tap spot 2, tap a weapon, reload, and it is still there', async ({

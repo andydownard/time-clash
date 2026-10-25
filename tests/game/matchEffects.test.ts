@@ -1,7 +1,7 @@
 // Weapons and upgrades inside a real match: damage, walls, force field, health, repair, range.
 import { describe, expect, it } from 'vitest';
 import { simulateShot } from '../../src/game/ballistics';
-import { TEAM_FACING } from '../../src/game/config';
+import { DAMAGE, TEAM_FACING } from '../../src/game/config';
 import { classifyBlast } from '../../src/game/damage';
 import {
   DEFAULT_EFFECTS,
@@ -19,6 +19,9 @@ import {
   type Players,
   type Team,
 } from '../../src/game/types';
+
+/** A fresh base's full health. */
+const FULL = DAMAGE.startingBaseHp;
 
 const PLAYERS: Players = [
   { name: 'Alex', team: 'PAST', grade: 5, subject: 'math' },
@@ -89,8 +92,11 @@ describe('default effects (a fresh game)', () => {
       turn(c, DEFAULT_EFFECTS, 'near');
     }
     expect(b.snapshot()).toEqual(a.snapshot());
-    expect(a.snapshot().baseHp).toEqual({ PAST: 80, FUTURE: 50 });
-    expect(a.snapshot().maxBaseHp).toEqual({ PAST: 100, FUTURE: 100 });
+    expect(a.snapshot().baseHp).toEqual({
+      PAST: FULL - 2 * DAMAGE.near,
+      FUTURE: FULL - 2 * DAMAGE.direct,
+    });
+    expect(a.snapshot().maxBaseHp).toEqual({ PAST: FULL, FUTURE: FULL });
   });
 });
 
@@ -105,7 +111,7 @@ describe('weapons', () => {
     const out = shoot(c, e, 'direct');
     expect(out.damage).toBe(e.PAST.direct);
     expect(e.PAST.direct).toBe(32);
-    expect(c.snapshot().baseHp.FUTURE).toBe(100 - 32);
+    expect(c.snapshot().baseHp.FUTURE).toBe(FULL - 32);
   });
   it('a weapon forged to level 3 hits harder than at level 1', () => {
     const e = effectsWith({ owned: { royalSword: 3 } });
@@ -138,9 +144,9 @@ describe('upgrades: base health', () => {
   it('starts a base at its raised full health', () => {
     const e = effectsWith({ upgrades: { tower: 2 } });
     const c = createMatch({ disturbances: false, players: PLAYERS, seed: 6, effects: e });
-    expect(c.snapshot().maxBaseHp).toEqual({ PAST: e.PAST.maxHp, FUTURE: 100 });
+    expect(c.snapshot().maxBaseHp).toEqual({ PAST: e.PAST.maxHp, FUTURE: FULL });
     expect(c.snapshot().baseHp.PAST).toBe(e.PAST.maxHp);
-    expect(e.PAST.maxHp).toBeGreaterThan(100);
+    expect(e.PAST.maxHp).toBeGreaterThan(FULL);
   });
 });
 
@@ -191,7 +197,7 @@ describe('upgrades: force field', () => {
     expect(first.blocked).toBe(true);
     const second = shoot(c, fielded, 'direct', 1);
     expect(second.blocked).toBe(true);
-    expect(c.snapshot().baseHp.FUTURE).toBe(100);
+    expect(c.snapshot().baseHp.FUTURE).toBe(FULL);
     c.reloadDone(FAST);
     c.pass();
     c.ready();
@@ -207,7 +213,7 @@ describe('upgrades: force field', () => {
     const third = shoot(c, fielded, 'direct');
     expect(third.blocked).toBeUndefined();
     expect(third.damage).toBe(DEFAULT_EFFECTS.PAST.direct);
-    expect(c.snapshot().baseHp.FUTURE).toBe(100 - DEFAULT_EFFECTS.PAST.direct);
+    expect(c.snapshot().baseHp.FUTURE).toBe(FULL - DEFAULT_EFFECTS.PAST.direct);
   });
   it('does not block a miss, and a miss does not use up the field', () => {
     const c = createMatch({ disturbances: false, players: PLAYERS, seed: 9, effects: fielded });
@@ -232,7 +238,7 @@ describe('upgrades: force field', () => {
     again.ready();
     // The rematch starts with FUTURE first, so PAST shoots on the second turn.
     again.setAim({ angleDeg: 45, power: 60 });
-    expect(again.snapshot().baseHp.FUTURE).toBe(100);
+    expect(again.snapshot().baseHp.FUTURE).toBe(FULL);
   });
 });
 
@@ -248,24 +254,26 @@ describe('upgrades: missiles and squad', () => {
   it('a squad heals its own base at the end of its own turn, up to full health', () => {
     const e = effectsWith({}, { upgrades: { squad: 2 } });
     const c = createMatch({ disturbances: false, players: PLAYERS, seed: 11, effects: e });
-    turn(c, e, 'direct'); // PAST hits FUTURE twice: 100 -> 50
-    expect(c.snapshot().baseHp.FUTURE).toBe(50);
+    turn(c, e, 'direct'); // PAST hits FUTURE twice
+    const hurt = FULL - 2 * DAMAGE.direct;
+    expect(c.snapshot().baseHp.FUTURE).toBe(hurt);
     turn(c, e, 'miss'); // FUTURE misses; its turn ends and the squad heals it
-    expect(c.snapshot().baseHp.FUTURE).toBe(50 + e.FUTURE.repair);
+    expect(c.snapshot().baseHp.FUTURE).toBe(Math.min(FULL, hurt + e.FUTURE.repair));
+    expect(e.FUTURE.repair).toBeLessThan(2 * DAMAGE.direct); // a real heal, not a full one
   });
   it('does not heal the other team, and never past full health', () => {
     const e = effectsWith({}, { upgrades: { squad: 3 } });
     const c = createMatch({ disturbances: false, players: PLAYERS, seed: 12, effects: e });
     turn(c, e, 'miss');
     turn(c, e, 'miss');
-    expect(c.snapshot().baseHp).toEqual({ PAST: 100, FUTURE: 100 });
+    expect(c.snapshot().baseHp).toEqual({ PAST: FULL, FUTURE: FULL });
   });
   it('a team with no squad is not healed', () => {
     const c = createMatch({ disturbances: false, players: PLAYERS, seed: 13 });
     turn(c, DEFAULT_EFFECTS, 'miss');
     turn(c, DEFAULT_EFFECTS, 'direct');
     turn(c, DEFAULT_EFFECTS, 'miss');
-    expect(c.snapshot().baseHp.PAST).toBe(50);
+    expect(c.snapshot().baseHp.PAST).toBe(FULL - 2 * DAMAGE.direct);
   });
 });
 
@@ -285,6 +293,6 @@ describe('who gets the damage', () => {
     c.ready();
     const out = shoot(c, DEFAULT_EFFECTS, 'direct');
     expect(out.target).toBe(otherTeam(team));
-    expect(c.snapshot().baseHp[team]).toBe(100);
+    expect(c.snapshot().baseHp[team]).toBe(FULL);
   });
 });

@@ -31,6 +31,7 @@ test('a returning family goes straight to the Camp, and the first tap there unlo
   await page.reload();
   await expect(tid(page, 'camp-start')).toBeVisible({ timeout: 10_000 });
   await expect(tid(page, 'tap-to-play')).toHaveCount(0);
+  await expect(tid(page, 'setup-next')).toHaveCount(0);
   await clashFromCamp(page);
   await expect(tid(page, 'pass-screen')).toBeVisible({ timeout: 10_000 });
 });
@@ -46,9 +47,12 @@ test('Setup has a Back button that returns to the Camp without saving', async ({
   await expect(tid(page, 'setup-name-PAST')).toHaveValue(PAST_SIDE.name);
 });
 
-test('a brand-new family has no Back on Setup (nowhere to go back to)', async ({ page }) => {
+test('a brand-new family goes to Setup, not the Camp, with no Back (nowhere to go back to)', async ({
+  page,
+}) => {
   await toSetup(page);
   await expect(tid(page, 'setup-back')).toHaveCount(0);
+  await expect(tid(page, 'camp-start')).toHaveCount(0);
 });
 
 test('the Forge has Back, and so does the pause panel in a game', async ({ page }) => {

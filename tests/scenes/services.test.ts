@@ -83,6 +83,12 @@ describe('createServices', () => {
     expect(services.audio.volume).toBeCloseTo(0.3);
     expect(services.audio.unlocked).toBe(false);
   });
+  it('offers the Computer player by default, and ?computer=0 switches it off', () => {
+    expect(make().services.computerPlayer).toBe(true);
+    expect(make({ search: '?e2e=1' }).services.computerPlayer).toBe(true);
+    expect(make({ search: '?computer=0' }).services.computerPlayer).toBe(false);
+    expect(make({ search: '?e2e=1&computer=0' }).services.computerPlayer).toBe(false);
+  });
   it('saves mute changes made through the audio manager', () => {
     const { services, storage } = make();
     services.audio.setMuted(true);

@@ -12,7 +12,6 @@ import {
 import {
   angleArc,
   angleFromDrag,
-  angleLabelSpot,
   guideTip,
   bubbleTailTarget,
   aimVector,
@@ -57,14 +56,6 @@ describe('the small angle guide', () => {
     const f = angleArc(45, -1);
     expect(f.start).toBeCloseTo(Math.PI, 9);
     expect(f.end).toBeCloseTo(Math.PI + Math.PI / 4, 9);
-  });
-  it('puts the number just past the tip, away from the launcher', () => {
-    const past = angleLabelSpot(o, 45, 1);
-    expect(past.x).toBeGreaterThan(guideTip(o, 45, 1).x);
-    expect(past.anchorX).toBe(0);
-    const future = angleLabelSpot(o, 45, -1);
-    expect(future.x).toBeLessThan(guideTip(o, 45, -1).x);
-    expect(future.anchorX).toBe(1);
   });
   it('turns a pointer into a whole-degree angle and round-trips the tip', () => {
     for (const facing of [1, -1] as const) {
@@ -183,9 +174,9 @@ describe('placement', () => {
 });
 
 describe('hpFraction with a raised maximum', () => {
-  it('keeps the old behavior with no maximum (out of 100)', () => {
-    expect(hpFraction(100)).toBe(1);
-    expect(hpFraction(50)).toBe(0.5);
+  it('is out of the starting base health when no maximum is given', () => {
+    expect(hpFraction(DAMAGE.startingBaseHp)).toBe(1);
+    expect(hpFraction(DAMAGE.startingBaseHp / 2)).toBe(0.5);
     expect(hpFraction(0)).toBe(0);
   });
   it('is out of the given maximum', () => {

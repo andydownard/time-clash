@@ -29,7 +29,12 @@ export type TimeClashHook = {
   /** Smallest size, in screen pixels, of any label drawn on the canvas, or null. */
   labelPx(): number | null;
   /** What the angle guide on the board shows: the team, its firing point, and its texts. */
-  aim(): { team: string | null; origin: { x: number; y: number } | null; texts: string[] } | null;
+  aim(): {
+    team: string | null;
+    origin: { x: number; y: number } | null;
+    texts: string[];
+    label?: { x: number; y: number; w: number; h: number } | null;
+  } | null;
   /** The birds drawn on the board right now and the bird clock, or null. */
   birds(): { clockMs: number; birds: { x: number; y: number }[] } | null;
 };
@@ -72,6 +77,7 @@ export type ActiveScene = {
     team: string | null;
     origin: { x: number; y: number } | null;
     texts: string[];
+    label?: { x: number; y: number; w: number; h: number } | null;
   };
   birdState?: () => { clockMs: number; birds: { x: number; y: number }[] } | null;
 };

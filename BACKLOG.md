@@ -11,6 +11,7 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 - Caption times now start at measured pauses in the real clips (`scripts/measure-intro-timings.py`). Exact word timing needs Kokoro timing output. Re-run the script after every voice re-render.
 
 ## P2
+- P2: Retune the Computer player levels after the pace rule (2026-10-24, base health 400). With longer matches Easy wins only 13% and Hard 93% against the decent human (targets 25 to 35% and 60 to 65%). Medium is still on target. Numbers: docs/GAME_SPEC.md "Practice opponent". The flag is off, so players do not see it yet. Also check the force field: it still blocks 1 whole hit a level, which is a smaller share of a 400-health base than of a 100-health one.
 - Victory awards: the winner can still hold five awards. Consider a cap if it stings.
 - Wood plank and neon pod card skins, bigger castle and rocket pictures on Setup cards, brighter Tap to Play silhouettes with a visual gag, and bouncing victory blocks are new art (Victory confetti and the fast-answer scrap burst are built; the blocks stay hidden under 820px tall).
 - Decided 2026-10-21, now built: one evasion ability per team. Food Trucks is the default spot (it adds a low wall that Phase 1 did not have). Ammo unlock lives on the Battle Plan, not the Forge.

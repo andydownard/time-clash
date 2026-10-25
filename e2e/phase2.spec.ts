@@ -1,6 +1,8 @@
 // Phase 2 end to end: the Battle Plan (place and base spot), special ammo unlocked with Scrap and
 // fired in battle, and the evasion abilities. The turn is still two shots, then a reload.
 import type { Page } from '@playwright/test';
+import type { BattleLayout } from '../src/game/types';
+import { ANGLE_LABEL_MAX, fighterKeepOut } from '../src/scenes/battle/angleLabel';
 import { expect, test } from './fixtures';
 import { giveScrap, savedCamp } from './support/camp';
 import { saveShot } from './support/shots';
@@ -64,8 +66,9 @@ test('Team Past places its castle on the Battle Plan by keyboard, and it is reme
   await toCamp(page);
   await tid(page, 'camp-start').click();
   await expect(page.locator('[data-screen="plan"]')).toContainText('Alex, place your castle');
-  // A family with no castle place yet sees none picked (the castle stays where it always was).
-  for (const id of ['hillFort', 'villageWall', 'drawbridge'])
+  // A new family sees Village Wall picked, the default, and only that one.
+  await expect(tid(page, 'plan-fort-villageWall')).toHaveAttribute('aria-checked', 'true');
+  for (const id of ['hillFort', 'drawbridge'])
     await expect(tid(page, `plan-fort-${id}`)).toHaveAttribute('aria-checked', 'false');
   const card = tid(page, 'plan-fort-drawbridge');
   const box = (await card.boundingBox())!;
@@ -73,6 +76,7 @@ test('Team Past places its castle on the Battle Plan by keyboard, and it is reme
   await card.focus();
   await page.keyboard.press('Space');
   await expect(card).toHaveAttribute('aria-checked', 'true');
+  await expect(tid(page, 'plan-fort-villageWall')).toHaveAttribute('aria-checked', 'false');
   await expect(tid(page, 'plan-spot-foodTruck')).toHaveAttribute('aria-checked', 'true');
   await saveShot(page, browserName, 'plan-castle');
   await tid(page, 'plan-go').click();
@@ -116,6 +120,19 @@ test('every castle place and base spot draws on the field where shells hit', asy
     expect(l.bases.PAST.y).toBe(t.pastY);
     expect(l.terrain.obstacles).toHaveLength(3);
     await readyUp(page);
+    // The angle number fits the size the unit sweep checks, and sits on no fighter.
+    const label = (await page.evaluate(() => window.__timeclash!.aim()))?.label;
+    expect(label).toBeTruthy();
+    expect(label!.w).toBeLessThanOrEqual(ANGLE_LABEL_MAX.w);
+    expect(label!.h).toBeLessThanOrEqual(ANGLE_LABEL_MAX.h);
+    for (const k of fighterKeepOut(l as BattleLayout))
+      expect(
+        label!.x < k.x + k.w &&
+          k.x < label!.x + label!.w &&
+          label!.y < k.y + k.h &&
+          k.y < label!.y + label!.h,
+        `label on a fighter at ${t.fort}`,
+      ).toBe(false);
     await saveShot(page, browserName, `battle-${t.fort}-${t.spot}`);
     await tid(page, 'pause').click();
     await tid(page, 'pause-leave').click();
@@ -187,8 +204,8 @@ test('evasion: the Stone Wall stands during Team Future’s turn, and the turn s
   const s = await snap(page);
   expect(s.turn.team).toBe('FUTURE');
   expect(s.evasion.PAST.phase).toBe('active');
-  // Aspen hill, the food truck wall, and now the stone wall.
-  expect((await layout(page))!.terrain.obstacles).toHaveLength(3);
+  // Aspen hill, the food truck wall, the default Village Wall, and now the stone wall.
+  expect((await layout(page))!.terrain.obstacles).toHaveLength(4);
   // Team Future's own button is the Hoverboard Dodge.
   await expect(button).toHaveAttribute('aria-label', /Hoverboard Dodge: ready/);
 });

@@ -42,8 +42,14 @@ export const AIM = {
 } as const;
 
 // ---------- Damage and health ----------
+/**
+ * Pace (owner, 2026-10-24): a player with perfect aim and a right answer every turn needs five
+ * turns of their own to win, so a match never ends in one or two turns. A perfect turn is two
+ * direct hits and a Power Shot (25 + 25 + 38 = 88), so full health is a little under five
+ * perfect turns. `tests/game/pace.test.ts` plays it.
+ */
 export const DAMAGE = {
-  startingBaseHp: 100,
+  startingBaseHp: 400,
   /** Impact within this distance of the base rect is a direct hit. */
   directRadius: 48,
   /** Impact within this distance is a near miss (tumble). */
@@ -60,8 +66,8 @@ export const DAMAGE = {
  */
 export const CHARACTER_HEALTH = {
   enabled: false,
-  /** Health each fighter starts with. */
-  hp: 3,
+  /** Health each fighter starts with. Four, so a perfect team needs five turns to beat. */
+  hp: 4,
   /** Health lost to a direct hit. */
   directHit: 1,
   /**
@@ -361,8 +367,11 @@ export const BIOMES: Record<(typeof BIOME_IDS)[number], BiomeConfig> = {
   },
 };
 
-/** What a new family's first Battle Plan shows picked. Food Trucks keeps the Phase 1 base spot. */
-export const DEFAULT_PLAN = { biome: 'aspen', spot: 'foodTruck' } as const;
+/**
+ * What a new family's first Battle Plan shows picked. Food Trucks keeps the Phase 1 base spot, and
+ * Village Wall is Team Past's matching default castle place (owner decision, 2026-10-24).
+ */
+export const DEFAULT_PLAN = { biome: 'aspen', spot: 'foodTruck', fort: 'villageWall' } as const;
 
 // ---------- Evasion (Phase 2) ----------
 /**
@@ -506,8 +515,8 @@ export type BotProfile = {
 };
 
 export const PRACTICE_BOT = {
-  /** Off by default. The UI turns it on later, after the panel review. */
-  enabled: false,
+  /** On for everyone (owner decision, 2026-10-24). `?computer=0` hides it, `?computer=1` shows it. */
+  enabled: true,
   /** Shown wherever the opponent appears. Never "bot", "AI" or "assistant". */
   displayName: 'Computer player',
   levels: {
@@ -595,6 +604,13 @@ export const BASE_BUILDER = {
   groundRows: 1,
   /** One cell is this many steps wide when Snap is off. A free brick sits on this finer grid. */
   freeSteps: 8,
+  /**
+   * Support: a brick must rest on the foundation or on a held-up brick by at least this many
+   * steps sideways (half a cell). A corner touch or a brick stuck to a side does not count.
+   */
+  minSupportSteps: 4,
+  /** A brick let go less than one cell above something drops onto it (at most this many steps). */
+  dropSnapSteps: 7,
   /** Saved bases each player keeps for each side. */
   slots: 3,
   /** Most player names whose saved bases we keep. */
@@ -629,8 +645,11 @@ export const BASE_BUILDER = {
     count: 4,
     /** Pad radius in free steps (a pad is about one and a quarter cells wide). */
     padSteps: 5,
-    /** The lowest a pad may sit, in cells from the top, so the mode switch never covers one. */
-    topRows: 2,
+    /**
+     * The highest a pad may sit, in cells from the top. 0: a pad may ride on the tallest brick
+     * (the mode switch now sits beside the plot, not on it).
+     */
+    topRows: 0,
     /** With no bricks, pads sit in a row on the foundation across these columns. */
     rowFromCol: 6,
     rowToCol: 18,
@@ -772,4 +791,70 @@ export const DISTURBANCE = {
   /** The dials slide to the kicked aim over this long, in this many steps (reduced motion: one jump). */
   recoilSlideMs: 320,
   recoilSlideSteps: 8,
+} as const;
+
+// ---------- Weapon Workshop (make your own Forge weapon) ----------
+/**
+ * The Forge's "Make my own weapon" pad (owner request, 2026-10-24). A player picks a style (the
+ * team's three catalog weapons are the three styles), then spends `budget` points on three stats.
+ * Each stat holds `minPoints` to `maxPoints`. The numbers are set so that no custom weapon ever
+ * beats the best catalog weapon of its team: see `powerScore` in src/game/customWeapons.ts and
+ * the sweep in tests/game/customWeapons.test.ts. A weapon's score is
+ * `direct + near + reachWeight * (speedScale - 1)`. reachWeight 20 counts the catalog's +0.2 launch
+ * speed (Royal Sword to Iron Cannon) as 4 damage, about two Forge levels of direct damage.
+ * Best catalog score: Iron Cannon 32 + 12 + 4 = 48. Best custom score: 43 (Power 5, Splash 4).
+ */
+export const WORKSHOP = {
+  /** Custom weapons one player can keep for one side. */
+  maxPerTeam: 6,
+  /** Points to spend on Power, Reach and Splash together. */
+  budget: 10,
+  minPoints: 1,
+  maxPoints: 5,
+  /** Power: direct-hit damage = base + perPoint x points (19 to 31). */
+  power: { base: 16, perPoint: 3 },
+  /** Splash: near-miss damage = base + perPoint x points (6 to 14). */
+  splash: { base: 4, perPoint: 2 },
+  /** Reach: launch speed scale = base + perPoint x points (1.0 to 1.2, like the catalog). */
+  reach: { base: 0.95, perPoint: 0.05 },
+  /** Score weight of launch speed above 1 (see above). */
+  reachWeight: 20,
+  /** The points each style starts with. The player moves them freely after that. */
+  presets: {
+    short: { power: 3, reach: 1, splash: 1 },
+    long: { power: 1, reach: 3, splash: 1 },
+    heavy: { power: 1, reach: 1, splash: 3 },
+  },
+  /**
+   * Scrap to forge, by score: the first row whose `upTo` the score is not above. The cheapest
+   * matches the Forge's first level-up (6 Scrap). Scores run 25 to 43.
+   */
+  cost: [
+    { upTo: 30, scrap: 6 },
+    { upTo: 36, scrap: 12 },
+    { upTo: 40, scrap: 18 },
+    { upTo: 999, scrap: 24 },
+  ] as ReadonlyArray<{ upTo: number; scrap: number }>,
+  /** A typed name: this many characters at most, letters, digits and spaces only. */
+  typedNameMax: 14,
+  /** A saved name (a picked pair of words or a typed name) is never longer than this. */
+  savedNameMax: 24,
+  /** Longest run of digits allowed in a typed name, so no phone or house number fits. */
+  maxDigitRun: 2,
+  /** Highest serial number in a custom weapon id ("custom:P:7"). */
+  maxSerial: 999,
+  /**
+   * As a base-builder spot weapon (for a later "My weapons" section in Build Base). Damage =
+   * (damageBase + damagePerPower x Power points) x roleScale, rounded. Health = hpBase +
+   * hpPerSparePower x (maxPoints - Power points), so a gentle hitter is sturdier.
+   */
+  mount: {
+    roles: { short: 'direct', long: 'volley', heavy: 'lob' },
+    damageBase: 8,
+    damagePerPower: 3,
+    /** A volley fires several shells, so each one is smaller (like the Archer post). */
+    roleScale: { direct: 1, volley: 0.5, lob: 1 },
+    hpBase: 20,
+    hpPerSparePower: 2,
+  },
 } as const;
