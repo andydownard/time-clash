@@ -735,4 +735,13 @@ export const BUILDER_COPY = {
   spotChosen: (n: number): string => `Spot ${n} chosen. Pick a weapon for it.`,
   weaponUnlocked: (name: string, n: number): string =>
     `You unlocked ${name}! Tap it to put it on spot ${n}.`,
+  /** "My weapons": the weapons the player made in the Forge Workshop, at the top of the list. */
+  myWeapons: 'My weapons',
+  campWeapons: 'Base weapons',
+  myDamage: (n: number): string => `Damage ${n}`,
+  myWeaponLabel: (name: string, damage: number, onSpot: boolean): string =>
+    `${name}, my weapon, damage ${damage}${onSpot ? ', on this spot' : ''}`,
+  /** The quiet row when the player has made none yet. It opens the Forge Workshop. */
+  makeInForge: 'Make a weapon in the Forge',
+  madeInForge: (name: string): string => `You made ${name}! It is in My weapons now.`,
 } as const;

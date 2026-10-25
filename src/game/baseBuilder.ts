@@ -20,6 +20,13 @@ import {
   type Cell,
   type ShapeProblem,
 } from './customShapes';
+import { customMountDef } from './customMounts';
+import {
+  cleanCustomList,
+  findCustom,
+  parseCustomWeaponId,
+  type CustomWeapon,
+} from './customWeapons';
 import { walletKey } from './loadout';
 import type { Team } from './types';
 import { TEAMS } from './types';
@@ -141,6 +148,10 @@ export type SpotWeaponDef = Readonly<{
   damage: number;
   /** Hit points it starts with. */
   hp: number;
+  /** A weapon of your own only: the catalog weapon whose picture it uses. */
+  art?: string;
+  /** A weapon of your own only (made in the Workshop, see customMounts.ts). */
+  mine?: true;
 }>;
 
 export const SPOT_WEAPONS: readonly SpotWeaponDef[] = B.spotWeapons.map((w) => ({ ...w }));
@@ -500,11 +511,47 @@ export function findSpot(
 
 // ---------- The build state and its operations ----------
 
-/** One weapon spot. `x` and `y` (the pad's middle, in steps) are only set when the player pinned it. */
-export type Spot = { weapon?: string; x?: number; y?: number };
+/**
+ * One weapon spot. `x` and `y` (the pad's middle, in steps) are only set when the player pinned it.
+ * `mine` is set only for a weapon of your own: the pad's own copy of it (its id is `weapon`), so a
+ * weapon renamed or gone from the Forge later never breaks a saved base.
+ */
+export type Spot = { weapon?: string; mine?: CustomWeapon; x?: number; y?: number };
 
-/** A spot with its place worked out. `weapon` is null for an empty pad. */
-export type ResolvedSpot = { index: number; x: number; y: number; weapon: string | null };
+/**
+ * A spot with its place worked out. `weapon` is null for an empty pad. `custom` is set only when
+ * the pad holds a weapon of your own: that weapon as a spot weapon, from the pad's copy.
+ */
+export type ResolvedSpot = {
+  index: number;
+  x: number;
+  y: number;
+  weapon: string | null;
+  custom?: SpotWeaponDef;
+};
+
+/**
+ * The weapon on a spot: a catalog weapon, or a weapon of your own read from the pad's copy.
+ * Undefined for an empty pad or anything unknown.
+ */
+export function spotDef(spot: Spot): SpotWeaponDef | undefined {
+  if (spot.weapon === undefined) return undefined;
+  const parsed = parseCustomWeaponId(spot.weapon);
+  if (!parsed) return spotWeaponById(spot.weapon);
+  const copy = cleanMine(spot.weapon, spot.mine);
+  return copy ? customMountDef(copy, parsed.team) : undefined;
+}
+
+/** A pad's copy of a weapon of your own, checked like a saved Workshop weapon, or null. */
+function cleanMine(id: unknown, copy: unknown): CustomWeapon | null {
+  const parsed = parseCustomWeaponId(id);
+  if (!parsed || typeof copy !== 'object' || copy === null) return null;
+  // A copy that names its own id must name this one (a saved copy leaves its id out).
+  const own = (copy as { id?: unknown }).id;
+  if (own !== undefined && own !== id) return null;
+  const [clean] = cleanCustomList([{ ...copy, id }], parsed.team);
+  return clean ?? null;
+}
 
 type Snapshot = { pieces: readonly Placed[]; spots: readonly Spot[] };
 
@@ -661,13 +708,15 @@ export function resolveSpots(pieces: readonly Placed[], spots: readonly Spot[]):
   const floor = B.spots.topRows * S + PAD;
   return normalizeSpots(spots).map((spot, index) => {
     const weapon = spot.weapon ?? null;
+    const custom = spot.mine ? spotDef(spot) : undefined;
+    const extra = custom ? { custom } : {};
     if (spot.x !== undefined && spot.y !== undefined) {
-      return { index, x: padX(spot.x), y: padY(spot.y), weapon };
+      return { index, x: padX(spot.x), y: padY(spot.y), weapon, ...extra };
     }
     const x = padX(Math.round(from + ((to - from) * (index + 0.5)) / B.spots.count));
     const under = rects.filter((r) => r.l < x + PAD && r.r > x - PAD).map((r) => r.t);
     const rest = under.length ? Math.min(...under) : PLOT_STEPS.h;
-    return { index, x, y: Math.max(floor, padY(rest - PAD)), weapon };
+    return { index, x, y: Math.max(floor, padY(rest - PAD)), weapon, ...extra };
   });
 }
 
@@ -685,23 +734,54 @@ const withSpot = (state: BuildState, index: number, next: Spot): BuildState =>
     state.spots.map((s, i) => (i === index ? next : s)),
   );
 
+/** A spot with no weapon: its pinned place (if any) stays. */
+const withoutWeapon = (spot: Spot): Spot => {
+  const rest: Spot = { ...spot };
+  delete rest.weapon;
+  delete rest.mine;
+  return rest;
+};
+
+const sameMine = (a: CustomWeapon | undefined, b: CustomWeapon): boolean =>
+  !!a &&
+  a.name === b.name &&
+  a.base === b.base &&
+  a.power === b.power &&
+  a.reach === b.reach &&
+  a.splash === b.splash;
+
 /**
- * Puts a weapon on a spot, replacing any weapon there. A weapon the player has not unlocked is
- * refused when `owned` is given. The same weapon on the same spot changes nothing.
+ * Puts a weapon on a spot, replacing any weapon there. A catalog weapon the player has not
+ * unlocked is refused when `owned` is given. A weapon of your own ("custom:P:1") must be in
+ * `mine` (the player's Workshop weapons for this side) and be this side's: it costs nothing and
+ * the pad keeps a copy of it. The same weapon on the same spot changes nothing.
  */
 export function assignWeapon(
   state: BuildState,
   index: number,
   weaponId: string,
   owned?: ReadonlySet<string>,
+  mine?: readonly CustomWeapon[],
 ): SpotResult {
   const cur = state.spots[index];
   if (!cur) return { ok: false, reason: 'nospot' };
+  if (parseCustomWeaponId(weaponId)) {
+    const found = findCustom(mine, weaponId);
+    const copy = found && cleanMine(weaponId, found);
+    if (!copy || parseCustomWeaponId(copy.id)?.team !== state.team) {
+      return { ok: false, reason: 'unknown' };
+    }
+    if (cur.weapon === copy.id && sameMine(cur.mine, copy)) return { ok: true, state };
+    return {
+      ok: true,
+      state: withSpot(state, index, { ...withoutWeapon(cur), weapon: copy.id, mine: copy }),
+    };
+  }
   const def = spotWeaponById(weaponId);
   if (!def || def.team !== state.team) return { ok: false, reason: 'unknown' };
   if (owned && !owned.has(def.id)) return { ok: false, reason: 'locked' };
   if (cur.weapon === def.id) return { ok: true, state };
-  return { ok: true, state: withSpot(state, index, { ...cur, weapon: def.id }) };
+  return { ok: true, state: withSpot(state, index, { ...withoutWeapon(cur), weapon: def.id }) };
 }
 
 /** Takes the weapon off a spot. The pad stays. */
@@ -709,9 +789,7 @@ export function clearSpot(state: BuildState, index: number): SpotResult {
   const cur = state.spots[index];
   if (!cur) return { ok: false, reason: 'nospot' };
   if (cur.weapon === undefined) return { ok: false, reason: 'empty' };
-  const rest: Spot = { ...cur };
-  delete rest.weapon;
-  return { ok: true, state: withSpot(state, index, rest) };
+  return { ok: true, state: withSpot(state, index, withoutWeapon(cur)) };
 }
 
 /** Pins a pad's middle (in steps) or, with null, lets it follow the base again. */
@@ -741,6 +819,11 @@ function normalizeSpots(spots: readonly Spot[]): Spot[] {
     const s = spots[i];
     const out: Spot = {};
     if (s && spotWeaponById(s.weapon)) out.weapon = s.weapon;
+    const copy = s ? cleanMine(s.weapon, s.mine) : null;
+    if (copy) {
+      out.weapon = copy.id;
+      out.mine = copy;
+    }
     if (s && padFits(s.x, s.y)) {
       out.x = s.x;
       out.y = s.y;
@@ -753,8 +836,13 @@ function normalizeSpots(spots: readonly Spot[]): Spot[] {
 
 /** [piece, x, y, ox, oy, rot, hp] */
 export type SavedPiece = [string, number, number, number, number, number, number];
-/** A weapon spot in a save: weapon id and, if pinned, the pad's middle in steps. */
-export type SavedSpot = { w?: string; x?: number; y?: number };
+/** A pad's copy of a weapon of your own in a save: style, name, Power, Reach, Splash. */
+export type SavedMine = { b: string; n: string; p: number; r: number; s: number };
+/**
+ * A weapon spot in a save: weapon id and, if pinned, the pad's middle in steps. `m` is new and
+ * optional: only a weapon of your own has it, so every older save loads unchanged.
+ */
+export type SavedSpot = { w?: string; m?: SavedMine; x?: number; y?: number };
 /** `s` is new and optional, so a base saved before weapon spots still loads. */
 export type SavedBase = { v: 1; p: SavedPiece[]; s?: SavedSpot[] };
 
@@ -769,6 +857,17 @@ export const toSaved = (pieces: readonly Placed[], spots?: readonly Spot[]): Sav
   if (clean.some(spotHasData)) {
     base.s = clean.map((c) => ({
       ...(c.weapon !== undefined ? { w: c.weapon } : {}),
+      ...(c.mine
+        ? {
+            m: {
+              b: c.mine.base,
+              n: c.mine.name,
+              p: c.mine.power,
+              r: c.mine.reach,
+              s: c.mine.splash,
+            },
+          }
+        : {}),
       ...(c.x !== undefined ? { x: c.x, y: c.y } : {}),
     }));
   }
@@ -818,6 +917,9 @@ function riderOf(pieces: readonly Placed[], x: number, y: number): number | null
   return best;
 }
 
+const isObjectRow = (v: unknown): v is Record<string, unknown> =>
+  typeof v === 'object' && v !== null && !Array.isArray(v);
+
 function cleanSpots(raw: unknown, team: Team, owned?: ReadonlySet<string>): Spot[] {
   let data = raw;
   if (typeof raw === 'string') {
@@ -832,9 +934,17 @@ function cleanSpots(raw: unknown, team: Team, owned?: ReadonlySet<string>): Spot
     const row: unknown = Array.isArray(list) ? list[i] : undefined;
     const out: Spot = {};
     if (typeof row !== 'object' || row === null || Array.isArray(row)) return out;
-    const { w, x, y } = row as Record<string, unknown>;
+    const { w, m, x, y } = row as Record<string, unknown>;
     const def = spotWeaponById(w);
     if (def && def.team === team && (!owned || owned.has(def.id))) out.weapon = def.id;
+    // A weapon of your own travels in the pad's copy, so it needs no unlock (like a shape).
+    const copy = isObjectRow(m)
+      ? cleanMine(w, { base: m.b, name: m.n, power: m.p, reach: m.r, splash: m.s })
+      : null;
+    if (copy && parseCustomWeaponId(copy.id)?.team === team) {
+      out.weapon = copy.id;
+      out.mine = copy;
+    }
     if (padFits(x, y)) {
       out.x = x;
       out.y = y as number;

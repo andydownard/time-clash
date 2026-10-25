@@ -1,5 +1,5 @@
 // Forging a weapon of your own with Scrap, then using it like any other: equip it, level it up,
-// take it into a match, and mount it on a base (data only). Every refusal changes nothing.
+// take it into a match, and mount it on a base. Every refusal changes nothing.
 import { describe, expect, it } from 'vitest';
 import { WORKSHOP } from '../../src/game/config';
 import { customMountWeapons } from '../../src/game/customMounts';
@@ -188,7 +188,7 @@ describe('a custom weapon is a normal owned weapon after that', () => {
   });
 });
 
-describe('customMountWeapons (data for a later "My weapons" section in Build Base)', () => {
+describe('customMountWeapons (the "My weapons" group in Build Base)', () => {
   it('is empty for a player with none', () => {
     expect(customMountWeapons(campWith(0), 'Alex', 'PAST')).toEqual([]);
     expect(customMountWeapons(campWith(0), 'Nobody', 'FUTURE')).toEqual([]);
@@ -215,6 +215,8 @@ describe('customMountWeapons (data for a later "My weapons" section in Build Bas
         role: 'direct',
         damage: 17,
         hp: 24,
+        art: 'cannon',
+        mine: true,
       },
       {
         id: 'custom:P:2',
@@ -224,6 +226,8 @@ describe('customMountWeapons (data for a later "My weapons" section in Build Bas
         role: 'volley',
         damage: 6,
         hp: 28,
+        art: 'archerPost',
+        mine: true,
       },
       {
         id: 'custom:P:3',
@@ -233,6 +237,8 @@ describe('customMountWeapons (data for a later "My weapons" section in Build Bas
         role: 'lob',
         damage: 23,
         hp: 20,
+        art: 'catapult',
+        mine: true,
       },
     ]);
     expect(customMountWeapons(camp, 'Alex', 'FUTURE')).toEqual([]);

@@ -872,12 +872,18 @@ export const WORKSHOP = {
   /** Highest serial number in a custom weapon id ("custom:P:7"). */
   maxSerial: 999,
   /**
-   * As a base-builder spot weapon (for a later "My weapons" section in Build Base). Damage =
+   * As a base-builder spot weapon ("My weapons" in Build Base's Weapons mode). Damage =
    * (damageBase + damagePerPower x Power points) x roleScale, rounded. Health = hpBase +
-   * hpPerSparePower x (maxPoints - Power points), so a gentle hitter is sturdier.
+   * hpPerSparePower x (maxPoints - Power points), so a gentle hitter is sturdier. Mounting one
+   * costs no Scrap: it was paid for when it was forged.
    */
   mount: {
     roles: { short: 'direct', long: 'volley', heavy: 'lob' },
+    /** The catalog spot weapon whose picture a weapon of your own uses, by team and style. */
+    art: {
+      PAST: { short: 'cannon', long: 'archerPost', heavy: 'catapult' },
+      FUTURE: { short: 'laser', long: 'turret', heavy: 'missilePod' },
+    },
     damageBase: 8,
     damagePerPower: 3,
     /** A volley fires several shells, so each one is smaller (like the Archer post). */

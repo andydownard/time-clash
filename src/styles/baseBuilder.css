@@ -566,6 +566,96 @@
 .tc-bb-weapon-clear[aria-disabled='true'] {
   opacity: 0.55;
 }
+/* "My weapons": the player's own Workshop weapons, at the top of the list, two to a row. While
+   the group shows, the list is as wide as the room on the far side of the chosen pad allows
+   (--bb-list-w, set by the screen), the base weapons go two to a row too, and the list may run
+   past the plot picture into the empty band under it. */
+.tc-bb-weapons[data-mine='some'] {
+  width: var(--bb-list-w, min(400px, 46%));
+  max-height: calc(100% - var(--tc-s-3));
+}
+.tc-bb-group-line {
+  height: 0;
+  margin: 3px 0;
+  overflow: hidden;
+  border-top: 3px solid var(--tc-parchment-warm);
+  color: transparent;
+  font-size: var(--tc-text-min);
+}
+.tc-bb-weapons[data-mine='some'] .tc-bb-weapons-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.tc-bb-weapons[data-mine='some'] .tc-bb-weapons-list > :not(.tc-bb-weapon) {
+  grid-column: 1 / -1;
+}
+.tc-bb-weapons[data-mine='some'] .tc-bb-weapon {
+  gap: 4px;
+  padding: 2px 4px;
+}
+.tc-bb-weapons[data-mine='some'] .tc-bb-weapon-icon {
+  width: 32px;
+  height: 32px;
+}
+/* A long word (Shield generator in Orbitron) breaks with a hyphen, never in silence. */
+.tc-bb-weapons[data-mine='some'] .tc-bb-weapon-name {
+  hyphens: auto;
+  overflow-wrap: break-word;
+}
+.tc-bb-group-title {
+  margin: 0;
+  color: var(--tc-parchment-warm);
+  font-family: var(--tc-font-voice-old);
+  font-weight: 400;
+  font-size: var(--tc-text-min);
+  line-height: 1.1;
+}
+.tc-bb[data-team='FUTURE'] .tc-bb-group-title {
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+}
+.tc-bb-myw {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.tc-bb-myw-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2px;
+}
+.tc-bb-myw-tile {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  align-content: center;
+  column-gap: 4px;
+  row-gap: 0;
+  padding: 2px 4px;
+}
+.tc-bb-myw-damage {
+  grid-column: 1 / -1;
+  white-space: nowrap;
+}
+/* The status line already says "Spot N chosen. Pick a weapon for it.", so with My weapons showing
+   the spot title steps aside (as on a short screen) and the two group titles lead. */
+.tc-bb-weapons[data-mine='some'] .tc-bb-weapons-title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+/* On this spot: a check badge on the corner of the picture, clear of every word. */
+.tc-bb-myw-check {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+}
+.tc-bb-make {
+  align-self: flex-start;
+  color: var(--tc-parchment-warm);
+}
 .tc-bb[data-mode='weapons'] .tc-bb-tray {
   opacity: 0.45;
 }
