@@ -281,11 +281,24 @@
   font-size: var(--tc-fs-label);
 }
 
-.tc-bb-tray {
+/* The plot row, the status line and the main bar. The drawing pad covers all three. */
+.tc-bb-body {
+  position: relative;
+  flex: 1 1 0;
+  min-height: 0;
   display: flex;
+  flex-direction: column;
+  gap: var(--tc-s-3);
+}
+/* The main bar: bricks, saved shapes, then "My shape". It wraps to a second row (in even columns)
+   when there are many shapes, so every tile stays in view and nothing scrolls. */
+.tc-bb-tray {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--bb-tile-min), 1fr));
+  /* Orbitron is wider than MedievalSharp, so Team Future tiles are wider (fewer to a row). */
+  --bb-tile-min: 92px;
   gap: var(--tc-s-2);
   padding: var(--tc-s-2) var(--tc-s-3);
-  overflow-x: auto;
   background: var(--tc-ink-deep);
   border: 4px solid var(--tc-purple-700);
   border-radius: 22px;
@@ -293,14 +306,13 @@
 }
 .tc-bb-brick {
   position: relative;
-  flex: 1 1 0;
-  min-width: 88px;
-  min-height: 112px;
+  min-width: 0;
+  min-height: 92px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  padding: var(--tc-s-1) var(--tc-s-1) var(--tc-s-2);
+  padding: var(--tc-s-1) 2px var(--tc-s-2);
   background: var(--tc-parchment-warm);
   color: var(--tc-ink-deep);
   border: 4px solid var(--tc-purple-700);
@@ -311,6 +323,9 @@
   white-space: nowrap;
   cursor: grab;
   touch-action: none;
+}
+.tc-bb[data-team='FUTURE'] .tc-bb-tray {
+  --bb-tile-min: 112px;
 }
 .tc-bb[data-team='FUTURE'] .tc-bb-brick {
   font-family: var(--tc-font-voice-new);
@@ -339,9 +354,14 @@
 }
 .tc-bb-icon {
   display: block;
+  width: 72px;
+  height: 54px;
   pointer-events: none;
 }
 .tc-bb-brick-name {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
   pointer-events: none;
 }
 .tc-bb-ghost {
@@ -550,16 +570,16 @@
   opacity: 0.45;
 }
 
-/* Your own shapes: the tile in the tray, the saved shapes row, and the drawing pad. */
+/* Your own shapes: the saved shape tiles and "My shape" in the main bar, and the drawing pad. */
 .tc-bb-own {
-  flex: none;
-  min-width: 56px;
-  min-height: 64px;
+  min-width: 0;
+  min-height: 92px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--tc-s-2);
-  padding: 0 var(--tc-s-3);
+  gap: var(--tc-s-1);
+  padding: var(--tc-s-1);
   background: var(--tc-ink-deep);
   color: var(--tc-parchment-warm);
   border: 4px dashed var(--tc-ember);
@@ -567,7 +587,7 @@
   font-family: var(--tc-font-voice-old);
   font-size: var(--tc-fs-label);
   line-height: 1;
-  white-space: nowrap;
+  text-align: center;
   cursor: pointer;
   touch-action: manipulation;
 }
@@ -585,62 +605,40 @@
 }
 .tc-bb-own-icon {
   flex: none;
+  width: 40px;
+  height: 40px;
   color: var(--tc-ember);
   pointer-events: none;
 }
-.tc-bb-own-name {
-  pointer-events: none;
-}
 
-.tc-bb-shapes {
-  display: flex;
-  align-items: center;
-  gap: var(--tc-s-2);
-  padding: 2px var(--tc-s-3);
-  overflow-x: auto;
-  background: var(--tc-ink-deep);
-  border: 3px solid var(--tc-purple-700);
-  border-radius: 22px;
-  box-shadow: 0 0 0 3px var(--tc-ember);
-}
-.tc-bb[data-team='FUTURE'] .tc-bb-shapes {
-  border-color: var(--tc-blue-500);
-}
-.tc-bb-shapes-title {
-  flex: none;
-  margin: 0 var(--tc-s-2) 0 0;
-  color: var(--tc-parchment-warm);
-  font-family: var(--tc-font-voice-old);
-  font-weight: 400;
-  font-size: var(--tc-text-min);
-  line-height: 1.1;
-  white-space: nowrap;
-}
-.tc-bb[data-team='FUTURE'] .tc-bb-shapes-title {
-  font-family: var(--tc-font-voice-new);
-  font-weight: var(--tc-fw-new-heavy);
-}
+/* A saved shape: a tile like a brick, its name under the picture, a trash can at its upper right. */
 .tc-bb-mine-wrap {
-  flex: none;
+  position: relative;
+  min-width: 0;
   display: flex;
-  align-items: stretch;
-  gap: var(--tc-s-1);
 }
 .tc-bb-mine {
-  flex: none;
-  min-width: 64px;
-  min-height: 64px;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 92px;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: var(--tc-s-1) var(--tc-s-1) var(--tc-s-2);
   background: var(--tc-parchment-warm);
+  color: var(--tc-ink-deep);
   border: 4px solid var(--tc-purple-700);
   border-radius: 16px;
+  font-family: var(--tc-font-voice-old);
+  font-size: var(--tc-fs-label);
+  line-height: 1;
   cursor: grab;
   touch-action: none;
 }
 .tc-bb[data-team='FUTURE'] .tc-bb-mine {
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
   border-color: var(--tc-blue-500);
 }
 .tc-bb-mine[aria-pressed='true'] {
@@ -652,22 +650,86 @@
 }
 .tc-bb-shape-icon {
   display: block;
+  flex: none;
   pointer-events: none;
 }
+.tc-bb-mine-name {
+  align-self: stretch;
+  overflow: hidden;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* The trash can: a 56px tap area inside the tile's upper right corner, drawn as a smaller can. */
 .tc-bb-mine-del {
-  flex: none;
-  min-width: 56px;
-  min-height: 64px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: var(--tc-tap);
+  height: var(--tc-tap);
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: var(--tc-s-1);
+  background: transparent;
+  color: var(--tc-ink-deep);
+  border: 0;
+  border-radius: 0 16px 0 16px;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.tc-bb-mine-can {
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0;
   background: var(--tc-parchment-warm);
-  color: var(--tc-ink-deep);
-  border: 4px solid var(--tc-banner-red);
-  border-radius: 14px;
-  cursor: pointer;
-  touch-action: manipulation;
+  border: 3px solid var(--tc-banner-red);
+  border-radius: 50%;
+  pointer-events: none;
+}
+/* Delete? Yes / No, inside the tile. It is a little wider than the tile so both buttons are 56px. */
+.tc-bb-mine-ask {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  z-index: 2;
+  width: 136px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--tc-s-1);
+  padding: var(--tc-s-1);
+  background: var(--tc-ink-deep);
+  color: var(--tc-parchment-warm);
+  border: 4px solid var(--tc-ember);
+  border-radius: 16px;
+}
+.tc-bb-mine-ask-text {
+  margin: 0;
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: var(--tc-text-min);
+  line-height: 1;
+}
+.tc-bb-mine-ask-row {
+  display: flex;
+  gap: var(--tc-s-1);
+}
+.tc-bb-mine-ask .tc-btn {
+  min-width: var(--tc-tap);
+  min-height: var(--tc-tap);
+  padding: 0 var(--tc-s-2);
+}
+
+/* The drawing pad covers the plot, the status line and the bar. What it covers is hidden, so no
+   glow from underneath shows around its edge. */
+.tc-bb[data-pad='open'] :is(.tc-bb-main, .tc-bb-hint, .tc-bb-tray) {
+  visibility: hidden;
 }
 .tc-bb-pad {
   position: absolute;
@@ -675,19 +737,31 @@
   z-index: 3;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  grid-template-rows: auto 1fr;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  grid-template-areas:
+    'head head'
+    'mats mats'
+    'grid side';
   column-gap: var(--tc-s-5);
-  row-gap: var(--tc-s-2);
-  align-content: center;
+  row-gap: var(--tc-s-3);
+  align-content: start;
   padding: var(--tc-s-3) var(--tc-s-5);
+  overflow: hidden;
   background: var(--tc-ink-deep);
   color: var(--tc-parchment-warm);
   border: 4px solid var(--tc-ember);
   border-radius: 22px;
   box-shadow: 0 8px 0 rgb(0 0 0 / 35%);
+  --tc-sel-edge: var(--tc-parchment-warm);
+}
+.tc-bb-pad-head {
+  grid-area: head;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: var(--tc-s-5);
 }
 .tc-bb-pad-title {
-  grid-column: 1 / -1;
   margin: 0;
   font-family: var(--tc-font-voice-old);
   font-weight: 400;
@@ -698,10 +772,24 @@
   font-family: var(--tc-font-voice-new);
   font-weight: var(--tc-fw-new-heavy);
 }
+.tc-bb-mats {
+  grid-area: mats;
+}
+.tc-bb-mat {
+  gap: var(--tc-s-2);
+}
+.tc-bb-mat-icon {
+  flex: none;
+  display: block;
+  pointer-events: none;
+}
 .tc-bb-pad-grid {
+  grid-area: grid;
   display: grid;
-  grid-template-columns: repeat(4, 60px);
-  grid-auto-rows: 60px;
+  grid-template-columns: repeat(var(--bb-pad-n, 6), var(--bb-sq));
+  grid-auto-rows: var(--bb-sq);
+  /* 64px squares fit beside the side panel at 1024 by 768. Never under 56px. */
+  --bb-sq: 64px;
   gap: var(--tc-s-1);
   padding: var(--tc-s-2);
   align-self: start;
@@ -727,35 +815,61 @@
 .tc-bb[data-team='FUTURE'] .tc-bb-sq {
   border-color: var(--tc-blue-300);
 }
-/* Filled squares look like the brick they will become, and a thick ink edge shows them without color. */
+/* A filled square shows its material picture, and a thick light edge shows it is filled. */
 .tc-bb-sq[aria-pressed='true'] {
-  background: var(--tc-steel-blue);
-  border: 5px solid var(--tc-parchment-warm);
-  box-shadow: inset 0 0 0 3px var(--tc-ink-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid var(--tc-parchment-warm);
 }
-.tc-bb[data-team='FUTURE'] .tc-bb-sq[aria-pressed='true'] {
-  background: var(--tc-blue-700);
-  border-color: var(--tc-pulse);
+.tc-bb-sq-art {
+  display: block;
+  pointer-events: none;
 }
 .tc-bb-pad-side {
+  grid-area: side;
   min-width: 0;
   display: flex;
   flex-direction: column;
   gap: var(--tc-s-2);
 }
+.tc-bb-pad-field {
+  display: flex;
+  align-items: center;
+  gap: var(--tc-s-3);
+}
+.tc-bb-pad-label {
+  flex: none;
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: var(--tc-text-min);
+}
+.tc-bb-pad-name {
+  flex: 1 1 auto;
+  min-width: 0;
+}
 .tc-bb-pad-help,
 .tc-bb-pad-count,
-.tc-bb-pad-msg {
+.tc-bb-pad-msg,
+.tc-bb-pad-name-msg {
   margin: 0;
   font-family: var(--tc-font-voice-new);
   font-weight: var(--tc-fw-new-heavy);
   font-size: var(--tc-text-min);
   line-height: 1.2;
 }
+.tc-bb-pad-name-msg:empty {
+  display: none;
+}
 .tc-bb-pad-row {
   display: flex;
   align-items: center;
   gap: var(--tc-s-4);
+}
+.tc-bb-pad-nums {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tc-s-1);
 }
 .tc-bb-pad-preview {
   flex: none;
@@ -811,12 +925,9 @@
 .tc-bb-pad-btn[aria-disabled='true'] {
   opacity: 0.55;
 }
-.tc-bb[data-mode='weapons'] .tc-bb-shapes {
-  opacity: 0.45;
-}
 
-/* On a short screen (iPad mini, 1024 by 768) the My shapes row takes some height, so the tool
-   icons get a little smaller and the whole Done button stays in view. */
+/* On a short screen (iPad mini, 1024 by 768) the bar can take two rows, so the tool icons get a
+   little smaller and the whole Done button stays in view. */
 @media (max-height: 790px) {
   .tc-bb-tool svg {
     width: 28px;

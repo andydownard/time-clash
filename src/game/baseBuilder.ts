@@ -7,12 +7,16 @@
 import { BASE_BUILDER as B } from './config';
 import {
   customId,
+  forTeam,
   isCustomId,
   parseCustomId,
   rotateCells,
+  shapeHp,
   shapeKey,
+  shapeNameProblem,
   shapeProblem,
   cellsFromKey,
+  tidyName,
   type Cell,
   type ShapeProblem,
 } from './customShapes';
@@ -35,7 +39,7 @@ export type PieceDef = Readonly<{
   hp: number;
   /** Owned from the start. Other pieces cost Scrap (see BASE_BUILDER.pieceScrap). */
   free: boolean;
-  /** Only for a shape of your own: its filled squares (column, row), before turning. */
+  /** Only for a shape of your own: its filled squares (column, row, material), before turning. */
   cells?: readonly Cell[];
 }>;
 
@@ -87,7 +91,7 @@ function customDef(id: string): PieceDef | undefined {
           name: 'Your shape',
           w,
           h,
-          hp: parts.cells.length * B.hpPerCell,
+          hp: shapeHp(parts.team, parts.cells),
           free: true,
           cells: parts.cells,
         }
@@ -967,6 +971,8 @@ export type TeamBases = {
   slots: Array<SavedBase | null>;
   /** Shapes of your own that this player drew for this side (keys, see customShapes.ts). */
   shapes?: string[];
+  /** The name the player gave each shape, by key. A shape with no name here gets "Shape N". */
+  shapeNames?: Record<string, string>;
 };
 export type BasesState = { players: Record<string, Record<Team, TeamBases>> };
 
@@ -1020,54 +1026,102 @@ export function chooseSlot(state: BasesState, name: string, team: Team, slot: nu
 
 // ---------- Your own shapes: the saved list for each player and side ----------
 
-/** The saved shape keys that are clean, new, and within the most shapes. */
-function cleanShapes(raw: unknown): string[] {
+/** The saved shape keys that are clean for this side, new, and within the most shapes. */
+function cleanShapes(raw: unknown, team: Team): string[] {
   if (!Array.isArray(raw)) return [];
   const out: string[] = [];
   for (const key of raw.slice(0, B.maxShapes * 4)) {
     if (out.length >= B.maxShapes) break;
-    if (cellsFromKey(key) !== null && !out.includes(key as string)) out.push(key as string);
+    if (cellsFromKey(key, team) !== null && !out.includes(key as string)) out.push(key as string);
+  }
+  return out;
+}
+
+/** The saved names that belong to a saved shape and pass the name rules. */
+function cleanShapeNames(raw: unknown, keys: readonly string[]): Record<string, string> {
+  const out: Record<string, string> = {};
+  if (typeof raw !== 'object' || raw === null || Array.isArray(raw)) return out;
+  for (const key of keys) {
+    const v: unknown = Object.prototype.hasOwnProperty.call(raw, key)
+      ? (raw as Record<string, unknown>)[key]
+      : undefined;
+    if (shapeNameProblem(v) === null) out[key] = tidyName(v);
   }
   return out;
 }
 
 /** The shapes a player drew for a side, as keys. Make a piece id with `customId(team, key)`. */
 export function shapesOf(state: BasesState, name: string, team: Team): string[] {
-  return cleanShapes(basesOf(state, name, team).shapes);
+  return cleanShapes(basesOf(state, name, team).shapes, team);
+}
+
+/** The name shown for the shape at place `index` (0 first) when it was saved without one. */
+export const defaultShapeName = (index: number): string => `Shape ${index + 1}`;
+
+export type SavedShape = { key: string; id: string; name: string };
+
+/** The saved shapes in saved order, each with its piece id and its name (or "Shape N"). */
+export function savedShapes(state: BasesState, name: string, team: Team): SavedShape[] {
+  const keys = shapesOf(state, name, team);
+  const names = cleanShapeNames(basesOf(state, name, team).shapeNames, keys);
+  return keys.map((key, i) => ({
+    key,
+    id: customId(team, key),
+    name: names[key] ?? defaultShapeName(i),
+  }));
+}
+
+/** The name the pad fills in for a new shape: the first "Shape N" from the next place not in use. */
+export function nextShapeName(state: BasesState, name: string, team: Team): string {
+  const taken = new Set(savedShapes(state, name, team).map((s) => s.name.toLowerCase()));
+  let i = shapesOf(state, name, team).length;
+  while (taken.has(defaultShapeName(i).toLowerCase())) i++;
+  return defaultShapeName(i);
 }
 
 export type ShapeSaveRefusal = ShapeProblem | 'duplicate' | 'full' | 'noname';
 export type ShapeSaveResult =
-  | { ok: true; state: BasesState; key: string; id: string }
+  | { ok: true; state: BasesState; key: string; id: string; name: string }
   | { ok: false; reason: ShapeSaveRefusal };
 
 /**
- * Saves a drawing in the player's list for this side. It is free. The same shape drawn in another
- * place on the pad is a duplicate. A player keeps at most BASE_BUILDER.maxShapes for each side.
+ * Saves a drawing in the player's list for this side, with its name. It is free. The same shape
+ * (same squares, same materials) drawn in another place on the pad is a duplicate. A player keeps
+ * at most BASE_BUILDER.maxShapes for each side. A name that is empty or breaks the name rules
+ * (see `shapeNameProblem`; the player's own name is never used) becomes the next "Shape N", so
+ * Save always works.
  */
 export function saveShape(
   state: BasesState,
   name: string,
   team: Team,
   cells: readonly Cell[],
+  shapeName?: string,
 ): ShapeSaveResult {
-  const problem = shapeProblem(cells);
+  const problem = shapeProblem(cells, team);
   if (problem) return { ok: false, reason: problem };
   if (walletKey(name) === '') return { ok: false, reason: 'noname' };
-  const key = shapeKey(cells);
+  const key = shapeKey(forTeam(team, cells));
   const have = shapesOf(state, name, team);
   if (have.includes(key)) return { ok: false, reason: 'duplicate' };
   if (have.length >= B.maxShapes) return { ok: false, reason: 'full' };
+  const cur = basesOf(state, name, team);
+  const label =
+    shapeNameProblem(shapeName, [name]) === null
+      ? tidyName(shapeName)
+      : nextShapeName(state, name, team);
   const next = withTeamBases(state, name, team, {
-    ...basesOf(state, name, team),
+    ...cur,
     shapes: [...have, key],
+    shapeNames: { ...cleanShapeNames(cur.shapeNames, have), [key]: label },
   });
-  return { ok: true, state: next, key, id: customId(team, key) };
+  return { ok: true, state: next, key, id: customId(team, key), name: label };
 }
 
 /**
- * Takes a shape off the saved list. A base that already uses it keeps it, because a placed shape
- * carries its own squares. A key that is not in the list changes nothing (the same state returns).
+ * Takes a shape (and its name) off the saved list. A base that already uses it keeps it, because
+ * a placed shape carries its own squares and materials. A key that is not in the list changes
+ * nothing (the same state returns).
  */
 export function deleteShape(state: BasesState, name: string, team: Team, key: string): BasesState {
   const have = shapesOf(state, name, team);
@@ -1075,7 +1129,11 @@ export function deleteShape(state: BasesState, name: string, team: Team, key: st
   const cur = basesOf(state, name, team);
   const left = have.filter((k) => k !== key);
   const next: TeamBases = { chosen: cur.chosen, slots: cur.slots };
-  if (left.length) next.shapes = left;
+  if (left.length) {
+    next.shapes = left;
+    const names = cleanShapeNames(cur.shapeNames, left);
+    if (Object.keys(names).length) next.shapeNames = names;
+  }
   return withTeamBases(state, name, team, next);
 }
 
@@ -1133,9 +1191,11 @@ export function parseBases(raw: unknown): BasesState | null {
       const t = value[team];
       if (!isObject(t)) continue;
       const slots = Array.isArray(t.slots) ? t.slots : [];
-      const shapes = cleanShapes(t.shapes);
+      const shapes = cleanShapes(t.shapes, team);
+      const shapeNames = cleanShapeNames(t.shapeNames, shapes);
       entry[team] = {
         ...(shapes.length ? { shapes } : {}),
+        ...(Object.keys(shapeNames).length ? { shapeNames } : {}),
         chosen: isWhole(t.chosen, 0, B.slots - 1) ? t.chosen : 0,
         slots: Array.from({ length: B.slots }, (_, i) => {
           // Cleaned but not settled: the builder settles a base when it opens it, so it can say so.
