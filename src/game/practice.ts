@@ -16,16 +16,18 @@ export const isBotLevel = (v: unknown): v is BotLevel =>
   typeof v === 'string' && (BOT_LEVELS as readonly string[]).includes(v);
 
 /**
- * The choice is shown when the config flag is on, or the address has ?computer=1.
- * That address is for testing before the panel review. Only the exact value 1 counts.
+ * The choice follows the config flag. The address can override it: ?computer=1 shows it and
+ * ?computer=0 hides it (the same pattern as ?builder=). Only those exact values count.
  */
 export function practiceEnabled(search: string, flag: boolean = PRACTICE_BOT.enabled): boolean {
-  if (flag) return true;
   try {
-    return new URLSearchParams(search).get('computer') === '1';
+    const asked = new URLSearchParams(search).get('computer');
+    if (asked === '1') return true;
+    if (asked === '0') return false;
   } catch {
-    return false;
+    // An unreadable address falls back to the setting.
   }
+  return flag;
 }
 
 /** The players with `team` replaced by the Computer player, who copies the other side's grade and subject. */

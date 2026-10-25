@@ -366,8 +366,11 @@ export const BIOMES: Record<(typeof BIOME_IDS)[number], BiomeConfig> = {
   },
 };
 
-/** What a new family's first Battle Plan shows picked. Food Trucks keeps the Phase 1 base spot. */
-export const DEFAULT_PLAN = { biome: 'aspen', spot: 'foodTruck' } as const;
+/**
+ * What a new family's first Battle Plan shows picked. Food Trucks keeps the Phase 1 base spot, and
+ * Village Wall is Team Past's matching default castle place (owner decision, 2026-10-24).
+ */
+export const DEFAULT_PLAN = { biome: 'aspen', spot: 'foodTruck', fort: 'villageWall' } as const;
 
 // ---------- Evasion (Phase 2) ----------
 /**
@@ -392,10 +395,12 @@ export const EVASION = {
 
 // ---------- Timing (ms) ----------
 export const TIMING = {
-  /** Loading screen waits at least this long so jokes can be read. */
-  loadingMinMs: 1500,
+  /** Loading screen waits at least this long so the jokes and the balloon riders can be enjoyed. */
+  loadingMinMs: 5000,
   /** A new family sees the longer, funnier load once. Returning families use loadingMinMs. */
-  loadingFirstMinMs: 4000,
+  loadingFirstMinMs: 8000,
+  /** Browser tests (the e2e hook is on) wait this long, so a full run is not slowed by the jokes. */
+  loadingQuickMs: 1500,
   loadingMessageMs: 2500,
   bannerDropMs: 400,
   bannerHoldMs: 1800,
@@ -509,8 +514,8 @@ export type BotProfile = {
 };
 
 export const PRACTICE_BOT = {
-  /** Off by default. The UI turns it on later, after the panel review. */
-  enabled: false,
+  /** On for everyone (owner decision, 2026-10-24). `?computer=0` hides it, `?computer=1` shows it. */
+  enabled: true,
   /** Shown wherever the opponent appears. Never "bot", "AI" or "assistant". */
   displayName: 'Computer player',
   levels: {
