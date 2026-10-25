@@ -6,7 +6,7 @@ import { footprint, pieceById } from '../../game/baseBuilder';
 import { BASE_BUILDER } from '../../game/config';
 import type { BrickId, BrickView, Rect, SpotView, Team } from '../../game/types';
 import { brickSvg, weaponPadSvg } from '../../ui/baseBuilderArt';
-import { ART, NO_TINT, PALETTE } from './visual';
+import { ART, NO_TINT, PALETTE, TEAM_COLOR } from './visual';
 
 /** Bricks are drawn this many times sharper than their world size, so they stay crisp. */
 export const RASTER = 2;
@@ -76,8 +76,9 @@ export function padSprites(spots: readonly SpotView[], stepPx: number): PadSprit
     .filter((s) => s.weapon)
     .map((s) => ({
       index: s.index,
-      key: `tc-pad|${s.weapon}|${px}`,
-      svg: weaponPadSvg(s.weapon as string, px),
+      // A weapon of your own is drawn with the picture of its style (`art`).
+      key: `tc-pad|${s.art ?? s.weapon}|${px}`,
+      svg: weaponPadSvg(s.art ?? (s.weapon as string), px),
       x: s.x,
       y: s.y,
       size,
@@ -179,4 +180,23 @@ export function dustPuffs(
     r: r * (i === 1 ? 1.1 : 0.8),
     color: colors[(order + i) % colors.length] as number,
   }));
+}
+
+/** The ring round a picked weapon's pad: a little bigger than the pad, in the team color. */
+export function padRing(
+  pad: { x: number; y: number; size: number },
+  team: Team,
+): { x: number; y: number; r: number; width: number; color: number } {
+  return { x: pad.x, y: pad.y, r: pad.size / 2 + 4, width: 3, color: TEAM_COLOR[team] };
+}
+
+/**
+ * The flash on a pad as its weapon fires: a team-colored disc that grows and fades. With
+ * reduced motion it blinks in place and does not grow.
+ */
+export function padFlash(
+  size: number,
+  reduced: boolean,
+): { r: number; toScale: number; ms: number; alpha: number } {
+  return { r: size / 2 + 2, toScale: reduced ? 1 : 2.2, ms: reduced ? 200 : 360, alpha: 0.85 };
 }

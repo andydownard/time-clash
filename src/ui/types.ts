@@ -6,7 +6,7 @@ import type { BattlePlan } from '../game/battlefield';
 import type { EvasionView } from '../game/types';
 import type { BasesState } from '../game/baseBuilder';
 import type { CampState } from '../game/loadout';
-import type { Players, Team, TeamStats, Vec2 } from '../game/types';
+import type { MountId, Players, ShooterId, Team, TeamStats, Vec2 } from '../game/types';
 import type { UnitId } from '../game/units';
 import type { Question } from '../questions/types';
 import type { Settings } from '../storage/types';
@@ -109,6 +109,10 @@ export const TEST_IDS = {
   powerControl: 'aim-power',
   fireButton: 'fire',
   unit: (id: string) => `unit-${id}`,
+  /** The Base weapons token after the fighters (built bases with a weapon that can fire). */
+  unitWeapons: 'unit-weapons',
+  /** In the weapons view: the token with the fighter's letter that switches back. */
+  unitFighters: 'unit-fighters',
   goBanner: 'go-banner',
   helper: (id: string) => `helper-${id}`,
   dashSpot: (spot: string) => `dash-${spot}`,
@@ -185,10 +189,29 @@ export type HudState = {
   units: ReadonlyArray<{ id: UnitId; name: string }>;
   /** The side the Computer player plays, when one child plays alone. */
   computerTeam?: Team;
+  /**
+   * The active team's weapons on its base pads that can fire, in spot order. Missing or empty
+   * hides the Base weapons token, and the selector is as before.
+   */
+  mounts?: readonly HudMount[];
+  /** The weapon the active team has picked, or null for a fighter. */
+  selectedMount?: MountId | null;
   /** Phase 2 gear for the active team: ammo and the evasion ability. Missing hides the gear. */
   gear?: HudGear;
   /** Squads S1. Missing hides the helper bar and everything stays as today. */
   squads?: HudSquads;
+};
+
+/** One weapon on a base pad, as the selector shows it. */
+export type HudMount = {
+  id: MountId;
+  /** The spot, 0 to 3. The token shows it as 1 to 4. */
+  spot: number;
+  name: string;
+  /** The catalog weapon whose picture it shows. */
+  art: string;
+  /** A weapon of your own (it wears the Forge star). */
+  mine: boolean;
 };
 
 /** The helper bar: which go is next, the active team's two helpers, and the dash spots. */
@@ -217,7 +240,8 @@ export type HudGear = {
 export type HudHandlers = {
   onAim: (aim: { angleDeg: number; power: number }) => void;
   onFire: () => void;
-  onSelect: (id: UnitId) => void;
+  /** A fighter or a weapon on a base pad was picked. */
+  onSelect: (id: ShooterId) => void;
   onMuteToggle: () => void;
   /** Load this ammo next (Phase 2). */
   onAmmo?: (id: AmmoId) => void;

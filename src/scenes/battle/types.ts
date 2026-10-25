@@ -11,6 +11,7 @@ import type {
   GustHit,
   MatchController,
   MatchOptions,
+  MountId,
   Rect,
   ShotResult,
   Team,
@@ -103,6 +104,13 @@ export interface BattleView {
   playTumble(team: Team): Promise<void>;
   /** Show which fighter is up for that team. */
   setSelectedUnit(team: Team, id: UnitId): void;
+  /**
+   * Built bases: show the weapon on a pad that is picked for that team (a ring on its pad), or
+   * null when a fighter is picked. Optional so older fakes still work.
+   */
+  setSelectedMount?(team: Team, id: MountId | null): void;
+  /** Built bases: the pad on `spot` flashes as its weapon fires. */
+  flashPad?(team: Team, spot: number): void;
   showScrapPopup(team: Team, amount: number): void;
   /** Phase 2: draw these stone walls (none clears them). Optional so older fakes still work. */
   setWalls?(walls: readonly Rect[]): void;

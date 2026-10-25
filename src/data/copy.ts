@@ -302,6 +302,12 @@ export const HUD = {
   keyboardHint: "Arrow keys aim. Space fires. Press a fighter's letter or number to pick it.",
   pickOne: 'Pick one',
   unitLabel: (name: string, id: string): string => `${name} ${id}`,
+  /** The selector token that switches to the weapons on the base pads. */
+  baseWeapons: 'Base weapons',
+  /** A weapon token: its spot number (1 to 4) and its name. */
+  mountLabel: (spot: number, name: string): string => `Spot ${spot}: ${name}`,
+  /** The token that switches back to the fighters, with the picked fighter on it. */
+  fightersLabel: (name: string, id: string): string => `Fighters: ${name} ${id}`,
   /** The gold star pip and screen-reader text while the Power Shot is up. */
   powerShot: 'Power Shot!',
   /** The coach line: it teaches the two sliders and shows until the first shot is fired. */
