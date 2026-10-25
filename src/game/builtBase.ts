@@ -8,8 +8,10 @@ import {
   chosenBase,
   chosenSpots,
   rectOf,
+  restOverlap,
   spotWeaponById,
   type BasesState,
+  type Placed,
   type Rect as StepRect,
   type SpotRole,
 } from './baseBuilder';
@@ -115,11 +117,12 @@ function buildTeam(team: Team, base: ChosenBase | undefined): BuiltTeam {
       anchored: false,
     });
   });
-  bricks.forEach((a) => {
+  // A brick rests on another where a filled square's bottom edge lies on a filled square's top
+  // edge (the builder's own rule, so a shape of your own rests by its squares, not its box).
+  const placed = base.pieces.filter((p) => rectOf(p) !== null);
+  bricks.forEach((a, i) => {
     bricks.forEach((b, j) => {
-      if (a !== b && b.steps.t === a.steps.b && a.steps.l < b.steps.r && b.steps.l < a.steps.r) {
-        a.below.push(j);
-      }
+      if (a !== b && restOverlap(placed[i] as Placed, placed[j] as Placed) > 0) a.below.push(j);
     });
     a.anchored = !a.grounded && a.below.length === 0;
   });

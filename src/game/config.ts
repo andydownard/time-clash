@@ -41,8 +41,14 @@ export const AIM = {
 } as const;
 
 // ---------- Damage and health ----------
+/**
+ * Pace (owner, 2026-10-24): a player with perfect aim and a right answer every turn needs five
+ * turns of their own to win, so a match never ends in one or two turns. A perfect turn is two
+ * direct hits and a Power Shot (25 + 25 + 38 = 88), so full health is a little under five
+ * perfect turns. `tests/game/pace.test.ts` plays it.
+ */
 export const DAMAGE = {
-  startingBaseHp: 100,
+  startingBaseHp: 400,
   /** Impact within this distance of the base rect is a direct hit. */
   directRadius: 48,
   /** Impact within this distance is a near miss (tumble). */
@@ -59,8 +65,8 @@ export const DAMAGE = {
  */
 export const CHARACTER_HEALTH = {
   enabled: false,
-  /** Health each fighter starts with. */
-  hp: 3,
+  /** Health each fighter starts with. Four, so a perfect team needs five turns to beat. */
+  hp: 4,
   /** Health lost to a direct hit. */
   directHit: 1,
   /**
@@ -597,6 +603,13 @@ export const BASE_BUILDER = {
   groundRows: 1,
   /** One cell is this many steps wide when Snap is off. A free brick sits on this finer grid. */
   freeSteps: 8,
+  /**
+   * Support: a brick must rest on the foundation or on a held-up brick by at least this many
+   * steps sideways (half a cell). A corner touch or a brick stuck to a side does not count.
+   */
+  minSupportSteps: 4,
+  /** A brick let go less than one cell above something drops onto it (at most this many steps). */
+  dropSnapSteps: 7,
   /** Saved bases each player keeps for each side. */
   slots: 3,
   /** Most player names whose saved bases we keep. */
@@ -631,8 +644,11 @@ export const BASE_BUILDER = {
     count: 4,
     /** Pad radius in free steps (a pad is about one and a quarter cells wide). */
     padSteps: 5,
-    /** The lowest a pad may sit, in cells from the top, so the mode switch never covers one. */
-    topRows: 2,
+    /**
+     * The highest a pad may sit, in cells from the top. 0: a pad may ride on the tallest brick
+     * (the mode switch now sits beside the plot, not on it).
+     */
+    topRows: 0,
     /** With no bricks, pads sit in a row on the foundation across these columns. */
     rowFromCol: 6,
     rowToCol: 18,

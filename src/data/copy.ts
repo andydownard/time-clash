@@ -1,7 +1,7 @@
 // Every user-facing string lives here. Kids read these, so: short words, short sentences.
 // Vocabulary table in AGENTS.md applies. Banned words are checked by tests/contracts/copy.test.ts.
 // Intro narration text lives in src/data/introScript.ts (from docs/NARRATION.md).
-import { TURN } from '../game/config';
+import { DAMAGE, TURN } from '../game/config';
 import type { AwardId } from '../game/awards';
 import { windLevel } from '../game/wind';
 import type { Subject, Team } from '../game/types';
@@ -233,7 +233,8 @@ export const HUD = {
   yourTurn: 'Your turn',
   angleValue: (deg: number): string => `${Math.round(deg)}°`,
   powerValue: (p: number): string => `${Math.round(p)}`,
-  hpValue: (hp: number, max = 100): string => `${Math.round(hp)} / ${Math.round(max)}`,
+  hpValue: (hp: number, max: number = DAMAGE.startingBaseHp): string =>
+    `${Math.round(hp)} / ${Math.round(max)}`,
   shotsValue: (n: number): string => `${n} of ${TURN.shotsPerTurn}`,
 } as const;
 
@@ -613,6 +614,12 @@ export const BUILDER_COPY = {
   nothingToUndo: 'Nothing to undo.',
   pickFirst: 'Tap a brick first, then tap Turn.',
   noRoom: 'No room there. Try another spot.',
+  /** A brick let go in mid-air, or beside a wall with nothing under it. */
+  floating: 'Build on something that touches the ground.',
+  /** Taking away, moving or turning a brick that another brick rests on. */
+  holding: 'Something is sitting on that brick. Take the top one off first.',
+  /** Once, when an old base had floating bricks and the builder set them down. */
+  settled: 'Chrono here! Some bricks were floating. I set them down.',
   full: 'This base is full of bricks.',
   cancelled: 'Put back. Nothing changed.',
   selected: (name: string): string => `${name} chosen. Tap Turn to spin it.`,
@@ -623,6 +630,8 @@ export const BUILDER_COPY = {
   unlocked: (name: string): string => `You unlocked ${name}!`,
   ghostAt: (name: string, x: number, y: number): string =>
     `${name} at column ${x + 1}, row ${y + 1}. Enter puts it down.`,
+  /** The column left of the plot with the team and mode buttons. */
+  rail: 'Team and mode',
   // Weapon spots
   mode: 'Mode',
   modeBuild: 'Build',

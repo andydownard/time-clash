@@ -174,9 +174,9 @@ describe('placement', () => {
 });
 
 describe('hpFraction with a raised maximum', () => {
-  it('keeps the old behavior with no maximum (out of 100)', () => {
-    expect(hpFraction(100)).toBe(1);
-    expect(hpFraction(50)).toBe(0.5);
+  it('is out of the starting base health when no maximum is given', () => {
+    expect(hpFraction(DAMAGE.startingBaseHp)).toBe(1);
+    expect(hpFraction(DAMAGE.startingBaseHp / 2)).toBe(0.5);
     expect(hpFraction(0)).toBe(0);
   });
   it('is out of the given maximum', () => {

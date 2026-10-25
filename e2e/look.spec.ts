@@ -17,6 +17,7 @@ import {
   toSetup,
   waitAiming,
   waitPassScreen,
+  wearDown,
 } from './support/game';
 import { saveShot } from './support/shots';
 
@@ -127,8 +128,9 @@ test('every screen keeps the floors (UPDATE_SCREENSHOTS=1 also retakes the scree
   page,
   browserName,
 }) => {
-  // A whole match under four busy workers can pass 3 minutes. Triple the limit, no sleeps.
-  test.slow();
+  // A whole match is about five turns a side (the pace rule), and busy workers slow each one.
+  // Allow five times the usual limit, no sleeps.
+  test.setTimeout(5 * test.info().timeout);
   const shot = (name: string): Promise<void> => saveShot(page, browserName, name);
   await openGame(page);
   await floors(page, 'Tap to Start');
@@ -223,6 +225,8 @@ test('every screen keeps the floors (UPDATE_SCREENSHOTS=1 also retakes the scree
   await answerReload(page, 'right-fast');
   await waitPassScreen(page);
 
+  // Full health takes several turns (the pace rule): wear it down to one hit.
+  await wearDown(page);
   await readyUp(page);
   await takeShot(page, 'direct');
   await expect(tid(page, 'victory')).toBeVisible({ timeout: 45_000 });

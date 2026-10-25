@@ -2,11 +2,15 @@
 // base again after a reload.
 import { expect, test } from './fixtures';
 import {
+  GROUND_ROW,
   bricks,
   cellPoint,
   chooseSpot,
   dragBrick,
+  middleOf,
+  mouseDrag,
   openBuilder,
+  plotInner,
   spotPad,
   toBuilderCamp,
 } from './support/builder';
@@ -38,16 +42,16 @@ test('drag, turn, undo, save to slot 2, reload and see the base again', async ({
   await tid(page, 'bb-slot-2').click();
   await expect(tid(page, 'bb-slot-2')).toHaveAttribute('aria-pressed', 'true');
 
-  await dragBrick(page, 'stone', 6, 9, 2, 1);
+  await dragBrick(page, 'stone', 6, 10, 2, 1);
   await expect(bricks(page)).toHaveCount(1);
   await tid(page, 'bb-turn').click();
   await expect(bricks(page).first()).toHaveAttribute('transform', /rotate\(90\)/);
 
-  await dragBrick(page, 'tower', 12, 8, 1, 2);
+  await dragBrick(page, 'tower', 12, 9, 1, 2);
   await expect(bricks(page)).toHaveCount(2);
   await tid(page, 'bb-undo').click();
   await expect(bricks(page)).toHaveCount(1);
-  await dragBrick(page, 'tower', 12, 8, 1, 2);
+  await dragBrick(page, 'tower', 12, 9, 1, 2);
   await expect(bricks(page)).toHaveCount(2);
 
   await tid(page, 'bb-done').click();
@@ -75,9 +79,9 @@ test('a drag that ends outside the plot cancels, and a placed brick dragged to t
   await page.mouse.up();
   await expect(bricks(page)).toHaveCount(0);
 
-  await dragBrick(page, 'stone', 4, 9, 2, 1);
+  await dragBrick(page, 'stone', 4, 10, 2, 1);
   await expect(bricks(page)).toHaveCount(1);
-  const at = await cellPoint(page, 4, 9, 2, 1);
+  const at = await cellPoint(page, 4, 10, 2, 1);
   const tray = await tid(page, 'bb-brick-plank').boundingBox();
   await page.mouse.move(at.x, at.y);
   await page.mouse.down();
@@ -86,12 +90,168 @@ test('a drag that ends outside the plot cancels, and a placed brick dragged to t
   await expect(bricks(page)).toHaveCount(0);
 });
 
+test('support: mid-air is refused, a second layer works, and the bottom brick stays put', async ({
+  page,
+}) => {
+  await toBuilderCamp(page);
+  await openBuilder(page, 'PAST');
+  // Carry a stone into the sky: the outline turns pink and dashed, and the reason shows.
+  const from = await middleOf(page, 'bb-brick-stone');
+  const sky = await cellPoint(page, 6, 3, 2, 1);
+  await page.mouse.move(from.x, from.y);
+  await page.mouse.down();
+  await page.mouse.move(sky.x, sky.y, { steps: 8 });
+  await expect(page.locator('.tc-bb-drop')).toHaveAttribute('data-ok', 'false');
+  await expect(tid(page, 'bb-status')).toHaveText('Build on something that touches the ground.');
+  await page.mouse.up();
+  await expect(bricks(page)).toHaveCount(0);
+  await expect(tid(page, 'bb-status')).toHaveText('Build on something that touches the ground.');
+
+  // A first layer on the ground, and a second layer on top of it.
+  await dragBrick(page, 'stone', 6, GROUND_ROW, 2, 1);
+  await dragBrick(page, 'stone', 6, GROUND_ROW - 1, 2, 1);
+  await expect(bricks(page)).toHaveCount(2);
+  const bottom = bricks(page).first();
+  await expect(bottom).toHaveAttribute('aria-label', /column 7, row 11\./);
+
+  // Dragging the bottom one to the tray is refused: something sits on it.
+  const at = await cellPoint(page, 6, GROUND_ROW, 2, 1);
+  await mouseDrag(page, at, await middleOf(page, 'bb-brick-plank'));
+  await expect(bricks(page)).toHaveCount(2);
+  await expect(tid(page, 'bb-status')).toHaveText(
+    'Something is sitting on that brick. Take the top one off first.',
+  );
+  // Dragging it along the ground is refused too, and it stays where it was.
+  await mouseDrag(page, at, await cellPoint(page, 15, GROUND_ROW, 2, 1));
+  await expect(bottom).toHaveAttribute('aria-label', /column 7, row 11\./);
+  await expect(tid(page, 'bb-status')).toHaveText(
+    'Something is sitting on that brick. Take the top one off first.',
+  );
+  // Take the top one off first, then the bottom one comes off.
+  await mouseDrag(
+    page,
+    await cellPoint(page, 6, GROUND_ROW - 1, 2, 1),
+    await middleOf(page, 'bb-brick-plank'),
+  );
+  await expect(bricks(page)).toHaveCount(1);
+  await mouseDrag(page, at, await middleOf(page, 'bb-brick-plank'));
+  await expect(bricks(page)).toHaveCount(0);
+});
+
+test('tap to pick, then tap the plot; a placed brick drags and a tap chooses it', async ({
+  page,
+}) => {
+  await toBuilderCamp(page);
+  await openBuilder(page, 'FUTURE');
+  // Tap Antenna, then a spot in the sky: refused, and Antenna stays picked.
+  await tid(page, 'bb-brick-antenna').click();
+  await expect(tid(page, 'bb-brick-antenna')).toHaveAttribute('aria-pressed', 'true');
+  const sky = await cellPoint(page, 3, 2, 1, 2);
+  await page.mouse.click(sky.x, sky.y);
+  await expect(bricks(page)).toHaveCount(0);
+  await expect(tid(page, 'bb-status')).toHaveText('Build on something that touches the ground.');
+  await expect(tid(page, 'bb-brick-antenna')).toHaveAttribute('aria-pressed', 'true');
+  // Before the click, the mouse shows where it would go.
+  const spot = await cellPoint(page, 3, GROUND_ROW - 1, 1, 2);
+  await page.mouse.move(spot.x, spot.y);
+  await expect(page.locator('.tc-bb-drop')).toHaveAttribute('data-ok', 'true');
+  await page.mouse.click(spot.x, spot.y);
+  await expect(bricks(page)).toHaveCount(1);
+  await expect(bricks(page).first()).toHaveAttribute('aria-label', /Antenna, column 4, row 10\./);
+  await expect(tid(page, 'bb-brick-antenna')).toHaveAttribute('aria-pressed', 'false');
+
+  // Drag the placed antenna somewhere else on the ground.
+  await mouseDrag(page, spot, await cellPoint(page, 15, GROUND_ROW - 1, 1, 2));
+  await expect(bricks(page).first()).toHaveAttribute('aria-label', /column 16, row 10\./);
+  // Dropped in mid-air, it goes back where it was.
+  await mouseDrag(
+    page,
+    await cellPoint(page, 15, GROUND_ROW - 1, 1, 2),
+    await cellPoint(page, 10, 2, 1, 2),
+  );
+  await expect(bricks(page).first()).toHaveAttribute('aria-label', /column 16, row 10\./);
+  // A plain tap chooses it, so Turn works on it.
+  const now = await cellPoint(page, 15, GROUND_ROW - 1, 1, 2);
+  await page.mouse.click(now.x, now.y);
+  await expect(page.locator('.tc-bb-select')).toHaveCount(1);
+  await tid(page, 'bb-turn').click();
+  await expect(bricks(page).first()).toHaveAttribute('transform', /rotate\(90\)/);
+
+  // Team Past works the same way: tap Stone, tap the ground.
+  await tid(page, 'bb-team-PAST').click();
+  await expect(page.locator('[data-screen="builder"][data-team="PAST"]')).toBeVisible();
+  await tid(page, 'bb-brick-stone').click();
+  const ground = await cellPoint(page, 2, GROUND_ROW, 2, 1);
+  await page.mouse.click(ground.x, ground.y);
+  await expect(bricks(page)).toHaveCount(1);
+});
+
+test('the whole plot is a place to build: all four corners, and a drop past the edge lands', async ({
+  page,
+  browserName,
+}) => {
+  await toBuilderCamp(page);
+  await openBuilder(page, 'PAST');
+  const right = 23;
+  // Bottom corners, dropped a little past the plot's left and right edges.
+  const inner = await plotInner(page);
+  const groundY = (await cellPoint(page, 0, GROUND_ROW, 1, 2)).y;
+  const from = await middleOf(page, 'bb-brick-tower');
+  await mouseDrag(page, from, { x: inner.x - 10, y: groundY - 10 });
+  await mouseDrag(page, from, { x: inner.x + inner.width + 10, y: groundY - 10 });
+  await expect(bricks(page)).toHaveCount(2);
+  await expect(bricks(page).nth(0)).toHaveAttribute('aria-label', /column 1, row 10\./);
+  await expect(bricks(page).nth(1)).toHaveAttribute('aria-label', /column 24, row 10\./);
+  // Stack towers up both sides to the top row.
+  for (const row of [7, 5, 3, 1]) {
+    await dragBrick(page, 'tower', 0, row, 1, 2);
+    await dragBrick(page, 'tower', right, row, 1, 2);
+  }
+  // A stone on each top tower reaches the very top row, in both top corners.
+  await dragBrick(page, 'stone', 0, 0, 2, 1);
+  await dragBrick(page, 'stone', right - 1, 0, 2, 1);
+  await expect(bricks(page)).toHaveCount(12);
+  const labels = await bricks(page).evaluateAll((els) =>
+    els.map((e) => e.getAttribute('aria-label')),
+  );
+  expect(labels.some((l) => /Stone, column 1, row 1\./.test(l ?? ''))).toBe(true);
+  expect(labels.some((l) => /Stone, column 23, row 1\./.test(l ?? ''))).toBe(true);
+  // Nothing covers the plot: the rails sit beside it, level with its top.
+  const rail = (await tid(page, 'bb-rail').boundingBox())!;
+  const tools = (await page.locator('.tc-bb-tools').boundingBox())!;
+  expect(rail.x + rail.width).toBeLessThanOrEqual(inner.x);
+  expect(tools.x).toBeGreaterThanOrEqual(inner.x + inner.width);
+  expect(Math.abs(rail.y - (inner.y - 6))).toBeLessThanOrEqual(8);
+  await saveShot(page, browserName, 'base-builder-corners');
+});
+
+test('the rails fit with no overlap on an iPad mini (1133 by 744)', async ({ page }) => {
+  await page.setViewportSize({ width: 1133, height: 744 });
+  await toBuilderCamp(page);
+  await openBuilder(page, 'FUTURE');
+  const inner = await plotInner(page);
+  const rail = (await tid(page, 'bb-rail').boundingBox())!;
+  expect(rail.x + rail.width).toBeLessThanOrEqual(inner.x);
+  for (const id of ['bb-team-PAST', 'bb-team-FUTURE', 'bb-mode-build', 'bb-mode-weapons']) {
+    const b = (await tid(page, id).boundingBox())!;
+    expect(b.height, id).toBeGreaterThanOrEqual(56);
+    expect(b.y + b.height, id).toBeLessThanOrEqual(rail.y + rail.height);
+  }
+  const count = (await tid(page, 'bb-spots-chip').boundingBox())!;
+  expect(count.y + count.height).toBeLessThanOrEqual(rail.y + rail.height);
+  const overflow = await page.evaluate(() => {
+    const s = document.querySelector<HTMLElement>('[data-screen="builder"]')!;
+    return s.scrollHeight > s.clientHeight + 1 || s.scrollWidth > s.clientWidth + 1;
+  });
+  expect(overflow).toBe(false);
+});
+
 test('Clear asks first, and bricks never overlap', async ({ page }) => {
   await toBuilderCamp(page);
   await openBuilder(page, 'PAST');
-  await dragBrick(page, 'long', 4, 9, 4, 1);
+  await dragBrick(page, 'long', 4, 10, 4, 1);
   // Dropped on top of the long brick: it lands on the nearest free spot instead.
-  await dragBrick(page, 'long', 4, 9, 4, 1);
+  await dragBrick(page, 'long', 4, 10, 4, 1);
   await expect(bricks(page)).toHaveCount(2);
   await tid(page, 'bb-clear').click();
   await expect(tid(page, 'bb-clear-yes')).toBeVisible();

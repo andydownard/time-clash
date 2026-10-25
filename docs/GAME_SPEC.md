@@ -115,7 +115,7 @@ Phase 1: Local Single-Computer Core Loop (MVP)
   ⚬ Basic 2D ballistics engine (angle, power, arc, wind).
   ⚬ 2-shot limit triggering the Educational Reload Modal.
   ⚬ Elementary question bank (Math & Reading) with grade-band selection.
-  ⚬ Flat base health (100 HP) with the first awkward tumble animation and post-fall comic speech bubbles.
+  ⚬ Flat base health (100 HP at first, 400 since the 2026-10-24 pace rule) with the first awkward tumble animation and post-fall comic speech bubbles.
   ⚬ 1 Funny Loading Screen with rotating humor prompts.
 
 Phase 2: The Camp Hub, Base Placement & Biomes
@@ -169,6 +169,10 @@ Screen 3: Battle Screen & Turn Transition
 ⚬ Environment: Left side shows an ornate medieval castle; right side shows a futuristic Austin cyber-base tucked under a glowing solar skyway.
 ⚬ Active Indicator: Prominent comic banner at top center reading: "PLAYER 1: ALEX — YOUR TURN! (SHOT 1 OF 2)" with glowing directional arrows.
 ⚬ Slapstick Moment: A character who was just knocked over lies hilariously flat on their stomach with arms spread out, a cartoon speech bubble above them saying: "Just checking the lawn for four-leaf clovers!"
+## Pace (owner decision, 2026-10-24)
+
+"Perfect aim should take about five turns; right now you can lose everything in one or two turns." So a player with perfect aim who answers every reload right needs five turns of their own to win. A base starts with 400 health (`DAMAGE.startingBaseHp`), and a fighter with 4 when character health is on (`CHARACTER_HEALTH.hp`). Hit damage is unchanged: direct 25, near 10, and the Power Shot 1.5 times (38). A perfect turn (two direct hits and a Power Shot) does 88, so a base lasts a little under five perfect turns. Weapons, ammo, walls and missiles keep their meaning because they change damage, not health. The two health upgrades grew four times with full health: Upgrade the Tower adds 48 a level, and Laser Squad heals 8 at the end of its own turn. A force field still blocks whole hits (1 a level). `tests/game/pace.test.ts` plays 40 seeded matches with perfect aim on both sides, in both health modes, and the shortest is 9 turns (both teams counted, so the first team wins on its fifth turn at the earliest). It also checks that a realistic player (`PRACTICE_BOT.scriptedHuman`) takes at least as long at the median. Measured: perfect aim 9 to 10 turns with base health and 9 to 12 with fighter health; the realistic player has a median of 12 turns with base health and 18 with fighter health.
+
 ## Practice opponent
 
 A rules-based opponent so one child can play alone, and later fill a seat when no second player is there. Pure logic in `src/game/bot.ts` (and `botPlay.ts` for simulated matches, `practice.ts` for turn ownership and pacing). On for everyone since 2026-10-24 (owner decision): `PRACTICE_BOT.enabled = true` in `src/game/config.ts`. `?computer=0` on the address hides the choice and `?computer=1` shows it, whatever the flag says. With it off the game is exactly as before. "Another player" is still picked first, so two children who share a screen see no change.
@@ -198,22 +202,22 @@ Simulation (`npx tsx scripts/simulate-bot.ts 2000`: 2,000 seeded matches per pai
 
 | Level | Bot wins vs decent human | Target |
 |---|---|---|
-| easy | 31.8% (human wins 68.2%) | human wins 65 to 75% |
-| medium | 49.6% | 45 to 55% |
-| hard | 62.8% | 60 to 65% |
+| easy | 13.1% (human wins 86.9%) | human wins 65 to 75% |
+| medium | 51.9% | 45 to 55% |
+| hard | 93.3% | 60 to 65% |
 
-Bot against bot (row wins): easy 30.9% vs medium, 20.6% vs hard; medium 67.5% vs easy, 37.0% vs hard; hard 79.3% vs easy, 63.1% vs medium. Matches last about 3 to 4 turns each.
+Bot against bot (row wins): easy 13.7% vs medium, 0.9% vs hard; medium 86.0% vs easy, 7.0% vs hard; hard 99.5% vs easy, 92.3% vs medium. Matches against the decent human last about 10 to 14 turns (both teams counted). These numbers are after the pace rule (2026-10-24). Longer matches leave less to luck, so Easy and Hard are now outside their targets (before the pace rule they were 31.8% and 62.8%, in about 3 to 4 turns). The levels need retuning before the Computer player is switched on (see BACKLOG.md).
 
 ## Character health (rules built, flag off)
 
 ### Match length (parent setting)
 
-Setup has a Match length choice: Short, Normal, Long. Normal is the default and is exactly the balance below (base health 100, or 3 health per fighter). Short halves full health (base 50, fighters 2). Long is one and a half times (base 150, fighters 5, rounded to whole numbers, never below 1). A direct hit still does 25 base damage (1 fighter health, 2 for a Power Shot), so Short ends in 2 direct hits and Long in 6, against 4 at Normal. It does not change the 2-shots-then-reload turn, the reload question, timing or Scrap. It is saved on the device and "Clear my data" resets it. Numbers: `MATCH_LENGTH` in `src/game/config.ts`.
+Setup has a Match length choice: Short, Normal, Long. Normal is the default and is exactly the balance below (base health 400, or 4 health per fighter; see Pace). Short halves full health (base 200, fighters 2). Long is one and a half times (base 600, fighters 6, rounded to whole numbers, never below 1). A direct hit still does 25 base damage (1 fighter health, 2 for a Power Shot), so Short ends in 8 direct hits and Long in 24, against 16 at Normal. It does not change the 2-shots-then-reload turn, the reload question, timing or Scrap. It is saved on the device and "Clear my data" resets it. Numbers: `MATCH_LENGTH` in `src/game/config.ts`.
 
-Owner decision (2026-10-20): "Every character has three health. It REPLACES base health." The rules are pure, in `src/game/damage.ts` and `src/game/match.ts`, with numbers in `CHARACTER_HEALTH` in `src/game/config.ts`. The flag is `CHARACTER_HEALTH.enabled = false`. It stays off until the Battle scene and the HUD draw health pips and play the awkward fall. With it off the game is exactly as before. A match reads it as the default of `MatchOptions.characterHealth`; tests pass the option and never change the constant.
+Owner decision (2026-10-20): "Every character has three health. It REPLACES base health." The pace rule (2026-10-24) raised it to four. The rules are pure, in `src/game/damage.ts` and `src/game/match.ts`, with numbers in `CHARACTER_HEALTH` in `src/game/config.ts`. The flag is `CHARACTER_HEALTH.enabled = false`. It stays off until the Battle scene and the HUD draw health pips and play the awkward fall. With it off the game is exactly as before. A match reads it as the default of `MatchOptions.characterHealth`; tests pass the option and never change the constant.
 
 What changes with the flag on:
-- All ten fighters (five per team: balloon, archer, cannon, catapult, spear; tank, helicopter, bunkers, saber robot, laser robot) start with `hp: 3`. The snapshot holds `unitHp` by fighter id.
+- All ten fighters (five per team: balloon, archer, cannon, catapult, spear; tank, helicopter, bunkers, saber robot, laser robot) start with `hp: 4`. The snapshot holds `unitHp` by fighter id.
 - Each fighter has a hit box (`unitBox` in `units.ts`, `CHARACTER_HEALTH.box`, centered on its firing spot). A shell flies along its path and bursts on the first standing enemy fighter whose box it touches (with 24 px of slack, `classifyBlast` with `directScale`). That is one direct hit. Air fighters can be hit in flight. If the shell touches none, it bursts where it lands. Any other standing enemy within 90 px of the burst (`nearScale`) has a near miss.
 - Base health is not used. A shot at the base does nothing to the base. `baseHp` stays in the snapshot at full, only for saves and old tests.
 
@@ -238,7 +242,7 @@ Owner decision (2026-10-20): "the bricks take hits", the weapons on the four spo
 
 **Choosing the bases.** `MatchOptions.bases` is `{ PAST?: ChosenBase, FUTURE?: ChosenBase }`, where `ChosenBase = { pieces, spots }` is `chosenBase` plus `chosenSpots` from the base builder (`chosenBaseFor(bases, name, team)` makes one). A missing base is the default fixed base, as today. A team that brings a base (bricks or weapons) no longer has the default base box stopping shells: its bricks are its base.
 
-**Layout.** The build plot (24 by 12 cells, 192 by 88 steps) maps to the battlefield at `BASE_IN_BATTLE.scale` (2 px per step, so 384 by 176 px). Team Past builds from the left (`margin` 40 px from the edge). Team Future is mirrored and sits on the right, so both face each other. The plot's bottom edge is the ground line. The snapshot holds each brick's box (`bricks`) and the four spots (`spots`), all in battlefield px. Custom-shape pieces do not exist in the base builder yet, so every brick is one rectangle.
+**Layout.** The build plot (24 by 12 cells, 192 by 88 steps) maps to the battlefield at `BASE_IN_BATTLE.scale` (2 px per step, so 384 by 176 px). Team Past builds from the left (`margin` 40 px from the edge). Team Future is mirrored and sits on the right, so both face each other. The plot's bottom edge is the ground line. The snapshot holds each brick's box (`bricks`) and the four spots (`spots`), all in battlefield px. A shape of your own is drawn as its box, but it rests on (and holds up) other bricks by its filled squares.
 
 **Brick hit points.** Each brick starts with the `hp` saved in the base. A shell that reaches a brick box bursts there (a direct hit) and does damage in brick hit points. A near miss (a shell that lands next to a wall) does 0. One hit per shell.
 
@@ -253,7 +257,7 @@ Owner decision (2026-10-20): "the bricks take hits", the weapons on the four spo
 
 A brick at 0 hit points falls away: the shot result lists it in `built.brickFell`. Nobody is hurt, the scene puffs it.
 
-**Support rule.** A brick is held up if it rests on the foundation (its bottom is the bottom of the plot) or on a standing brick directly under it (that brick's top touches its bottom and they overlap sideways). When a brick falls, every brick that is no longer held up falls too, in a fixed order: lowest bottom edge first, then leftmost, then by index. One pass is enough, because what holds a brick up is always lower. All of them are listed, in that order, in `built.bricksFell` (the brick the shell took out comes first). A brick that was already floating when the match began (nothing under it) is anchored and never falls by support. A fallen brick never comes back and never blocks a shell again.
+**Support rule.** A brick is held up if it rests on the foundation (its bottom is the bottom of the plot) or on a standing brick directly under it (the bottom edge of one of its filled squares lies on the top edge of a filled square of that brick, and they overlap sideways; `restOverlap` in `baseBuilder.ts`). The builder uses the same rule, stricter: a brick may only be placed where it overlaps what holds it up by at least half a cell (`BASE_BUILDER.minSupportSteps`), and an old floating base is settled when it loads (see ARCHITECTURE.md "Base builder"). So every base from the builder starts a match with every brick held up (`tests/game/baseBuilderSupport.test.ts`). When a brick falls, every brick that is no longer held up falls too, in a fixed order: lowest bottom edge first, then leftmost, then by index. One pass is enough, because what holds a brick up is always lower. All of them are listed, in that order, in `built.bricksFell` (the brick the shell took out comes first). A brick that was already floating when the match began (nothing under it) is anchored and never falls by support. This only guards against a base made outside the builder: the builder never makes one. A fallen brick never comes back and never blocks a shell again.
 
 **Shells and walls.** A shell stops at the first standing enemy brick or mounted weapon its path touches, and bursts there. The result's `path` and `landing` end at the contact point and `stoppedBy` names the brick or weapon (`hit` then means the original flight and should be ignored). A fighter the shell touches first is hit first and the wall is not. Two kinds of shell arc over walls: a `lob` weapon, and any shot from a flier (balloon, helicopter; `flierRoles`). They pass over walls on the way up and across, and only meet one coming down. A team's own bricks never stop its own shells. Fighter hits, near misses and the Power Shot work exactly as in Character health.
 
