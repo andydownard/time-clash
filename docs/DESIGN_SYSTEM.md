@@ -76,7 +76,11 @@ All interactive parts are at least 56px tall and wide (`--tc-tap`).
 
 **Progress bar.** Track `--tc-bar-track`, 3px edge in `--tc-bar-edge`, fill `--tc-bar-fill`, height `--tc-bar-h` (26px). The label above it shows the percent as a number ("64%"), so the fill is never the only signal. Label text is `--tc-on-future` at `--tc-fs-lead`.
 
-**Chips (grade picker, K to 12).** Orbitron 800, `--tc-fs-label`. Unselected: `--tc-chip-bg`, `--tc-chip-text`, `--tc-chip-border`. Selected: `--tc-chip-on-bg`, `--tc-chip-on-text`, `--tc-chip-on-border`, plus a check mark so selection is not color-only. Size at least `--tc-chip-min` (56px) square. The mock used 52px, which is too small.
+**Chips (subject, match length, Play with).** Orbitron 800, `--tc-fs-label`. Unselected: `--tc-chip-bg`, `--tc-chip-text`, `--tc-chip-border`. Selected: `--tc-chip-on-bg`, `--tc-chip-on-text`, `--tc-chip-on-border`, plus a check mark so selection is not color-only. Size at least `--tc-chip-min` (56px) square.
+
+**Grade dropdown (Setup).** A native `<select>` per team (`.tc-select` in a `.tc-select-wrap`), K and Grades 1 to 12. It looks like the name field: `--tc-input-bg`, `--tc-input-text`, `--tc-input-border`, at least 56px tall, `--tc-fs-button` text in the plain rounded stack (Orbitron draws 1 as a bar), with a visible "Grade" label and a ▾ arrow drawn by CSS. A native select gives an iPad its own big picker wheel and gives the keyboard arrow keys for free. While a team's grade is K or 1, one quiet line shows under it: "A grown-up can read the questions with you." (no read-aloud).
+
+**Link (Clear my data).** `.tc-link`: underlined body text at `--tc-fs-label`, no box, color from the surface. Padding keeps the tap area 56px tall. The privacy line "Names stay on this device. Nothing is sent anywhere." sits beside it as plain small text. The confirm step ("Yes, clear it", "Keep them") stays two real buttons.
 
 **Inputs.** Background `--tc-input-bg`, text `--tc-input-text`, border `--tc-input-border`, radius `--tc-r-button`, min height `--tc-input-min-h` (56px), text at least `--tc-fs-body`. Always a visible label.
 
@@ -147,10 +151,10 @@ Computed from the token values by `tests/styles/designPairs.ts` (WCAG 2.1 relati
 | Design value | Our value | Why |
 |---|---|---|
 | Wood button gradient Purple 500 to 700 with cream text | Purple 700 to 900 | Cream on Purple 500 is 4.41:1. It needs 4.5:1. |
-| Grade chips 52px | 56px minimum | Tap target floor. |
+| Grade chips 52px | A 56px grade dropdown | Tap target floor. Thirteen chips took two rows per card; a native dropdown is one row and suits the iPad. |
 | Labels and eyebrows at 14, 16, 18px | 20px | Text floor. |
 | Chip on a team card: see-through, team edge (Purple 300 or Blue 300), cream text. Picked chip: Ember fill, Ink text and border, parchment ring | Same as the board, with a check mark added | The board is already accessible (Ink on Ember is 10.30:1). The check mark means the pick is never shown by color alone. Chips off a team card use Blue 700 with white text (8.66:1). |
-| Chip digits in Orbitron | Grade chips, question numbers and answer numbers use the plain rounded system stack | Orbitron draws 1 as a bar and 7 as a flag, which young readers mix up. Titles and counters keep Orbitron. |
+| Chip digits in Orbitron | The grade dropdown, question numbers and answer numbers use the plain rounded system stack | Orbitron draws 1 as a bar and 7 as a flag, which young readers mix up. Titles and counters keep Orbitron. |
 | A separate shots panel in the middle of the HUD | One control bar at the bottom. Its header names whose turn it is and shows the shot pips (two shots, then Reload) | The Battle board has one bar: badge, Angle, Power, Fire. The banner and the bar already say "shot 1 of 2". |
 | Wind drawn twice (card and sign) | One wind sign, on the canvas. The HUD copy is for screen readers | Two readouts in two type voices confused the top row. |
 | Team card edge in red or old cyan | Past: Purple. Future: Blue with a Pulse glow when active | Red and old cyan are not in the palette. |

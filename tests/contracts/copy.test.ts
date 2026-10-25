@@ -79,8 +79,6 @@ describe('copy: content', () => {
   });
 
   it('labels grades K to 12', () => {
-    expect(COPY.gradeLabel(0)).toBe('K');
-    expect(COPY.gradeLabel(8)).toBe('8');
     expect(COPY.gradeChipLabel(0)).toBe('Kindergarten');
     expect(COPY.gradeChipLabel(2)).toBe('Grade 2');
   });

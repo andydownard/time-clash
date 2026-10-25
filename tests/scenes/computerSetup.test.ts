@@ -8,7 +8,7 @@ import { SCENE_KEYS } from '../../src/scenes/registry';
 import { runCampStep, runSetupStep } from '../../src/scenes/steps';
 import { COMPUTER_IDS } from '../../src/ui/computerPlayer';
 import { TEST_IDS } from '../../src/ui/types';
-import { click, flush, q } from '../ui/helpers';
+import { click, flush, pickGrade, q } from '../ui/helpers';
 import { makeServices, tinyBank } from './fakes';
 import type { BattleSceneData } from '../../src/scenes/battle/types';
 
@@ -90,7 +90,7 @@ describe('flag on', () => {
 
   it('saves one human and the Computer player, and remembers the level', async () => {
     const p = runSetupStep(t.services);
-    click(q(TEST_IDS.setupGrade('PAST', 4)));
+    pickGrade('PAST', 4);
     click(q(TEST_IDS.setupSubject('PAST', 'math')));
     click(q(COMPUTER_IDS.playWithComputer));
     click(q(COMPUTER_IDS.level('hard')));

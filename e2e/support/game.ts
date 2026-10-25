@@ -30,7 +30,7 @@ export type Side = { name: string; grade: number; subject: Subject };
 
 export async function fillTeam(page: Page, team: Team, side: Side): Promise<void> {
   await tid(page, `setup-name-${team}`).fill(side.name);
-  await tid(page, `setup-grade-${team}-${side.grade}`).click();
+  await tid(page, `setup-grade-${team}`).selectOption(String(side.grade));
   await tid(page, `setup-subject-${team}-${side.subject}`).click();
 }
 

@@ -257,6 +257,59 @@ body {
   width: 100%;
   accent-color: var(--tc-blue-700);
 }
+/* Dropdown: a native select (an iPad shows its own big picker). Used when a set has more than
+   about five values, such as the grade. It looks like the name input, with an arrow. Grade numbers
+   use plain letters: Orbitron draws 1 as a bar and 7 as a flag. */
+.tc-select-wrap {
+  position: relative;
+  display: block;
+}
+.tc-select-wrap::after {
+  content: '\25BE';
+  position: absolute;
+  right: var(--tc-s-4);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--tc-input-text);
+  font-size: var(--tc-fs-button);
+  pointer-events: none;
+}
+.tc-select {
+  appearance: none;
+  width: 100%;
+  min-height: var(--tc-tap);
+  padding: var(--tc-s-2) calc(var(--tc-s-6) + var(--tc-s-4)) var(--tc-s-2) var(--tc-s-4);
+  border: var(--tc-input-border);
+  border-radius: var(--tc-r-button);
+  background: var(--tc-input-bg);
+  color: var(--tc-input-text);
+  font-family: var(--tc-font);
+  font-size: var(--tc-fs-button);
+  font-weight: 800;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+/* Link: a quiet, rare action (Clear my data). Underlined body text, not a box. The padding keeps
+   the tap area 56px tall. */
+.tc-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tc-tap);
+  padding: 0 var(--tc-s-2);
+  border: 0;
+  background: none;
+  color: inherit;
+  font-family: var(--tc-font);
+  font-size: var(--tc-fs-label);
+  font-weight: 400;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.tc-link:hover {
+  text-decoration-thickness: 3px;
+}
 /* Chips: grade and subject pickers. The chosen chip also shows a check mark. */
 .tc-chip {
   display: inline-flex;
@@ -303,12 +356,6 @@ body {
   background: var(--tc-chip-picked-bg);
   color: var(--tc-chip-picked-text);
   border: 4px solid var(--tc-chip-picked-edge);
-}
-/* Grade numbers use plain letters. Orbitron draws 1 as a bar and 7 as a flag. */
-.tc-chips-grades .tc-chip {
-  font-family: var(--tc-font);
-  font-weight: 800;
-  padding-inline: var(--tc-s-1);
 }
 /* Answer tiles. A number badge (from data-key) matches the 1 to 4 keys. */
 .tc-choice {
@@ -972,17 +1019,6 @@ body {
     white-space: nowrap;
   }
 }
-/* The read-back line repeats the cards, so on a 768 or 800 tall screen, or a portrait one, it goes too. Screen readers keep it. */
-@media (max-height: 810px), (orientation: portrait) {
-  .tc-match-helper {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-}
 /* iPad mini landscape is 744 tall: tighten Setup so Clear my data keeps a margin above the
    bottom edge and the home bar (iPad audit defect 2). */
 @media (max-height: 760px) {
@@ -995,15 +1031,6 @@ body {
   }
   .tc-team-card {
     padding-block: var(--tc-s-2);
-  }
-  /* The summary line repeats the choices on the cards. It stays for screen readers. */
-  .tc-match-helper {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
   }
 }
 [data-tc-root] .tc-setup-title {
@@ -1095,19 +1122,6 @@ body {
   font-family: var(--tc-font-voice-old);
   font-weight: 400;
 }
-.tc-subject-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--tc-s-1) var(--tc-s-2);
-}
-.tc-subject-head .tc-label {
-  margin: 0;
-}
-.tc-subject-head .tc-chips {
-  flex: 0 1 auto;
-}
 .tc-label {
   display: block;
   margin: 6px 0 0;
@@ -1121,21 +1135,6 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: var(--tc-s-2);
-}
-/* K to 12 in tidy rows: as many 56px columns as fit, sharing the leftover width. */
-.tc-chips-grades {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(var(--tc-chip-min), 1fr));
-  gap: 6px;
-}
-.tc-subject-help {
-  margin: 0;
-}
-.tc-match-helper {
-  margin: 0;
-  font-family: var(--tc-font-voice-old);
-  font-size: var(--tc-fs-lead);
-  text-align: center;
 }
 .tc-setup-form .tc-row .tc-btn-primary {
   min-height: 72px;
@@ -4314,10 +4313,6 @@ button.tc-forge-row[aria-disabled='true'],
   }
   .tc-team-card {
     padding: var(--tc-s-3);
-  }
-  /* 13 grades fit 5 across inside a half-width card. */
-  .tc-chips-grades {
-    grid-template-columns: repeat(5, minmax(var(--tc-chip-min), 1fr));
   }
   /* Portrait: a fixed grid. Row 0 clears the ? and gear, row 1 holds both team cards, row 2 the
      shots. Sound lives low and left, so nothing floats over the picture. */

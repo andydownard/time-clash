@@ -65,7 +65,7 @@ test('Setup chips and inputs show a focus ring', async ({ page, browserName }) =
   await toSetup(page);
   for (const id of [
     'setup-name-PAST',
-    'setup-grade-PAST-2',
+    'setup-grade-PAST',
     'setup-subject-PAST-both',
     'setup-next',
   ]) {

@@ -1,6 +1,6 @@
 // Setup form rules. Pure functions: the overlay calls these and shows the messages.
 import { SETUP } from '../data/copy';
-import { GRADE, NAME, TOPIC_FOCUS, TOPIC_IDS } from '../game/config';
+import { GRADE, NAME } from '../game/config';
 import type { Grade, Player, Players, Subject, Team } from '../game/types';
 import { isBlockedName } from './nameBlocklist';
 
@@ -21,7 +21,7 @@ export function validatePlayerName(raw: unknown): NameResult {
 
 const SUBJECTS: readonly Subject[] = ['reading', 'math', 'both'];
 
-export type TeamInput = { name: string; grade: number; subject: string; topic?: string };
+export type TeamInput = { name: string; grade: number; subject: string };
 export type SetupInput = Record<Team, TeamInput>;
 export type TeamErrors = { name?: string; grade?: string; subject?: string };
 
@@ -47,9 +47,6 @@ function validateTeam(team: Team, input: TeamInput): { player?: Player; errors: 
     grade: input.grade as Grade,
     subject: input.subject as Subject,
   };
-  // Off unless a parent picked it, and only if this side is offered it.
-  const topic = TOPIC_FOCUS.enabled ? TOPIC_IDS.find((t) => t === input.topic) : undefined;
-  if (topic && TOPIC_FOCUS.offer[team].includes(topic)) player.topic = topic;
   return { errors, player };
 }
 

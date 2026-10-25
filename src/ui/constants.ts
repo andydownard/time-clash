@@ -25,5 +25,6 @@ export const LOCAL_IDS = {
   reloadTimer: 'reload-timer',
   reloadPrompt: 'reload-prompt',
   setupReadBack: 'setup-read-back',
+  setupGradeNote: (team: string) => `setup-grade-note-${team}`,
   setupError: (team: string) => `setup-error-${team}`,
 } as const;

@@ -95,9 +95,7 @@ export const SUBJECT_LABELS: Record<Subject, string> = {
   both: 'Both',
 };
 
-/** Short label for chips: K, 1, 2 ... 12. */
-export const gradeLabel = (grade: number): string => (grade === 0 ? 'K' : String(grade));
-/** Long label for screen readers and summaries. */
+/** The grade dropdown's words, also used by screen readers and summaries. */
 export const gradeChipLabel = (grade: number): string =>
   grade === 0 ? 'Kindergarten' : `Grade ${grade}`;
 
@@ -188,17 +186,8 @@ export const SETUP = {
   gradeLabel: 'Grade',
   subjectLabel: 'Subject',
   gradeHelper: 'Each team gets questions for its own grade. That keeps it fair.',
-  subjectHelper: 'Both mixes reading and math.',
-  /** Optional math focus (a parent picks it). Off at first. */
-  topicLabel: 'Focus',
-  topicChips: {
-    multiplication: 'Focus: Multiplication',
-    division: 'Focus: Division',
-  } as Record<string, string>,
-  topicHelpers: {
-    multiplication: 'Math questions are all multiplication.',
-    division: 'Math questions are all division.',
-  } as Record<string, string>,
+  /** One quiet line under the grade, only while that team's grade is K or 1. No read-aloud. */
+  youngReaderNote: 'A grown-up can read the questions with you.',
   /** Match length: a parent picks it. Short and Long change how many hits a base can take. */
   matchLengthLabel: 'Match length',
   matchLengthChips: { short: 'Short', normal: 'Normal', long: 'Long' } as Record<string, string>,

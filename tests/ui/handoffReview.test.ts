@@ -8,7 +8,7 @@ import { INTRO_SCRIPT } from '../../src/data/introScript';
 import { parseCssVars, resolveCssVars } from '../../src/ui/contrast';
 import type { HudHandlers, HudState } from '../../src/ui/types';
 import { TEST_IDS } from '../../src/ui/types';
-import { click, mathQ, q, qa, setup } from './helpers';
+import { click, mathQ, pickGrade, q, qa, setup } from './helpers';
 
 const read = (p: string) => readFileSync(new URL(p, import.meta.url), 'utf8');
 const css = read('../../src/styles/ui.css').replace(/\/\*[\s\S]*?\*\//g, '');
@@ -169,9 +169,9 @@ describe('light surfaces never carry Steel, Ember or Pulse lines', () => {
 });
 
 describe('plain numerals for young readers', () => {
-  it('grade chips, math prompt and answer tiles do not use Orbitron', () => {
+  it('the grade dropdown, math prompt and answer tiles do not use Orbitron', () => {
     for (const sel of [
-      '.tc-chips-grades .tc-chip',
+      '.tc-select',
       ".tc-reload[data-layout='math'] .tc-prompt",
       ".tc-reload[data-layout='math'] .tc-choice",
     ]) {
@@ -203,9 +203,10 @@ describe('Setup', () => {
     expect(bodyOf('.tc-team-card .tc-chip')).toMatch(/background:\s*transparent/);
     expect(bodyOf(".tc-chip[aria-checked='true']::before")).toContain('margin-right');
   });
-  it('grade chips sit on an even grid: 7 across, 5 across in portrait', () => {
-    expect(bodyOf('.tc-chips-grades')).toMatch(/repeat\(7,/);
-    expect(css).toMatch(/\.tc-chips-grades\s*\{\s*grid-template-columns:\s*repeat\(5,/);
+  it('the grade is a dropdown in plain letters, at least 56px tall and 20px text', () => {
+    expect(bodyOf('.tc-select')).toMatch(/min-height:\s*var\(--tc-tap\)/);
+    expect(bodyOf('.tc-select')).toMatch(/font-family:\s*var\(--tc-font\)/);
+    expect(bodyOf('.tc-select')).toMatch(/font-size:\s*var\(--tc-fs-button\)/);
   });
   it('the heading shares the ? and gear row, so the Clear button fits on screen', () => {
     expect(bodyOf('[data-tc-root] .tc-setup-title')).toMatch(/min-height:\s*var\(--tc-tap\)/);
@@ -214,7 +215,7 @@ describe('Setup', () => {
     void s.overlay.showSetup(null);
     const line = q('setup-read-back')!;
     expect(line.textContent).toBe('Team Past: Grade 2, Both. Team Future: Grade 2, Both');
-    click(q(TEST_IDS.setupGrade('FUTURE', 0)));
+    pickGrade('FUTURE', 0);
     click(q(TEST_IDS.setupSubject('PAST', 'math')));
     expect(line.textContent).toBe('Team Past: Grade 2, Math. Team Future: Kindergarten, Both');
   });

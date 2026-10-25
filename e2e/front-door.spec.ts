@@ -43,8 +43,8 @@ test('Setup keeps two different sides and remembers them after a reload', async 
   await toSetup(page);
   await id(page, 'setup-name-PAST').fill('Alex');
   await id(page, 'setup-name-FUTURE').fill('Sam');
-  await id(page, 'setup-grade-PAST-3').click();
-  await id(page, 'setup-grade-FUTURE-8').click();
+  await id(page, 'setup-grade-PAST').selectOption('3');
+  await id(page, 'setup-grade-FUTURE').selectOption('8');
   await id(page, 'setup-subject-FUTURE-math').click();
   await id(page, 'setup-next').click();
   await expect(id(page, 'setup-next')).toBeHidden();
@@ -56,8 +56,8 @@ test('Setup keeps two different sides and remembers them after a reload', async 
   await expect(id(page, 'setup-next')).toBeVisible();
   await expect(id(page, 'setup-name-PAST')).toHaveValue('Alex');
   await expect(id(page, 'setup-name-FUTURE')).toHaveValue('Sam');
-  await expect(id(page, 'setup-grade-PAST-3')).toHaveAttribute('aria-checked', 'true');
-  await expect(id(page, 'setup-grade-FUTURE-8')).toHaveAttribute('aria-checked', 'true');
+  await expect(id(page, 'setup-grade-PAST')).toHaveValue('3');
+  await expect(id(page, 'setup-grade-FUTURE')).toHaveValue('8');
 });
 
 test('an empty name keeps you on Setup', async ({ page }) => {
