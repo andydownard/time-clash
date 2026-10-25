@@ -46,7 +46,7 @@ test('draw an L, save it, drag it on, turn it, reload and see it again', async (
   await expect(tid(page, 'bb-pad')).toBeHidden();
   await expect(tid(page, 'bb-shape-1')).toBeVisible();
 
-  await dragShape(page, 1, 8, 7, 2, 3);
+  await dragShape(page, 1, 8, 8, 2, 3);
   await expect(bricks(page)).toHaveCount(1);
   await expect(bricks(page).first()).toHaveAttribute('data-piece', /^own:P:/);
   await tid(page, 'bb-turn').click();

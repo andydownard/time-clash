@@ -87,7 +87,16 @@ body {
   outline-color: var(--tc-focus-on-light);
 }
 
-/* ---------- Buttons and controls (56px floor) ---------- */
+/* ---------- Controls (56px floor) ----------
+   Three kinds, one look each (docs/DESIGN_SYSTEM.md, "Controls"):
+   - Button (.tc-btn) starts an action. Solid and raised on a bottom edge that folds away when
+     pressed. One filled primary per screen. Secondary is the outlined neutral. Destructive is
+     never the primary.
+   - Selector picks a value. Flat, never raised, never pressed down: options in one connected
+     strip (.tc-chips of .tc-chip, role radio), the picked one Ember with a check mark. An on/off
+     setting is one .tc-chip.tc-toggle (role switch). More than about five values: a dropdown
+     (.tc-select).
+   - Link (.tc-link) is a quiet, rare action: underlined text, no box. */
 .tc-btn,
 .tc-chip,
 .tc-input,
@@ -119,14 +128,17 @@ body {
   line-height: var(--tc-lh-tight);
   letter-spacing: var(--tc-ls-caps);
   text-transform: uppercase;
+  box-shadow: var(--tc-btn-edge);
 }
 .tc-btn:hover,
-.tc-chip:hover,
 .tc-choice:hover {
   filter: brightness(1.08);
 }
-.tc-btn:active,
-.tc-chip:active,
+/* A button presses down onto its edge. Selectors never move. */
+.tc-btn:active:not(:disabled):not([aria-disabled='true']) {
+  transform: translateY(var(--tc-btn-press));
+  box-shadow: none;
+}
 .tc-choice:active {
   transform: translateY(2px);
 }
@@ -164,7 +176,7 @@ body {
   background: var(--tc-btn-neon-bg);
   color: var(--tc-btn-neon-text);
   border: var(--tc-btn-neon-border);
-  box-shadow: var(--tc-glow-neon);
+  box-shadow: var(--tc-btn-edge-neon), var(--tc-glow-neon);
   text-shadow: var(--tc-btn-neon-text-shadow);
 }
 /* Primary (READY style): gold border, purple to blue. One per screen. */
@@ -178,7 +190,7 @@ body {
   background: var(--tc-btn-primary-bg);
   color: var(--tc-btn-primary-text);
   border: var(--tc-btn-primary-border);
-  box-shadow: var(--tc-glow-ready);
+  box-shadow: var(--tc-btn-edge), var(--tc-glow-ready);
   text-shadow: var(--tc-btn-primary-text-shadow);
 }
 .tc-btn-fire {
@@ -257,15 +269,82 @@ body {
   width: 100%;
   accent-color: var(--tc-blue-700);
 }
-/* Chips: grade and subject pickers. The chosen chip also shows a check mark. */
+/* Dropdown: a native select (an iPad shows its own big picker). Used when a set has more than
+   about five values, such as the grade. It looks like the name input, with an arrow. Grade numbers
+   use plain letters: Orbitron draws 1 as a bar and 7 as a flag. */
+.tc-select-wrap {
+  position: relative;
+  display: block;
+}
+.tc-select-wrap::after {
+  content: '\25BE';
+  position: absolute;
+  right: var(--tc-s-4);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--tc-input-text);
+  font-size: var(--tc-fs-button);
+  pointer-events: none;
+}
+.tc-select {
+  appearance: none;
+  width: 100%;
+  min-height: var(--tc-tap);
+  padding: var(--tc-s-2) calc(var(--tc-s-6) + var(--tc-s-4)) var(--tc-s-2) var(--tc-s-4);
+  border: var(--tc-input-border);
+  border-radius: var(--tc-r-button);
+  background: var(--tc-input-bg);
+  color: var(--tc-input-text);
+  font-family: var(--tc-font);
+  font-size: var(--tc-fs-button);
+  font-weight: 800;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+/* Link: a quiet, rare action (Clear my data). Underlined body text, not a box. The padding keeps
+   the tap area 56px tall. */
+.tc-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tc-tap);
+  padding: 0 var(--tc-s-2);
+  border: 0;
+  background: none;
+  color: inherit;
+  font-family: var(--tc-font);
+  font-size: var(--tc-fs-label);
+  font-weight: 400;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.tc-link:hover {
+  text-decoration-thickness: 3px;
+}
+/* Selector option. Flat: see-through with an outline, no edge, no press. The picked option is
+   filled Ember with Ink words and a check mark, so the pick is never color alone. The outline
+   color (--tc-sel-edge) follows the surface, so a strip stays one unbroken shape. */
+.tc-panel,
+.tc-reload-card,
+.tc-intro-card {
+  --tc-sel-edge: var(--tc-on-light);
+}
+.tc-team-card {
+  --tc-sel-edge: var(--tc-chip-past-edge);
+}
+.tc-team-card[data-team='FUTURE'] {
+  --tc-sel-edge: var(--tc-chip-future-edge);
+}
 .tc-chip {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--tc-s-1);
-  background: var(--tc-chip-bg);
-  color: var(--tc-chip-text);
-  border: var(--tc-chip-border);
+  background: transparent;
+  color: inherit;
+  border: 3px solid var(--tc-sel-edge, currentColor);
   border-radius: var(--tc-r-chip);
   min-width: var(--tc-chip-min);
   padding: var(--tc-s-2) var(--tc-s-3);
@@ -279,36 +358,69 @@ body {
   white-space: nowrap;
 }
 .tc-chip[aria-checked='true'] {
-  background: var(--tc-chip-on-bg);
-  color: var(--tc-chip-on-text);
-  border: var(--tc-chip-on-border);
+  z-index: 1;
+  background: var(--tc-chip-picked-bg);
+  color: var(--tc-chip-picked-text);
   font-weight: var(--tc-fw-new-heavy);
-  box-shadow: 0 0 0 3px var(--tc-parchment-warm);
 }
 .tc-chip[aria-checked='true']::before {
   content: '\2713';
   margin-right: var(--tc-s-1);
 }
-/* On a team card (setup board): the chip is see-through with the team's edge and cream text.
-   The chosen chip is Ember with an Ink border and a check mark. */
-.tc-team-card .tc-chip {
+/* One connected strip: neighbours share an edge and only the ends are rounded. */
+.tc-chips,
+.tc-forge-picker,
+.tc-plan-cards {
+  gap: 0;
+}
+.tc-chips {
+  display: flex;
+  flex-wrap: nowrap;
+}
+:is(.tc-chips, .tc-forge-picker, .tc-plan-cards) > .tc-chip + .tc-chip {
+  margin-left: -3px;
+}
+:is(.tc-chips, .tc-forge-picker, .tc-plan-cards) > .tc-chip:not(:first-child) {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+:is(.tc-chips, .tc-forge-picker, .tc-plan-cards) > .tc-chip:not(:last-child) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+/* An on/off switch: one option on its own, with a drawn switch track. The knob sits right and
+   the track is Ember when on, so the state is a shape too, not only color. The words also say
+   it ("Sound on"). No check mark: the knob is the mark. */
+.tc-toggle {
+  gap: var(--tc-s-2);
+  padding-inline: var(--tc-s-4);
+}
+.tc-toggle[aria-checked='true'] {
   background: transparent;
-  color: var(--tc-on-dark);
-  border: 3px solid var(--tc-chip-past-edge);
+  color: inherit;
 }
-.tc-team-card[data-team='FUTURE'] .tc-chip {
-  border-color: var(--tc-chip-future-edge);
+.tc-toggle[aria-checked='true']::before {
+  content: none;
 }
-.tc-team-card .tc-chip[aria-checked='true'] {
-  background: var(--tc-chip-picked-bg);
-  color: var(--tc-chip-picked-text);
-  border: 4px solid var(--tc-chip-picked-edge);
+.tc-toggle::after {
+  content: '';
+  flex: none;
+  order: 2;
+  width: 48px;
+  height: 28px;
+  border: 3px solid currentColor;
+  border-radius: var(--tc-r-pill);
+  background: radial-gradient(circle at 11px 50%, currentColor 0 7px, transparent 8px);
 }
-/* Grade numbers use plain letters. Orbitron draws 1 as a bar and 7 as a flag. */
-.tc-chips-grades .tc-chip {
-  font-family: var(--tc-font);
-  font-weight: 800;
-  padding-inline: var(--tc-s-1);
+.tc-toggle[aria-checked='true']::after {
+  border-color: var(--tc-chip-picked-edge);
+  background:
+    radial-gradient(
+      circle at calc(100% - 11px) 50%,
+      var(--tc-chip-picked-text) 0 7px,
+      transparent 8px
+    ),
+    var(--tc-chip-picked-bg);
 }
 /* Answer tiles. A number badge (from data-key) matches the 1 to 4 keys. */
 .tc-choice {
@@ -343,7 +455,6 @@ body {
   justify-content: center;
   font-size: var(--tc-fs-label);
 }
-.tc-choice .tc-choice-text,
 .tc-choice {
   overflow-wrap: anywhere;
 }
@@ -735,9 +846,19 @@ body {
   display: flex;
   gap: 8px;
 }
-.tc-hud-corner .tc-btn {
-  padding-inline: var(--tc-s-4);
+/* The Sound switch floats over the sky, so it sits on an Ink backing to stay readable. It is
+   packed tight so it stays clear of the Team Past card on a 1024 wide screen. */
+.tc-hud-corner .tc-toggle {
+  gap: var(--tc-s-1);
+  padding-inline: var(--tc-s-2);
+  letter-spacing: 0.02em;
   white-space: nowrap;
+  background: var(--tc-ink-deep);
+  color: var(--tc-on-dark);
+}
+.tc-hud-corner .tc-toggle::after {
+  width: 40px;
+  height: 24px;
 }
 /* Team cards. Past is purple, Future is blue with a Pulse glow. The active card also shows a
    marker and a thicker edge, so the turn is never shown by color alone. */
@@ -949,40 +1070,6 @@ body {
   padding-bottom: var(--tc-s-3);
   gap: var(--tc-s-2);
 }
-/* The heading shares a row with the ? and gear buttons (it is centered, they sit at the left),
-   so the cards start higher and every button fits on a 1024x768 screen. */
-[data-tc-root] .tc-setup-sub {
-  margin: 0;
-  font-family: var(--tc-font-voice-new);
-  font-weight: 700;
-  font-size: var(--tc-fs-label);
-  letter-spacing: var(--tc-ls-caps);
-  text-align: center;
-  text-transform: uppercase;
-}
-/* On a 768 tall screen there is no room for the line, and Setup must not scroll (regression 13).
-   It stays for screen readers. */
-@media (max-height: 790px) {
-  [data-tc-root] .tc-setup-sub {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-}
-/* The read-back line repeats the cards, so on a 768 or 800 tall screen, or a portrait one, it goes too. Screen readers keep it. */
-@media (max-height: 810px), (orientation: portrait) {
-  .tc-match-helper {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-}
 /* iPad mini landscape is 744 tall: tighten Setup so Clear my data keeps a margin above the
    bottom edge and the home bar (iPad audit defect 2). */
 @media (max-height: 760px) {
@@ -995,15 +1082,6 @@ body {
   }
   .tc-team-card {
     padding-block: var(--tc-s-2);
-  }
-  /* The summary line repeats the choices on the cards. It stays for screen readers. */
-  .tc-match-helper {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
   }
 }
 [data-tc-root] .tc-setup-title {
@@ -1095,19 +1173,6 @@ body {
   font-family: var(--tc-font-voice-old);
   font-weight: 400;
 }
-.tc-subject-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--tc-s-1) var(--tc-s-2);
-}
-.tc-subject-head .tc-label {
-  margin: 0;
-}
-.tc-subject-head .tc-chips {
-  flex: 0 1 auto;
-}
 .tc-label {
   display: block;
   margin: 6px 0 0;
@@ -1116,26 +1181,6 @@ body {
   font-weight: var(--tc-fw-new);
   letter-spacing: var(--tc-ls-caps);
   text-transform: uppercase;
-}
-.tc-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--tc-s-2);
-}
-/* K to 12 in tidy rows: as many 56px columns as fit, sharing the leftover width. */
-.tc-chips-grades {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(var(--tc-chip-min), 1fr));
-  gap: 6px;
-}
-.tc-subject-help {
-  margin: 0;
-}
-.tc-match-helper {
-  margin: 0;
-  font-family: var(--tc-font-voice-old);
-  font-size: var(--tc-fs-lead);
-  text-align: center;
 }
 .tc-setup-form .tc-row .tc-btn-primary {
   min-height: 72px;
@@ -1155,25 +1200,10 @@ body {
   margin: 0;
   white-space: nowrap;
 }
-.tc-length .tc-chips {
-  flex-wrap: nowrap;
-  gap: var(--tc-s-1);
-}
 .tc-length .tc-chip {
-  min-height: var(--tc-tap);
-  font-size: var(--tc-fs-label);
   flex: none;
   white-space: nowrap;
   padding-inline: var(--tc-s-3);
-  background: transparent;
-  color: var(--tc-on-dark);
-  border: 3px solid var(--tc-on-dark);
-}
-/* The chosen length is Ember with a check mark, like the grade chips. */
-.tc-length .tc-chip[aria-checked='true'] {
-  background: var(--tc-chip-picked-bg);
-  color: var(--tc-chip-picked-text);
-  border: 4px solid var(--tc-chip-picked-edge);
 }
 .tc-privacy {
   display: flex;
@@ -1603,11 +1633,12 @@ body {
 .tc-cover-mute {
   justify-self: center;
 }
-.tc-cover-mute::before {
+/* The speaker picture stands in for the switch's check mark (the words still say on or off). */
+.tc-toggle.tc-cover-mute::before {
   content: '\1F50A';
   margin-right: var(--tc-s-2);
 }
-.tc-cover-mute[data-muted='true']::before {
+.tc-toggle.tc-cover-mute[data-muted='true']::before {
   content: '\1F507';
 }
 /* Empty live regions and the Next slot reserve no space until they have something to say. */
@@ -1993,6 +2024,15 @@ body {
   .tc-victory > .tc-row:last-child {
     margin-top: var(--tc-s-2);
   }
+  /* A full-length match can fill both cards (six medals and a Scrap row with a plus), so
+     Chrono's line gets the smaller face the reload quip uses. The text size does not change. */
+  .tc-chrono-says {
+    padding-block: var(--tc-s-1);
+  }
+  .tc-chrono-says .tc-chrono-face {
+    width: 40px;
+    height: 43px;
+  }
 }
 
 /* ---------- Camp ---------- */
@@ -2281,8 +2321,11 @@ body {
 }
 .tc-forge-picker {
   display: flex;
-  justify-content: center;
-  gap: var(--tc-s-3);
+  width: fit-content;
+  margin-inline: auto;
+  border-radius: var(--tc-r-chip);
+  background: var(--tc-ink-deep);
+  color: var(--tc-on-dark);
 }
 .tc-forge-list {
   width: min(960px, 100%);
@@ -2435,6 +2478,232 @@ button.tc-forge-row[aria-disabled='true'],
 }
 .tc-forge-status:empty {
   visibility: hidden;
+}
+/* Under the list: My weapons, Make my own weapon, and (in My weapons) Level up. */
+.tc-forge-foot {
+  width: min(960px, 100%);
+  margin-left: auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--tc-s-3);
+}
+.tc-forge-foot .tc-btn {
+  min-height: var(--tc-tap);
+  padding-inline: var(--tc-s-4);
+  font-size: var(--tc-text-min);
+  white-space: nowrap;
+}
+.tc-forge-make[aria-disabled='true'] {
+  border-style: dashed;
+  cursor: not-allowed;
+}
+/* My weapons: two cards a row, so six fit without scrolling. */
+.tc-forge-list[data-view='mine'] {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--tc-s-2) var(--tc-s-3);
+}
+.tc-forge-card .tc-forge-pick {
+  gap: var(--tc-s-3);
+  padding-block: 0;
+}
+.tc-forge-card .tc-forge-namerow {
+  flex-wrap: wrap;
+  gap: var(--tc-s-2);
+}
+.tc-forge-card .tc-forge-badge {
+  padding: 2px var(--tc-s-2);
+}
+
+/* ---------- Weapon Workshop (make your own weapon) ---------- */
+.tc-workshop .tc-forge-status {
+  align-self: stretch;
+  min-height: 0;
+}
+.tc-workshop .tc-forge-title {
+  font-size: calc(var(--tc-text-min) * 1.6);
+}
+.tc-workshop .tc-forge-back {
+  white-space: nowrap;
+}
+.tc-ws-body {
+  width: min(1100px, 100%);
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: var(--tc-s-4);
+  align-items: start;
+}
+.tc-ws-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tc-s-3);
+  padding: var(--tc-s-3) var(--tc-s-4);
+  border: 4px solid var(--tc-purple-500);
+  border-radius: 18px;
+  background: var(--tc-ink-deep);
+  color: var(--tc-parchment-warm);
+}
+.tc-workshop[data-team='FUTURE'] .tc-ws-panel {
+  border-color: var(--tc-blue-700);
+  color: var(--tc-blue-100);
+}
+.tc-ws-head {
+  margin: 0;
+  font-family: var(--tc-font-voice-old);
+  font-weight: 400;
+  font-size: var(--tc-fs-lead);
+}
+.tc-workshop[data-team='FUTURE'] .tc-ws-head {
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+}
+.tc-ws-styles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--tc-s-2);
+}
+.tc-ws-style {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: var(--tc-tap);
+  padding: var(--tc-s-1) var(--tc-s-2);
+  border: 3px solid var(--tc-purple-500);
+  border-radius: 14px;
+  background: var(--tc-parchment-warm);
+  color: var(--tc-ink-deep);
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: var(--tc-text-min);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.tc-ws-style .tc-weapon-icon {
+  width: 64px;
+  height: 32px;
+}
+.tc-ws-style[aria-checked='true'] {
+  border: 4px solid var(--tc-ink-deep);
+  background: var(--tc-ember);
+  box-shadow: 0 0 0 4px var(--tc-purple-500);
+}
+.tc-workshop[data-team='FUTURE'] .tc-ws-style {
+  border-color: var(--tc-blue-700);
+}
+.tc-workshop[data-team='FUTURE'] .tc-ws-style[aria-checked='true'] {
+  border-color: var(--tc-ink-deep);
+  background: var(--tc-blue-100);
+  box-shadow: 0 0 0 4px var(--tc-pulse);
+}
+.tc-ws-style-name {
+  white-space: nowrap;
+}
+.tc-ws-points {
+  margin: 0;
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: var(--tc-text-min);
+  letter-spacing: var(--tc-ls-caps);
+  text-transform: uppercase;
+  color: var(--tc-ember);
+}
+.tc-workshop[data-team='FUTURE'] .tc-ws-points {
+  color: var(--tc-pulse);
+}
+.tc-ws-stat {
+  display: grid;
+  /* One label width for all three rows, so the plus and minus buttons line up. */
+  grid-template-columns: 8.5em var(--tc-tap) 2ch var(--tc-tap) minmax(0, 1fr);
+  align-items: center;
+  gap: var(--tc-s-2);
+  font-size: var(--tc-text-min);
+}
+.tc-ws-label {
+  display: flex;
+  flex-direction: column;
+  white-space: nowrap;
+}
+.tc-ws-stat-name {
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: var(--tc-fs-lead);
+}
+.tc-ws-help,
+.tc-ws-effect {
+  font-size: var(--tc-text-min);
+}
+.tc-ws-effect {
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new);
+  text-transform: uppercase;
+}
+.tc-ws-value {
+  text-align: center;
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: var(--tc-fs-lead);
+}
+.tc-ws-step {
+  width: var(--tc-tap);
+  height: var(--tc-tap);
+  border: 3px solid var(--tc-ember);
+  border-radius: 14px;
+  background: var(--tc-purple-700);
+  color: var(--tc-white);
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: var(--tc-text-young);
+  line-height: 1;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.tc-workshop[data-team='FUTURE'] .tc-ws-step {
+  border-color: var(--tc-pulse);
+  background: var(--tc-blue-700);
+}
+.tc-ws-step[aria-disabled='true'] {
+  border-style: dashed;
+  cursor: not-allowed;
+}
+.tc-ws-words {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--tc-s-2);
+}
+.tc-ws-select,
+.tc-ws-typed {
+  width: 100%;
+  min-height: var(--tc-tap);
+  padding: var(--tc-s-1) var(--tc-s-3);
+  border: 3px solid var(--tc-ember);
+  border-radius: 12px;
+  background: var(--tc-parchment-warm);
+  color: var(--tc-ink-deep);
+  font-family: var(--tc-font-voice-new);
+  font-weight: var(--tc-fw-new-heavy);
+  font-size: var(--tc-text-min);
+}
+.tc-workshop[data-team='FUTURE'] .tc-ws-select,
+.tc-workshop[data-team='FUTURE'] .tc-ws-typed {
+  border-color: var(--tc-pulse);
+}
+.tc-ws-typed::placeholder {
+  color: var(--tc-oak);
+  opacity: 1;
+}
+.tc-ws-preview {
+  cursor: default;
+  min-height: 0;
+  padding: var(--tc-s-2) var(--tc-s-3);
+  gap: var(--tc-s-3);
+}
+.tc-ws-forge {
+  min-height: var(--tc-tap);
+  font-size: var(--tc-text-min);
 }
 /* The pictures move: the bowyer and her chips, the press, sparks. Reduced motion stops it all. */
 /* Future Forge: the operator's thumb presses three buttons in turn (each glows), and a thin pulse
@@ -4315,10 +4584,6 @@ button.tc-forge-row[aria-disabled='true'],
   .tc-team-card {
     padding: var(--tc-s-3);
   }
-  /* 13 grades fit 5 across inside a half-width card. */
-  .tc-chips-grades {
-    grid-template-columns: repeat(5, minmax(var(--tc-chip-min), 1fr));
-  }
   /* Portrait: a fixed grid. Row 0 clears the ? and gear, row 1 holds both team cards, row 2 the
      shots. Sound lives low and left, so nothing floats over the picture. */
   .tc-hud-top {
@@ -4573,7 +4838,6 @@ button.tc-forge-row[aria-disabled='true'],
 .tc-plan-cards {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--tc-s-2);
 }
 .tc-plan-card {
   justify-content: flex-start;

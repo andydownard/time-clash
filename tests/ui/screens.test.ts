@@ -16,7 +16,7 @@ import { INTRO_SCRIPT } from '../../src/data/introScript';
 import { CELEBRATE, DEFAULT_NAMES, TIMING } from '../../src/game/config';
 import type { Players, TeamStats } from '../../src/game/types';
 import { TEST_IDS, Z } from '../../src/ui/types';
-import { click, flush, key, q, qa, setup } from './helpers';
+import { click, flush, gradeShown, pickGrade, q, qa, setup } from './helpers';
 
 let s: ReturnType<typeof setup>;
 beforeEach(() => {
@@ -343,70 +343,35 @@ describe('setup screen', () => {
     expect(document.body.textContent).toContain(SETUP.gradeHelper);
   });
 
-  it('says that each team picks its own grade, and what Both means', () => {
+  it('says that each team picks its own grade, with no extra line about Both', () => {
     expect(SETUP.gradeHelper).toBe(
       'Each team gets questions for its own grade. That keeps it fair.',
     );
-    expect(SETUP.subjectHelper).toBe('Both mixes reading and math.');
     void s.overlay.showSetup(null);
-    const text = document.body.textContent!;
-    expect(text).toContain(SETUP.subjectHelper);
-    expect(text.split(SETUP.subjectHelper).length - 1).toBe(2); // once per team card
+    expect(document.body.textContent).not.toContain('mixes reading and math');
   });
 
-  it('offers multiplication to Team Past and division to Team Future, both start off', async () => {
+  it('has no Focus switch (the owner retired it on 2026-10-24)', async () => {
     const p = s.overlay.showSetup(null);
-    const chip = q(TEST_IDS.setupTopic('PAST', 'multiplication'))!;
-    const divChip = q(TEST_IDS.setupTopic('FUTURE', 'division'))!;
-    expect(chip.getAttribute('aria-checked')).toBe('false');
-    expect(divChip.getAttribute('aria-checked')).toBe('false');
-    expect(divChip.textContent).toBe('Focus: Division');
-    expect(q(TEST_IDS.setupTopic('FUTURE', 'multiplication'))).toBeNull();
-    expect(q(TEST_IDS.setupTopic('PAST', 'division'))).toBeNull();
+    expect(qa('[data-testid^="setup-topic-"]')).toHaveLength(0);
+    expect(document.body.textContent).not.toMatch(/Focus|Multiplication|Division/);
+    expect(qa('[role="switch"]')).toHaveLength(0);
     next();
     const players = await p;
     expect(players[0]).not.toHaveProperty('topic');
     expect(players[1]).not.toHaveProperty('topic');
   });
 
-  it('turns the division focus on for Team Future and hands it to the game', async () => {
-    const p = s.overlay.showSetup(null);
-    click(q(TEST_IDS.setupTopic('FUTURE', 'division')));
-    expect(q(TEST_IDS.setupTopic('FUTURE', 'division'))!.getAttribute('aria-checked')).toBe('true');
-    expect(q(TEST_IDS.setupTopic('PAST', 'multiplication'))!.getAttribute('aria-checked')).toBe(
-      'false',
-    );
-    next();
-    const players = await p;
-    expect(players[1].topic).toBe('division');
-    expect(players[0]).not.toHaveProperty('topic');
-  });
-
-  it('turns the focus on and off, keeps it with different grades, and hands it to the game', async () => {
-    const p = s.overlay.showSetup(null);
-    click(q(TEST_IDS.setupGrade('PAST', 3)));
-    click(q(TEST_IDS.setupGrade('FUTURE', 8)));
-    const chip = q(TEST_IDS.setupTopic('PAST', 'multiplication'))!;
-    click(chip);
-    expect(chip.getAttribute('aria-checked')).toBe('true');
-    click(chip);
-    expect(chip.getAttribute('aria-checked')).toBe('false');
-    click(chip);
-    next();
-    const players = await p;
-    expect(players[0].topic).toBe('multiplication');
-    expect([players[0].grade, players[1].grade]).toEqual([3, 8]);
-  });
-
-  it('shows a saved focus as on', () => {
-    const players: Players = [
+  it('drops a saved focus from old players and starts without it', async () => {
+    const old = [
       { name: 'Alex', team: 'PAST', grade: 3, subject: 'math', topic: 'multiplication' },
       { name: 'Sam', team: 'FUTURE', grade: 8, subject: 'math' },
-    ];
-    void s.overlay.showSetup(players);
-    expect(q(TEST_IDS.setupTopic('PAST', 'multiplication'))!.getAttribute('aria-checked')).toBe(
-      'true',
-    );
+    ] as unknown as Players;
+    const p = s.overlay.showSetup(old);
+    expect(gradeShown('PAST')).toBe(3);
+    next();
+    const players = await p;
+    expect(players[0]).toEqual({ name: 'Alex', team: 'PAST', grade: 3, subject: 'math' });
   });
 
   it('shows saved players when given', () => {
@@ -416,17 +381,25 @@ describe('setup screen', () => {
     ];
     void s.overlay.showSetup(players);
     expect(field('PAST').value).toBe('Alex');
-    expect(q(TEST_IDS.setupGrade('FUTURE', 8))!.getAttribute('aria-checked')).toBe('true');
+    expect(gradeShown('FUTURE')).toBe(8);
     expect(q(TEST_IDS.setupSubject('PAST', 'reading'))!.getAttribute('aria-checked')).toBe('true');
   });
 
-  it('has 13 grade chips per team labelled K and 1 to 12, and 3 subject chips', () => {
+  it('has one grade dropdown per team with K and Grades 1 to 12, and 3 subject choices', () => {
     void s.overlay.showSetup(null);
-    const chips = qa('[data-testid^="setup-grade-PAST-"]');
-    expect(chips).toHaveLength(13);
-    expect(chips[0]!.textContent).toBe('K');
-    expect(chips[12]!.textContent).toBe('12');
-    expect(chips[0]!.getAttribute('aria-label')).toBe(gradeChipLabel(0));
+    for (const team of ['PAST', 'FUTURE'] as const) {
+      const sel = q<HTMLSelectElement>(TEST_IDS.setupGrade(team))!;
+      expect(sel.tagName).toBe('SELECT');
+      const options = [...sel.options];
+      expect(options).toHaveLength(13);
+      expect(options[0]!.value).toBe('0');
+      expect(options[0]!.textContent).toBe(gradeChipLabel(0));
+      expect(options[3]!.textContent).toBe('Grade 3');
+      expect(options[12]!.textContent).toBe('Grade 12');
+      // A visible label names it.
+      const label = document.querySelector(`label[for="${sel.id}"]`);
+      expect(label?.textContent).toBe(SETUP.gradeLabel);
+    }
     expect(qa('[data-testid^="setup-subject-FUTURE-"]')).toHaveLength(3);
   });
 
@@ -434,8 +407,8 @@ describe('setup screen', () => {
     const p = s.overlay.showSetup(null);
     type('PAST', '  Alex ');
     type('FUTURE', 'Sam');
-    click(q(TEST_IDS.setupGrade('PAST', 0)));
-    click(q(TEST_IDS.setupGrade('FUTURE', 12)));
+    pickGrade('PAST', 0);
+    pickGrade('FUTURE', 12);
     click(q(TEST_IDS.setupSubject('PAST', 'reading')));
     click(q(TEST_IDS.setupSubject('FUTURE', 'math')));
     next();
@@ -446,30 +419,42 @@ describe('setup screen', () => {
     expect(q(TEST_IDS.setupNext)).toBeNull();
   });
 
-  it('selecting a chip unselects the others', () => {
+  it('a value outside K to 12 is ignored and the old grade stays', () => {
     void s.overlay.showSetup(null);
-    click(q(TEST_IDS.setupGrade('PAST', 5)));
-    click(q(TEST_IDS.setupGrade('PAST', 6)));
-    const checked = qa('[data-testid^="setup-grade-PAST-"][aria-checked="true"]');
-    expect(checked).toHaveLength(1);
-    expect(checked[0]!.textContent).toBe('6');
+    pickGrade('PAST', 5);
+    const sel = q<HTMLSelectElement>(TEST_IDS.setupGrade('PAST'))!;
+    sel.append(new Option('x', '13'));
+    sel.value = '13';
+    sel.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(gradeShown('PAST')).toBe(5);
   });
 
-  it('arrow keys move through grade chips', () => {
+  it('shows the grown-up note only for a team at K or Grade 1', () => {
     void s.overlay.showSetup(null);
-    click(q(TEST_IDS.setupGrade('PAST', 5)));
-    key(q(TEST_IDS.setupGrade('PAST', 5))!, 'ArrowRight');
-    expect(q(TEST_IDS.setupGrade('PAST', 6))!.getAttribute('aria-checked')).toBe('true');
-    key(q(TEST_IDS.setupGrade('PAST', 6))!, 'ArrowLeft');
-    key(q(TEST_IDS.setupGrade('PAST', 5))!, 'ArrowLeft');
-    expect(q(TEST_IDS.setupGrade('PAST', 4))!.getAttribute('aria-checked')).toBe('true');
+    const note = (t: 'PAST' | 'FUTURE') => q(`setup-grade-note-${t}`)!;
+    expect(SETUP.youngReaderNote).toBe('A grown-up can read the questions with you.');
+    pickGrade('PAST', 0);
+    pickGrade('FUTURE', 5);
+    expect(note('PAST').hidden).toBe(false);
+    expect(note('PAST').textContent).toBe(SETUP.youngReaderNote);
+    expect(note('FUTURE').hidden).toBe(true);
+    pickGrade('PAST', 1);
+    expect(note('PAST').hidden).toBe(false);
+    pickGrade('PAST', 2);
+    expect(note('PAST').hidden).toBe(true);
+    pickGrade('FUTURE', 1);
+    expect(note('FUTURE').hidden).toBe(false);
+    // The dropdown points a screen reader at the note.
+    const sel = q(TEST_IDS.setupGrade('FUTURE'))!;
+    expect(sel.getAttribute('aria-describedby')).toContain(note('FUTURE').id);
   });
 
-  it('arrow keys stop at the ends', () => {
+  it('the summary line is for screen readers only, and still says both picks', () => {
     void s.overlay.showSetup(null);
-    click(q(TEST_IDS.setupGrade('PAST', 0)));
-    key(q(TEST_IDS.setupGrade('PAST', 0))!, 'ArrowLeft');
-    expect(q(TEST_IDS.setupGrade('PAST', 0))!.getAttribute('aria-checked')).toBe('true');
+    pickGrade('PAST', 4);
+    const line = q('setup-read-back')!;
+    expect(line.classList.contains('tc-sr-only')).toBe(true);
+    expect(line.textContent).toContain(gradeChipLabel(4));
   });
 
   it('an empty name shows the friendly message, does not resolve, and focuses the field', async () => {
@@ -662,8 +647,17 @@ describe('settings and misc', () => {
 
   it('every button and input in a screen is one of the sized components', async () => {
     void s.overlay.showSetup(null);
-    const allowed = ['tc-btn', 'tc-chip', 'tc-input', 'tc-choice', 'tc-icon-btn', 'tc-range'];
-    const bad = qa('button, input').filter((el) => !allowed.some((c) => el.classList.contains(c)));
+    const allowed = [
+      'tc-btn',
+      'tc-chip',
+      'tc-input',
+      'tc-select',
+      'tc-link',
+      'tc-choice',
+      'tc-icon-btn',
+      'tc-range',
+    ];
+    const bad = qa('button, input, select').filter((el) => !allowed.some((c) => el.classList.contains(c)));
     expect(bad.map((b) => b.outerHTML)).toEqual([]);
   });
 });

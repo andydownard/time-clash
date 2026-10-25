@@ -211,3 +211,24 @@ export function forgeScene(doc: Document, team: Team): SVGElement {
 export function weaponIcon(doc: Document, id: WeaponId): SVGElement {
   return svgFromString(doc, ICONS[id], 'tc-weapon-icon');
 }
+
+/** Team tokens for a weapon you made: Past purple-500, Future pulse (tokens.css team accents). */
+const MINE_TINT: Record<Team, string> = { PAST: '#8247e8', FUTURE: '#4fd8ff' };
+/** A five-point star, centered on 0,0, about 14 across. */
+const STAR = 'M0,-7 L2,-2.4 L6.8,-2.2 L3,1 L4.3,5.8 L0,3 L-4.3,5.8 L-3,1 L-6.8,-2.2 L-2,-2.4 Z';
+
+/**
+ * A weapon you made in the Workshop: the picture of its style, shrunk a little, on a glow in the
+ * team's accent color, with a star badge (it is yours). Decorative, like the other icons.
+ */
+export function customWeaponIcon(doc: Document, base: WeaponId, team: Team): SVGElement {
+  const inner = ICONS[base].replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, '');
+  const tint = MINE_TINT[team];
+  return svgFromString(
+    doc,
+    `<svg viewBox="0 0 80 40"><ellipse cx="38" cy="22" rx="36" ry="15" fill="${tint}" opacity=".4"/>` +
+      `<g transform="translate(3 5) scale(.86)">${inner}</g>` +
+      `<g transform="translate(71 8)"><path d="${STAR}" fill="${tint}" stroke="#12102b" stroke-width="2" stroke-linejoin="round"/></g></svg>`,
+    'tc-weapon-icon tc-weapon-icon-mine',
+  );
+}

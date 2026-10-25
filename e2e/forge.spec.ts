@@ -1,4 +1,5 @@
 // Forge Weapon: opens from the Camp, spends Scrap, and the weapon shows up in the next match.
+import { DAMAGE } from '../src/game/config';
 import { expect, test } from './fixtures';
 import { giveScrap, savedCamp } from './support/camp';
 import {
@@ -80,7 +81,7 @@ test('a forged weapon is used in the next match', async ({ page }) => {
   await clashFromCamp(page);
   await expect(tid(page, 'pass-screen')).toBeVisible({ timeout: 10_000 });
   const m = await snap(page);
-  expect(m.maxBaseHp).toEqual({ PAST: 100, FUTURE: 100 });
+  expect(m.maxBaseHp).toEqual({ PAST: DAMAGE.startingBaseHp, FUTURE: DAMAGE.startingBaseHp });
   const saved = await savedCamp(page);
   expect(saved.wallets.alex!.loadout.PAST!.owned.royalSword).toBe(2);
   expect(saved.wallets.alex!.scrap).toBe(44);

@@ -200,7 +200,7 @@ describe('settings panel', () => {
     expect(b.textContent).toBe(BUTTONS.motionOn);
     expect(document.querySelector('[data-tc-root]')!.getAttribute('data-motion')).toBe('full');
   });
-  it('has a Bonus ring button: shown by default, saved when hidden, and 56px or more', () => {
+  it('has a Bonus ring switch: shown by default, saved when hidden, and 56px or more', () => {
     open();
     const b = q(CHROME_IDS.bonusRing)!;
     expect(b.textContent).toBe(BUTTONS.bonusRingShown);
@@ -211,7 +211,8 @@ describe('settings panel', () => {
     click(b);
     expect(loadSettings(t.storage).hideBonusRing).toBe(false);
     expect(b.textContent).toBe(BUTTONS.bonusRingShown);
-    expect(b.classList.contains('tc-btn')).toBe(true);
+    expect(b.getAttribute('aria-checked')).toBe('true');
+    expect(b.classList.contains('tc-chip')).toBe(true);
   });
   it('the Bonus ring choice does not change the other settings', () => {
     open();

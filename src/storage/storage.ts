@@ -1,7 +1,7 @@
 // Typed, never-throwing wrapper around localStorage. Nothing here leaves the device.
 import { isSpecialAmmo, type AmmoId } from '../game/ammo';
 import { normalizePlan, type BattlePlan } from '../game/battlefield';
-import { DEFAULT_SETTINGS, GRADE, TOPIC_FOCUS, TOPIC_IDS } from '../game/config';
+import { DEFAULT_SETTINGS, GRADE } from '../game/config';
 import {
   freshCamp,
   freshLoadout,
@@ -21,7 +21,8 @@ import {
   type BasesState,
 } from '../game/baseBuilder';
 import { isMatchLength, normalizeMatchLength, type MatchLength } from '../game/matchLength';
-import { FORGE, WEAPONS, type WeaponId } from '../game/weapons';
+import { FORGE, WEAPONS, type AnyWeaponId } from '../game/weapons';
+import { cleanCustomList } from '../game/customWeapons';
 import { UPGRADES, UPGRADE_MAX_LEVEL, type UpgradeId } from '../game/upgrades';
 import { CALIBRATION, type CalibrationState, type Levels } from '../questions/calibration';
 import type { PickHistory, QuestionSubject } from '../questions/types';
@@ -51,23 +52,22 @@ const TEAM_ORDER: readonly Team[] = ['PAST', 'FUTURE'];
 const isObject = (v: unknown): v is Record<string, unknown> =>
   typeof v === 'object' && v !== null && !Array.isArray(v);
 
-/** A grade, subject and optional Focus, checked. Null when the grade or subject is bad. */
-function parsePick(v: unknown, team: Team): SetupPick | null {
+/**
+ * A grade and subject, checked. Null when either is bad. Anything else saved with them (such as
+ * the retired Focus switch's `topic`) is dropped, never fatal.
+ */
+function parsePick(v: unknown): SetupPick | null {
   if (!isObject(v)) return null;
   const { grade, subject } = v;
   if (typeof grade !== 'number' || !Number.isInteger(grade)) return null;
   if (grade < GRADE.min || grade > GRADE.max) return null;
   if (typeof subject !== 'string' || !SUBJECTS.includes(subject as Subject)) return null;
-  const pick: SetupPick = { grade: grade as Grade, subject: subject as Subject };
-  // A saved topic must still be one this side is offered. Anything else is dropped, not fatal.
-  const topic = TOPIC_IDS.find((t) => t === v.topic);
-  if (topic && TOPIC_FOCUS.offer[team].includes(topic)) pick.topic = topic;
-  return pick;
+  return { grade: grade as Grade, subject: subject as Subject };
 }
 
 function parsePlayer(v: unknown, team: Team): Player | null {
   if (!isObject(v)) return null;
-  const pick = parsePick(v, team);
+  const pick = parsePick(v);
   if (typeof v.name !== 'string' || v.team !== team || !pick) return null;
   return { name: v.name, team, ...pick };
 }
@@ -76,7 +76,7 @@ function parseSetupPicks(v: unknown): SetupPicks | null {
   if (!isObject(v)) return null;
   const out: SetupPicks = {};
   for (const team of TEAM_ORDER) {
-    const pick = parsePick(v[team], team);
+    const pick = parsePick(v[team]);
     if (pick) out[team] = pick;
   }
   return out;
@@ -148,15 +148,22 @@ const wholeBetween = (v: unknown, lo: number, hi: number): number | null =>
 function parseLoadout(v: unknown, team: Team): TeamLoadout {
   const fresh = freshLoadout(team);
   if (!isObject(v)) return fresh;
-  const owned: Partial<Record<WeaponId, number>> = { ...fresh.owned };
+  const owned: Partial<Record<AnyWeaponId, number>> = { ...fresh.owned };
   if (isObject(v.owned)) {
     for (const w of WEAPONS.filter((x) => x.team === team)) {
       const level = wholeBetween(v.owned[w.id], 1, FORGE.maxLevel);
       if (level !== null) owned[w.id] = level;
     }
   }
-  const wanted = WEAPONS.find((w) => w.id === v.weapon && w.team === team);
-  const weapon = wanted && owned[wanted.id] ? wanted.id : fresh.weapon;
+  // Weapons of your own: each one checked, a bad one dropped. Each is owned (level 1 if unsure).
+  const custom = cleanCustomList(v.custom, team);
+  for (const c of custom) {
+    owned[c.id] = (isObject(v.owned) && wholeBetween(v.owned[c.id], 1, FORGE.maxLevel)) || 1;
+  }
+  const wanted =
+    WEAPONS.find((w) => w.id === v.weapon && w.team === team)?.id ??
+    custom.find((c) => c.id === v.weapon)?.id;
+  const weapon = wanted && owned[wanted] ? wanted : fresh.weapon;
   const upgrades: Partial<Record<UpgradeId, number>> = {};
   if (isObject(v.upgrades)) {
     for (const u of UPGRADES.filter((x) => x.team === team)) {
@@ -192,6 +199,7 @@ function parseLoadout(v: unknown, team: Team): TeamLoadout {
     ...(pieces.length > 0 ? { pieces } : {}),
     ...(mounts.length > 0 ? { mounts } : {}),
     ...(ammo.length > 0 ? { ammo } : {}),
+    ...(custom.length > 0 ? { custom } : {}),
   };
 }
 

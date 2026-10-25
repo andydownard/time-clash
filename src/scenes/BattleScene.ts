@@ -4,10 +4,25 @@
 // Start it with scene.start(BATTLE_SCENE_KEY, data) where data is BattleSceneData.
 import Phaser from 'phaser';
 import { BALLISTICS, HIT_FX, WORLD } from '../game/config';
-import type { AimInput, BattleLayout, Rect, ShotResult, Team, Vec2 } from '../game/types';
+import type { BirdPath } from '../game/disturbance';
+import type {
+  AimInput,
+  BattleLayout,
+  BirdBump,
+  GustHit,
+  Rect,
+  ShotResult,
+  Team,
+  Vec2,
+} from '../game/types';
 import { drawBackdrop, paintArt, type Backdrop } from './battle/backdrop';
 import { obstacleArt } from './battle/obstacleArt';
 import { createAimArt, type AimArt, type AimArtState } from './battle/aimArt';
+import {
+  createDisturbanceLayer,
+  type BirdLayerState,
+  type DisturbanceLayer,
+} from './battle/disturbanceLayer';
 import { effectColor, floatLabel, playDamagePip, playFade } from './battle/effects';
 import { createDamageArt, damageStage, type DamageArt } from './battle/damageArt';
 import {
@@ -71,6 +86,7 @@ export class BattleScene extends Phaser.Scene implements BattleView {
   private flow: BattleFlow | null = null;
   private pause: PauseControl | null = null;
   private aimArt!: AimArt;
+  private disturb: DisturbanceLayer | null = null;
   private statusArt!: StatusArt;
   private sides = {} as Record<Team, Phaser.GameObjects.Container>;
   private glows = {} as Record<Team, Phaser.GameObjects.Ellipse>;
@@ -109,6 +125,10 @@ export class BattleScene extends Phaser.Scene implements BattleView {
     this.scale.on(Phaser.Scale.Events.RESIZE, this.refreshLabels, this);
     this.statusArt = createStatusArt(this, layout, this.labels);
     this.aimArt = createAimArt(this, layout, this.labels);
+    this.disturb = createDisturbanceLayer(this, {
+      reduced: () => this.reduced(),
+      fontPx: this.fontPx,
+    });
 
     for (const team of TEAMS) {
       const base: Rect = layout.bases[team];
@@ -262,6 +282,27 @@ export class BattleScene extends Phaser.Scene implements BattleView {
   showPreview(team: Team, dots: readonly PreviewDot[] | null): void {
     this.aimArt.showPreview(team, dots);
   }
+
+  // ---------- Disturbances: birds and gusts (drawn by battle/disturbanceLayer.ts) ----------
+
+  showBirds(birds: readonly BirdPath[] | null): void {
+    this.disturb?.showBirds(birds);
+  }
+
+  birdClockMs(): number {
+    return this.disturb?.clockMs() ?? 0;
+  }
+
+  playBirdBump(bump: BirdBump): void {
+    this.disturb?.bump(bump);
+  }
+
+  playGust(gust: GustHit): void {
+    this.disturb?.gust(gust);
+  }
+
+  /** Read by the e2e hook (never in production). */
+  birdState = (): BirdLayerState | null => this.disturb?.state() ?? null;
 
   showTrace(team: Team, points: readonly Vec2[] | null): void {
     this.aimArt.showTrace(team, points);
@@ -640,6 +681,8 @@ export class BattleScene extends Phaser.Scene implements BattleView {
     this.wallKey = '[]';
     this.dashers?.destroy();
     this.dashers = null;
+    this.disturb?.destroy();
+    this.disturb = null;
     this.dragHandler = null;
     this.input.off('pointerdown');
     this.input.off('pointermove');

@@ -172,11 +172,11 @@ describe('screen', () => {
 describe('drag and drop', () => {
   it('a drag from the tray puts a brick on the plot, snapped to the grid, and saves it', () => {
     const o = open();
-    drag(brick('stone'), [mid(6, 9, 2, 1)[0] + 7, mid(6, 9, 2, 1)[1] - 6]);
+    drag(brick('stone'), [mid(6, 10, 2, 1)[0] + 7, mid(6, 10, 2, 1)[1] - 6]);
     expect(pieces()).toHaveLength(1);
     const saved = slotPieces(o.saved.at(-1)!, 'Alex', 'PAST', 0);
     expect(saved).toHaveLength(1);
-    expect(saved[0]).toMatchObject({ piece: 'stone', x: 6, y: 9, ox: 0, oy: 0, rot: 0 });
+    expect(saved[0]).toMatchObject({ piece: 'stone', x: 6, y: 10, ox: 0, oy: 0, rot: 0 });
     expect(status()).toBe(BUILDER_COPY.placed('Stone'));
   });
   it('with Snap off the brick keeps a finer position', () => {
@@ -200,8 +200,8 @@ describe('drag and drop', () => {
   });
   it('a brick dropped on top of another lands on the nearest free spot', () => {
     open();
-    drag(brick('long'), mid(4, 9, 4, 1));
-    drag(brick('long'), mid(4, 9, 4, 1));
+    drag(brick('long'), mid(4, 10, 4, 1));
+    drag(brick('long'), mid(4, 10, 4, 1));
     expect(pieces()).toHaveLength(2);
     const [a, b] = pieces().map((p) => p.getAttribute('transform'));
     expect(a).not.toBe(b);
@@ -228,7 +228,8 @@ describe('drag and drop', () => {
     pointer(document, 'pointerup', 10, 650);
     expect(brick('tower').getAttribute('aria-pressed')).toBe('true');
     expect(status()).toBe(BUILDER_COPY.hintPicked('Tower'));
-    pointer(plot(), 'pointerdown', ...mid(3, 3, 1, 2));
+    pointer(plot(), 'pointerdown', ...mid(3, 9, 1, 2));
+    pointer(document, 'pointerup', ...mid(3, 9, 1, 2));
     expect(pieces()).toHaveLength(1);
     expect(brick('tower').getAttribute('aria-pressed')).toBe('false');
   });
@@ -237,9 +238,9 @@ describe('drag and drop', () => {
 describe('placed bricks', () => {
   it('tap a brick to choose it, then Turn spins it, and Undo takes the turn back', () => {
     const o = open();
-    drag(brick('stone'), mid(6, 9, 2, 1));
-    pointer(plot().querySelector('.tc-bb-piece')!, 'pointerdown', ...mid(6, 9, 2, 1));
-    pointer(document, 'pointerup', ...mid(6, 9, 2, 1));
+    drag(brick('stone'), mid(6, 10, 2, 1));
+    pointer(plot().querySelector('.tc-bb-piece')!, 'pointerdown', ...mid(6, 10, 2, 1));
+    pointer(document, 'pointerup', ...mid(6, 10, 2, 1));
     click(q('bb-turn'));
     expect(slotPieces(o.saved.at(-1)!, 'Alex', 'PAST', 0)[0]!.rot).toBe(90);
     expect(pieces()[0]!.getAttribute('transform')).toContain('rotate(90)');
@@ -257,20 +258,20 @@ describe('placed bricks', () => {
   });
   it('drag a placed brick to move it', () => {
     const o = open();
-    drag(brick('stone'), mid(6, 9, 2, 1));
-    const start = mid(6, 9, 2, 1);
-    const end = mid(12, 5, 2, 1);
+    drag(brick('stone'), mid(6, 10, 2, 1));
+    const start = mid(6, 10, 2, 1);
+    const end = mid(12, 10, 2, 1);
     pointer(pieces()[0]!, 'pointerdown', ...start);
     pointer(document, 'pointermove', start[0] + 30, start[1] - 30);
     pointer(document, 'pointermove', ...end);
     pointer(document, 'pointerup', ...end);
-    expect(slotPieces(o.saved.at(-1)!, 'Alex', 'PAST', 0)[0]).toMatchObject({ x: 12, y: 5 });
+    expect(slotPieces(o.saved.at(-1)!, 'Alex', 'PAST', 0)[0]).toMatchObject({ x: 12, y: 10 });
     expect(status()).toBe(BUILDER_COPY.moved('Stone'));
   });
   it('drag a placed brick back to the tray to remove it', () => {
     const o = open();
-    drag(brick('stone'), mid(6, 9, 2, 1));
-    const start = mid(6, 9, 2, 1);
+    drag(brick('stone'), mid(6, 10, 2, 1));
+    const start = mid(6, 10, 2, 1);
     pointer(pieces()[0]!, 'pointerdown', ...start);
     pointer(document, 'pointermove', start[0], start[1] + 100);
     pointer(document, 'pointermove', 100, 650);
@@ -281,8 +282,8 @@ describe('placed bricks', () => {
   });
   it('a placed brick dragged off the plot but not onto the tray goes back', () => {
     open();
-    drag(brick('stone'), mid(6, 9, 2, 1));
-    const start = mid(6, 9, 2, 1);
+    drag(brick('stone'), mid(6, 10, 2, 1));
+    const start = mid(6, 10, 2, 1);
     pointer(pieces()[0]!, 'pointerdown', ...start);
     pointer(document, 'pointermove', 1500, 50);
     pointer(document, 'pointerup', 1500, 50);
@@ -299,7 +300,7 @@ describe('placed bricks', () => {
   });
   it('Clear asks first, Keep it changes nothing, Yes clears, and Undo brings it back', () => {
     open();
-    drag(brick('stone'), mid(6, 9, 2, 1));
+    drag(brick('stone'), mid(6, 10, 2, 1));
     click(q('bb-clear'));
     expect(q('bb-clear-yes')!.closest('[hidden]')).toBeNull();
     click(q('bb-clear-no'));
@@ -312,10 +313,219 @@ describe('placed bricks', () => {
   });
   it('gives each brick a spoken label with its place', () => {
     open();
-    drag(brick('stone'), mid(6, 9, 2, 1));
-    expect(pieces()[0]!.getAttribute('aria-label')).toBe(BUILDER_COPY.pieceLabel('Stone', 6, 9));
+    drag(brick('stone'), mid(6, 10, 2, 1));
+    expect(pieces()[0]!.getAttribute('aria-label')).toBe(BUILDER_COPY.pieceLabel('Stone', 6, 10));
     expect(pieces()[0]!.getAttribute('role')).toBe('button');
     expect(pieces()[0]!.getAttribute('tabindex')).toBe('0');
+  });
+});
+
+describe('support: every brick stands on the ground or on a brick that does', () => {
+  it('a brick dragged into mid-air shows the pink "not here" outline and is refused with a reason', () => {
+    const o = open();
+    pointer(brick('stone'), 'pointerdown', 10, 650);
+    pointer(document, 'pointermove', 100, 100);
+    pointer(document, 'pointermove', ...mid(6, 4, 2, 1));
+    expect(document.querySelector('.tc-bb-drop')!.getAttribute('data-ok')).toBe('false');
+    expect(document.querySelector('.tc-bb-ghost')!.getAttribute('data-ok')).toBe('false');
+    expect(status()).toBe(BUILDER_COPY.floating);
+    pointer(document, 'pointerup', ...mid(6, 4, 2, 1));
+    expect(pieces()).toHaveLength(0);
+    expect(o.saved).toHaveLength(0);
+    expect(status()).toBe(BUILDER_COPY.floating);
+  });
+  it('a second layer on the first is fine, and the outline is the ok one', () => {
+    const o = open();
+    drag(brick('stone'), mid(6, 10, 2, 1));
+    pointer(brick('stone'), 'pointerdown', 10, 650);
+    pointer(document, 'pointermove', 100, 100);
+    pointer(document, 'pointermove', ...mid(6, 9, 2, 1));
+    expect(document.querySelector('.tc-bb-drop')!.getAttribute('data-ok')).toBe('true');
+    pointer(document, 'pointerup', ...mid(6, 9, 2, 1));
+    expect(slotPieces(o.saved.at(-1)!, 'Alex', 'PAST', 0).map((p) => p.y)).toEqual([10, 9]);
+  });
+  it('a brick let go just above another drops onto it with Snap off', () => {
+    const o = open();
+    drag(brick('stone'), mid(6, 10, 2, 1));
+    click(q('bb-snap'));
+    // Three free steps (15px) above the top of the first stone.
+    drag(brick('stone'), [mid(6, 9, 2, 1)[0], mid(6, 9, 2, 1)[1] - 15]);
+    const top = slotPieces(o.saved.at(-1)!, 'Alex', 'PAST', 0)[1]!;
+    expect([top.y, top.oy]).toEqual([9, 0]);
+  });
+  it('the bottom brick cannot be taken off, dragged away or deleted while one sits on it', () => {
+    open();
+    drag(brick('stone'), mid(6, 10, 2, 1));
+    drag(brick('stone'), mid(6, 9, 2, 1));
+    const bottom = () => pieces().find((p) => p.getAttribute('aria-label')!.includes('row 11'))!;
+    // Dragged to the tray: refused, nothing lost.
+    let start = mid(6, 10, 2, 1);
+    pointer(bottom(), 'pointerdown', start[0], start[1]);
+    pointer(document, 'pointermove', start[0], start[1] + 100);
+    pointer(document, 'pointermove', 100, 650);
+    pointer(document, 'pointerup', 100, 650);
+    expect(pieces()).toHaveLength(2);
+    expect(status()).toBe(BUILDER_COPY.holding);
+    // Dragged across the ground: refused, it stays where it was.
+    start = mid(6, 10, 2, 1);
+    pointer(bottom(), 'pointerdown', ...start);
+    pointer(document, 'pointermove', start[0] + 30, start[1]);
+    pointer(document, 'pointermove', ...mid(14, 10, 2, 1));
+    expect(document.querySelector('.tc-bb-drop')!.getAttribute('data-ok')).toBe('false');
+    pointer(document, 'pointerup', ...mid(14, 10, 2, 1));
+    expect(bottom().getAttribute('aria-label')).toBe(BUILDER_COPY.pieceLabel('Stone', 6, 10));
+    expect(status()).toBe(BUILDER_COPY.holding);
+    // Delete key: refused, and the keyboard stays on the brick.
+    key(bottom(), 'Delete');
+    expect(pieces()).toHaveLength(2);
+    expect(status()).toBe(BUILDER_COPY.holding);
+    // Turn: refused too.
+    pointer(bottom(), 'pointerdown', ...start);
+    pointer(document, 'pointerup', ...start);
+    click(q('bb-turn'));
+    expect(status()).toBe(BUILDER_COPY.holding);
+    // Take the top one off first, then the bottom one comes off.
+    const top = pieces().find((p) => p.getAttribute('aria-label')!.includes('row 10'))!;
+    key(top, 'Delete');
+    key(bottom(), 'Delete');
+    expect(pieces()).toHaveLength(0);
+    // Undo walks back through legal states only.
+    click(q('bb-undo'));
+    click(q('bb-undo'));
+    expect(pieces()).toHaveLength(2);
+  });
+  it('Clear always works, even with a stack', () => {
+    open();
+    drag(brick('stone'), mid(6, 10, 2, 1));
+    drag(brick('stone'), mid(6, 9, 2, 1));
+    click(q('bb-clear'));
+    click(q('bb-clear-yes'));
+    expect(pieces()).toHaveLength(0);
+  });
+  it('an old base with floating bricks is set down when it opens, saved, and said once', () => {
+    const raw = { v: 1 as const, p: [['stone', 4, 2, 0, 0, 0, 20]] as never };
+    const bases: BasesState = {
+      players: {
+        alex: {
+          PAST: { chosen: 0, slots: [raw, null, null] },
+          FUTURE: { chosen: 0, slots: [null, null, null] },
+        },
+      },
+    };
+    const o = open('PAST', campWith(0), bases);
+    expect(status()).toBe(BUILDER_COPY.settled);
+    expect(pieces()[0]!.getAttribute('aria-label')).toBe(BUILDER_COPY.pieceLabel('Stone', 4, 10));
+    expect(o.saved).toHaveLength(1);
+    document.body.innerHTML = '';
+    s = setup();
+    open('PAST', campWith(0), o.saved[0]!);
+    expect(status()).toBe(BUILDER_COPY.hint);
+  });
+});
+
+describe('tap to pick, then tap or slide on the plot', () => {
+  it('Team Future: tap Antenna, tap the plot, and it is placed there', () => {
+    const o = open('FUTURE');
+    pointer(brick('antenna'), 'pointerdown', 10, 650);
+    pointer(document, 'pointerup', 10, 650);
+    pointer(plot(), 'pointerdown', ...mid(3, 9, 1, 2));
+    pointer(document, 'pointerup', ...mid(3, 9, 1, 2));
+    expect(slotPieces(o.saved.at(-1)!, 'Sam', 'FUTURE', 0)[0]).toMatchObject({
+      piece: 'antenna',
+      x: 3,
+      y: 9,
+    });
+    expect(brick('antenna').getAttribute('aria-pressed')).toBe('false');
+  });
+  it('a tap in mid-air is refused, and the brick stays picked so the next tap can work', () => {
+    open();
+    pointer(brick('stone'), 'pointerdown', 10, 650);
+    pointer(document, 'pointerup', 10, 650);
+    pointer(plot(), 'pointerdown', ...mid(6, 3, 2, 1));
+    pointer(document, 'pointerup', ...mid(6, 3, 2, 1));
+    expect(pieces()).toHaveLength(0);
+    expect(status()).toBe(BUILDER_COPY.floating);
+    expect(brick('stone').getAttribute('aria-pressed')).toBe('true');
+    pointer(plot(), 'pointerdown', ...mid(6, 10, 2, 1));
+    pointer(document, 'pointerup', ...mid(6, 10, 2, 1));
+    expect(pieces()).toHaveLength(1);
+  });
+  it('a tap on top of a placed brick stacks the picked brick there (it does not grab the brick)', () => {
+    const o = open();
+    drag(brick('tower'), mid(6, 9, 1, 2));
+    pointer(brick('stone'), 'pointerdown', 10, 650);
+    pointer(document, 'pointerup', 10, 650);
+    // The stone's middle is over the tower's top cell.
+    const p: [number, number] = [6 * 40 + 40, 9 * 40 - 20];
+    pointer(pieces()[0]!, 'pointerdown', ...p);
+    pointer(document, 'pointerup', ...p);
+    expect(
+      slotPieces(o.saved.at(-1)!, 'Alex', 'PAST', 0).map((q2) => [q2.piece, q2.x, q2.y]),
+    ).toEqual([
+      ['tower', 6, 9],
+      ['stone', 6, 8],
+    ]);
+  });
+  it('a picked brick follows a finger slide on the plot and lands where it is let go', () => {
+    const o = open();
+    pointer(brick('plank'), 'pointerdown', 10, 650);
+    pointer(document, 'pointerup', 10, 650);
+    pointer(plot(), 'pointerdown', ...mid(2, 4, 3, 1));
+    pointer(document, 'pointermove', ...mid(5, 6, 3, 1));
+    expect(document.querySelector('.tc-bb-ghost')!.hasAttribute('hidden')).toBe(false);
+    pointer(document, 'pointermove', ...mid(9, 10, 3, 1));
+    pointer(document, 'pointerup', ...mid(9, 10, 3, 1));
+    expect(slotPieces(o.saved.at(-1)!, 'Alex', 'PAST', 0)[0]).toMatchObject({ x: 9, y: 10 });
+  });
+  it('with a mouse, the picked brick shows where it would go before the click', () => {
+    open();
+    pointer(brick('stone'), 'pointerdown', 10, 650);
+    pointer(document, 'pointerup', 10, 650);
+    pointer(plot(), 'pointermove', ...mid(6, 10, 2, 1));
+    expect(document.querySelector('.tc-bb-drop')!.getAttribute('data-ok')).toBe('true');
+    pointer(plot(), 'pointermove', ...mid(6, 2, 2, 1));
+    expect(document.querySelector('.tc-bb-drop')!.getAttribute('data-ok')).toBe('false');
+  });
+  it('a plain tap on a placed brick chooses it and draws the dashed outline', () => {
+    open();
+    drag(brick('stone'), mid(6, 10, 2, 1));
+    pointer(pieces()[0]!, 'pointerdown', ...mid(6, 10, 2, 1));
+    pointer(document, 'pointerup', ...mid(6, 10, 2, 1));
+    expect(document.querySelector('.tc-bb-select')).not.toBeNull();
+    expect(status()).toBe(BUILDER_COPY.selected('Stone'));
+  });
+});
+
+describe('the whole plot is a place to build', () => {
+  it('a brick let go just past the left or right edge lands on the edge', () => {
+    const o = open();
+    drag(brick('stone'), [-12, mid(0, 10, 2, 1)[1]]);
+    drag(brick('stone'), [960 + 12, mid(0, 10, 2, 1)[1]]);
+    const xs = slotPieces(o.saved.at(-1)!, 'Alex', 'PAST', 0).map((p) => p.x);
+    expect(xs).toEqual([0, B.cols - 2]);
+  });
+  it('the team and mode buttons live in a rail beside the plot, not on it', () => {
+    open();
+    const rail = q('bb-rail')!;
+    expect(rail.contains(q('bb-team-PAST'))).toBe(true);
+    expect(rail.contains(q('bb-team-FUTURE'))).toBe(true);
+    expect(rail.contains(q('bb-mode-build'))).toBe(true);
+    expect(rail.contains(q('bb-mode-weapons'))).toBe(true);
+    expect(rail.contains(q('bb-spots-chip'))).toBe(true);
+    expect(document.querySelector('.tc-bb-plot')!.contains(rail)).toBe(false);
+    const top = document.querySelector('.tc-bb-top')!;
+    expect([...top.children].map((c) => c.className.split(' ').at(-1))).toEqual([
+      'tc-bb-back',
+      'tc-bb-slots',
+      'tc-bb-scrap',
+    ]);
+    // The dashed castle outline that looked like a limit is gone.
+    expect(plot().querySelector('[stroke-dasharray="4 10"]')).toBeNull();
+  });
+  it('the plot picture fills its frame exactly (no empty bands)', () => {
+    expect(css).toMatch(/\.tc-bb-plot-art \{[^}]*box-sizing: content-box/);
+    expect(css).toMatch(/\.tc-bb-plot-art \{[^}]*aspect-ratio: 2 \/ 1/);
+    expect(css).not.toMatch(/tc-bb-modebar/);
   });
 });
 
@@ -340,11 +550,13 @@ describe('keyboard', () => {
   });
   it('arrow keys move a chosen brick and R turns it', () => {
     const o = open();
-    drag(brick('stone'), mid(6, 9, 2, 1));
+    drag(brick('stone'), mid(6, 10, 2, 1));
     key(pieces()[0]!, 'ArrowRight');
     expect(slotPieces(o.saved.at(-1)!, 'Alex', 'PAST', 0)[0]!.x).toBe(7);
+    // Up would leave it in mid-air, so it stays and the status line says why.
     key(pieces()[0]!, 'ArrowUp');
-    expect(slotPieces(o.saved.at(-1)!, 'Alex', 'PAST', 0)[0]!.y).toBe(8);
+    expect(slotPieces(o.saved.at(-1)!, 'Alex', 'PAST', 0)[0]!.y).toBe(10);
+    expect(status()).toBe(BUILDER_COPY.floating);
     key(pieces()[0]!, 'r');
     expect(slotPieces(o.saved.at(-1)!, 'Alex', 'PAST', 0)[0]!.rot).toBe(90);
   });
@@ -368,11 +580,11 @@ describe('keyboard', () => {
 describe('saved slots', () => {
   it('each slot keeps its own base, and the tab you leave on is the chosen one', () => {
     const o = open();
-    drag(brick('stone'), mid(6, 9, 2, 1));
+    drag(brick('stone'), mid(6, 10, 2, 1));
     click(q('bb-slot-2'));
     expect(pieces()).toHaveLength(0);
-    drag(brick('long'), mid(4, 9, 4, 1));
-    drag(brick('tower'), mid(10, 8, 1, 2));
+    drag(brick('long'), mid(4, 10, 4, 1));
+    drag(brick('tower'), mid(10, 9, 1, 2));
     const last = o.saved.at(-1)!;
     expect(slotPieces(last, 'Alex', 'PAST', 0)).toHaveLength(1);
     expect(slotPieces(last, 'Alex', 'PAST', 1)).toHaveLength(2);
@@ -384,7 +596,7 @@ describe('saved slots', () => {
     expect(q('bb-slot-2')!.getAttribute('aria-label')).toBe(BUILDER_COPY.slotFull(2, 2));
   });
   it('opens on the chosen slot and shows the saved base', () => {
-    const r = placePiece(newBuild('PAST'), 'stone', { x: 2, y: 3, ox: 0, oy: 0 });
+    const r = placePiece(newBuild('PAST'), 'stone', { x: 2, y: 10, ox: 0, oy: 0 });
     if (!r.ok) throw new Error('place');
     const bases = saveSlot(freshBases(), 'Alex', 'PAST', 2, r.state.pieces);
     bases.players.alex!.PAST.chosen = 2;
@@ -393,14 +605,14 @@ describe('saved slots', () => {
     expect(pieces()).toHaveLength(1);
   });
   it('a saved piece the player does not own is left out, not crashed on', () => {
-    const r = placePiece(newBuild('PAST'), 'arch', { x: 2, y: 3, ox: 0, oy: 0 });
+    const r = placePiece(newBuild('PAST'), 'arch', { x: 2, y: 9, ox: 0, oy: 0 });
     if (!r.ok) throw new Error('place');
     open('PAST', campWith(0), saveSlot(freshBases(), 'Alex', 'PAST', 0, r.state.pieces));
     expect(pieces()).toHaveLength(0);
   });
   it('Team Future saves under its own player and side', () => {
     const o = open('FUTURE');
-    drag(brick('panel'), mid(6, 9, 2, 1));
+    drag(brick('panel'), mid(6, 10, 2, 1));
     expect(slotPieces(o.saved.at(-1)!, 'Sam', 'FUTURE', 0)).toHaveLength(1);
     expect(slotPieces(o.saved.at(-1)!, 'Alex', 'PAST', 0)).toHaveLength(0);
   });
@@ -522,7 +734,8 @@ describe('look rules (baseBuilder.css)', () => {
 });
 
 describe('weapon spots', () => {
-  const pad = (n: number) => document.querySelector<SVGElement>(`.tc-bb-spot[data-spot="${n - 1}"]`)!;
+  const pad = (n: number) =>
+    document.querySelector<SVGElement>(`.tc-bb-spot[data-spot="${n - 1}"]`)!;
   const weapons = () => q('bb-weapon-panel')!;
   const toWeapons = () => click(q('bb-mode-weapons'));
   // jsdom SVG nodes have no click(), so send the event a tap makes.
@@ -553,7 +766,7 @@ describe('weapon spots', () => {
     expect(status()).toBe(BUILDER_COPY.hint);
     expect(document.querySelector('.tc-bb-tray')!.hasAttribute('inert')).toBe(false);
   });
-  it('tapping a pad opens the list for that spot with this side\'s four weapons', () => {
+  it("tapping a pad opens the list for that spot with this side's four weapons", () => {
     open('FUTURE');
     toWeapons();
     tap(pad(2));
@@ -655,16 +868,16 @@ describe('weapon spots', () => {
   });
   it('bricks cannot be dragged in Weapons mode', () => {
     open();
-    drag(brick('stone'), mid(6, 9, 2, 1));
+    drag(brick('stone'), mid(6, 10, 2, 1));
     expect(pieces()).toHaveLength(1);
     toWeapons();
     const before = pieces()[0]!.getAttribute('transform');
-    drag(pieces()[0]!, mid(12, 9, 2, 1), [260, 380]);
+    drag(pieces()[0]!, mid(12, 10, 2, 1), [260, 420]);
     expect(pieces()[0]!.getAttribute('transform')).toBe(before);
   });
   it('shows weapons saved earlier, and an old save with no spots opens with empty pads', () => {
     const bricks = newBuild('PAST');
-    const r = placePiece(bricks, 'stone', { x: 2, y: 3, ox: 0, oy: 0 });
+    const r = placePiece(bricks, 'stone', { x: 2, y: 10, ox: 0, oy: 0 });
     if (!r.ok) throw new Error('place');
     const old = saveSlot(freshBases(), 'Alex', 'PAST', 0, r.state.pieces);
     open('PAST', campWith(0, 0), old);
@@ -711,7 +924,7 @@ describe('weapon spots', () => {
     expect(pad(2).getAttribute('data-weapon')).toBe('');
     expect(weapons().hidden).toBe(true);
   });
-  it('switching saved bases lets go of the spot and shows that base\'s weapons', () => {
+  it("switching saved bases lets go of the spot and shows that base's weapons", () => {
     open();
     toWeapons();
     tap(pad(1));

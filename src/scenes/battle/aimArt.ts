@@ -5,7 +5,8 @@ import Phaser from 'phaser';
 import { HUD } from '../../data/copy';
 import { AIM, TEAM_FACING } from '../../game/config';
 import type { AimInput, BattleLayout, Team, Vec2 } from '../../game/types';
-import { angleArc, angleFromDrag, angleLabelSpot, guideTip } from './geometry';
+import { angleLabelBox, fighterKeepOut } from './angleLabel';
+import { angleArc, angleFromDrag, guideTip } from './geometry';
 import type { PreviewDot } from './types';
 import type { LabelScaler } from './textScale';
 import { TEXT_ROLES, textStyle, type TextRole } from './textStyle';
@@ -21,6 +22,8 @@ export type AimArtState = {
   origin: Vec2 | null;
   /** Every text the aim art draws right now. */
   texts: string[];
+  /** The angle number's box in world px, or null when hidden. */
+  label: { x: number; y: number; w: number; h: number } | null;
 };
 
 export type AimArt = {
@@ -58,6 +61,8 @@ export function createAimArt(
   let from: Vec2 | null = null;
 
   let dragging = false;
+  // The fighters never move during a match, so the boxes the number must stay off are fixed.
+  const keepOut = fighterKeepOut(layout);
 
   const origin = (t: Team): Vec2 => from ?? layout.launchOrigins[t];
 
@@ -100,12 +105,10 @@ export function createAimArt(
     const role = readoutRole(team);
     angleText.setColor(TEXT_ROLES[role].color);
     angleText.setText(HUD.angleValue(aim.angleDeg));
-    const spot = angleLabelSpot(o, aim.angleDeg, facing);
-    const x = spot.anchorX === 0 ? spot.x : spot.x - angleText.width;
-    angleText.setPosition(
-      Math.min(layout.width - angleText.width - 8, Math.max(8, x)),
-      Math.max(8, spot.y - angleText.height / 2),
-    );
+    // Past the tip, but never on a fighter, its letter tag or the guide (angleLabel.ts).
+    const size = { w: angleText.width, h: angleText.height };
+    const box = angleLabelBox(o, aim.angleDeg, facing, size, keepOut, layout);
+    angleText.setPosition(box.x, box.y);
   };
 
   return {
@@ -120,6 +123,9 @@ export function createAimArt(
         team,
         origin: team ? { ...origin(team) } : null,
         texts: team ? [angleText.text] : [],
+        label: team
+          ? { x: angleText.x, y: angleText.y, w: angleText.width, h: angleText.height }
+          : null,
       };
     },
     showPreview(t, dots) {

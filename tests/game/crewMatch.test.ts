@@ -29,7 +29,7 @@ const WRONG = { correct: false, elapsedMs: 1000 };
 const BONK = SQUADS.standBonkDamage;
 const HP = CHARACTER_HEALTH.hp;
 const on = (seed = 3, extra: Partial<MatchOptions> = {}): MatchController =>
-  createMatch({ players: PLAYERS, seed, squads: true, ...extra });
+  createMatch({ disturbances: false, players: PLAYERS, seed, squads: true, ...extra });
 const aiming = (c: MatchController): MatchController => {
   c.ready();
   return c;
@@ -101,7 +101,7 @@ describe('the flag', () => {
   });
   it('a match that never sends a dasher plays exactly like a squads:false match', () => {
     const run = (squads: boolean) => {
-      const c = createMatch({ players: PLAYERS, seed: 5, squads });
+      const c = createMatch({ disturbances: false, players: PLAYERS, seed: 5, squads });
       const out: unknown[] = [];
       for (let t = 0; t < 4; t++) {
         out.push(c.ready());

@@ -16,11 +16,11 @@ beforeEach(() => {
 const css = readFileSync(join(import.meta.dirname, '../../src/styles/ui.css'), 'utf8');
 
 describe('Setup board gap', () => {
-  it('asks who is fighting and says what to do in one plain line', () => {
+  it('asks who is fighting, with no second line that repeats the field labels', () => {
     void s.overlay.showSetup(null);
     expect(SETUP.heading).toBe('Who is fighting?');
-    expect(SETUP.subtitle).toBe('Type your name. Pick your grade and subject.');
-    expect(document.querySelector('.tc-setup-sub')!.textContent).toBe(SETUP.subtitle);
+    expect(document.querySelector('.tc-setup-sub')).toBeNull();
+    expect(document.body.textContent).not.toContain('Pick your grade and subject');
   });
 });
 

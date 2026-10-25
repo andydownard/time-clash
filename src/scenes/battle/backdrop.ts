@@ -1,12 +1,13 @@
 // Battle backdrop: a dusk sky that runs from deep blue to a warm glow, twinkling stars, drifting
 // clouds, three layers of parallax hills, the ground, and every solid shape from the layout
-// (painted from obstacleArt.ts, so the art matches exactly where shells hit).
+// (painted from obstacleArt.ts, so the art matches exactly where shells hit; only the supports
+// under a floating shape are decoration).
 // Original shapes only. Nothing here is scary.
 import Phaser from 'phaser';
 import type { BattleLayout, Polygon } from '../../game/types';
 import { aspenLayers, type AspenLayer } from './aspens';
 import { biomeLook } from './biomeArt';
-import { layoutObstacleArt, type ArtShape } from './obstacleArt';
+import { layoutPaint, type ArtShape } from './obstacleArt';
 import { BATTLE_BAND } from '../../game/config';
 import { ART, PALETTE } from './visual';
 
@@ -152,7 +153,8 @@ export function drawBackdrop(scene: Phaser.Scene, layout: BattleLayout): Backdro
   g.fillRect(width / 2, height, width / 2, BATTLE_BAND);
   // Obstacle 0 is the biome's middle shape. Then Team Future's spot (tower, bridge deck or food
   // truck) and Team Past's castle place (rock, village wall or drawbridge), each with its own look.
-  for (const shapes of layoutObstacleArt(layout)) paintArt(g, shapes);
+  // The supports of a floating shape (chains, posts, pylons) paint first and are not solid.
+  for (const shapes of layoutPaint(layout)) paintArt(g, shapes);
   const top = layout.terrain.ground[0];
   const topRight = layout.terrain.ground[1];
   if (top && topRight) {

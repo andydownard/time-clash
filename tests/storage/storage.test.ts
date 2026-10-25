@@ -36,25 +36,16 @@ const players: Players = [
   { name: 'Sam', team: 'FUTURE', grade: 8, subject: 'math' },
 ];
 
-describe('storage: players with a topic focus', () => {
-  const withTopic: Players = [{ ...players[0], topic: 'multiplication' }, players[1]];
-  it('round-trips the topic', () => {
-    const s = createStorage(fakeBacking());
-    s.set('timeclash.players', withTopic);
-    expect(s.get('timeclash.players')).toEqual(withTopic);
-  });
-  it('round-trips division on Team Future', () => {
-    const s = createStorage(fakeBacking());
-    const future: Players = [players[0], { ...players[1], topic: 'division' }];
-    s.set('timeclash.players', future);
-    expect(s.get('timeclash.players')).toEqual(future);
-  });
-  it('drops division saved on Team Past', () => {
-    const raw = JSON.stringify([{ ...players[0], topic: 'division' }, players[1]]);
+describe('storage: players saved with the retired Focus switch', () => {
+  it('load without error and drop the old topic field', () => {
+    const raw = JSON.stringify([
+      { ...players[0], topic: 'multiplication' },
+      { ...players[1], topic: 'division' },
+    ]);
     const s = createStorage(fakeBacking({ 'timeclash.players': raw }));
     expect(s.get('timeclash.players')).toEqual(players);
   });
-  it('drops an unknown saved topic and keeps the player', () => {
+  it('drop an unknown saved topic and keep the player', () => {
     const raw = JSON.stringify([{ ...players[0], topic: 'juggling' }, players[1]]);
     const s = createStorage(fakeBacking({ 'timeclash.players': raw }));
     expect(s.get('timeclash.players')).toEqual(players);

@@ -3,6 +3,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   CHARACTER_HEALTH,
+  DAMAGE,
   PHASE1_LAYOUT as LAYOUT,
   PRACTICE_BOT,
   SQUADS,
@@ -120,7 +121,13 @@ const PLAYERS: Players = [
   { name: 'Alex', team: 'PAST', grade: 3, subject: 'math' },
   { name: 'Sam', team: 'FUTURE', grade: 3, subject: 'math' },
 ];
-const CAP = 400;
+/**
+ * A safe bound on match length when nobody aims: at least one base bonk lands every few rounds
+ * of a duel (each dasher bonked to 0, a rest, then out again), so the cap grows with base health
+ * and dasher health, both from config.
+ */
+const CAP =
+  Math.ceil(DAMAGE.startingBaseHp / SQUADS.standBonkDamage) * 6 * (CHARACTER_HEALTH.hp + 2);
 
 type Style = 'dasherOnly' | 'aims';
 
@@ -131,7 +138,12 @@ type Style = 'dasherOnly' | 'aims';
  * lost at any one turn start.
  */
 function play(seed: number, styles: Record<Team, Style>): { turns: number; worstStart: number } {
-  const c: MatchController = createMatch({ players: PLAYERS, seed, squads: true });
+  const c: MatchController = createMatch({
+    disturbances: false,
+    players: PLAYERS,
+    seed,
+    squads: true,
+  });
   const rng = createRng(seed);
   let worstStart = 0;
   for (let turns = 1; turns <= CAP; turns++) {

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { HIT_LINES, PASS_SCREEN, RELOAD, RELOAD_QUIPS, tumblePool } from '../../../src/data/copy';
 import { DAMAGE, SCRAP } from '../../../src/game/config';
-import { findAim, makeWorld, settle } from './flowHarness';
+import { QUICK_END, QUICK_END_HITS, findAim, makeWorld, settle } from './flowHarness';
 
 const SEED = 7;
 
@@ -74,20 +74,20 @@ describe('BattleFlow: one turn', () => {
     expect(w.modalQuestions[0]!.grade).toBe(2);
   });
 
-  it('asks only multiplication when the shooter has the topic on, at the shooter grade', async () => {
+  it('asks a math question at the shooter grade', async () => {
     const miss = findAim(SEED, 0, 'PAST', 'miss');
     const w = makeWorld({
       seed: SEED,
       script: [miss, miss],
       players: [
-        { name: 'Alex', team: 'PAST', grade: 4, subject: 'math', topic: 'multiplication' },
+        { name: 'Alex', team: 'PAST', grade: 4, subject: 'math' },
         { name: 'Sam', team: 'FUTURE', grade: 9, subject: 'math' },
       ],
     });
     void w.flow.run();
     await settle();
     expect(w.modalQuestions).toHaveLength(1);
-    expect(w.modalQuestions[0]!.tags).toContain('topic:multiplication');
+    expect(w.modalQuestions[0]!.subject).toBe('math');
     expect(w.modalQuestions[0]!.grade).toBe(4);
   });
 
@@ -305,14 +305,14 @@ describe('BattleFlow: winning', () => {
     const dP = (turn: number) => findAim(SEED, turn, 'PAST', 'direct');
     const dF = (turn: number) => findAim(SEED, turn, 'FUTURE', 'miss');
     const script = [dP(0), dP(0), dF(1), dF(1), dP(2), dP(2)];
-    const w = makeWorld({ seed: SEED, script });
+    const w = makeWorld({ seed: SEED, script, matchOptions: QUICK_END });
     void w.flow.run();
     await settle();
     expect(w.results).toHaveLength(1);
     const r = w.results[0]!;
     expect(r.winner).toBe('PAST');
     expect(r.names).toEqual({ PAST: 'Alex', FUTURE: 'Sam' });
-    expect(r.stats.PAST.directHits).toBe(4);
+    expect(r.stats.PAST.directHits).toBe(QUICK_END_HITS);
     expect(r.rematch.seed).toBe(SEED + 1);
     expect(r.rematch.firstTeam).toBe('FUTURE');
     expect(w.log.filter((l) => l.startsWith('reload:'))).toEqual(['reload:PAST', 'reload:FUTURE']);
@@ -323,7 +323,11 @@ describe('BattleFlow: winning', () => {
   it('a wipeout never shows a pass screen or reload after it', async () => {
     const dP = (turn: number) => findAim(SEED, turn, 'PAST', 'direct');
     const dF = (turn: number) => findAim(SEED, turn, 'FUTURE', 'miss');
-    const w = makeWorld({ seed: SEED, script: [dP(0), dP(0), dF(1), dF(1), dP(2), dP(2)] });
+    const w = makeWorld({
+      seed: SEED,
+      script: [dP(0), dP(0), dF(1), dF(1), dP(2), dP(2)],
+      matchOptions: QUICK_END,
+    });
     void w.flow.run();
     await settle();
     const lastImpact = w.log.lastIndexOf('impact:direct');

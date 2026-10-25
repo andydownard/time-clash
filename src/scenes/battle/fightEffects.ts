@@ -266,20 +266,6 @@ export function playHitBurst(
   return Promise.all(jobs).then(() => undefined);
 }
 
-/** Reduced motion: one soft glow that fades, no flying pieces. */
-export function playHitFade(scene: Phaser.Scene, pos: Vec2, shooter: Team): Promise<void> {
-  const plan = hitBurstPlan(shooter, 1, 0);
-  const glow = scene.add
-    .circle(pos.x, pos.y, plan.flash.radius, plan.ring.color, 0.5)
-    .setDepth(DEPTH);
-  return tweenDone(scene, {
-    targets: glow,
-    alpha: 0,
-    duration: 250,
-    onComplete: () => glow.destroy(),
-  });
-}
-
 /** Little stars circling over a fallen fighter. Returns a stop function. Still when motion is reduced. */
 export function startStars(scene: Phaser.Scene, headAt: () => Vec2, reduced: boolean): () => void {
   const stars = Array.from({ length: HIT_FX.starCount }, () =>

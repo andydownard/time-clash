@@ -83,7 +83,7 @@ function toBonus(
   return c.reloadDone(answer);
 }
 
-const make = (seed = 5, effects?: MatchEffects) => createMatch({ players: PLAYERS, seed, effects });
+const make = (seed = 5, effects?: MatchEffects) => createMatch({ disturbances: false, players: PLAYERS, seed, effects });
 
 describe('the Power Shot is offered', () => {
   it('after a fast right answer', () => {
@@ -224,11 +224,14 @@ describe('Power Shot damage', () => {
 describe('the match can end on the Power Shot', () => {
   it('sets OVER and the winner, and then every action throws MatchOverError', () => {
     const c = make(5);
-    // Three Past turns of one direct hit each leave Future at 25. Future only misses.
-    for (let i = 0; i < 3; i++) {
+    const power = Math.round(DAMAGE.direct * BONUS.damageMultiplier);
+    // Past lands direct hits until one Power Shot is enough to finish Future, then only misses.
+    // Future only misses. Nobody answers right, so no Power Shot comes early.
+    const hp = (): number => c.snapshot().baseHp.FUTURE;
+    for (let guard = 0; hp() > power && guard < DAMAGE.startingBaseHp; guard++) {
       c.ready();
-      shoot(c, undefined, 'direct');
-      shoot(c, undefined, 'miss');
+      shoot(c, undefined, hp() > power ? 'direct' : 'miss');
+      shoot(c, undefined, hp() > power ? 'direct' : 'miss');
       c.reloadDone(WRONG);
       c.pass();
       c.ready();
@@ -237,7 +240,9 @@ describe('the match can end on the Power Shot', () => {
       c.reloadDone(WRONG);
       c.pass();
     }
-    expect(c.snapshot().baseHp.FUTURE).toBe(DAMAGE.startingBaseHp - 3 * DAMAGE.direct);
+    expect(hp()).toBeGreaterThan(0);
+    expect(hp()).toBeLessThanOrEqual(power);
+    expect(c.snapshot().status).toBe('PLAYING');
     toBonus(c, RIGHT_SLOW);
     shoot(c, undefined, 'direct');
     const s = c.snapshot();

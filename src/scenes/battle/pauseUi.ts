@@ -48,9 +48,10 @@ export function createPauseControl(doc: Document, handlers: PauseHandlers): Paus
   };
 
   const resumeButton = (): HTMLButtonElement => {
+    // The one filled (primary) button: going back to the game.
     const b = h(doc, 'button', {
       type: 'button',
-      class: 'tc-btn tc-btn-neutral',
+      class: 'tc-btn tc-btn-primary',
       'data-testid': 'pause-resume',
       text: BUTTONS.resume,
     });
@@ -81,9 +82,10 @@ export function createPauseControl(doc: Document, handlers: PauseHandlers): Paus
   };
 
   const showConfirm = (card: HTMLElement): void => {
+    // Staying is the primary choice. Leaving (it ends the match) is never the filled button.
     const stay = h(doc, 'button', {
       type: 'button',
-      class: 'tc-btn tc-btn-neutral',
+      class: 'tc-btn tc-btn-primary',
       'data-testid': 'pause-stay',
       text: BUTTONS.stay,
     });

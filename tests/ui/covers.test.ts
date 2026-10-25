@@ -35,12 +35,12 @@ const expectBoardShown = () => {
 };
 
 describe('pass-the-mouse cover', () => {
-  it('shows the heading, the next name, and the no-peeking line', () => {
+  it('shows the heading and the next name, with no "no peeking" line (owner, 2026-10-24)', () => {
     void s.overlay.showPassScreen({ nextName: 'Sam', nextTeam: 'FUTURE' });
     const el = q(TEST_IDS.passScreen)!;
     expect(el.textContent).toContain(PASS_SCREEN.heading);
     expect(el.textContent).toContain(PASS_SCREEN.upNext('Sam'));
-    expect(el.textContent).toContain(PASS_SCREEN.noPeeking);
+    expect(el.textContent).not.toMatch(/peek/i);
     expect(el.getAttribute('data-team')).toBe('FUTURE');
   });
 
@@ -127,7 +127,7 @@ describe('pass-the-mouse cover', () => {
 });
 
 describe('pass cover voice line', () => {
-  const LINE = `${PASS_SCREEN.heading} ${PASS_SCREEN.noPeeking}`;
+  const LINE = PASS_SCREEN.heading;
   const captionLayerZ = () =>
     Number((document.querySelector('[data-layer="caption"]') as HTMLElement).style.zIndex);
 

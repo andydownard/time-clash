@@ -14,8 +14,6 @@ const PLAYERS: Players = [
   { name: 'Knight', team: 'PAST', grade: 3, subject: 'math' },
   { name: 'Rocket', team: 'FUTURE', grade: 3, subject: 'math' },
 ];
-/** Base health from the owner's pace decision (2026-10-24). Config may already hold it. */
-const PACED_BASE_HP = 400;
 const PERFECT = {
   ...profileOf('hard'),
   angleSpreadDeg: 0,
@@ -32,7 +30,7 @@ const withHp = (hp: number): MatchEffects => ({
 
 /** Turns in all (both sides) until someone wins. Every turn ends with a right answer. */
 function perfectMatch(seed: number, soldiers: boolean, effects: MatchEffects): number {
-  const c = createMatch({ players: PLAYERS, seed, squads: true, effects });
+  const c = createMatch({ disturbances: false, players: PLAYERS, seed, squads: true, effects });
   const rng = createRng(seed);
   const over = () => c.snapshot().status === 'OVER';
   const shoot = (team: Team) => {
@@ -65,7 +63,8 @@ function perfectMatch(seed: number, soldiers: boolean, effects: MatchEffects): n
 }
 
 describe('pace with Squads on', () => {
-  const paced = withHp(Math.max(DAMAGE.startingBaseHp, PACED_BASE_HP));
+  // The real base health from config (the owner's pace decision, 2026-10-24).
+  const paced = withHp(DAMAGE.startingBaseHp);
 
   it('perfect bots with their dashers out every turn still need at least 9 turns in all', () => {
     const turns = SEEDS.map((seed) => perfectMatch(seed, true, paced));
@@ -73,7 +72,7 @@ describe('pace with Squads on', () => {
   });
 
   it('a dasher saves at most one own turn (two in all) against the launcher-only game', () => {
-    for (const effects of [paced, DEFAULT_EFFECTS]) {
+    for (const effects of [paced, withHp(DAMAGE.startingBaseHp / 4)]) {
       for (const seed of SEEDS) {
         const without = perfectMatch(seed, false, effects);
         const withSoldiers = perfectMatch(seed, true, effects);

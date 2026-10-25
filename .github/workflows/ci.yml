@@ -37,7 +37,8 @@ jobs:
       - run: npm audit --omit=dev
   # A pull request runs one Chromium job. The full matrix runs only from "Run workflow". Nothing runs
   # e2e on main, because the pull request already passed the same code. A job that hangs stops at the
-  # time limit, so it cannot burn minutes.
+  # time limit, so it cannot burn minutes. Playwright runs 4 workers, one per runner core
+  # (playwright.config.ts), so one job is faster than two shards that each pay for the install.
   e2e:
     name: e2e (${{ matrix.project }} ${{ matrix.shard }})
     if: github.event_name != 'push'

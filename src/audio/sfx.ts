@@ -254,6 +254,48 @@ export function playSynth(ctx: Ctx, name: SfxName, level: number): void {
         );
       });
       break;
+    case 'squawk': // a surprised bird: two quick chirps that fall in pitch
+      [0, 0.13].forEach((at, i) => {
+        voice(
+          ctx,
+          master,
+          'sawtooth',
+          [
+            [1250 - i * 150, 0],
+            [1500 - i * 150, 0.03],
+            [620 - i * 80, 0.1],
+          ],
+          0.11,
+          0.3,
+          t + at,
+        );
+      });
+      break;
+    case 'whoosh': {
+      // A rush of air: band-passed noise that sweeps up, plus a soft low hum under it.
+      noiseBurst(ctx, master, {
+        filter: 'bandpass',
+        freq: 350,
+        freqEnd: 1800,
+        q: 0.8,
+        seconds: 0.5,
+        peak: 0.55,
+        startAt: t,
+      });
+      voice(
+        ctx,
+        master,
+        'sine',
+        [
+          [160, 0],
+          [240, 0.4],
+        ],
+        0.5,
+        0.15,
+        t,
+      );
+      break;
+    }
     case 'cheer': // happy rising notes
       [523, 659, 784, 1047].forEach((f, i) => {
         voice(

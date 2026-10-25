@@ -1,4 +1,4 @@
-// Player setup: two cards, one per team. Names, grade chips (K to 12), subject chips.
+// Player setup: two cards, one per team. Name, a grade dropdown (K to 12), subject selector.
 import {
   BUTTONS,
   PASS_SCREEN,
@@ -8,27 +8,12 @@ import {
   TEAM_NAMES,
   UI_EXTRA,
   gradeChipLabel,
-  gradeLabel,
 } from '../data/copy';
 import { COMPUTER } from '../data/computerCopy';
-import {
-  DEFAULT_NAMES,
-  GRADE,
-  MATCH_LENGTH,
-  NAME,
-  PRACTICE_BOT,
-  TOPIC_FOCUS,
-} from '../game/config';
+import { DEFAULT_NAMES, GRADE, MATCH_LENGTH, NAME, PRACTICE_BOT } from '../game/config';
 import { normalizeMatchLength, type MatchLength } from '../game/matchLength';
 import { withComputer } from '../game/practice';
-import {
-  TEAMS,
-  type Grade,
-  type Players,
-  type Subject,
-  type Team,
-  type Topic,
-} from '../game/types';
+import { TEAMS, type Grade, type Players, type Subject, type Team } from '../game/types';
 import { clearMyData, loadMatchLength, loadPractice, loadSetupPicks } from '../storage/storage';
 import type { SetupPick } from '../storage/types';
 import { skyline } from './art';
@@ -36,6 +21,7 @@ import { COMPUTER_TEAM, createPracticeSetup } from './computerPlayer';
 import { LOCAL_IDS } from './constants';
 import type { UiCtx } from './ctx';
 import { h } from './dom';
+import { radioGroup } from './selector';
 import { validateSetup, type TeamErrors } from './setupForm';
 import { TEST_IDS } from './types';
 
@@ -46,14 +32,15 @@ import { TEST_IDS } from './types';
 const START_PICK = { grade: 2 as Grade, subject: 'both' as Subject };
 const SUBJECTS: readonly Subject[] = ['reading', 'math', 'both'];
 
-type TeamState = { name: string; grade: Grade; subject: Subject; topic?: Topic };
+type TeamState = { name: string; grade: Grade; subject: Subject };
 
 /** Just the part Setup remembers between visits. */
-const pickOf = (t: TeamState): SetupPick => ({
-  grade: t.grade,
-  subject: t.subject,
-  ...(t.topic ? { topic: t.topic } : {}),
-});
+const pickOf = (t: TeamState): SetupPick => ({ grade: t.grade, subject: t.subject });
+
+const GRADES: readonly Grade[] = Array.from(
+  { length: GRADE.max - GRADE.min + 1 },
+  (_, i) => (GRADE.min + i) as Grade,
+);
 
 export function showSetup(ctx: UiCtx, initial: Players | null): Promise<Players>;
 export function showSetup(
@@ -78,7 +65,7 @@ export function showSetup(
     FUTURE: { name: DEFAULT_NAMES.FUTURE, ...START_PICK },
   });
   const state = defaults();
-  // Last time's grade, subject and Focus. Names are not kept here.
+  // Last time's grade and subject. Names are not kept here.
   const remembered = loadSetupPicks(ctx.storage);
   for (const team of TEAMS) {
     const pick = remembered[team];
@@ -88,69 +75,15 @@ export function showSetup(
     // The Computer player is not a name to type back in. Its side starts fresh.
     for (const p of initial) {
       if (p.name === PRACTICE_BOT.displayName) continue;
-      state[p.team] = { name: p.name, grade: p.grade, subject: p.subject, topic: p.topic };
+      state[p.team] = { name: p.name, grade: p.grade, subject: p.subject };
     }
   }
 
   // Set once the read-back line exists. Every chip pick calls it.
   let onPick: () => void = () => {};
   const inputs = {} as Record<Team, HTMLInputElement>;
+  const gradeSelects = {} as Record<Team, HTMLSelectElement>;
   const errorEls = {} as Record<Team, HTMLElement>;
-
-  /** A group of radio-style chips with arrow-key movement. */
-  function chipGroup<T extends string | number>(
-    team: Team | null,
-    label: string,
-    values: readonly T[],
-    current: () => T,
-    set: (v: T) => void,
-    make: (v: T) => HTMLButtonElement,
-    describedBy?: string,
-  ): { el: HTMLElement; chips: HTMLButtonElement[]; paint: () => void } {
-    const chips = values.map((v) => make(v));
-    // A radio group is one stop in the Tab order. The arrow keys move inside it.
-    const paint = (): void => {
-      chips.forEach((c, i) => {
-        const on = values[i] === current();
-        c.setAttribute('aria-checked', String(on));
-        c.tabIndex = on ? 0 : -1;
-      });
-    };
-    chips.forEach((chip, i) => {
-      chip.addEventListener('click', () => {
-        set(values[i] as T);
-        paint();
-        onPick();
-      });
-      chip.addEventListener('keydown', (e) => {
-        const move =
-          e.key === 'ArrowRight' || e.key === 'ArrowDown'
-            ? 1
-            : e.key === 'ArrowLeft' || e.key === 'ArrowUp'
-              ? -1
-              : 0;
-        if (!move) return;
-        e.preventDefault();
-        const to = Math.min(values.length - 1, Math.max(0, i + move));
-        set(values[to] as T);
-        paint();
-        onPick();
-        chips[to]?.focus();
-      });
-    });
-    const el = h(
-      doc,
-      'div',
-      {
-        class: 'tc-chips',
-        role: 'radiogroup',
-        'aria-label': team ? `${TEAM_NAMES[team]} ${label}` : label,
-        'aria-describedby': describedBy,
-      },
-      ...chips,
-    );
-    return { el, chips, paint };
-  }
 
   const painters: Array<() => void> = [];
   // The Play with choice. Off by default: with no `computer` option nothing below changes Setup.
@@ -160,22 +93,15 @@ export function showSetup(
 
   // How long the match runs. Normal unless a parent changed it. It sits on the button row, so Setup stays one screen.
   let matchLength: MatchLength = loadMatchLength(ctx.storage);
-  const lengthGroup = chipGroup<MatchLength>(
-    null,
-    SETUP.matchLengthLabel,
-    MATCH_LENGTH.ids,
-    () => matchLength,
-    (v) => (matchLength = normalizeMatchLength(v)),
-    (v) =>
-      h(doc, 'button', {
-        type: 'button',
-        class: 'tc-chip',
-        role: 'radio',
-        'data-testid': TEST_IDS.setupMatchLength(v),
-        text: SETUP.matchLengthChips[v],
-      }),
-    'tc-length-help',
-  );
+  const lengthGroup = radioGroup<MatchLength>(doc, {
+    label: SETUP.matchLengthLabel,
+    values: MATCH_LENGTH.ids,
+    current: () => matchLength,
+    set: (v) => (matchLength = normalizeMatchLength(v)),
+    option: (v) => ({ text: SETUP.matchLengthChips[v] ?? v, testId: TEST_IDS.setupMatchLength(v) }),
+    onPick: () => onPick(),
+    describedBy: 'tc-length-help',
+  });
   painters.push(lengthGroup.paint);
   const lengthRow = h(
     doc,
@@ -214,84 +140,47 @@ export function showSetup(
       input.removeAttribute('aria-invalid');
     });
 
-    const grades = chipGroup<Grade>(
-      team,
-      SETUP.gradeLabel,
-      Array.from({ length: GRADE.max - GRADE.min + 1 }, (_, i) => (GRADE.min + i) as Grade),
-      () => state[team].grade,
-      (g) => (state[team].grade = g),
-      (g) =>
-        h(doc, 'button', {
-          type: 'button',
-          class: 'tc-chip',
-          role: 'radio',
-          'aria-label': gradeChipLabel(g),
-          'data-testid': TEST_IDS.setupGrade(team, g),
-          text: gradeLabel(g),
-        }),
-      `tc-grade-help-${lower}`,
+    // Grade is a native dropdown: 13 choices, and an iPad shows its own big picker wheel.
+    const gradeId = `tc-grade-${lower}`;
+    const noteId = `tc-grade-note-${lower}`;
+    const gradeSelect = h(
+      doc,
+      'select',
+      {
+        class: 'tc-select',
+        id: gradeId,
+        'data-testid': TEST_IDS.setupGrade(team),
+        'aria-describedby': `tc-grade-help-${lower} ${noteId}`,
+      },
+      ...GRADES.map((g) => h(doc, 'option', { value: g, text: gradeChipLabel(g) })),
     );
-    const subjects = chipGroup<Subject>(
-      team,
-      SETUP.subjectLabel,
-      SUBJECTS,
-      () => state[team].subject,
-      (s) => (state[team].subject = s),
-      (s) =>
-        h(doc, 'button', {
-          type: 'button',
-          class: 'tc-chip tc-chip-wide',
-          role: 'radio',
-          'data-testid': TEST_IDS.setupSubject(team, s),
-          text: SUBJECT_LABELS[s],
-        }),
-    );
-    grades.el.classList.add('tc-chips-grades');
-    painters.push(grades.paint, subjects.paint);
-
-    // Optional math focus. Off at first. Only sides the config offers a topic to show it.
-    const topics = TOPIC_FOCUS.enabled ? TOPIC_FOCUS.offer[team] : [];
-    const topicRow =
-      topics.length === 0
-        ? null
-        : h(
-            doc,
-            'div',
-            { class: 'tc-topic' },
-            h(
-              doc,
-              'div',
-              {
-                class: 'tc-chips',
-                role: 'group',
-                'aria-label': `${TEAM_NAMES[team]} ${SETUP.topicLabel}`,
-              },
-              ...topics.map((topic) => {
-                const chip = h(doc, 'button', {
-                  type: 'button',
-                  class: 'tc-chip tc-chip-wide',
-                  role: 'switch',
-                  'aria-describedby': `tc-topic-help-${lower}`,
-                  'data-testid': TEST_IDS.setupTopic(team, topic),
-                  text: SETUP.topicChips[topic] ?? topic,
-                });
-                const paint = (): void =>
-                  chip.setAttribute('aria-checked', String(state[team].topic === topic));
-                chip.addEventListener('click', () => {
-                  state[team].topic = state[team].topic === topic ? undefined : topic;
-                  paint();
-                  onPick();
-                });
-                painters.push(paint);
-                return chip;
-              }),
-            ),
-            h(doc, 'p', {
-              class: 'tc-sr-only',
-              id: `tc-topic-help-${lower}`,
-              text: topics.map((t) => SETUP.topicHelpers[t] ?? '').join(' '),
-            }),
-          );
+    gradeSelects[team] = gradeSelect;
+    const youngNote = h(doc, 'p', {
+      class: 'tc-muted',
+      id: noteId,
+      'data-testid': LOCAL_IDS.setupGradeNote(team),
+      text: SETUP.youngReaderNote,
+    });
+    const paintGrade = (): void => {
+      gradeSelect.value = String(state[team].grade);
+      youngNote.hidden = state[team].grade > GRADE.grownUpNoteMax;
+    };
+    gradeSelect.addEventListener('change', () => {
+      const g = Number(gradeSelect.value);
+      if (Number.isInteger(g) && g >= GRADE.min && g <= GRADE.max) state[team].grade = g as Grade;
+      paintGrade();
+      onPick();
+    });
+    const subjects = radioGroup<Subject>(doc, {
+      label: `${TEAM_NAMES[team]} ${SETUP.subjectLabel}`,
+      values: SUBJECTS,
+      current: () => state[team].subject,
+      set: (v) => (state[team].subject = v),
+      option: (v) => ({ text: SUBJECT_LABELS[v], testId: TEST_IDS.setupSubject(team, v) }),
+      onPick: () => onPick(),
+      optionClass: 'tc-chip-wide',
+    });
+    painters.push(paintGrade, subjects.paint);
 
     return h(
       doc,
@@ -318,20 +207,13 @@ export function showSetup(
       h(doc, 'label', { class: 'tc-label', for: nameId, text: SETUP.nameLabel }),
       input,
       err,
-      h(doc, 'p', { class: 'tc-label', text: SETUP.gradeLabel }),
-      grades.el,
-      // Heard by screen readers on the grade chips. The line everyone sees is under the cards.
+      h(doc, 'label', { class: 'tc-label', for: gradeId, text: SETUP.gradeLabel }),
+      h(doc, 'span', { class: 'tc-select-wrap' }, gradeSelect),
+      youngNote,
+      // Heard by screen readers on the grade dropdown.
       h(doc, 'p', { class: 'tc-sr-only', id: `tc-grade-help-${lower}`, text: SETUP.gradeHelper }),
-      // The Focus switch shares the Subject label's line, so Setup keeps fitting a 768 tall screen.
-      h(
-        doc,
-        'div',
-        { class: 'tc-subject-head' },
-        h(doc, 'p', { class: 'tc-label', text: SETUP.subjectLabel }),
-        ...(topicRow ? [topicRow] : []),
-      ),
+      h(doc, 'p', { class: 'tc-label', 'aria-hidden': 'true', text: SETUP.subjectLabel }),
       subjects.el,
-      h(doc, 'p', { class: 'tc-muted tc-subject-help', text: SETUP.subjectHelper }),
     );
   });
   const humanCards = cards;
@@ -342,9 +224,9 @@ export function showSetup(
       practice.card.hidden = !practice.isComputer();
     });
   }
-  // Says the picks in words, so a parent sees the start grade was not skipped.
+  // Says the picks in words for a screen reader. Sighted players already see them on the cards.
   const readBack = h(doc, 'p', {
-    class: 'tc-match-helper',
+    class: 'tc-sr-only',
     'data-testid': LOCAL_IDS.setupReadBack,
     'aria-live': 'polite',
   });
@@ -366,9 +248,10 @@ export function showSetup(
   // ---- Clear my data (asks first) ----
   const note = h(doc, 'p', { class: 'tc-muted', role: 'status' });
   const confirmRow = h(doc, 'div', { class: 'tc-row', hidden: true });
+  // A quiet link, not a button: it is rare, and it asks first.
   const clearBtn = h(doc, 'button', {
     type: 'button',
-    class: 'tc-btn tc-btn-neutral',
+    class: 'tc-link',
     'data-testid': LOCAL_IDS.clearData,
     text: UI_EXTRA.clearData,
   });
@@ -442,7 +325,6 @@ export function showSetup(
       ...(practice ? [practice.card] : []),
     ),
     readBack,
-    h(doc, 'p', { class: 'tc-sr-only', text: SETUP.matchHelper }),
     h(
       doc,
       'div',
@@ -471,7 +353,6 @@ export function showSetup(
     },
     skyline(doc),
     h(doc, 'h1', { class: 'tc-setup-title', text: SETUP.heading }),
-    h(doc, 'p', { class: 'tc-setup-sub', text: SETUP.subtitle }),
     form,
   );
   const close = ctx.openScreen(screen);
@@ -490,7 +371,6 @@ export function showSetup(
           name: inputs.PAST.value,
           grade: state.PAST.grade,
           subject: state.PAST.subject,
-          topic: state.PAST.topic,
         },
         // Playing alone: the other side is not typed, so check it with the default name.
         FUTURE: alone
@@ -499,7 +379,6 @@ export function showSetup(
               name: inputs.FUTURE.value,
               grade: state.FUTURE.grade,
               subject: state.FUTURE.subject,
-              topic: state.FUTURE.topic,
             },
       });
       if (result.ok) {

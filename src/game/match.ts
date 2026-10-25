@@ -19,6 +19,7 @@ import {
   BASE_IN_BATTLE,
   BONUS,
   CHARACTER_HEALTH,
+  DISTURBANCE,
   PHASE1_LAYOUT,
   RNG_SALT,
   SCRAP,
@@ -67,6 +68,15 @@ import {
   type HelperId,
   type RecallOutcome,
 } from './crew';
+import {
+  birdsForTurn,
+  gustForTurn,
+  kickAim,
+  recoilFor,
+  type BirdPath,
+  type FlightDisturbance,
+  type Gust,
+} from './disturbance';
 import { DEFAULT_EFFECTS } from './loadout';
 import { scoreReload } from './reload';
 import { createShuffleBag } from './bag';
@@ -81,6 +91,7 @@ import type {
   BlastResult,
   CreateMatch,
   DashResult,
+  FireOptions,
   Match,
   MatchController,
   MountId,
@@ -158,6 +169,12 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
 
   let turn = createTurn(firstTeam, 0);
   let wind = windForTurn(seed, 0);
+  // Birds, gusts and recoil (DISTURBANCE): new birds and a new gust every turn.
+  const disturbOn = options.disturbances ?? DISTURBANCE.enabled;
+  let birds: BirdPath[] = disturbOn ? birdsForTurn(seed, 0) : [];
+  let gust: Gust | null = disturbOn ? gustForTurn(seed, 0) : null;
+  /** Shots fired so far this turn (the Power Shot is the third). Seeds the recoil. */
+  let shotInTurn = 0;
   let status: Match['status'] = 'PLAYING';
   let winner: Team | null = null;
   const effects = options.effects ?? DEFAULT_EFFECTS;
@@ -198,8 +215,14 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
   /** The field right now: the layout plus a stone wall that is standing. */
   const currentLayout = () => withWalls(layout, wallsFor(evasion));
   const unitHp = freshUnitHp(maxUnitHp);
-  /** Flies the active fighter (or weapon) with the current aim. Changes nothing, so a preview can use it. */
-  const flyCurrent = (mount: ReturnType<typeof mountOf> | undefined) => {
+  /**
+   * Flies the active fighter (or weapon) with the current aim. Changes nothing, so a preview can
+   * use it. A preview passes no disturbance, so it stays plain wind only.
+   */
+  const flyCurrent = (
+    mount: ReturnType<typeof mountOf> | undefined,
+    disturbance?: FlightDisturbance,
+  ) => {
     let nextSource: ShellSource | null = null;
     const team = turn.team;
     const unit = unitOf(team);
@@ -222,6 +245,7 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
         layout: walls.length > 0 ? withWalls(flightLay, walls) : flightLay,
         speedScale,
         ...(ammo === 'standard' ? {} : { ammo }),
+        ...(disturbance ? { disturbance } : {}),
       });
     let result: ShotResult;
     if (built) {
@@ -418,6 +442,8 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       ammo: { ...loaded },
       ammoLeft: { PAST: { ...ammoLeft.PAST }, FUTURE: { ...ammoLeft.FUTURE } },
       evasion: { PAST: evasionView(evasion.PAST), FUTURE: evasionView(evasion.FUTURE) },
+      disturbances: disturbOn,
+      birds: birds.map((b) => ({ ...b })),
       ...(squadsOn
         ? {
             squads: {
@@ -602,7 +628,7 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       return planned.outcome;
     },
 
-    fire(): ShotResult {
+    fire(fireOptions?: FireOptions): ShotResult {
       guard('fire');
       if (squadsOn && crew.picked[turn.team] !== helperId(turn.team, 'launcher')) {
         throw new IllegalCommandError('wrong_command');
@@ -616,8 +642,21 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
         throw new RangeError(`Fighter ${selected[turn.team]} is knocked out and cannot fire`);
       }
       step({ type: 'FIRE' });
-      const { result, ammo, unit, angleDeg, power, team, nextSource } = flyCurrent(mount);
+      const raw = fireOptions?.birdMs;
+      const birdMs = typeof raw === 'number' && Number.isFinite(raw) && raw > 0 ? raw : 0;
+      const disturbance: FlightDisturbance | undefined = disturbOn
+        ? { birds, birdMs, gust }
+        : undefined;
+      const { result, ammo, unit, angleDeg, power, team, nextSource } = flyCurrent(
+        mount,
+        disturbance,
+      );
       if (nextSource) source = nextSource;
+      // Recoil: the fighter's dials slide a little for the next shot. A mounted weapon has none.
+      if (disturbOn && !mount) {
+        aim[team] = kickAim(aim[team], recoilFor(seed, turn.turnNumber, shotInTurn, unit.role));
+      }
+      shotInTurn += 1;
       inFlight = result;
       inFlightAmmo = ammo;
       if (ammo !== 'standard') {
@@ -634,6 +673,7 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
         unit: unit.id,
         ...(mount ? { mount: mount.id } : {}),
         ...(ammo === 'standard' ? {} : { ammo }),
+        ...(disturbOn ? { birdMs } : {}),
       };
       stats[team].shotsFired += 1;
       return result;
@@ -756,6 +796,11 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
         baseHp = { ...baseHp, [ending]: Math.min(maxHp[ending], baseHp[ending] + repair) };
       }
       wind = windForTurn(seed, turn.turnNumber);
+      shotInTurn = 0;
+      if (disturbOn) {
+        birds = birdsForTurn(seed, turn.turnNumber);
+        gust = gustForTurn(seed, turn.turnNumber);
+      }
       // An ability armed this turn starts guarding. The new team's guard from last time ends.
       evasion = { ...evasion, [ending]: endOwnTurn(evasion[ending]) };
       evasion = { ...evasion, [turn.team]: startOwnTurn(evasion[turn.team]) };
@@ -772,6 +817,7 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       ...(options.squads === undefined ? {} : { squads: options.squads }),
       ...(options.baseInBattle === undefined ? {} : { baseInBattle: options.baseInBattle }),
       ...(options.bases ? { bases: options.bases } : {}),
+      ...(options.disturbances === undefined ? {} : { disturbances: options.disturbances }),
     }),
   };
 };

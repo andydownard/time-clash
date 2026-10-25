@@ -50,11 +50,11 @@ Every line is said by the device voice only after a tap (`noClip`, no network re
 - Captions only (not spoken): "Sir Bonk walks out. He bonks every turn!", "Sir Bonk walks home.", "Sir Bonk: Bonk! The base wobbles.", "Sir Bonk: Bonk! Bonk!", "Bop! Sir Bonk loses a heart.", "Sir Bonk wobbles.", and "Sir Bonk tumbles and walks home dizzy." followed by a funny line from the wipeout bag. That funny line is spoken like any wipeout line when the voice service is set up.
 
 ## Pass screen line (built)
-Each time the pass screen (the cover between turns) opens, Chrono says its own words: "Pass the screen! No peeking at their question!" (`src/ui/passScreen.ts`, built from `PASS_SCREEN.heading` and `PASS_SCREEN.noPeeking`).
+Each time the pass screen (the cover between turns) opens, Chrono says its own words: "Pass the screen!" (`src/ui/passScreen.ts`, `PASS_SCREEN.heading`). The "No peeking at their question!" line was removed on 2026-10-24 (owner): the cover already hides the board.
 - It goes through the AudioManager, so it is silent before the first tap, while muted, and in a browser driven by a test tool. The caption shows in every case, above the cover, unless captions are off in Settings.
 - "I'm ready!" is its Skip: it stops the line and clears the caption. The cover's Sound button hushes it mid-line.
 - The line is fixed text. It never holds the child's name or any question text.
-- It never asks the voice service for a clip (`noClip` on the line), so the cover makes no network request. The device voice reads it. No question text is ever spoken, so the question card makes no clip request either (`e2e/voice-clips.spec.ts`).
+- It never asks the voice service for a clip (`noClip` on the line), so the cover makes no network request. The device voice reads it. No question text is ever spoken, so the question card makes no clip request either (`e2e/reading.spec.ts`).
 - A match against the computer has no pass screen, so it has no pass line.
 
 ## Short replays (optional, build later)

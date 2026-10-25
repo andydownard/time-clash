@@ -19,6 +19,8 @@ All nine effects are made in code with the browser's WebAudio. There are no soun
 | cheer | four happy rising notes | synthesized in code | original |
 | bonk | a dasher's hollow foam knock | synthesized in code | original |
 | step | a dasher's soft pitter-patter steps | synthesized in code | original |
+| squawk | a shell bumps a bird: two quick chirps that fall in pitch | synthesized in code | original |
+| whoosh | the turn's gust: a soft rush of air that sweeps up, over a low hum | synthesized in code | original |
 
 ## Music
 

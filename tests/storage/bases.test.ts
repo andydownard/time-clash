@@ -22,7 +22,7 @@ function backing(initial: Record<string, string> = {}) {
 }
 
 const placed = (() => {
-  const r = placePiece(newBuild('PAST'), 'stone', { x: 2, y: 3, ox: 0, oy: 0 });
+  const r = placePiece(newBuild('PAST'), 'stone', { x: 2, y: 10, ox: 0, oy: 0 });
   if (!r.ok) throw new Error('place');
   return r.state.pieces;
 })();

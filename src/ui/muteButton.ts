@@ -1,19 +1,16 @@
-// A Sound on/off button for the covers (pass screen, question). It changes sound only, so it
+// A Sound on/off switch for the covers (pass screen, question). It changes sound only, so it
 // leaks nothing about the board. The label follows the settings and the button cleans up after itself.
 import { BUTTONS } from '../data/copy';
 import type { UiCtx } from './ctx';
-import { h } from './dom';
+import { setSwitch, switchChip } from './selector';
 import { LOCAL_IDS } from './constants';
 
 export function createCoverMute(ctx: UiCtx): { el: HTMLButtonElement; dispose: () => void } {
-  const el = h(ctx.doc, 'button', {
-    type: 'button',
-    class: 'tc-btn tc-btn-neutral tc-cover-mute',
-    'data-testid': LOCAL_IDS.coverMute,
-  });
+  // An on/off setting, so a switch: the words say the state.
+  const el = switchChip(ctx.doc, { testId: LOCAL_IDS.coverMute, extraClass: 'tc-cover-mute' });
   const paint = (): void => {
     const muted = ctx.settings().muted;
-    el.textContent = muted ? BUTTONS.soundOff : BUTTONS.soundOn;
+    setSwitch(el, !muted, muted ? BUTTONS.soundOff : BUTTONS.soundOn);
     // The speaker icon is drawn by CSS from this, so the label text stays exact.
     el.dataset.muted = String(muted);
   };

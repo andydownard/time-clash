@@ -2,8 +2,9 @@
 // The ?e2e=1 hook is used only to pin the seed and to read state (never questions).
 import type { Locator, Page } from '@playwright/test';
 import { expect } from '../fixtures';
+import { BONUS, DAMAGE, RELOAD, TIMING } from '../../src/game/config';
 import type { AimInput, BlastResult, Match, Subject, Team } from '../../src/game/types';
-import { findAim, pressesFor } from './aim';
+import { findAim } from './aim';
 import { rightChoiceIndex } from './bank';
 import './globals';
 
@@ -18,11 +19,29 @@ export async function openGame(page: Page, query = ''): Promise<void> {
   await page.waitForFunction(() => Boolean(window.__timeclash));
 }
 
-/** First visit: tap, Skip the intro, wait out Loading, land on Setup. */
+/** Adds `ms` to the page clock (performance.now), so a wait in the app ends without a sleep. */
+async function skewClock(page: Page, ms: number): Promise<void> {
+  await page.evaluate((add) => (window.__skew = (window.__skew ?? 0) + add), ms);
+}
+
+/**
+ * Loading stays up so the jokes can be read: TIMING.loadingQuickMs under ?e2e=1, longer for a
+ * real family. Tests that are not about Loading move the page clock past it instead of waiting.
+ * (e2e/setup.spec.ts still times the real Loading screen.)
+ */
+export async function skipLoadingWait(page: Page): Promise<void> {
+  const loading = page.locator('[data-screen="loading"]');
+  // A very busy machine can be past Loading already. Then there is nothing to skip.
+  await expect(loading.or(tid(page, 'setup-next')).first()).toBeVisible({ timeout: 10_000 });
+  if (await loading.isVisible()) await skewClock(page, TIMING.loadingFirstMinMs);
+}
+
+/** First visit: tap, Skip the intro, skip past Loading, land on Setup. */
 export async function toSetup(page: Page, query = ''): Promise<void> {
   await openGame(page, query);
   await tid(page, 'tap-to-play').click();
   await tid(page, 'intro-skip').click();
+  await skipLoadingWait(page);
   await expect(tid(page, 'setup-next')).toBeVisible({ timeout: 10_000 });
 }
 
@@ -30,7 +49,7 @@ export type Side = { name: string; grade: number; subject: Subject };
 
 export async function fillTeam(page: Page, team: Team, side: Side): Promise<void> {
   await tid(page, `setup-name-${team}`).fill(side.name);
-  await tid(page, `setup-grade-${team}-${side.grade}`).click();
+  await tid(page, `setup-grade-${team}`).selectOption(String(side.grade));
   await tid(page, `setup-subject-${team}-${side.subject}`).click();
 }
 
@@ -113,7 +132,6 @@ export async function enterAim(page: Page, team: Team, to: AimInput): Promise<vo
   await expect.poll(async () => (await snap(page)).aim[team]).toEqual(to);
 }
 
-export { pressesFor };
 
 /** Aims for a wanted result with the keyboard, then fires with Space. Returns the aim used. */
 export async function takeShot(page: Page, wanted: BlastResult): Promise<AimInput> {
@@ -159,8 +177,7 @@ export async function answerReload(page: Page, how: HowToAnswer) {
   const q = await readQuestion(page);
   const right = rightChoiceIndex(q.prompt, q.choices);
   const wrong = [0, 1, 2, 3].find((i) => i !== right)!;
-  if (how === 'right-slow')
-    await page.evaluate(() => (window.__skew = (window.__skew ?? 0) + 9000));
+  if (how === 'right-slow') await skewClock(page, 9000);
   const pick = how === 'wrong' ? wrong : right;
   if (how === 'right-fast') {
     // Fast is judged on the page clock, from when the card showed. A busy machine can take
@@ -186,10 +203,10 @@ export async function answerReload(page: Page, how: HowToAnswer) {
   return { ...q, rightIndex: right, rightAnswer: q.choices[right]!, picked: q.choices[pick]! };
 }
 
-/** After any answer the card waits for Got it. It ignores taps for a moment, so wait it out. */
+/** After any answer the card waits for Got it. It ignores taps for a moment, so move the page clock past that. */
 export async function tapGotIt(page: Page): Promise<void> {
   await expect(tid(page, 'reload-next')).toBeVisible();
-  await page.waitForTimeout(500);
+  await skewClock(page, RELOAD.gotItDelayMs);
   await tid(page, 'reload-next').click();
 }
 
@@ -229,6 +246,33 @@ export async function quietTurn(page: Page): Promise<void> {
   await expect(tid(page, 'reload-modal')).toBeVisible({ timeout: 20_000 });
   await answerReload(page, 'right-fast');
   await waitPassScreen(page);
+}
+
+/**
+ * Full health is several turns of hits (the pace rule), so a test that plays to Victory first
+ * wears the base down. Start on the shooter's pass screen. The shooter lands direct hits and
+ * Power Shots, each only while it leaves the other base above 0, and the other team takes quiet
+ * turns. Ends on the shooter's pass screen with the other base at one direct hit or less.
+ */
+export async function wearDown(page: Page): Promise<void> {
+  const shooter = (await snap(page)).turn.team;
+  const target: Team = shooter === 'PAST' ? 'FUTURE' : 'PAST';
+  const powerHit = Math.round(DAMAGE.direct * BONUS.damageMultiplier);
+  const hp = async (): Promise<number> => (await snap(page)).baseHp[target];
+  const aimFor = async (hit: number): Promise<BlastResult> =>
+    (await hp()) > hit ? 'direct' : 'miss';
+  while ((await hp()) > DAMAGE.direct) {
+    await readyUp(page);
+    await takeShot(page, await aimFor(DAMAGE.direct));
+    await waitAiming(page, 1);
+    await takeShot(page, await aimFor(DAMAGE.direct));
+    await expect(tid(page, 'reload-modal')).toBeVisible({ timeout: 45_000 });
+    await answerReload(page, 'right-fast');
+    await takeBonusShot(page, await aimFor(powerHit));
+    await waitPassScreen(page);
+    await quietTurn(page);
+  }
+  expect(await hp()).toBeGreaterThan(0);
 }
 
 /**

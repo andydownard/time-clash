@@ -1,7 +1,8 @@
 // Fakes and helpers for driving BattleFlow in plain Vitest. No Phaser, no DOM.
 import { simulateShot } from '../../../src/game/ballistics';
-import { LAUNCH_ORIGINS, PHASE1_LAYOUT, TEAM_FACING } from '../../../src/game/config';
+import { DAMAGE, LAUNCH_ORIGINS, PHASE1_LAYOUT, TEAM_FACING } from '../../../src/game/config';
 import { classifyBlast } from '../../../src/game/damage';
+import { DEFAULT_EFFECTS } from '../../../src/game/loadout';
 import { createMatch } from '../../../src/game/match';
 import type {
   AimInput,
@@ -32,6 +33,21 @@ export const PLAYERS: Players = [
   { name: 'Alex', team: 'PAST', grade: 2, subject: 'math' },
   { name: 'Sam', team: 'FUTURE', grade: 5, subject: 'reading' },
 ];
+
+/** Direct hits that end a quick test match (the old full health of 100 was four hits). */
+export const QUICK_END_HITS = 4;
+
+/**
+ * Match options for a flow test that must reach the end in a few scripted shots. Full health
+ * is QUICK_END_HITS direct hits on each side. Everything else is a fresh game. The real pace
+ * (DAMAGE.startingBaseHp) is played in tests/game/pace.test.ts.
+ */
+export const QUICK_END: Partial<MatchOptions> = {
+  effects: {
+    PAST: { ...DEFAULT_EFFECTS.PAST, maxHp: QUICK_END_HITS * DAMAGE.direct },
+    FUTURE: { ...DEFAULT_EFFECTS.FUTURE, maxHp: QUICK_END_HITS * DAMAGE.direct },
+  },
+};
 
 export type Log = string[];
 
@@ -90,6 +106,8 @@ export function makeWorld(
   const match: MatchController = createMatch({
     players: opts.players ?? PLAYERS,
     seed: opts.seed ?? 7,
+    // The flow tests script exact hits, so birds, gusts and recoil stay off unless a test asks.
+    disturbances: false,
     ...opts.matchOptions,
   });
 

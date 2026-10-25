@@ -4,7 +4,7 @@ import type { BasesState } from '../game/baseBuilder';
 import type { CampState } from '../game/loadout';
 import type { MatchLength } from '../game/matchLength';
 import type { PracticeChoice } from '../game/practice';
-import type { Grade, Players, Subject, Team, Topic } from '../game/types';
+import type { Grade, Players, Subject, Team } from '../game/types';
 import type { Levels } from '../questions/calibration';
 import type { PickHistory } from '../questions/types';
 
@@ -22,7 +22,7 @@ export type Settings = {
 };
 
 /** What a side picked at Setup last time. No names. */
-export type SetupPick = { grade: Grade; subject: Subject; topic?: Topic };
+export type SetupPick = { grade: Grade; subject: Subject };
 export type SetupPicks = Partial<Record<Team, SetupPick>>;
 
 /** Keys from ARCHITECTURE.md. Do not add keys without updating that file. */

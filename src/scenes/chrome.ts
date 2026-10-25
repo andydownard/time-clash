@@ -8,6 +8,7 @@ import { clearMyData, loadSettings } from '../storage/storage';
 import type { AudioManager } from '../audio/types';
 import type { TypedStorage } from '../storage/types';
 import { h, trapTab } from '../ui/dom';
+import { setSwitch, switchChip } from '../ui/selector';
 import type { LoadingEnv } from '../ui/loadingLogic';
 import { TEST_IDS, Z, type Overlay } from '../ui/types';
 import { CHROME } from './copy';
@@ -136,31 +137,12 @@ export function mountChrome(doc: Document, deps: ChromeDeps): Chrome {
 
   const openPanel = (): void => {
     if (panel) return;
-    const mute = h(doc, 'button', {
-      type: 'button',
-      class: 'tc-btn tc-btn-neutral',
-      'data-testid': CHROME_IDS.mute,
-    });
-    const captions = h(doc, 'button', {
-      type: 'button',
-      class: 'tc-btn tc-btn-neutral',
-      'data-testid': CHROME_IDS.captions,
-    });
-    const music = h(doc, 'button', {
-      type: 'button',
-      class: 'tc-btn tc-btn-neutral',
-      'data-testid': CHROME_IDS.music,
-    });
-    const motion = h(doc, 'button', {
-      type: 'button',
-      class: 'tc-btn tc-btn-neutral',
-      'data-testid': CHROME_IDS.motion,
-    });
-    const bonusRing = h(doc, 'button', {
-      type: 'button',
-      class: 'tc-btn tc-btn-neutral',
-      'data-testid': CHROME_IDS.bonusRing,
-    });
+    // Each setting is on or off, so each is a switch (a selector), not a button.
+    const mute = switchChip(doc, { testId: CHROME_IDS.mute });
+    const captions = switchChip(doc, { testId: CHROME_IDS.captions });
+    const music = switchChip(doc, { testId: CHROME_IDS.music });
+    const motion = switchChip(doc, { testId: CHROME_IDS.motion });
+    const bonusRing = switchChip(doc, { testId: CHROME_IDS.bonusRing });
     const volume = h(doc, 'input', {
       type: 'range',
       class: 'tc-range',
@@ -176,9 +158,10 @@ export function mountChrome(doc: Document, deps: ChromeDeps): Chrome {
       'data-testid': CHROME_IDS.volumeValue,
     });
     const note = h(doc, 'p', { 'data-testid': CHROME_IDS.note, role: 'status' });
+    // A quiet link: it is rare, and it asks first.
     const clear = h(doc, 'button', {
       type: 'button',
-      class: 'tc-btn tc-btn-neutral',
+      class: 'tc-link',
       'data-testid': CHROME_IDS.clear,
       text: UI_EXTRA.clearData,
     });
@@ -191,16 +174,21 @@ export function mountChrome(doc: Document, deps: ChromeDeps): Chrome {
     });
 
     const paint = (): void => {
-      mute.textContent = audio.muted ? BUTTONS.soundOff : BUTTONS.soundOn;
-      captions.textContent = loadSettings(storage).captions
-        ? BUTTONS.captionsOn
-        : BUTTONS.captionsOff;
-      music.textContent = audio.musicOn ? BUTTONS.musicOn : BUTTONS.musicOff;
+      const settings = loadSettings(storage);
+      setSwitch(mute, !audio.muted, audio.muted ? BUTTONS.soundOff : BUTTONS.soundOn);
+      setSwitch(
+        captions,
+        settings.captions,
+        settings.captions ? BUTTONS.captionsOn : BUTTONS.captionsOff,
+      );
+      setSwitch(music, audio.musicOn, audio.musicOn ? BUTTONS.musicOn : BUTTONS.musicOff);
       const reduced = syncMotion();
-      motion.textContent = reduced ? BUTTONS.motionOff : BUTTONS.motionOn;
-      bonusRing.textContent = loadSettings(storage).hideBonusRing
-        ? BUTTONS.bonusRingHidden
-        : BUTTONS.bonusRingShown;
+      setSwitch(motion, !reduced, reduced ? BUTTONS.motionOff : BUTTONS.motionOn);
+      setSwitch(
+        bonusRing,
+        !settings.hideBonusRing,
+        settings.hideBonusRing ? BUTTONS.bonusRingHidden : BUTTONS.bonusRingShown,
+      );
       volume.value = String(Math.round(audio.volume * 100));
       volumeValue.textContent = `${volume.value}%`;
     };
@@ -237,9 +225,10 @@ export function mountChrome(doc: Document, deps: ChromeDeps): Chrome {
       paint();
     });
     clear.addEventListener('click', () => {
+      // Wiping data is never the primary (filled) button.
       const yes = h(doc, 'button', {
         type: 'button',
-        class: 'tc-btn tc-btn-primary',
+        class: 'tc-btn tc-btn-neutral',
         'data-testid': CHROME_IDS.clearYes,
         text: UI_EXTRA.clearDataYes,
       });

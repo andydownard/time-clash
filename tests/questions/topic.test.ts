@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { TOPIC_FOCUS } from '../../src/game/config';
+import { QUESTION_TOPICS } from '../../src/game/config';
 import { BANK } from '../../src/questions/bank';
 import { checkBankFiles } from '../../src/questions/checkBank';
 import { pickQuestion, sanitizeHistory } from '../../src/questions/pick';
@@ -7,7 +7,7 @@ import { EMPTY_HISTORY, type PickHistory } from '../../src/questions/types';
 import { recomputeMathAnswer, validateQuestion } from '../../src/questions/validate';
 import { bankOf, mq, pool, testRng } from './helpers';
 
-const TAG = TOPIC_FOCUS.tags.multiplication;
+const TAG = QUESTION_TOPICS.tags.multiplication;
 const mult = (over = {}) => mq({ tags: [TAG], ...over });
 
 describe('topic tag on a question', () => {
@@ -65,7 +65,7 @@ describe('checkBankFiles topic coverage', () => {
   it('names a math grade that lacks enough topic questions', () => {
     const r = checkBankFiles([{ file: 'math-5.json', data: [mult()] }], { requireTopics: true });
     expect(r.problems.join()).toContain('multiplication');
-    expect(r.problems.join()).toContain(String(TOPIC_FOCUS.minPerGrade));
+    expect(r.problems.join()).toContain(String(QUESTION_TOPICS.minPerGrade));
   });
   it('does not ask for topic questions unless told to', () => {
     const r = checkBankFiles([{ file: 'math-5.json', data: [mq()] }]);
@@ -78,7 +78,7 @@ describe('the real bank', () => {
   it('has the minimum per grade, K to 12', () => {
     for (let g = 0; g <= 12; g++) {
       expect(topical.filter((q) => q.grade === g).length).toBeGreaterThanOrEqual(
-        TOPIC_FOCUS.minPerGrade,
+        QUESTION_TOPICS.minPerGrade,
       );
     }
   });
@@ -90,26 +90,15 @@ describe('the real bank', () => {
   });
 });
 
-describe('pickQuestion with a topic', () => {
-  const topical = pool('math', 5, 4).map((q, i) => ({
-    ...q,
-    id: `math-5-01${i}0`,
-    prompt: `What is ${i + 2} x 3?`,
-    tags: [TAG],
-  }));
-  const bank = bankOf(pool('math', 5, 6), topical);
-  const ask = { subject: 'math', grade: 5, who: 'PAST', topic: 'multiplication' } as const;
-
-  it('only asks topic questions when a topic is set', () => {
-    const rng = testRng(3);
-    let h: PickHistory = EMPTY_HISTORY;
-    for (let i = 0; i < 12; i++) {
-      const r = pickQuestion(bank, ask, h, rng);
-      expect(r.question.tags).toContain(TAG);
-      h = r.history;
-    }
-  });
-  it('asks any math question when no topic is set', () => {
+describe('pickQuestion after the Focus switch was retired', () => {
+  it('mixes topic questions in with the other math questions', () => {
+    const topical = pool('math', 5, 4).map((q, i) => ({
+      ...q,
+      id: `math-5-01${i}0`,
+      prompt: `What is ${i + 2} x 3?`,
+      tags: [TAG],
+    }));
+    const bank = bankOf(pool('math', 5, 6), topical);
     const rng = testRng(3);
     let h: PickHistory = EMPTY_HISTORY;
     const seen = new Set<boolean>();
@@ -118,38 +107,20 @@ describe('pickQuestion with a topic', () => {
       seen.add(r.question.tags.includes(TAG));
       h = r.history;
     }
-    expect(seen.has(false)).toBe(true);
+    expect(seen).toEqual(new Set([true, false]));
+    expect(Object.keys(h.used)).toEqual(['math-5']);
   });
-  it('ignores the topic for a reading pick', () => {
-    const b = bankOf(pool('reading', 5, 3), [mult()]);
-    const r = pickQuestion(b, { ...ask, subject: 'reading' }, EMPTY_HISTORY, testRng(1));
-    expect(r.question.subject).toBe('reading');
-  });
-  it('falls back to the nearest grade that has topic questions', () => {
-    const b = bankOf(pool('math', 5, 4), [mult({ id: 'math-3-0001', grade: 3 })]);
-    const r = pickQuestion(b, ask, EMPTY_HISTORY, testRng(1));
-    expect(r.gradeUsed).toBe(3);
-  });
-  it('falls back to plain math when the bank has no topic questions at all', () => {
-    const r = pickQuestion(bankOf(pool('math', 5, 4)), ask, EMPTY_HISTORY, testRng(1));
-    expect(r.question.subject).toBe('math');
-  });
-  it('keeps topic history apart from the plain pool and repeats with the same seed', () => {
-    const run = () => {
-      const r = pickQuestion(bank, ask, EMPTY_HISTORY, testRng(9));
-      return { id: r.question.id, keys: Object.keys(r.history.used) };
+  it('drops old topic pool keys from saved history', () => {
+    const h = {
+      used: { 'math-5-multiplication': ['math-5-0100'], 'math-5': ['math-5-0001'] },
+      lastSubject: {},
     };
-    expect(run()).toEqual(run());
-    expect(run().keys).toEqual(['math-5-multiplication']);
-  });
-  it('keeps topic history through sanitizeHistory', () => {
-    const h = { used: { 'math-5-multiplication': ['math-5-0100'] }, lastSubject: {} };
-    expect(sanitizeHistory(h).used['math-5-multiplication' as never]).toEqual(['math-5-0100']);
+    expect(sanitizeHistory(h).used).toEqual({ 'math-5': ['math-5-0001'] });
   });
 });
 
 describe('division topic', () => {
-  const DIV = TOPIC_FOCUS.tags.division;
+  const DIV = QUESTION_TOPICS.tags.division;
   const div = (over = {}) =>
     mq({
       tags: [DIV],
@@ -159,9 +130,7 @@ describe('division topic', () => {
       ...over,
     });
 
-  it('is offered to Team Future only, with its own tag', () => {
-    expect(TOPIC_FOCUS.offer.FUTURE).toContain('division');
-    expect(TOPIC_FOCUS.offer.PAST).not.toContain('division');
+  it('has its own tag', () => {
     expect(DIV).toBe('topic:division');
   });
   it('accepts a division question with the topic tag', () => {
@@ -213,7 +182,7 @@ describe('division topic', () => {
     const topical = BANK.questions.filter((q) => q.tags.includes(DIV));
     for (let g = 0; g <= 12; g++) {
       expect(topical.filter((q) => q.grade === g).length, `grade ${g}`).toBeGreaterThanOrEqual(
-        TOPIC_FOCUS.minPerGrade,
+        QUESTION_TOPICS.minPerGrade,
       );
     }
     for (const q of topical) {
@@ -221,27 +190,5 @@ describe('division topic', () => {
       expect(q.kind).toBe('numeric');
       expect(q.subject).toBe('math');
     }
-  });
-  it('picks only division when the topic is set', () => {
-    const topical = pool('math', 5, 4).map((q, i) => ({
-      ...q,
-      id: `math-5-01${i}0`,
-      prompt: `What is ${(i + 2) * 3} / 3?`,
-      tags: [DIV],
-    }));
-    const bank = bankOf(pool('math', 5, 6), topical);
-    const rng = testRng(5);
-    let h: PickHistory = EMPTY_HISTORY;
-    for (let i = 0; i < 10; i++) {
-      const r = pickQuestion(
-        bank,
-        { subject: 'math', grade: 5, who: 'FUTURE', topic: 'division' },
-        h,
-        rng,
-      );
-      expect(r.question.tags).toContain(DIV);
-      h = r.history;
-    }
-    expect(Object.keys(h.used)).toEqual(['math-5-division']);
   });
 });

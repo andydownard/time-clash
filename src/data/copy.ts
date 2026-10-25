@@ -1,7 +1,7 @@
 // Every user-facing string lives here. Kids read these, so: short words, short sentences.
 // Vocabulary table in AGENTS.md applies. Banned words are checked by tests/contracts/copy.test.ts.
 // Intro narration text lives in src/data/introScript.ts (from docs/NARRATION.md).
-import { TURN } from '../game/config';
+import { DAMAGE, TURN } from '../game/config';
 import type { AwardId } from '../game/awards';
 import { windLevel } from '../game/wind';
 import type { Subject, Team } from '../game/types';
@@ -36,6 +36,97 @@ export const FORGE_COPY = {
   forged: (name: string, level: number): string => `${name} is now level ${level}!`,
   needMore: (n: number): string => `Not yet. You need ${n} more Scrap.`,
   atTop: 'This weapon is at the top level.',
+  /** The Weapon Workshop button, and the "My weapons" section (your own weapons). */
+  makeOwn: 'Make my own weapon',
+  myWeapons: (n: number): string => `My weapons · ${n}`,
+  allWeapons: 'All weapons',
+  /** The star badge on a weapon you made, in words for a screen reader. */
+  mine: 'Made by you',
+  /** The Level up button for one of your own weapons sits under the list. */
+  levelUpMine: (name: string, text: string): string => `${name}: ${text}`,
+  full: (max: number): string => `You have ${max} of your own. That is the most.`,
+} as const;
+
+// ---------- Weapon Workshop (make your own weapon) ----------
+export const WORKSHOP_COPY = {
+  title: 'Weapon Workshop',
+  back: 'Back',
+  pickStyle: 'Pick a style',
+  /** A style is named after the catalog weapon it is like. */
+  styles: {
+    royalSword: 'Sword',
+    elderLongbow: 'Longbow',
+    ironCannon: 'Cannon',
+    plasmaBlade: 'Blade',
+    laserRifle: 'Rifle',
+    railCannon: 'Rail Cannon',
+  } as Readonly<Record<string, string>>,
+  pointsLeft: (n: number): string => (n === 1 ? '1 point left' : `${n} points left`),
+  stats: {
+    power: { name: 'Power', help: 'Hits hard' },
+    reach: { name: 'Reach', help: 'Throws far' },
+    splash: { name: 'Splash', help: 'Near misses hurt' },
+  },
+  more: (stat: string): string => `More ${stat}`,
+  less: (stat: string): string => `Less ${stat}`,
+  /** What a stat's points do, in words. */
+  power: (n: number): string => `Damage ${n}`,
+  reach: (range: string): string => `Range ${range}`,
+  splash: (n: number): string => `Near miss ${n}`,
+  statLabel: (stat: string, n: number, max: number): string => `${stat} ${n} of ${max}`,
+  atMost: (stat: string): string => `${stat} is full.`,
+  atLeast: (stat: string): string => `${stat} is as low as it goes.`,
+  noPoints: 'No points left. Take one from another.',
+  nameIt: 'Name it',
+  firstWord: 'First word',
+  secondWord: 'Second word',
+  typeName: 'Or type a name',
+  /** Silly, friendly words. A weapon's name is one of each, or a typed name. */
+  adjectives: [
+    'Wobbly',
+    'Giggly',
+    'Bouncy',
+    'Sparkly',
+    'Mighty',
+    'Fuzzy',
+    'Zippy',
+    'Jolly',
+    'Sneaky',
+    'Rumbly',
+    'Sleepy',
+    'Shiny',
+    'Speedy',
+    'Silly',
+  ] as readonly string[],
+  nouns: [
+    'Noodle',
+    'Pickle',
+    'Muffin',
+    'Thunder',
+    'Banana',
+    'Teapot',
+    'Waffle',
+    'Bubble',
+    'Taco',
+    'Puddle',
+    'Gizmo',
+    'Sock',
+    'Pancake',
+    'Rocket',
+  ] as readonly string[],
+  /** Why a typed name is not used. The picked words are kept, so nothing is lost. */
+  nameProblem: {
+    empty: '',
+    long: 'That name is too long.',
+    letters: 'Use only letters, numbers and spaces.',
+    blocked: 'Let us pick a friendlier name.',
+    private: 'Keep your own name a secret.',
+    digits: 'Use fewer numbers in a row.',
+  },
+  keepPicked: (name: string): string => `We will use ${name}.`,
+  forge: (cost: number): string => `Forge it! · ${cost} Scrap`,
+  forged: (name: string): string => `You made ${name}! It is equipped.`,
+  needMore: (n: number): string => `Not yet. You need ${n} more Scrap.`,
 } as const;
 
 // ---------- Build Base (the old shop screen, shown when the base builder is off) ----------
@@ -95,9 +186,7 @@ export const SUBJECT_LABELS: Record<Subject, string> = {
   both: 'Both',
 };
 
-/** Short label for chips: K, 1, 2 ... 12. */
-export const gradeLabel = (grade: number): string => (grade === 0 ? 'K' : String(grade));
-/** Long label for screen readers and summaries. */
+/** The grade dropdown's words, also used by screen readers and summaries. */
 export const gradeChipLabel = (grade: number): string =>
   grade === 0 ? 'Kindergarten' : `Grade ${grade}`;
 
@@ -121,8 +210,6 @@ export const BUTTONS = {
   back: 'Back',
   leaveGame: 'Leave game',
   stay: 'Stay',
-  next: 'Next',
-  ok: 'OK',
 } as const;
 
 // ---------- Pause and leaving a game ----------
@@ -141,7 +228,8 @@ export const TURN_SCREEN = {
 // ---------- Tap to Start ----------
 export const TAP_TO_START = {
   button: 'TAP TO PLAY',
-  helper: 'Tap the big button to start. Sound starts after you tap.',
+  /** The sound promise. The big button already says what to do. */
+  helper: 'Sound starts after you tap.',
 } as const;
 
 // ---------- Intro (How to Play) ----------
@@ -152,7 +240,6 @@ export const INTRO = {
   mute: 'Mute',
   unmute: 'Unmute',
   next: 'Next card',
-  done: "Let's go!",
   cardOf: (n: number, total: number): string => `Card ${n} of ${total}`,
 } as const;
 
@@ -182,29 +269,18 @@ export const LOADING = {
 // ---------- Setup ----------
 export const SETUP = {
   heading: 'Who is fighting?',
-  subtitle: 'Type your name. Pick your grade and subject.',
   nameLabel: 'Name',
   namePlaceholder: 'Type a name',
   gradeLabel: 'Grade',
   subjectLabel: 'Subject',
   gradeHelper: 'Each team gets questions for its own grade. That keeps it fair.',
-  subjectHelper: 'Both mixes reading and math.',
-  /** Optional math focus (a parent picks it). Off at first. */
-  topicLabel: 'Focus',
-  topicChips: {
-    multiplication: 'Focus: Multiplication',
-    division: 'Focus: Division',
-  } as Record<string, string>,
-  topicHelpers: {
-    multiplication: 'Math questions are all multiplication.',
-    division: 'Math questions are all division.',
-  } as Record<string, string>,
+  /** One quiet line under the grade, only while that team's grade is K or 1. No read-aloud. */
+  youngReaderNote: 'A grown-up can read the questions with you.',
   /** Match length: a parent picks it. Short and Long change how many hits a base can take. */
   matchLengthLabel: 'Match length',
   matchLengthChips: { short: 'Short', normal: 'Normal', long: 'Long' } as Record<string, string>,
   matchLengthHelper: 'Short ends sooner. Long takes more hits. Questions stay the same.',
   start: "Let's clash!",
-  matchHelper: 'Questions will match your grade.',
   namesStay: 'Names stay on this device. Nothing is sent anywhere.',
   readBack: (team: string, grade: string, subject: string): string =>
     `${team}: ${grade}, ${subject}`,
@@ -233,7 +309,8 @@ export const HUD = {
   yourTurn: 'Your turn',
   angleValue: (deg: number): string => `${Math.round(deg)}°`,
   powerValue: (p: number): string => `${Math.round(p)}`,
-  hpValue: (hp: number, max = 100): string => `${Math.round(hp)} / ${Math.round(max)}`,
+  hpValue: (hp: number, max: number = DAMAGE.startingBaseHp): string =>
+    `${Math.round(hp)} / ${Math.round(max)}`,
   shotsValue: (n: number): string => `${n} of ${TURN.shotsPerTurn}`,
 } as const;
 
@@ -314,7 +391,6 @@ export const goTurnBanner = (name: string): string => `${String(name).toUpperCas
 
 export const PASS_SCREEN = {
   heading: 'Pass the screen!',
-  noPeeking: 'No peeking at their question!',
   upNext: (name: string): string => `${name}, you're up!`,
   ready: "I'm ready!",
   /** Shown beside the heading, so the next side is clear without color. */
@@ -349,7 +425,6 @@ export const HITS = {
   direct: 'Direct hit!',
   near: 'So close!',
   miss: 'Whoosh! Missed.',
-  blocks: 'Boing! Toy blocks everywhere!',
 } as const;
 
 /** More ways to say it. The scene picks with a seeded shuffle bag, so no line repeats back to back. */
@@ -371,6 +446,15 @@ export const HIT_LINES = {
     'Plop! The grass got a surprise.',
     'Bonk! That rock did not see it coming.',
   ],
+} as const;
+
+/**
+ * The sound words for birds and gusts. Each one floats over the board when it happens, so the
+ * squawk and the whoosh are never sound-only cues.
+ */
+export const DISTURBANCE_COPY = {
+  squawk: 'Squawk!',
+  whoosh: 'Whoosh!',
 } as const;
 
 /** Chrono's quick joke after a reload. Warm, and always at Chrono's expense. */
@@ -446,7 +530,6 @@ export function tumblePool(team: Team): readonly string[] {
 // ---------- Victory ----------
 export const VICTORY = {
   heading: (name: string): string => `${name} wins!`,
-  teamWins: (team: Team): string => `${TEAM_NAMES[team]} wins!`,
   /**
    * Said by the losing side's fighter in the canvas speech bubble, never by Chrono. Chrono did not
    * fall over, so the line only fits in the mouth of the side that took the wipeout.
@@ -470,15 +553,6 @@ export const VICTORY = {
     scrapCollector: 'Scrap Collector',
     goodSport: 'Good Sport',
   } as Record<AwardId, string>,
-  statsHeading: 'Scoreboard',
-  shotsFired: 'Shots fired',
-  directHits: 'Direct hits',
-  questionsAnswered: 'Questions answered',
-  correctAnswers: 'Right answers',
-  fastestAnswer: 'Fastest answer',
-  fastestValue: (ms: number | null): string =>
-    ms === null ? 'None yet' : `${(Number(ms) / 1000).toFixed(1)} seconds`,
-  scrapEarned: 'Scrap earned',
   rematch: 'Rematch',
   backToCamp: 'Back to Camp',
 } as const;
@@ -497,14 +571,6 @@ export const VICTORY_CHRONO = {
 } as const;
 export type VictoryMood = keyof typeof VICTORY_CHRONO;
 
-// ---------- Errors ----------
-export const ERRORS = {
-  generic: 'Something went wonky. Tap to try again.',
-  tryAgain: 'Try again',
-  noSound: 'Sound is not working here. Captions are on.',
-  saveFailed: 'This browser will not save. The game still works today.',
-} as const;
-
 // ---------- Added by the UI track (additive) ----------
 export const UI_EXTRA = {
   gradeError: 'Pick a grade.',
@@ -518,7 +584,6 @@ export const UI_EXTRA = {
   choicesLabel: 'Answer choices',
   stepsLabel: 'Steps',
   loadingLabel: 'Loading',
-  playerCard: (team: Team): string => `${TEAM_NAMES[team]} player`,
 } as const;
 
 // ---------- Phase 2: Battle Plan, ammo and evasion (additive) ----------
@@ -627,6 +692,12 @@ export const BUILDER_COPY = {
   nothingToUndo: 'Nothing to undo.',
   pickFirst: 'Tap a brick first, then tap Turn.',
   noRoom: 'No room there. Try another spot.',
+  /** A brick let go in mid-air, or beside a wall with nothing under it. */
+  floating: 'Build on something that touches the ground.',
+  /** Taking away, moving or turning a brick that another brick rests on. */
+  holding: 'Something is sitting on that brick. Take the top one off first.',
+  /** Once, when an old base had floating bricks and the builder set them down. */
+  settled: 'Chrono here! Some bricks were floating. I set them down.',
   full: 'This base is full of bricks.',
   cancelled: 'Put back. Nothing changed.',
   selected: (name: string): string => `${name} chosen. Tap Turn to spin it.`,
@@ -637,6 +708,8 @@ export const BUILDER_COPY = {
   unlocked: (name: string): string => `You unlocked ${name}!`,
   ghostAt: (name: string, x: number, y: number): string =>
     `${name} at column ${x + 1}, row ${y + 1}. Enter puts it down.`,
+  /** The column left of the plot with the team and mode buttons. */
+  rail: 'Team and mode',
   // Weapon spots
   mode: 'Mode',
   modeBuild: 'Build',

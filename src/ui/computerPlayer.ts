@@ -7,6 +7,7 @@ import { DEFAULT_PRACTICE, type PracticeChoice } from '../game/practice';
 import type { Team } from '../game/types';
 import type { UiCtx } from './ctx';
 import { h } from './dom';
+import { radioGroup } from './selector';
 import { svgFromString } from './svg';
 
 export const COMPUTER_IDS = {
@@ -55,59 +56,6 @@ export function computerFace(doc: Document, team: Team, small = false): SVGEleme
   return svg;
 }
 
-type Pick<T extends string> = { value: T; label: string; testId: string };
-
-/** A row of big radio buttons with arrow-key movement, like the grade chips. */
-function radioRow<T extends string>(
-  doc: Document,
-  label: string,
-  picks: ReadonlyArray<Pick<T>>,
-  current: () => T,
-  set: (v: T) => void,
-  extraClass = '',
-): { el: HTMLElement; paint: () => void } {
-  const chips = picks.map((p) =>
-    h(doc, 'button', {
-      type: 'button',
-      class: `tc-chip tc-chip-wide ${extraClass}`.trim(),
-      role: 'radio',
-      'data-testid': p.testId,
-      text: p.label,
-    }),
-  );
-  const paint = (): void =>
-    chips.forEach((c, i) => {
-      const on = picks[i]?.value === current();
-      c.setAttribute('aria-checked', String(on));
-      c.tabIndex = on ? 0 : -1;
-    });
-  chips.forEach((chip, i) => {
-    chip.addEventListener('click', () => {
-      set((picks[i] as Pick<T>).value);
-      paint();
-    });
-    chip.addEventListener('keydown', (e) => {
-      const move =
-        e.key === 'ArrowRight' || e.key === 'ArrowDown'
-          ? 1
-          : e.key === 'ArrowLeft' || e.key === 'ArrowUp'
-            ? -1
-            : 0;
-      if (!move) return;
-      e.preventDefault();
-      const to = Math.min(picks.length - 1, Math.max(0, i + move));
-      set((picks[to] as Pick<T>).value);
-      paint();
-      chips[to]?.focus();
-    });
-  });
-  paint();
-  return {
-    el: h(doc, 'div', { class: 'tc-chips', role: 'radiogroup', 'aria-label': label }, ...chips),
-    paint,
-  };
-}
-
 export type PracticeSetup = {
   /** The "Play with" row. Goes above the team cards. */
   playWithRow: HTMLElement;
@@ -135,19 +83,18 @@ export function createPracticeSetup(
   const { doc } = ctx;
   const state: PracticeChoice = { ...(initial ?? DEFAULT_PRACTICE) };
 
-  const who = radioRow<'person' | 'computer'>(
-    doc,
-    COMPUTER.playWith,
-    [
-      { value: 'person', label: COMPUTER.anotherPlayer, testId: COMPUTER_IDS.playWithPerson },
-      { value: 'computer', label: COMPUTER.computerPlayer, testId: COMPUTER_IDS.playWithComputer },
-    ],
-    () => state.opponent,
-    (v) => {
-      state.opponent = v;
-      onChange();
-    },
-  );
+  const who = radioGroup<'person' | 'computer'>(doc, {
+    label: COMPUTER.playWith,
+    values: ['person', 'computer'],
+    current: () => state.opponent,
+    set: (v) => (state.opponent = v),
+    option: (v) =>
+      v === 'person'
+        ? { text: COMPUTER.anotherPlayer, testId: COMPUTER_IDS.playWithPerson }
+        : { text: COMPUTER.computerPlayer, testId: COMPUTER_IDS.playWithComputer },
+    onPick: onChange,
+    optionClass: 'tc-chip-wide',
+  });
   const playWithRow = h(
     doc,
     'div',
@@ -156,16 +103,15 @@ export function createPracticeSetup(
     who.el,
   );
 
-  const level = radioRow<BotLevel>(
-    doc,
-    COMPUTER.howHard,
-    BOT_LEVELS.map((l) => ({ value: l, label: COMPUTER.levels[l], testId: COMPUTER_IDS.level(l) })),
-    () => state.level,
-    (v) => {
-      state.level = v;
-      onChange();
-    },
-  );
+  const level = radioGroup<BotLevel>(doc, {
+    label: COMPUTER.howHard,
+    values: BOT_LEVELS,
+    current: () => state.level,
+    set: (v) => (state.level = v),
+    option: (v) => ({ text: COMPUTER.levels[v], testId: COMPUTER_IDS.level(v) }),
+    onPick: onChange,
+    optionClass: 'tc-chip-wide',
+  });
   const card = h(
     doc,
     'div',

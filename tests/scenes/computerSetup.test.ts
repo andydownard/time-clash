@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
-// Setup and the battle hand-off with the Computer player (behind PRACTICE_BOT.enabled / ?computer=1).
+// Setup and the battle hand-off with the Computer player (on for everyone through
+// PRACTICE_BOT.enabled; ?computer=0 turns it off).
 import { beforeEach, describe, expect, it } from 'vitest';
 import { COMPUTER } from '../../src/data/computerCopy';
 import { PRACTICE_BOT } from '../../src/game/config';
@@ -7,7 +8,7 @@ import { SCENE_KEYS } from '../../src/scenes/registry';
 import { runCampStep, runSetupStep } from '../../src/scenes/steps';
 import { COMPUTER_IDS } from '../../src/ui/computerPlayer';
 import { TEST_IDS } from '../../src/ui/types';
-import { click, flush, q } from '../ui/helpers';
+import { click, flush, pickGrade, q } from '../ui/helpers';
 import { makeServices, tinyBank } from './fakes';
 import type { BattleSceneData } from '../../src/scenes/battle/types';
 
@@ -16,9 +17,9 @@ beforeEach(() => {
   t = makeServices();
 });
 
-describe("flag off: Setup is exactly today's Setup", () => {
-  it('the config flag is off', () => {
-    expect(PRACTICE_BOT.enabled).toBe(false);
+describe('switched off (?computer=0): Setup has no Computer player', () => {
+  it('the config flag is on for everyone, so off only comes from the address', () => {
+    expect(PRACTICE_BOT.enabled).toBe(true);
   });
   it('shows no Play with row, no computer card and no How hard?', async () => {
     const p = runSetupStep(t.services);
@@ -89,7 +90,7 @@ describe('flag on', () => {
 
   it('saves one human and the Computer player, and remembers the level', async () => {
     const p = runSetupStep(t.services);
-    click(q(TEST_IDS.setupGrade('PAST', 4)));
+    pickGrade('PAST', 4);
     click(q(TEST_IDS.setupSubject('PAST', 'math')));
     click(q(COMPUTER_IDS.playWithComputer));
     click(q(COMPUTER_IDS.level('hard')));

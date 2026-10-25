@@ -5,7 +5,6 @@ import type {
   MatchController,
   MatchOptions,
   Players,
-  Team,
   TeamStats,
 } from '../../src/game/types';
 import { DEFAULT_SETTINGS, PHASE1_LAYOUT } from '../../src/game/config';
@@ -124,5 +123,3 @@ export function makeServices(opts: { loadBank?: () => Promise<QuestionBank>; see
   };
   return { ...base, services, howToOpened: () => opened, DEFAULT_SETTINGS };
 }
-
-export const teamOf = (i: 0 | 1): Team => (i === 0 ? 'PAST' : 'FUTURE');

@@ -6,7 +6,7 @@ import type { BattlePlan } from '../game/battlefield';
 import type { EvasionView } from '../game/types';
 import type { BasesState } from '../game/baseBuilder';
 import type { CampState } from '../game/loadout';
-import type { Grade, Players, Team, TeamStats, Vec2 } from '../game/types';
+import type { Players, Team, TeamStats, Vec2 } from '../game/types';
 import type { UnitId } from '../game/units';
 import type { Question } from '../questions/types';
 import type { Settings } from '../storage/types';
@@ -50,9 +50,9 @@ export const TEST_IDS = {
   captionBar: 'caption-bar',
   loadingRetry: 'loading-retry',
   setupName: (team: Team) => `setup-name-${team}`,
-  setupGrade: (team: Team, grade: Grade) => `setup-grade-${team}-${grade}`,
+  /** The grade dropdown (a native select) on each team card. */
+  setupGrade: (team: Team) => `setup-grade-${team}`,
   setupSubject: (team: Team, subject: string) => `setup-subject-${team}-${subject}`,
-  setupTopic: (team: Team, topic: string) => `setup-topic-${team}-${topic}`,
   setupMatchLength: (length: string) => `setup-length-${length}`,
   setupMatchLengthRow: 'setup-length-row',
   setupNext: 'setup-next',
@@ -71,6 +71,21 @@ export const TEST_IDS = {
   forgeStatus: 'forge-status',
   forgeTeam: (team: Team) => `forge-team-${team}`,
   forgeWeapon: (id: string) => `forge-weapon-${id}`,
+  forgeMake: 'forge-make',
+  forgeMine: 'forge-mine',
+  workshopBack: 'workshop-back',
+  workshopScrap: 'workshop-scrap',
+  workshopStyle: (base: string) => `workshop-style-${base}`,
+  workshopPoints: 'workshop-points',
+  workshopMore: (stat: string) => `workshop-more-${stat}`,
+  workshopLess: (stat: string) => `workshop-less-${stat}`,
+  workshopStat: (stat: string) => `workshop-stat-${stat}`,
+  workshopWord1: 'workshop-word1',
+  workshopWord2: 'workshop-word2',
+  workshopTyped: 'workshop-typed',
+  workshopPreview: 'workshop-preview',
+  workshopForge: 'workshop-forge',
+  workshopStatus: 'workshop-status',
   campPlayers: 'camp-players',
   planBack: 'plan-back',
   planGo: 'plan-go',
@@ -153,7 +168,7 @@ export type HudState = {
   activeTeam: Team | null;
   names: Record<Team, string>;
   baseHp: Record<Team, number>;
-  /** Each base's full health. Missing means 100. An upgrade can raise it. */
+  /** Each base's full health. Missing means DAMAGE.startingBaseHp. An upgrade can raise it. */
   maxBaseHp?: Record<Team, number>;
   scrap: Record<Team, number>;
   wind: number;

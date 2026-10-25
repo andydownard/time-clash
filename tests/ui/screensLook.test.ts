@@ -5,7 +5,19 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { INTRO, LOADING, PASS_SCREEN, RELOAD, SETUP, TEAM_NAMES, VICTORY_CHRONO } from '../../src/data/copy';
 import { INTRO_SCRIPT } from '../../src/data/introScript';
 import { TEST_IDS } from '../../src/ui/types';
-import { click, fractionQ, flush, mainIdeaQ, mathQ, q, qa, setup, wordQ } from './helpers';
+import {
+  click,
+  fractionQ,
+  flush,
+  gradeShown,
+  mainIdeaQ,
+  mathQ,
+  pickGrade,
+  q,
+  qa,
+  setup,
+  wordQ,
+} from './helpers';
 
 let s: ReturnType<typeof setup>;
 beforeEach(() => {
@@ -22,8 +34,8 @@ describe('Setup look', () => {
     const vs = grid.querySelector('.tc-vs')!;
     expect(vs.textContent).toBe(SETUP.versus);
     expect(vs.getAttribute('aria-hidden')).toBe('true');
-    expect(document.body.textContent).toContain('Questions will match your grade');
-    expect(SETUP.matchHelper).toBe('Questions will match your grade.');
+    // The grade explanation is said once (on each grade dropdown), not twice.
+    expect(document.body.textContent).not.toContain('Questions will match your grade');
   });
 
   it('names each card for assistive tech and shows the team with a shape and a name', () => {
@@ -37,22 +49,17 @@ describe('Setup look', () => {
     }
   });
 
-  it('has K to 12 chips in a wrapping grid, each a real 56px-class button with a mark when chosen', () => {
+  it('has a K to 12 grade dropdown per team, in plain letters so 1 and 7 read clearly', () => {
     void s.overlay.showSetup(null);
-    const grid = qa('.tc-chips-grades');
-    expect(grid).toHaveLength(2);
-    for (const g of grid) {
-      const chips = [...g.querySelectorAll('button.tc-chip')];
-      expect(chips.map((c) => c.textContent)).toEqual([
-        'K',
-        ...Array.from({ length: 12 }, (_, i) => String(i + 1)),
-      ]);
-      for (const c of chips) expect(c.getAttribute('role')).toBe('radio');
+    for (const team of ['PAST', 'FUTURE'] as const) {
+      const sel = q<HTMLSelectElement>(TEST_IDS.setupGrade(team))!;
+      expect(sel.classList.contains('tc-select')).toBe(true);
+      expect([...sel.options].map((o) => o.value)).toEqual(
+        Array.from({ length: 13 }, (_, i) => String(i)),
+      );
     }
-    click(q(TEST_IDS.setupGrade('FUTURE', 12)));
-    expect(q(TEST_IDS.setupGrade('FUTURE', 12))!.getAttribute('aria-checked')).toBe('true');
-    // The check mark comes from CSS on [aria-checked='true'], and the label text is unchanged.
-    expect(q(TEST_IDS.setupGrade('FUTURE', 12))!.textContent).toBe('12');
+    pickGrade('FUTURE', 12);
+    expect(gradeShown('FUTURE')).toBe(12);
   });
 
   it('has a Reading, Math, Both picker per team', () => {
@@ -65,11 +72,11 @@ describe('Setup look', () => {
     }
   });
 
-  it('keeps the grade explanation for screen readers on each grade group', () => {
+  it('keeps the grade explanation for screen readers on each grade dropdown', () => {
     void s.overlay.showSetup(null);
-    for (const g of qa('.tc-chips-grades')) {
-      const id = g.getAttribute('aria-describedby')!;
-      expect(document.getElementById(id)!.textContent).toBe(SETUP.gradeHelper);
+    for (const team of ['PAST', 'FUTURE'] as const) {
+      const ids = q(TEST_IDS.setupGrade(team))!.getAttribute('aria-describedby')!.split(' ');
+      expect(document.getElementById(ids[0]!)!.textContent).toBe(SETUP.gradeHelper);
     }
   });
 
@@ -311,9 +318,18 @@ describe('Wipeout look', () => {
 
 describe('every control is a real, sized component', () => {
   it('Reload, Pass, and Victory use only the sized classes', async () => {
-    const allowed = ['tc-btn', 'tc-chip', 'tc-input', 'tc-choice', 'tc-icon-btn', 'tc-range'];
+    const allowed = [
+      'tc-btn',
+      'tc-chip',
+      'tc-input',
+      'tc-select',
+      'tc-link',
+      'tc-choice',
+      'tc-icon-btn',
+      'tc-range',
+    ];
     const bad = (): string[] =>
-      qa('button, input')
+      qa('button, input, select')
         .filter((el) => !allowed.some((c) => el.classList.contains(c)))
         .map((e) => e.outerHTML);
     void s.overlay.showReloadModal({ question: mainIdeaQ, team: 'PAST', playerName: 'Alex' });

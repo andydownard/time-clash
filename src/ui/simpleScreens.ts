@@ -21,6 +21,7 @@ import { awardIcon } from './awardIcons';
 import { countRow } from './countPictures';
 import { victoryMood } from './victoryMood';
 import { h } from './dom';
+import { setSwitch, switchChip } from './selector';
 import { TEST_IDS, type LoadingHandle, type VictoryChoice, type VictoryOptions } from './types';
 
 export function showTapToStart(
@@ -35,20 +36,13 @@ export function showTapToStart(
       'data-testid': TEST_IDS.tapToPlay,
       text: TAP_TO_START.button,
     });
-    const mute = h(doc, 'button', {
-      type: 'button',
-      class: 'tc-btn tc-btn-neutral',
-      'data-testid': TEST_IDS.muteToggle,
-    });
-    const captions = h(doc, 'button', {
-      type: 'button',
-      class: 'tc-btn tc-btn-neutral',
-      'data-testid': TEST_IDS.captionsToggle,
-    });
+    // On/off settings are switches, not buttons: the words say the state.
+    const mute = switchChip(doc, { testId: TEST_IDS.muteToggle });
+    const captions = switchChip(doc, { testId: TEST_IDS.captionsToggle });
     const paint = (): void => {
       const s = ctx.settings();
-      mute.textContent = s.muted ? BUTTONS.soundOff : BUTTONS.soundOn;
-      captions.textContent = s.captions ? BUTTONS.captionsOn : BUTTONS.captionsOff;
+      setSwitch(mute, !s.muted, s.muted ? BUTTONS.soundOff : BUTTONS.soundOn);
+      setSwitch(captions, s.captions, s.captions ? BUTTONS.captionsOn : BUTTONS.captionsOff);
     };
     paint();
     mute.addEventListener('click', () => {

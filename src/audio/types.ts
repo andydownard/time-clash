@@ -19,7 +19,9 @@ export type SfxName =
   | 'cheer' // victory
   | 'bonus' // fast answer: two bright coin pings
   | 'bonk' // a dasher bonks: a hollow foam knock
-  | 'step'; // a dasher walks: a few soft pitter-patter steps
+  | 'step' // a dasher walks: a few soft pitter-patter steps
+  | 'squawk' // a shell bumps a bird: two quick falling chirps
+  | 'whoosh'; // the turn's gust: a soft swept rush of air
 
 export const SFX_NAMES: readonly SfxName[] = [
   'launch',
@@ -34,6 +36,8 @@ export const SFX_NAMES: readonly SfxName[] = [
   'bonus',
   'bonk',
   'step',
+  'squawk',
+  'whoosh',
 ];
 
 export type Caption = { text: string; startMs: number };

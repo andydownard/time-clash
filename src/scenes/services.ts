@@ -64,7 +64,7 @@ export type ServiceOptions = {
   entropy?: () => number;
   seeds?: SeedSource;
   faults?: LoadFaults;
-  /** The page address query (`?computer=1` shows the Computer player choice). */
+  /** The page address query (`?computer=0` hides the Computer player choice, `?computer=1` shows it). */
   search?: string;
   /** Ask the app server for spoken clips. Default: the build flag VITE_VOICE=on. */
   voice?: boolean;

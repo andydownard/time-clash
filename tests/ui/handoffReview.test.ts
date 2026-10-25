@@ -8,7 +8,7 @@ import { INTRO_SCRIPT } from '../../src/data/introScript';
 import { parseCssVars, resolveCssVars } from '../../src/ui/contrast';
 import type { HudHandlers, HudState } from '../../src/ui/types';
 import { TEST_IDS } from '../../src/ui/types';
-import { click, mathQ, q, qa, setup } from './helpers';
+import { click, mathQ, pickGrade, q, qa, setup } from './helpers';
 
 const read = (p: string) => readFileSync(new URL(p, import.meta.url), 'utf8');
 const css = read('../../src/styles/ui.css').replace(/\/\*[\s\S]*?\*\//g, '');
@@ -132,12 +132,12 @@ describe('HUD readouts', () => {
   it('has no separate shots panel: the bar header holds the turn name and the pips', () => {
     expect(css).not.toContain('.tc-hud-center');
   });
-  it('Sound sits top left under the ? and gear, and uses the shared button font', () => {
+  it('Sound sits top left under the ? and gear, and uses the shared control font', () => {
     const corner = bodyOf('.tc-hud-corner');
     expect(corner).toMatch(/top:/);
     expect(corner).not.toMatch(/bottom:/);
     expect(corner).toMatch(/left:/);
-    expect(bodyOf('.tc-hud-corner .tc-btn')).not.toMatch(/font-family/);
+    expect(bodyOf('.tc-hud-corner .tc-toggle')).not.toMatch(/font-family/);
   });
   it('portrait lays the HUD out as a grid with cards side by side', () => {
     expect(css).toMatch(/grid-template-areas:\s*'past future';/);
@@ -169,9 +169,9 @@ describe('light surfaces never carry Steel, Ember or Pulse lines', () => {
 });
 
 describe('plain numerals for young readers', () => {
-  it('grade chips, math prompt and answer tiles do not use Orbitron', () => {
+  it('the grade dropdown, math prompt and answer tiles do not use Orbitron', () => {
     for (const sel of [
-      '.tc-chips-grades .tc-chip',
+      '.tc-select',
       ".tc-reload[data-layout='math'] .tc-prompt",
       ".tc-reload[data-layout='math'] .tc-choice",
     ]) {
@@ -199,13 +199,19 @@ describe('Setup', () => {
     expect(vars['--tc-chip-picked-text']).toBe(vars['--tc-ink-deep']);
     expect(vars['--tc-chip-past-edge']).toBe(vars['--tc-purple-300']);
     expect(vars['--tc-chip-future-edge']).toBe(vars['--tc-blue-300']);
-    expect(bodyOf(".tc-team-card .tc-chip[aria-checked='true']")).toContain('--tc-chip-picked-bg');
-    expect(bodyOf('.tc-team-card .tc-chip')).toMatch(/background:\s*transparent/);
+    expect(bodyOf(".tc-chip[aria-checked='true']")).toContain('--tc-chip-picked-bg');
+    expect(bodyOf(".tc-chip[aria-checked='true']")).toContain('--tc-chip-picked-text');
+    expect(bodyOf('.tc-chip')).toMatch(/background:\s*transparent/);
+    expect(bodyOf('.tc-team-card')).toContain('--tc-sel-edge: var(--tc-chip-past-edge)');
+    expect(bodyOf(".tc-team-card[data-team='FUTURE']")).toContain(
+      '--tc-sel-edge: var(--tc-chip-future-edge)',
+    );
     expect(bodyOf(".tc-chip[aria-checked='true']::before")).toContain('margin-right');
   });
-  it('grade chips sit on an even grid: 7 across, 5 across in portrait', () => {
-    expect(bodyOf('.tc-chips-grades')).toMatch(/repeat\(7,/);
-    expect(css).toMatch(/\.tc-chips-grades\s*\{\s*grid-template-columns:\s*repeat\(5,/);
+  it('the grade is a dropdown in plain letters, at least 56px tall and 20px text', () => {
+    expect(bodyOf('.tc-select')).toMatch(/min-height:\s*var\(--tc-tap\)/);
+    expect(bodyOf('.tc-select')).toMatch(/font-family:\s*var\(--tc-font\)/);
+    expect(bodyOf('.tc-select')).toMatch(/font-size:\s*var\(--tc-fs-button\)/);
   });
   it('the heading shares the ? and gear row, so the Clear button fits on screen', () => {
     expect(bodyOf('[data-tc-root] .tc-setup-title')).toMatch(/min-height:\s*var\(--tc-tap\)/);
@@ -214,7 +220,7 @@ describe('Setup', () => {
     void s.overlay.showSetup(null);
     const line = q('setup-read-back')!;
     expect(line.textContent).toBe('Team Past: Grade 2, Both. Team Future: Grade 2, Both');
-    click(q(TEST_IDS.setupGrade('FUTURE', 0)));
+    pickGrade('FUTURE', 0);
     click(q(TEST_IDS.setupSubject('PAST', 'math')));
     expect(line.textContent).toBe('Team Past: Grade 2, Math. Team Future: Kindergarten, Both');
   });
@@ -239,7 +245,7 @@ describe('Reload card', () => {
     void s.overlay.showReloadModal({ question: mathQ, team: 'PAST', playerName: 'Alex' });
     expect(q('reload-speak')).toBeNull();
     expect(q('cover-mute')!.getAttribute('data-muted')).toBe('false');
-    expect(bodyOf('.tc-cover-mute::before')).toContain('content');
+    expect(bodyOf('.tc-toggle.tc-cover-mute::before')).toContain('content');
   });
   it('the timer line is one idea and leads with Bonus', () => {
     void s.overlay.showReloadModal({ question: mathQ, team: 'PAST', playerName: 'Alex' });
