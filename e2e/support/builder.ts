@@ -1,7 +1,7 @@
 // Helpers for the base builder specs: reach the Camp with the builder on, and drag bricks by cell.
 import type { Page } from '@playwright/test';
 import { expect } from '../fixtures';
-import { FUTURE_SIDE, PAST_SIDE, fillTeam, tid } from './game';
+import { FUTURE_SIDE, PAST_SIDE, fillTeam, tid, toSetup } from './game';
 import './globals';
 
 /** The plot picture is 24 by 12 cells of 40 units, fitted inside its box and centered. */
@@ -10,11 +10,7 @@ const ROWS = 12;
 
 /** First visit with the builder switched on (?builder=1): Setup, then the Camp. */
 export async function toBuilderCamp(page: Page): Promise<void> {
-  await page.goto('/?e2e=1&builder=1');
-  await page.waitForFunction(() => Boolean(window.__timeclash));
-  await tid(page, 'tap-to-play').click();
-  await tid(page, 'intro-skip').click();
-  await expect(tid(page, 'setup-next')).toBeVisible({ timeout: 10_000 });
+  await toSetup(page, '&builder=1');
   await fillTeam(page, 'PAST', PAST_SIDE);
   await fillTeam(page, 'FUTURE', FUTURE_SIDE);
   await tid(page, 'setup-next').click();

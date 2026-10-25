@@ -1,17 +1,8 @@
 // The screens before the battle: tap, intro, loading, setup, and the always-there buttons.
-// These run against the production build, so they use only what a family can see.
-import type { Page } from '@playwright/test';
+// They use only what a family can see. (The fixture already fails any test that asks another site
+// for anything, and e2e/setup.spec.ts covers the Setup form itself.)
 import { expect, test } from './fixtures';
-
-const id = (page: Page, testid: string) => page.getByTestId(testid);
-
-/** First visit: tap, skip the intro, wait out Loading, land on Setup. */
-async function toSetup(page: Page): Promise<void> {
-  await page.goto('/');
-  await id(page, 'tap-to-play').click();
-  await id(page, 'intro-skip').click();
-  await expect(id(page, 'setup-next')).toBeVisible({ timeout: 10_000 });
-}
+import { tid as id, toSetup } from './support/game';
 
 test('shows the tap screen with Sound and Captions buttons', async ({ page }) => {
   await page.goto('/');
@@ -37,34 +28,6 @@ test('first visit plays the intro with captions, and Skip leads on to Loading th
   await id(page, 'intro-skip').click();
   await expect(page.locator('[data-screen="loading"]')).toBeVisible();
   await expect(id(page, 'setup-next')).toBeVisible({ timeout: 10_000 });
-});
-
-test('Setup keeps two different sides and remembers them after a reload', async ({ page }) => {
-  await toSetup(page);
-  await id(page, 'setup-name-PAST').fill('Alex');
-  await id(page, 'setup-name-FUTURE').fill('Sam');
-  await id(page, 'setup-grade-PAST-3').click();
-  await id(page, 'setup-grade-FUTURE-8').click();
-  await id(page, 'setup-subject-FUTURE-math').click();
-  await id(page, 'setup-next').click();
-  await expect(id(page, 'setup-next')).toBeHidden();
-
-  await page.reload();
-  // The intro was seen and the players are saved, so Loading then the Camp follow the tap.
-  await expect(id(page, 'camp-start')).toBeVisible({ timeout: 10_000 });
-  await id(page, 'camp-players').click();
-  await expect(id(page, 'setup-next')).toBeVisible();
-  await expect(id(page, 'setup-name-PAST')).toHaveValue('Alex');
-  await expect(id(page, 'setup-name-FUTURE')).toHaveValue('Sam');
-  await expect(id(page, 'setup-grade-PAST-3')).toHaveAttribute('aria-checked', 'true');
-  await expect(id(page, 'setup-grade-FUTURE-8')).toHaveAttribute('aria-checked', 'true');
-});
-
-test('an empty name keeps you on Setup', async ({ page }) => {
-  await toSetup(page);
-  await id(page, 'setup-name-PAST').fill('   ');
-  await id(page, 'setup-next').click();
-  await expect(id(page, 'setup-next')).toBeVisible();
 });
 
 test('the ? button opens How to Play from Setup, and Skip returns', async ({ page }) => {
@@ -133,16 +96,4 @@ test('buttons are at least 56px tall', async ({ page }) => {
     expect(box!.height, t).toBeGreaterThanOrEqual(56);
     expect(box!.width, t).toBeGreaterThanOrEqual(56);
   }
-});
-
-test('makes no requests outside this site', async ({ page }) => {
-  const outside: string[] = [];
-  page.on('request', (r) => {
-    const url = new URL(r.url());
-    if (!['localhost', '127.0.0.1'].includes(url.hostname) && url.protocol.startsWith('http')) {
-      outside.push(r.url());
-    }
-  });
-  await toSetup(page);
-  expect(outside).toEqual([]);
 });

@@ -1,6 +1,5 @@
 // The Computer player: one child plays alone. It is behind PRACTICE_BOT.enabled (off) and the
 // ?computer=1 address, so these tests prove both that it works when on and that nothing shows when off.
-import type { Page } from '@playwright/test';
 import { expect, test } from './fixtures';
 import { smallTargets, smallText } from './support/audit';
 import {
@@ -11,20 +10,13 @@ import {
   PAST_SIDE,
   takeShot,
   tid,
+  toSetup,
 } from './support/game';
 import { saveShot } from './support/shots';
 import './support/globals';
 
-async function toSetupWith(page: Page, query: string): Promise<void> {
-  await page.goto(`/?e2e=1${query}`);
-  await page.waitForFunction(() => Boolean(window.__timeclash));
-  await tid(page, 'tap-to-play').click();
-  await tid(page, 'intro-skip').click();
-  await expect(tid(page, 'setup-next')).toBeVisible({ timeout: 10_000 });
-}
-
 test('flag off: Setup shows no computer choice anywhere', async ({ page }) => {
-  await toSetupWith(page, '');
+  await toSetup(page, '');
   await expect(tid(page, 'play-with-computer')).toHaveCount(0);
   await expect(tid(page, 'play-with-person')).toHaveCount(0);
   await expect(tid(page, 'computer-card')).toHaveCount(0);
@@ -36,7 +28,7 @@ test('flag off: Setup shows no computer choice anywhere', async ({ page }) => {
 });
 
 test('flag off: only ?computer=1 turns it on (other values do nothing)', async ({ page }) => {
-  await toSetupWith(page, '&computer=true');
+  await toSetup(page, '&computer=true');
   await expect(tid(page, 'play-with-computer')).toHaveCount(0);
 });
 
@@ -45,7 +37,7 @@ test('flag on: pick Computer player and Hard, play a whole match to Victory', as
   browserName,
 }) => {
   test.slow();
-  await toSetupWith(page, '&computer=1');
+  await toSetup(page, '&computer=1');
   await expect(tid(page, 'play-with-person')).toHaveAttribute('aria-checked', 'true');
   await saveShot(page, browserName, 'computer-player-setup-choice');
 
@@ -155,7 +147,7 @@ test('flag on: pick Computer player and Hard, play a whole match to Victory', as
 });
 
 test('flag on: the last choice is remembered next time', async ({ page }) => {
-  await toSetupWith(page, '&computer=1');
+  await toSetup(page, '&computer=1');
   await tid(page, 'play-with-computer').click();
   await tid(page, 'computer-level-easy').click();
   await tid(page, 'setup-next').click();
