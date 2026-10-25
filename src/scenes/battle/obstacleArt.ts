@@ -5,6 +5,12 @@
 // The rule that keeps the art honest: the first shape is the collision polygon itself, the last
 // is its outline, and every detail in between lies inside that polygon. A shell hits exactly
 // what a child sees. Details that would poke out are dropped (`keepInside`). No randomness.
+//
+// One documented exception (Andy approved it on 2026-10-24): the supports that hold up a floating
+// shape, the Drawbridge's chains, gate post and leg, and the Future bridge's pylons and cables.
+// They are decoration only (`solid: false`). They never change a collision polygon, they paint
+// before every solid shape (so each outline stays on top), they stay inside the world and never
+// go below the ground line. Shells fly straight through them.
 import { isBiomeId } from '../../game/battlefield';
 import { FORTS, SPOTS } from '../../game/config';
 import { isFortId } from '../../game/forts';
@@ -31,6 +37,9 @@ export type ArtShape =
   | { op: 'circle'; x: number; y: number; r: number; color: number; alpha: number }
   | { op: 'line'; a: Vec2; b: Vec2; width: number; color: number; alpha: number }
   | { op: 'outline'; pts: Vec2[]; width: number; color: number };
+
+/** A support drawn behind the solid shapes. Shells pass through it. */
+export type DecorShape = Exclude<ArtShape, { op: 'outline' }> & { solid: false };
 
 /** Outline width, the same 4px every obstacle had before. */
 export const OUTLINE_W = 4;
@@ -581,3 +590,145 @@ export const layoutObstacleArt = (layout: BattleLayout): ArtShape[][] => {
   const kinds = obstacleKinds(layout);
   return layout.terrain.obstacles.map((o, i) => obstacleArt(kinds[i]!, o));
 };
+
+// ---------- Supports (decoration only, not solid) ----------
+
+const decor = (s: Exclude<ArtShape, { op: 'outline' }>): DecorShape => ({ ...s, solid: false });
+
+/** Supports are thinner than a solid outline, so they never read as a wall. */
+const SUPPORT_EDGE = 3;
+
+/** A post from `top` down to the ground: an ink edge with a fill inside. */
+function post(x: number, w: number, top: number, ground: number, fill: number): ArtShape[] {
+  return [
+    rect(
+      x - SUPPORT_EDGE,
+      top - SUPPORT_EDGE,
+      w + SUPPORT_EDGE * 2,
+      ground - top + SUPPORT_EDGE,
+      C.ink,
+    ),
+    rect(x, top, w, ground - top, fill),
+  ];
+}
+
+/** An iron ring: the round end of a chain or a cable. */
+const ring = (x: number, y: number, r: number): ArtShape[] => [
+  circle(x, y, r, C.ink),
+  circle(x, y, r - 2, C.metal),
+  circle(x, y, Math.max(1.5, r - 4.5), C.ink),
+];
+
+/** A chain from a to b: short rounded links, every other one seen side-on, an iron ring each end. */
+function chain(a: Vec2, b: Vec2): ArtShape[] {
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
+  const len = Math.hypot(dx, dy) || 1;
+  const ux = dx / len;
+  const uy = dy / len;
+  const out: ArtShape[] = [line(a.x, a.y, b.x, b.y, 2, C.ink, 0.6)];
+  const step = 12;
+  for (let d = 8, i = 0; d + 8 <= len - 6; d += step, i++) {
+    const cx = a.x + ux * d;
+    const cy = a.y + uy * d;
+    if (i % 2 === 0) {
+      out.push(line(cx - ux * 6, cy - uy * 6, cx + ux * 6, cy + uy * 6, 8, C.ink));
+      out.push(line(cx - ux * 4, cy - uy * 4, cx + ux * 4, cy + uy * 4, 4, C.metal));
+    } else {
+      out.push(circle(cx, cy, 5, C.ink), circle(cx, cy, 3, C.metalDark));
+    }
+  }
+  return [...out, ...ring(a.x, a.y, 6), ...ring(b.x, b.y, 7)];
+}
+
+/** A thin steel cable with an ink edge, so it shows against the sky. */
+const cable = (a: Vec2, b: Vec2): ArtShape[] => [
+  line(a.x, a.y, b.x, b.y, 4, C.ink),
+  line(a.x, a.y, b.x, b.y, 2, C.metal),
+];
+
+const SUPPORTS: Partial<Record<ObstacleKind, (b: Box, ground: number) => ArtShape[]>> = {
+  /**
+   * The Drawbridge hangs from a gate post by the castle: two chains run from the post's winch to
+   * the deck's top corners, and one wooden leg props up the free end.
+   */
+  drawbridge: (b, ground) => {
+    const postW = 14;
+    const postX = b.minX - postW - 2;
+    const postTop = b.minY - 56;
+    const winch = { x: postX + postW / 2, y: postTop + 8 };
+    const legW = 10;
+    const legX = b.maxX - 28;
+    return [
+      ...post(postX, postW, postTop, ground, C.wood),
+      line(postX + 4, postTop + 18, postX + 4, ground - 6, 2, C.ink, 0.45),
+      ...post(legX, legW, b.maxY - 4, ground, C.wood),
+      line(legX + 3, b.maxY + 6, legX + 3, ground - 6, 2, C.ink, 0.45),
+      ...chain({ x: b.maxX - 8, y: b.minY + 4 }, winch),
+      ...chain({ x: (b.minX + b.maxX) / 2 + 6, y: b.minY + 4 }, winch),
+      ...ring(winch.x, winch.y, 10),
+      circle(winch.x, winch.y, 3, C.gold),
+    ];
+  },
+  /**
+   * The Future bridge stands on two steel pylons. The near one rises above the deck as a tower,
+   * and three cables hang from its glowing top down to the road.
+   */
+  bridgeDeck: (b, ground) => {
+    const w = 14;
+    const towerX = b.minX + 12;
+    const towerTop = b.minY - 58;
+    const farX = b.maxX - 68;
+    const top = { x: towerX + w / 2, y: towerTop + 8 };
+    const out: ArtShape[] = [
+      ...[0.35, 0.6, 0.85].flatMap((f) =>
+        cable(top, { x: b.minX + (b.maxX - b.minX) * f, y: b.minY + 4 }),
+      ),
+    ];
+    for (const [x, from] of [
+      [towerX, towerTop],
+      [farX, b.maxY - 4],
+    ] as const) {
+      out.push(...post(x, w, from, ground, C.metal));
+      out.push(line(x + w / 2, from + 6, x + w / 2, ground - 10, 2, C.glow));
+      for (let y = from + 14; y < ground - 14; y += 26)
+        out.push(circle(x + 3.5, y, 1.5, C.ink), circle(x + w - 3.5, y, 1.5, C.ink));
+      out.push(
+        rect(x - 8, ground - 8, w + 16, 8, C.ink),
+        rect(x - 6, ground - 6, w + 12, 6, C.hullDark),
+      );
+    }
+    out.push(
+      circle(top.x, top.y, 7, C.ink),
+      circle(top.x, top.y, 5, C.glow),
+      circle(top.x, top.y, 2, C.neon),
+    );
+    return out;
+  },
+};
+
+/**
+ * The supports for one obstacle: decoration only (`solid: false`). Most shapes stand on the
+ * ground and need none. Never changes the polygon. Same input, same shapes.
+ */
+export function obstacleDecor(kind: ObstacleKind, poly: Polygon, groundY: number): DecorShape[] {
+  const draw = SUPPORTS[kind];
+  if (!draw) return [];
+  return draw(boundsOf(poly), groundY).map((s) => decor(s as Exclude<ArtShape, { op: 'outline' }>));
+}
+
+/** The supports of every obstacle of a layout, one list per obstacle, in obstacle order. */
+export const layoutObstacleDecor = (layout: BattleLayout): DecorShape[][] => {
+  const kinds = obstacleKinds(layout);
+  const ground = layout.terrain.ground[0]?.y ?? layout.height;
+  return layout.terrain.obstacles.map((o, i) => obstacleDecor(kinds[i]!, o, ground));
+};
+
+/**
+ * Everything to paint for a layout's obstacles, in order: every support first (so no support
+ * ever sits on a solid shape or its outline), then each solid shape from `obstacleArt`.
+ */
+export const layoutPaint = (layout: BattleLayout): ArtShape[][] => [
+  ...layoutObstacleDecor(layout).filter((d) => d.length > 0),
+  ...layoutObstacleArt(layout),
+];

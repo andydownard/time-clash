@@ -7,9 +7,13 @@ import type { FortIdValue, Polygon, SpotIdValue } from '../../../src/game/types'
 import { BIOME_LOOKS } from '../../../src/scenes/battle/biomeArt';
 import {
   OUTLINE_W,
+  boundsOf,
   insidePolygon,
   layoutObstacleArt,
+  layoutObstacleDecor,
+  layoutPaint,
   obstacleArt,
+  obstacleDecor,
   obstacleKinds,
   shapeInside,
   shapePoints,
@@ -192,6 +196,88 @@ describe('every obstacle looks like something, not a dark box', () => {
   it('is the same every time (no randomness)', () => {
     for (const kind of ALL_KINDS)
       expect(obstacleArt(kind, sample[kind])).toEqual(obstacleArt(kind, sample[kind]));
+  });
+});
+
+describe('supports are decoration only (owner approved, 2026-10-24)', () => {
+  const groundOf = (l: { terrain: { ground: ReadonlyArray<{ y: number }> } }) =>
+    l.terrain.ground[0]!.y;
+
+  it('the drawbridge and the Future bridge have visible supports; shapes on the ground need none', () => {
+    const l = buildLayout({ biome: 'aspen', spot: 'bridge', fort: 'drawbridge' });
+    const decor = layoutObstacleDecor(l);
+    const kinds = obstacleKinds(l);
+    expect(decor).toHaveLength(l.terrain.obstacles.length);
+    kinds.forEach((k, i) => {
+      if (k === 'drawbridge' || k === 'bridgeDeck')
+        expect(decor[i]!.length, k).toBeGreaterThanOrEqual(6);
+      else expect(decor[i], k).toEqual([]);
+    });
+    for (const kind of ['tower', 'foodTruck', 'fortRock', 'villageWall', 'stoneWall'] as const)
+      expect(obstacleDecor(kind, l.terrain.obstacles[0]!, groundOf(l)), kind).toEqual([]);
+  });
+
+  it('each support reaches from the ground to the floating shape, so it looks held up', () => {
+    for (const fort of [null, 'drawbridge'] as const) {
+      const l = buildLayout({ biome: 'cherry', spot: 'bridge', fort });
+      const ground = groundOf(l);
+      layoutObstacleDecor(l).forEach((shapes, i) => {
+        if (shapes.length === 0) return;
+        const poly = l.terrain.obstacles[i]!;
+        const b = boundsOf(poly);
+        const pts = shapes.flatMap(shapePoints);
+        // Something stands on the ground line.
+        expect(Math.max(...pts.map((p) => p.y))).toBeCloseTo(ground, 5);
+        // Something touches the shape itself (a chain end, a cable end, the top of a post).
+        expect(pts.some((p) => insidePolygon(poly, p, 1))).toBe(true);
+        // And something rises above the shape (a gate post or a pylon for the chains or cables).
+        expect(Math.min(...pts.map((p) => p.y))).toBeLessThan(b.minY);
+      });
+    }
+  });
+
+  for (const { name, l } of layouts()) {
+    it(`${name}: decoration is marked not solid, stays in the world and above the ground`, () => {
+      const ground = groundOf(l);
+      for (const shapes of layoutObstacleDecor(l))
+        for (const s of shapes) {
+          expect(s.solid, name).toBe(false);
+          expect(s.op, name).not.toBe('outline');
+          for (const p of shapePoints(s)) {
+            expect(p.x, `${name} ${s.op}`).toBeGreaterThanOrEqual(0);
+            expect(p.x, `${name} ${s.op}`).toBeLessThanOrEqual(l.width);
+            expect(p.y, `${name} ${s.op}`).toBeGreaterThanOrEqual(0);
+            expect(p.y, `${name} ${s.op} below the ground`).toBeLessThanOrEqual(ground + 1e-9);
+          }
+          expect(ALLOWED.has(s.color), `${name} 0x${s.color.toString(16)}`).toBe(true);
+        }
+    });
+
+    it(`${name}: decoration paints first, so every solid shape and its outline sit on top`, () => {
+      const paint = layoutPaint(l);
+      const decor = layoutObstacleDecor(l).filter((d) => d.length > 0);
+      const art = layoutObstacleArt(l);
+      expect(paint).toEqual([...decor, ...art]);
+      // The solid groups still start with the polygon and end with its outline.
+      for (const group of paint.slice(decor.length)) {
+        expect(group[0]!.op).toBe('poly');
+        expect(group[group.length - 1]!.op).toBe('outline');
+      }
+    });
+  }
+
+  it('never moves a solid shape: the polygons and the layout stay exactly the same', () => {
+    const l = buildLayout({ biome: 'temple', spot: 'bridge', fort: 'drawbridge' });
+    const before = JSON.parse(JSON.stringify(l)) as unknown;
+    const frozen = l.terrain.obstacles.map((o) => Object.freeze(o.map((p) => Object.freeze(p))));
+    frozen.forEach((poly, i) => obstacleDecor(obstacleKinds(l)[i]!, poly, groundOf(l)));
+    layoutPaint(l);
+    expect(JSON.parse(JSON.stringify(l))).toEqual(before);
+  });
+
+  it('is the same every time (no randomness)', () => {
+    const l = buildLayout({ biome: 'aspen', spot: 'bridge', fort: 'drawbridge' });
+    expect(layoutObstacleDecor(l)).toEqual(layoutObstacleDecor(l));
   });
 });
 
