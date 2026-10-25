@@ -84,3 +84,34 @@ describe('new launch sounds', () => {
     }
   });
 });
+
+describe('bird and gust sounds (made in code, no files)', () => {
+  it('are listed as effects', () => {
+    expect(SFX_NAMES).toContain('squawk');
+    expect(SFX_NAMES).toContain('whoosh');
+  });
+
+  it('squawk is two quick chirps that fall in pitch, short and gentle', () => {
+    const ctx = play('squawk');
+    const chirps = ctx.of('osc');
+    expect(chirps.length).toBe(2);
+    expect(chirps[1]!.startedAt!).toBeGreaterThan(chirps[0]!.startedAt!);
+    for (const c of chirps) {
+      const calls = c.frequency!.calls;
+      const from = calls.find((x) => x.kind === 'set')!.value;
+      const to = calls.filter((x) => x.kind === 'exp').at(-1)!.value;
+      expect(to).toBeLessThan(from);
+      expect(c.stoppedAt!).toBeLessThanOrEqual(5 + 0.5);
+    }
+  });
+
+  it('whoosh is a soft swept noise with a low hum, and still hums without noise', () => {
+    const ctx = play('whoosh');
+    expect(ctx.of('source').length).toBe(1);
+    expect(ctx.of('osc').length).toBeGreaterThanOrEqual(1);
+    for (const n of [...ctx.of('osc'), ...ctx.of('source')]) {
+      expect(n.stoppedAt!).toBeLessThanOrEqual(5 + 0.8);
+    }
+    expect(play('whoosh', { withNoise: false }).of('osc').length).toBeGreaterThanOrEqual(1);
+  });
+});

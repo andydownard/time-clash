@@ -17,11 +17,11 @@ import {
 } from '../../game/practice';
 import type { MatchEffects } from '../../game/loadout';
 import { kindForRole } from './projectileKinds';
-import { EVASION, PRACTICE_BOT, RNG_SALT, TURN } from '../../game/config';
+import { BALLISTICS, DISTURBANCE, EVASION, PRACTICE_BOT, RNG_SALT, TURN } from '../../game/config';
 import type { AmmoId } from '../../game/ammo';
 import { createShuffleBag } from '../../game/bag';
 import { createRng } from '../../game/rng';
-import type { AimInput, MatchController, Rng, Team } from '../../game/types';
+import type { AimInput, MatchController, Rng, ShotResult, Team } from '../../game/types';
 import {
   GEAR_COPY,
   HIT_LINES,
@@ -48,6 +48,9 @@ import { previewDots, traceDots } from './trajectory';
 import { bubbleText, tumblingTeam } from './tumble';
 import type { BattleResult, BattleView, ViewStatus } from './types';
 import { IMPACT_BEAT_MS, SCRAP_POPUP_MS, WIN_BEAT_MS } from './visual';
+
+/** One flight step in ms (the path has one point per step). */
+const STEP_MS = BALLISTICS.stepSeconds * 1000;
 
 export type FlowDeps = {
   match: MatchController;
@@ -160,6 +163,7 @@ export class BattleFlow {
 
     this.pushStatus(false);
     view.setActiveTeam(null);
+    view.showBirds?.(null);
     await this.gate();
     view.showTrace(team, null);
     // One child alone has nobody to hide the screen from, so there is no cover in this mode.
@@ -169,6 +173,9 @@ export class BattleFlow {
     }
     this.thinkingSpentMs = 0;
     match.ready();
+    // This turn's birds take off now, so the player can watch them while aiming.
+    const birds = match.snapshot().birds ?? [];
+    if (birds.length > 0) view.showBirds?.(birds);
     view.setActiveTeam(team);
     this.deps.audio?.setMusicTeam?.(team);
 
@@ -282,7 +289,11 @@ export class BattleFlow {
     const lines = [SQUAD_COPY.rolled(name, Number(out.to.slice(1)) + 1)];
     if (out.bonk?.kind === 'base') {
       lines.push(
-        out.dodged ? SQUAD_COPY.bonkDodged : out.blocked ? SQUAD_COPY.bonkBlocked : SQUAD_COPY.bonkBase,
+        out.dodged
+          ? SQUAD_COPY.bonkDodged
+          : out.blocked
+            ? SQUAD_COPY.bonkBlocked
+            : SQUAD_COPY.bonkBase,
       );
     } else if (out.bonk) {
       lines.push(SQUAD_COPY.bonkHelper);
@@ -304,11 +315,18 @@ export class BattleFlow {
     // The wind-up: Fire is already off, and the shot is not taken until the glow is done.
     await view.playCharge(team, this.originFor(team));
     await this.gate();
-    const result = match.fire();
+    // The shot meets the birds where they are drawn now (the bird clock), then recoil kicks the aim.
+    const kickedFrom = { ...match.snapshot().aim[team] };
+    const result = match.fire({ birdMs: view.birdClockMs?.() ?? 0 });
+    const kickedTo = { ...match.snapshot().aim[team] };
     audio?.playSfx(team === 'PAST' ? 'cannonBoom' : 'laserPew');
-    this.pushStatus(false);
+    this.pushStatus(false, kickedFrom);
     const unit = unitById(match.snapshot().selected[team]);
-    await view.animateShot(team, result, unit ? kindForRole(unit.role) : undefined);
+    await Promise.all([
+      view.animateShot(team, result, unit ? kindForRole(unit.role) : undefined),
+      this.flightCues(result),
+      this.slideRecoil(kickedFrom, kickedTo),
+    ]);
     this.live();
     // The whole arc stays up as a guide for the next shot. A cover clears it first.
     view.showTrace(team, traceDots(result.path));
@@ -349,6 +367,59 @@ export class BattleFlow {
           tailTarget: bubbleTailTarget(tumbler, match.layout, true),
         });
       }
+    }
+  }
+
+  /**
+   * The bird bumps and the gust, each at its moment in the flight: a picture, a word and a sound
+   * (the word shows even when sound is off). Never throws, so it cannot stop the shot.
+   */
+  private async flightCues(result: ShotResult): Promise<void> {
+    const { view, audio } = this.deps;
+    const cues: Array<{ step: number; play: () => void }> = [];
+    for (const b of result.bumps ?? []) {
+      cues.push({
+        step: b.step,
+        play: () => {
+          view.playBirdBump?.(b);
+          audio?.playSfx('squawk');
+        },
+      });
+    }
+    const gust = result.gust;
+    if (gust) {
+      cues.push({
+        step: gust.fromStep,
+        play: () => {
+          view.playGust?.(gust);
+          audio?.playSfx('whoosh');
+        },
+      });
+    }
+    cues.sort((a, b) => a.step - b.step);
+    let doneMs = 0;
+    for (const cue of cues) {
+      const at = cue.step * STEP_MS;
+      await this.deps.wait(Math.max(0, at - doneMs));
+      doneMs = Math.max(doneMs, at);
+      if (this.stopped) return;
+      cue.play();
+    }
+  }
+
+  /** Recoil: the Angle and Power dials slide to the kicked aim. Reduced motion: they jump. */
+  private async slideRecoil(from: AimInput, to: AimInput): Promise<void> {
+    if (from.angleDeg === to.angleDeg && from.power === to.power) return;
+    const reduced = this.deps.reducedMotion?.() === true;
+    const steps = reduced ? 1 : DISTURBANCE.recoilSlideSteps;
+    for (let i = 1; i <= steps; i++) {
+      if (!reduced) await this.deps.wait(DISTURBANCE.recoilSlideMs / steps);
+      if (this.stopped) return;
+      const k = i / steps;
+      this.pushStatus(false, {
+        angleDeg: Math.round(from.angleDeg + (to.angleDeg - from.angleDeg) * k),
+        power: Math.round(from.power + (to.power - from.power) * k),
+      });
     }
   }
 
@@ -653,12 +724,13 @@ export class BattleFlow {
     return { PAST: past.name, FUTURE: future.name };
   }
 
-  private pushStatus(canFire: boolean): void {
+  /** `shownAim` draws the dials somewhere other than the real aim (only while recoil slides them). */
+  private pushStatus(canFire: boolean, shownAim?: AimInput): void {
     const { match, overlay, view } = this.deps;
     const s = match.snapshot();
     const team = s.turn.team;
     const shotsLeft = Math.max(0, TURN.shotsPerTurn - s.turn.shotsFired) as 0 | 1 | 2;
-    const aim = s.aim[team];
+    const aim = shownAim ?? s.aim[team];
     // The Scrap a player has in total: what they had before, plus what they earned in this match.
     const base = this.deps.scrapBase ?? { PAST: 0, FUTURE: 0 };
     const scrap = { PAST: base.PAST + s.scrap.PAST, FUTURE: base.FUTURE + s.scrap.FUTURE };

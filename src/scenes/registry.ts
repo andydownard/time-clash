@@ -68,7 +68,7 @@ export type AppServices = {
   /** True when Setup offers the Computer player (config flag or `?computer=1`). Off means today's game. */
   computerPlayer?: boolean;
   /** Switches only the e2e hook sets (Squads on). Empty in a real game, so config decides. */
-  flags?: { squads?: boolean; quickLoad?: boolean };
+  flags?: { squads?: boolean; quickLoad?: boolean; disturbances?: boolean };
 };
 
 export const SERVICES_KEY = 'timeclash.services';
