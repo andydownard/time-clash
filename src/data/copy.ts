@@ -36,6 +36,97 @@ export const FORGE_COPY = {
   forged: (name: string, level: number): string => `${name} is now level ${level}!`,
   needMore: (n: number): string => `Not yet. You need ${n} more Scrap.`,
   atTop: 'This weapon is at the top level.',
+  /** The Weapon Workshop button, and the "My weapons" section (your own weapons). */
+  makeOwn: 'Make my own weapon',
+  myWeapons: (n: number): string => `My weapons · ${n}`,
+  allWeapons: 'All weapons',
+  /** The star badge on a weapon you made, in words for a screen reader. */
+  mine: 'Made by you',
+  /** The Level up button for one of your own weapons sits under the list. */
+  levelUpMine: (name: string, text: string): string => `${name}: ${text}`,
+  full: (max: number): string => `You have ${max} of your own. That is the most.`,
+} as const;
+
+// ---------- Weapon Workshop (make your own weapon) ----------
+export const WORKSHOP_COPY = {
+  title: 'Weapon Workshop',
+  back: 'Back',
+  pickStyle: 'Pick a style',
+  /** A style is named after the catalog weapon it is like. */
+  styles: {
+    royalSword: 'Sword',
+    elderLongbow: 'Longbow',
+    ironCannon: 'Cannon',
+    plasmaBlade: 'Blade',
+    laserRifle: 'Rifle',
+    railCannon: 'Rail Cannon',
+  } as Readonly<Record<string, string>>,
+  pointsLeft: (n: number): string => (n === 1 ? '1 point left' : `${n} points left`),
+  stats: {
+    power: { name: 'Power', help: 'Hits hard' },
+    reach: { name: 'Reach', help: 'Throws far' },
+    splash: { name: 'Splash', help: 'Near misses hurt' },
+  },
+  more: (stat: string): string => `More ${stat}`,
+  less: (stat: string): string => `Less ${stat}`,
+  /** What a stat's points do, in words. */
+  power: (n: number): string => `Damage ${n}`,
+  reach: (range: string): string => `Range ${range}`,
+  splash: (n: number): string => `Near miss ${n}`,
+  statLabel: (stat: string, n: number, max: number): string => `${stat} ${n} of ${max}`,
+  atMost: (stat: string): string => `${stat} is full.`,
+  atLeast: (stat: string): string => `${stat} is as low as it goes.`,
+  noPoints: 'No points left. Take one from another.',
+  nameIt: 'Name it',
+  firstWord: 'First word',
+  secondWord: 'Second word',
+  typeName: 'Or type a name',
+  /** Silly, friendly words. A weapon's name is one of each, or a typed name. */
+  adjectives: [
+    'Wobbly',
+    'Giggly',
+    'Bouncy',
+    'Sparkly',
+    'Mighty',
+    'Fuzzy',
+    'Zippy',
+    'Jolly',
+    'Sneaky',
+    'Rumbly',
+    'Sleepy',
+    'Shiny',
+    'Speedy',
+    'Silly',
+  ] as readonly string[],
+  nouns: [
+    'Noodle',
+    'Pickle',
+    'Muffin',
+    'Thunder',
+    'Banana',
+    'Teapot',
+    'Waffle',
+    'Bubble',
+    'Taco',
+    'Puddle',
+    'Gizmo',
+    'Sock',
+    'Pancake',
+    'Rocket',
+  ] as readonly string[],
+  /** Why a typed name is not used. The picked words are kept, so nothing is lost. */
+  nameProblem: {
+    empty: '',
+    long: 'That name is too long.',
+    letters: 'Use only letters, numbers and spaces.',
+    blocked: 'Let us pick a friendlier name.',
+    private: 'Keep your own name a secret.',
+    digits: 'Use fewer numbers in a row.',
+  },
+  keepPicked: (name: string): string => `We will use ${name}.`,
+  forge: (cost: number): string => `Forge it! · ${cost} Scrap`,
+  forged: (name: string): string => `You made ${name}! It is equipped.`,
+  needMore: (n: number): string => `Not yet. You need ${n} more Scrap.`,
 } as const;
 
 // ---------- Build Base (the old shop screen, shown when the base builder is off) ----------
