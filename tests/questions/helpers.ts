@@ -1,6 +1,6 @@
 // Test helpers for the question tracks. No dependency on src/game/rng.ts so this track stays independent.
 import type { Rng } from '../../src/game/types';
-import type { Question, QuestionBank, PickHistory } from '../../src/questions/types';
+import type { Question, QuestionBank } from '../../src/questions/types';
 import type { StorageKey, StorageSchema, TypedStorage } from '../../src/storage/types';
 
 export function testRng(seed: number): Rng {
@@ -115,5 +115,3 @@ export function deepFreeze<T>(value: T): T {
   }
   return value;
 }
-
-export const emptyHistory = (): PickHistory => ({ used: {}, lastSubject: {} });

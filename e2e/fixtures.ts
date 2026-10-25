@@ -1,6 +1,7 @@
 // Every spec imports test and expect from here, not from @playwright/test.
 // The page it hands out is silent, and the test fails if the app:
 //   - asks for anything outside this site (privacy: no network calls to other origins),
+//   - leaves a cookie behind (privacy: risk 2 in AGENTS.md),
 //   - logs a console error or throws an uncaught error.
 import { expect, test as base, type Page } from '@playwright/test';
 import { installSilent } from './support/silent';
@@ -28,6 +29,7 @@ export const test = base.extend<Options & { page: Page }>({
     page.on('pageerror', (e) => problems.push(`pageerror: ${e.message}`));
     await use(page);
     expect(outside, 'requests to other origins').toEqual([]);
+    expect(await page.context().cookies(), 'cookies').toEqual([]);
     if (strictConsole) expect(problems, 'console errors').toEqual([]);
   },
 });

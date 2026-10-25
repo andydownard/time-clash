@@ -151,8 +151,6 @@ export const BOUNCE_HEIGHT = 36;
 export const CHARGE_MS = 380;
 /** The vanish puff after the tumble. */
 export const VANISH_MS = 700;
-/** Base blast timing. */
-export const BLAST_MS = 900;
 
 export const IMPACT_SCALE = { direct: 1.4, near: 1, miss: 0.6 } as const;
 
