@@ -360,8 +360,11 @@ export const BIOMES: Record<(typeof BIOME_IDS)[number], BiomeConfig> = {
   },
 };
 
-/** What a new family's first Battle Plan shows picked. Food Trucks keeps the Phase 1 base spot. */
-export const DEFAULT_PLAN = { biome: 'aspen', spot: 'foodTruck' } as const;
+/**
+ * What a new family's first Battle Plan shows picked. Food Trucks keeps the Phase 1 base spot, and
+ * Village Wall is Team Past's matching default castle place (owner decision, 2026-10-24).
+ */
+export const DEFAULT_PLAN = { biome: 'aspen', spot: 'foodTruck', fort: 'villageWall' } as const;
 
 // ---------- Evasion (Phase 2) ----------
 /**
@@ -505,8 +508,8 @@ export type BotProfile = {
 };
 
 export const PRACTICE_BOT = {
-  /** Off by default. The UI turns it on later, after the panel review. */
-  enabled: false,
+  /** On for everyone (owner decision, 2026-10-24). `?computer=0` hides it, `?computer=1` shows it. */
+  enabled: true,
   /** Shown wherever the opponent appears. Never "bot", "AI" or "assistant". */
   displayName: 'Computer player',
   levels: {

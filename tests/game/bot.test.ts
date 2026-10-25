@@ -31,8 +31,8 @@ const q = (grade: number, kind?: string): BotQuestion => ({
 });
 
 describe('practice bot flag', () => {
-  it('is off by default and named Computer player', () => {
-    expect(PRACTICE_BOT.enabled).toBe(false);
+  it('is on for everyone and named Computer player', () => {
+    expect(PRACTICE_BOT.enabled).toBe(true);
     expect(PRACTICE_BOT.displayName).toBe('Computer player');
     expect(PRACTICE_BOT.displayName).not.toMatch(/\b(bot|ai|assistant)\b/i);
   });

@@ -74,7 +74,7 @@ Team Past gets the same kind of choice for its castle (added 2026-10-23, owner r
 ⚬ Hill Fort: high on a solid rock. The best view. Low shots thud into the rock.
 ⚬ Village Wall: on the ground, behind a low stone wall out in front.
 ⚬ Drawbridge: low, behind a raised wooden drawbridge that stops flat shots, so players lob.
-⚬ No pick (every plan saved before this) keeps the castle where it always was, with no cover.
+⚬ Village Wall is the default (owner decision, 2026-10-24), the way Food Trucks is for Team Future. A new family, and every plan saved before castle places, starts at Village Wall. One castle card is always picked.
 
 Every blocking shape is drawn as the thing it is (stone courses, moss and grass, cherry petals, temple vines, tower windows with neon trim, a steel truss, a taco truck, oak planks with iron bands), never a plain dark box. The picture and the solid shape are the same outline, so a shell hits exactly what a child sees.
 
@@ -171,7 +171,7 @@ Screen 3: Battle Screen & Turn Transition
 ⚬ Slapstick Moment: A character who was just knocked over lies hilariously flat on their stomach with arms spread out, a cartoon speech bubble above them saying: "Just checking the lawn for four-leaf clovers!"
 ## Practice opponent
 
-A rules-based opponent so one child can play alone, and later fill a seat when no second player is there. Pure logic in `src/game/bot.ts` (and `botPlay.ts` for simulated matches, `practice.ts` for turn ownership and pacing). Off by default: `PRACTICE_BOT.enabled = false` in `src/game/config.ts`. `?computer=1` on the address shows the choice for testing before the panel review. With it off the game is exactly as before.
+A rules-based opponent so one child can play alone, and later fill a seat when no second player is there. Pure logic in `src/game/bot.ts` (and `botPlay.ts` for simulated matches, `practice.ts` for turn ownership and pacing). On for everyone since 2026-10-24 (owner decision): `PRACTICE_BOT.enabled = true` in `src/game/config.ts`. `?computer=0` on the address hides the choice and `?computer=1` shows it, whatever the flag says. With it off the game is exactly as before. "Another player" is still picked first, so two children who share a screen see no change.
 
 Rules:
 - It sees only what a child can see: the bases, wind, health and its own fighter. It never sees the other player's reload question.

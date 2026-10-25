@@ -354,7 +354,13 @@ describe('camp step: Battle Plan', () => {
     expect(data.match.layout.biome).toBe('cherry');
     expect(data.match.layout.spot).toBe('skyscraper');
     expect(data.match.layout.bases.FUTURE.y).toBe(330);
-    expect(t.storage.get('timeclash.plan')).toEqual({ biome: 'cherry', spot: 'skyscraper' });
+    // The live game always passes a castle place: Village Wall unless the family picks another.
+    expect(data.match.layout.fort).toBe('villageWall');
+    expect(t.storage.get('timeclash.plan')).toEqual({
+      biome: 'cherry',
+      spot: 'skyscraper',
+      fort: 'villageWall',
+    });
     // Next time, the same plan is picked already.
     void runCampStep(t.services);
     click(q(TEST_IDS.campStart));

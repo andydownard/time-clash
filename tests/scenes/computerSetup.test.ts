@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
-// Setup and the battle hand-off with the Computer player (behind PRACTICE_BOT.enabled / ?computer=1).
+// Setup and the battle hand-off with the Computer player (on for everyone through
+// PRACTICE_BOT.enabled; ?computer=0 turns it off).
 import { beforeEach, describe, expect, it } from 'vitest';
 import { COMPUTER } from '../../src/data/computerCopy';
 import { PRACTICE_BOT } from '../../src/game/config';
@@ -16,9 +17,9 @@ beforeEach(() => {
   t = makeServices();
 });
 
-describe("flag off: Setup is exactly today's Setup", () => {
-  it('the config flag is off', () => {
-    expect(PRACTICE_BOT.enabled).toBe(false);
+describe('switched off (?computer=0): Setup has no Computer player', () => {
+  it('the config flag is on for everyone, so off only comes from the address', () => {
+    expect(PRACTICE_BOT.enabled).toBe(true);
   });
   it('shows no Play with row, no computer card and no How hard?', async () => {
     const p = runSetupStep(t.services);
