@@ -59,7 +59,7 @@ test('touch: tap an L on the pad, save it, drag it on, turn it, reload and see i
     [3, 2],
   ] as const)
     await tid(page, `bb-sq-${r}-${c}`).tap();
-  await expect(tid(page, 'bb-pad-count')).toHaveText('4 of 8 squares');
+  await expect(tid(page, 'bb-pad-count')).toHaveText('4 of 12 squares');
   await tid(page, 'bb-pad-save').tap();
   await expect(tid(page, 'bb-shape-1')).toBeVisible();
 
@@ -101,7 +101,7 @@ test('touch: the pad and the saved shapes meet the 56px and 20px rules', async (
         out.push(`${el.dataset.testid}: small font`);
     }
     for (const el of document.querySelectorAll<HTMLElement>(
-      '.tc-bb-pad p, .tc-bb-pad h2, .tc-bb-shapes h2',
+      '.tc-bb-pad p, .tc-bb-pad h2, .tc-bb-pad label, .tc-bb-mine-name',
     )) {
       if (el.getBoundingClientRect().width && parseFloat(getComputedStyle(el).fontSize) < 20)
         out.push(`${el.className}: small font`);
