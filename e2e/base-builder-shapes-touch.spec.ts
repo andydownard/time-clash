@@ -65,7 +65,7 @@ test('touch: tap an L on the pad, save it, drag it on, turn it, reload and see i
 
   const tile = (await tid(page, 'bb-shape-1').boundingBox())!;
   const start = { x: tile.x + tile.width / 2, y: tile.y + tile.height / 2 };
-  const end = await cellPoint(page, 8, 7, 2, 3);
+  const end = await cellPoint(page, 8, 8, 2, 3);
   await touchDrag(page, '[data-testid="bb-shape-1"]', [
     start,
     { x: (start.x + end.x) / 2, y: (start.y + end.y) / 2 },

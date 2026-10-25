@@ -613,6 +613,12 @@ export const BUILDER_COPY = {
   nothingToUndo: 'Nothing to undo.',
   pickFirst: 'Tap a brick first, then tap Turn.',
   noRoom: 'No room there. Try another spot.',
+  /** A brick let go in mid-air, or beside a wall with nothing under it. */
+  floating: 'Build on something that touches the ground.',
+  /** Taking away, moving or turning a brick that another brick rests on. */
+  holding: 'Something is sitting on that brick. Take the top one off first.',
+  /** Once, when an old base had floating bricks and the builder set them down. */
+  settled: 'Chrono here! Some bricks were floating. I set them down.',
   full: 'This base is full of bricks.',
   cancelled: 'Put back. Nothing changed.',
   selected: (name: string): string => `${name} chosen. Tap Turn to spin it.`,
@@ -623,6 +629,8 @@ export const BUILDER_COPY = {
   unlocked: (name: string): string => `You unlocked ${name}!`,
   ghostAt: (name: string, x: number, y: number): string =>
     `${name} at column ${x + 1}, row ${y + 1}. Enter puts it down.`,
+  /** The column left of the plot with the team and mode buttons. */
+  rail: 'Team and mode',
   // Weapon spots
   mode: 'Mode',
   modeBuild: 'Build',
