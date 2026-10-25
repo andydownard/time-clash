@@ -60,6 +60,16 @@ The central staging area between matches where players upgrade gear and craft in
   ⚬ [Reinforce Base]: Spend scrap materials to add armor plates, forcefield generators, or thick stone buttresses.
   ⚬ [Tweak Gear]: Adjust projectile types (confetti explosives, bouncy plasma spheres, heavy iron bowling balls).
 
+Weapon Workshop (added 2026-10-24, owner request: "in forge weapons, you can create your own weapon to forge"):
+
+⚬ The Forge has a "Make my own weapon" button for each team. It opens the Weapon Workshop.
+⚬ Pick a style: Team Past picks Sword, Longbow or Cannon. Team Future picks Blade, Rifle or Rail Cannon. The style sets the picture, the starting points, and (later) how it fires from a base spot.
+⚬ Spend 10 points with plus and minus: Power (direct hit damage, 19 to 31), Reach (how far it throws, Short to Far) and Splash (near miss damage, 6 to 14). Each stat holds 1 to 5 points.
+⚬ Fair by design: a weapon's score is direct + near + 20 x (speed scale - 1). The best custom weapon scores 43. The Iron Cannon and Rail Cannon score 48. A test checks every legal design at every Forge level.
+⚬ Name it: pick one silly word from each of two lists (such as Wobbly Noodle), or type a name of up to 14 letters, digits and spaces. A typed name with a blocked word, a player's name, or 3 digits in a row is not used: the screen says why, kindly, and keeps the picked words.
+⚬ Cost: 6 Scrap for the gentlest weapon, up to 24 Scrap for the strongest (the WORKSHOP cost table). Too little Scrap says how much more is needed.
+⚬ The new weapon is equipped at once and shows in the Forge's "My weapons" section with a star. It levels up like the others (to level 3) and plays like a catalog weapon. Each player keeps up to 6 per team, saved on the device by name.
+
 C. Base Placement (Futuristic City)
 
 Instead of a fixed spawn point, the Future player can choose where to plant their Secret Base across the Austin cityscape:
