@@ -1,5 +1,6 @@
 // A fresh game with the default fighters plays exactly like the one-launcher game did.
 import { describe, expect, it } from 'vitest';
+import { SQUADS } from '../../src/game/config';
 import { createMatch } from '../../src/game/match';
 import type { Players } from '../../src/game/types';
 
@@ -17,8 +18,8 @@ const AIMS = [
   { angleDeg: 35, power: 95 },
 ];
 
-function playTrace(seed: number): string[] {
-  const c = createMatch({ players: PLAYERS, seed });
+function playTrace(seed: number, extra: { squads?: boolean } = {}): string[] {
+  const c = createMatch({ players: PLAYERS, seed, ...extra });
   const out: string[] = [];
   let i = 0;
   for (let t = 0; t < 6 && c.snapshot().status === 'PLAYING'; t++) {
@@ -43,6 +44,62 @@ describe('default fighters reproduce the one-launcher game', () => {
   it('matches the trace recorded before fighters existed', () => {
     expect(playTrace(7)).toEqual(GOLDEN_7);
     expect(playTrace(12345)).toEqual(GOLDEN_12345);
+  });
+  it('is the same with Squads on or off while no dasher walks out', () => {
+    expect(playTrace(7, { squads: true })).toEqual(GOLDEN_7);
+    expect(playTrace(7, { squads: false })).toEqual(GOLDEN_7);
+  });
+});
+
+/**
+ * Both sides walk their dasher out whenever he is home, then fire the rest of their goes. Four
+ * turns, with health written as health lost, so the trace holds when balance numbers change.
+ */
+function dasherTrace(seed: number): string[] {
+  const c = createMatch({ players: PLAYERS, seed, squads: true });
+  const max = c.snapshot().maxBaseHp;
+  const full = c.snapshot().squads!.maxHp;
+  const out: string[] = [];
+  let i = 0;
+  for (let t = 0; t < 4 && c.snapshot().status === 'PLAYING'; t++) {
+    const beats = c.ready();
+    for (const b of beats) {
+      const hit =
+        b.target.kind === 'base'
+          ? `base-${b.target.damage === SQUADS.standBonkDamage ? 'bonk' : b.target.damage}`
+          : `lost-${full - b.target.hp}`;
+      out.push(`stand|${b.team}|${b.from}>${b.to}|${hit}`);
+    }
+    const team = c.snapshot().turn.team;
+    if (c.snapshot().status === 'OVER') break;
+    if (
+      c.snapshot().squads!.crew.helpers.find((h) => h.id === `${team}-dasher`)!.state === 'home'
+    ) {
+      c.selectHelper(`${team}-dasher`);
+      out.push(`dash|${team}|${c.dash(c.helperTargets()[0]!).to}`);
+    }
+    c.selectHelper(`${team}-launcher`);
+    while (c.snapshot().turn.phase === 'AIMING' && c.snapshot().status === 'PLAYING') {
+      c.setAim(AIMS[i++ % AIMS.length] as (typeof AIMS)[number]);
+      c.fire();
+      const o = c.shotLanded();
+      const hp = c.snapshot().baseHp;
+      const d = o.dasher ? `|dasher-${o.dasher.result}-lost-${full - o.dasher.hp}` : '';
+      const lost = `${max.PAST - hp.PAST}/${max.FUTURE - hp.FUTURE}`;
+      out.push(
+        `shot|${team}|${o.result}|${o.damage > 0 ? 'hit' : 'none'}|${lost === '0/0' ? 'none' : 'some'}${d}`,
+      );
+    }
+    if (c.snapshot().status === 'OVER') break;
+    c.reloadDone({ correct: false, elapsedMs: 1000 });
+    c.pass();
+  }
+  return out;
+}
+
+describe('walking dashers replay exactly', () => {
+  it('matches the trace recorded when the walking dasher was added', () => {
+    expect(dasherTrace(7)).toEqual(DASHER_GOLDEN_7);
   });
 });
 
@@ -71,4 +128,21 @@ const GOLDEN_12345: string[] = [
   '135|1.907,507.095|miss|0|75/25',
   '78|1278.609,378.500|miss|0|75/25',
   '138|1183.854,490.000|direct|25|75/0',
+];
+
+/** Recorded from the code when the walking dasher was added (seed 7). */
+const DASHER_GOLDEN_7: string[] = [
+  'dash|PAST|g3',
+  'shot|PAST|direct|hit|some',
+  'stand|PAST|g3>g3|base-bonk',
+  'dash|FUTURE|g4',
+  'shot|FUTURE|miss|none|some',
+  'stand|PAST|g3>g3|lost-1',
+  'stand|FUTURE|g4>g4|lost-1',
+  'shot|PAST|miss|none|some',
+  'shot|PAST|direct|hit|some',
+  'stand|FUTURE|g4>g4|lost-2',
+  'stand|PAST|g3>g3|lost-2',
+  'shot|FUTURE|direct|hit|some',
+  'shot|FUTURE|miss|none|some',
 ];

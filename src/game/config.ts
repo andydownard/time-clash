@@ -137,22 +137,33 @@ export const TURN = {
 } as const;
 
 /**
- * Squads, milestone S1 (docs/SQUADS_PLAN.md). Off by default, so a shipped build plays exactly
- * as before. A match takes `MatchOptions.squads`, which falls back to `enabled`. Tests pass the
- * option and never change this constant.
+ * Squads, milestone S1 (docs/SQUADS_PLAN.md). On for everyone (owner decision, 2026-10-24): each
+ * side has its launcher and one walking helper, the dasher. A match takes `MatchOptions.squads`,
+ * which falls back to `enabled`. Tests pass the option and never change this constant.
  */
 export const SQUADS = {
-  enabled: false,
+  enabled: true,
   /** A turn is this many goes, then the reload question. Same number as TURN.shotsPerTurn. */
   goesPerTurn: 2,
-  /** Ground spots g0 to g4, left to right. g0 is Team Past's doorstep and the last one is Team Future's. */
+  /**
+   * Ground spots g0 to g4, left to right. g0 is Team Past's doorstep and the last one is Team
+   * Future's. Only a side's own dasher may stand on its doorstep (to guard it).
+   */
   groundSpots: 5,
-  /** How many spots a dasher may roll in one go. */
-  dashRange: 2,
-  /** Base health a dash bonk takes off an enemy base (plan section 6). One aimed direct hit stays bigger. */
-  dashBonkDamage: 12,
-  /** Where each side's dasher stands at the start, and where it walks home to after a bonk. */
-  dasherHome: { PAST: 1, FUTURE: 3 } as Record<Team, number>,
+  /**
+   * Base health one dasher bonk takes, at the start of every turn while he stands at the enemy
+   * base. About 12 percent of a perfect-aim turn, so a dasher left alone helps a lot but cannot
+   * win alone. Damage cuts, a Hoverboard Dodge and a force field stop it like a shot.
+   */
+  standBonkDamage: 12,
+  /** Health a dasher loses to one bonk from the enemy dasher next to him. Same as a direct hit. */
+  duelBonkHp: CHARACTER_HEALTH.directHit,
+  /** Where the spots sit, in world px from a base's inner edge: the doorstep and the attack spot. */
+  spotInset: { door: 34, attack: 96 },
+  /** Where a dasher waits at home, in world px inside his own base's inner edge. */
+  homeInset: 30,
+  /** Walking speed on screen, world px per second. Drawing only. */
+  walkPxPerSec: 300,
   /** Rendered tap size at 768 px wide. The hard floor is 56. */
   minTapPx: 64,
 } as const;

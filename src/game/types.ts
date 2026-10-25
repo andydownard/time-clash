@@ -3,7 +3,15 @@
 // See docs/CONTRACTS.md for the reasons behind each choice.
 
 import type { AmmoId } from './ammo';
-import type { Crew, DashOutcome, GroundSpotId, HelperId } from './crew';
+import type {
+  Crew,
+  DashOutcome,
+  DasherHit,
+  GroundSpotId,
+  HelperId,
+  RecallOutcome,
+  StandBeat,
+} from './crew';
 import type { BIOME_IDS, FORT_IDS, SPOT_IDS } from './config';
 import type { EvasionId, EvasionPhase } from './evasion';
 import type { Placed, ResolvedSpot, SpotRole } from './baseBuilder';
@@ -245,6 +253,8 @@ export type BlastOutcome = {
   knockedOut?: UnitId[];
   /** Only when BASE_IN_BATTLE is on. See BuiltEvents. */
   built?: BuiltEvents;
+  /** Squads only: the shell landed near the target's out dasher (he wobbles, or loses health). */
+  dasher?: DasherHit;
 };
 
 /** A team's base as saved: `chosenBase` and `chosenSpots` from baseBuilder.ts. */
@@ -392,6 +402,10 @@ export type Match = {
     readonly crew: Crew;
     readonly picked: Record<Team, HelperId>;
     readonly go: 1 | 2;
+    /** A dasher's full health (CHARACTER_HEALTH.hp, scaled by the match length). */
+    readonly maxHp: number;
+    /** Own turns each team has started this match. A resting dasher wakes by this count. */
+    readonly ownTurns: Record<Team, number>;
   };
   readonly seed: number;
   readonly players: Players;
@@ -489,8 +503,12 @@ export interface MatchController {
   readonly layout: BattleLayout;
   /** A fresh copy of the full state. Safe to keep. */
   snapshot(): Match;
-  /** PASS_SCREEN -> AIMING. */
-  ready(): void;
+  /**
+   * PASS_SCREEN -> AIMING. With Squads on, every dasher out on the field walks on if he must and
+   * bonks at the start of the turn (both teams' turns). Returns what each did, in order. A bonk can
+   * end the match (status OVER). Empty with Squads off.
+   */
+  ready(): StandBonk[];
   /** Only in AIMING or BONUS_AIMING. Clamps and stores the active team's aim. Returns the clamped aim. */
   setAim(aim: AimInput): AimInput;
   /**
@@ -536,19 +554,35 @@ export interface MatchController {
    * Throws IllegalCommandError (`flag_off`, `not_your_helper`) or IllegalTransitionError.
    */
   selectHelper(id: HelperId): void;
-  /** The ground spots the picked dasher may roll to now. Empty for a launcher or with the flag off. */
+  /** The ground spot the picked dasher walks out to now (one at most). Empty unless a dasher at home is picked. */
   helperTargets(): GroundSpotId[];
   /**
-   * Squads S1. AIMING -> AIMING (after go 1) or RELOAD (after go 2). The picked dasher rolls to `to`
-   * and bonks what is next to it. Applies base damage and the win rule. Does the work of
-   * fire() and shotLanded() in one call. Throws IllegalCommandError or IllegalTransitionError.
+   * Squads S1. AIMING -> AIMING (after go 1) or RELOAD (after go 2). The picked dasher walks out to
+   * `to` (his one stop) over any obstacle. He bonks at the start of each turn after that. Does the
+   * work of fire() and shotLanded() in one call. Throws IllegalCommandError or IllegalTransitionError.
    */
   dash(to: GroundSpotId): DashResult;
+  /**
+   * Squads S1. Come back: the picked dasher, out on the field, walks home. A whole go, like dash.
+   * He is ready again on his team's next turn. Throws IllegalCommandError (`not_out`) or
+   * IllegalTransitionError.
+   */
+  recall(): RecallOutcome;
   /** Options for a rematch: same players, seed + 1, the other team starts. */
   rematchOptions(): MatchOptions;
 }
 
-/** A dash go, after damage. `damage` is what the base really lost (0 if blocked or dodged). */
-export type DashResult = DashOutcome & { damage: number; blocked?: boolean; dodged?: boolean };
+/** A dash go. The dasher only walks out; he bonks at the start of the next turn. */
+export type DashResult = DashOutcome;
+
+/**
+ * One dasher's bonk at the start of a turn, after shields. For a base, `damage` is what the base
+ * really lost (0 if a force field or a Hoverboard Dodge stopped it).
+ */
+export type StandBonk = Omit<StandBeat, 'target'> & {
+  target:
+    | { kind: 'base'; team: Team; damage: number; blocked?: boolean; dodged?: boolean }
+    | Extract<StandBeat['target'], { kind: 'helper' }>;
+};
 
 export type CreateMatch = (options: MatchOptions) => MatchController;
