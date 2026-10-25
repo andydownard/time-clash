@@ -156,18 +156,16 @@ const FUTURE_SCENE = `<defs>
 <g fill="#2ee6ff" opacity=".5"><circle cx="90" cy="60" r="2"/><circle cx="260" cy="110" r="2"/><circle cx="470" cy="50" r="2"/><circle cx="700" cy="90" r="2"/><circle cx="880" cy="40" r="2"/></g>
 <path d="M0,${PLOT_H - 90} L120,${PLOT_H - 150} L200,${PLOT_H - 110} L330,${PLOT_H - 200} L450,${PLOT_H - 120} L600,${PLOT_H - 170} L760,${PLOT_H - 110} L880,${PLOT_H - 160} L${PLOT_W},${PLOT_H - 100} V${PLOT_H} H0 Z" fill="#12102b" opacity=".55"/>`;
 
-const SILHOUETTE: Record<Team, string> = {
-  PAST: `M160,${PLOT_H - 40} V160 H320 V240 H440 V180 H540 V240 H700 V120 H820 V${PLOT_H - 40}`,
-  FUTURE: `M140,${PLOT_H - 40} V280 H260 V200 H360 V140 H480 V200 H600 V280 H700 V200 H820 V${PLOT_H - 40}`,
-};
-
 function gridLines(): string {
   const v = Array.from({ length: B.cols - 1 }, (_, i) => `M${(i + 1) * CELL},0 V${PLOT_H}`);
   const hh = Array.from({ length: B.rows - 1 }, (_, i) => `M0,${(i + 1) * CELL} H${PLOT_W}`);
   return `<path d="${[...v, ...hh].join(' ')}" stroke="#f7ebcb" stroke-opacity=".2" stroke-width="2" fill="none"/>`;
 }
 
-/** The foundation along the bottom. It is part of the picture, not a place to build. */
+/**
+ * The foundation along the bottom: the ground every brick stands on, across the full width. It is
+ * not a place to build in, but any brick may sit on it anywhere.
+ */
 function foundation(team: Team): string {
   const y = PLOT_H - B.groundRows * CELL;
   const h = B.groundRows * CELL;
@@ -184,7 +182,6 @@ export function plotScene(doc: Document, team: Team): SVGElement {
 ${team === 'PAST' ? PAST_SCENE : FUTURE_SCENE}
 ${gridLines()}
 ${foundation(team)}
-<path d="${SILHOUETTE[team]}" fill="#f7ebcb" fill-opacity=".07" stroke="#f7ebcb" stroke-opacity=".6" stroke-width="4" stroke-dasharray="4 10" stroke-linecap="round" stroke-linejoin="round"/>
 <g class="tc-bb-pieces"></g><g class="tc-bb-spots"></g><g class="tc-bb-preview"></g>
 </svg>`,
   );

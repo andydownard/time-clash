@@ -2,7 +2,7 @@
 // Keyboard: Up/Down = angle, Left/Right = power (Shift = bigger steps), Space = fire.
 import { COMPUTER, computerTurnBanner } from '../data/computerCopy';
 import { BUTTONS, HUD, TEAM_NAMES, goTurnBanner, turnBanner, windLabel } from '../data/copy';
-import { AIM, TIMING, TURN, WIND } from '../game/config';
+import { AIM, DAMAGE, TIMING, TURN, WIND } from '../game/config';
 import { TEAMS, type Team } from '../game/types';
 import type { UnitId } from '../game/units';
 import { LOCAL_IDS } from './constants';
@@ -470,7 +470,7 @@ export function createHud(ctx: UiCtx) {
         : '';
       paintPips(parts.pips, state.shotsLeft, state.bonus);
       for (const t of TEAMS) {
-        const max = Math.max(1, Math.round(state.maxBaseHp?.[t] ?? 100));
+        const max = Math.max(1, Math.round(state.maxBaseHp?.[t] ?? DAMAGE.startingBaseHp));
         const hp = clamp(Math.round(state.baseHp[t]), 0, max);
         parts.name[t].textContent = state.names[t];
         parts.hpText[t].textContent = HUD.hpValue(hp, max);

@@ -71,6 +71,21 @@ export const TEST_IDS = {
   forgeStatus: 'forge-status',
   forgeTeam: (team: Team) => `forge-team-${team}`,
   forgeWeapon: (id: string) => `forge-weapon-${id}`,
+  forgeMake: 'forge-make',
+  forgeMine: 'forge-mine',
+  workshopBack: 'workshop-back',
+  workshopScrap: 'workshop-scrap',
+  workshopStyle: (base: string) => `workshop-style-${base}`,
+  workshopPoints: 'workshop-points',
+  workshopMore: (stat: string) => `workshop-more-${stat}`,
+  workshopLess: (stat: string) => `workshop-less-${stat}`,
+  workshopStat: (stat: string) => `workshop-stat-${stat}`,
+  workshopWord1: 'workshop-word1',
+  workshopWord2: 'workshop-word2',
+  workshopTyped: 'workshop-typed',
+  workshopPreview: 'workshop-preview',
+  workshopForge: 'workshop-forge',
+  workshopStatus: 'workshop-status',
   campPlayers: 'camp-players',
   planBack: 'plan-back',
   planGo: 'plan-go',
@@ -151,7 +166,7 @@ export type HudState = {
   activeTeam: Team | null;
   names: Record<Team, string>;
   baseHp: Record<Team, number>;
-  /** Each base's full health. Missing means 100. An upgrade can raise it. */
+  /** Each base's full health. Missing means DAMAGE.startingBaseHp. An upgrade can raise it. */
   maxBaseHp?: Record<Team, number>;
   scrap: Record<Team, number>;
   wind: number;

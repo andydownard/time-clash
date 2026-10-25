@@ -69,6 +69,7 @@ Any other pair throws. Battle scene loop: `pass screen → ready() → banner �
 23. **Victory has "Back to Start", not "Main Menu".** "Menu" is on the never-say list.
 27. **Ammo and evasion are free actions while aiming, like picking a fighter.** `selectAmmo`, `armEvasion` and `disarmEvasion` work only in AIMING or BONUS_AIMING and never count as a shot, so a turn is still exactly 2 shots, then the reload. Out of phase they throw `IllegalTransitionError`. A kind the team does not own throws `RangeError`. An ability that is not ready throws `EvasionError` with a reason.
 28. **An ability guards the other team's next turn, not the turn it was armed.** The match flips armed to active in `pass()`, and ends the guard when the owner's next turn starts. `currentLayout()` is the field with any standing wall. The preview and the shot both use it.
+29. **Pace: health is big, damage is unchanged.** A base starts with 400 health and a fighter with 4 (owner, 2026-10-24), so perfect aim needs five turns of its own to win. Hit damage stays 25, 10 and 1.5 times, so weapons, ammo and damage upgrades keep their meaning. `tests/game/pace.test.ts` pins it.
 
 ## Copy rules
 All UI text comes from `src/data/copy.ts`. `tests/contracts/copy.test.ts` checks the banned list and the never-say column of the vocabulary table, by whole word and (for the worst words) inside other words.

@@ -1,7 +1,8 @@
 // The base builder rules: bricks on a grid, with no Phaser and no screen. A player builds a castle
-// (Team Past) or a base (Team Future) before a battle. Anything goes: bricks may stand on each
-// other, stick out sideways, or lean on a wall. The only rules are "inside the plot" and "no two
-// bricks in the same spot". Every function returns a new state and never changes the old one.
+// (Team Past) or a base (Team Future) before a battle. The rules: inside the plot, no two bricks in
+// the same spot, and every brick is held up all the way down to the ground (see "Support"). A brick
+// that something rests on cannot be taken away. Every function returns a new state and never
+// changes the old one.
 // A base also has four weapon spots: round pads where a cannon, laser or other weapon is mounted.
 import { BASE_BUILDER as B } from './config';
 import {
@@ -237,7 +238,12 @@ const inside = (r: Rect): boolean =>
 /** Touching edges are fine. Only a shared area counts. */
 const overlaps = (a: Rect, b: Rect): boolean => a.l < b.r && b.l < a.r && a.t < b.b && b.t < a.b;
 
-export type PlaceRefusal = 'unknown' | 'outside' | 'overlap' | 'full' | 'nothing';
+/**
+ * Why a brick cannot go somewhere. `floating`: nothing holds it up. `holding`: another brick rests
+ * on it, so it cannot be taken away (the player takes the top brick off first).
+ */
+export type PlaceRefusal =
+  'unknown' | 'outside' | 'overlap' | 'full' | 'nothing' | 'floating' | 'holding';
 
 export function check(
   pieces: readonly Placed[],
@@ -257,6 +263,182 @@ export function check(
     if (mine.some((a) => theirs.some((b) => overlaps(a, b)))) return 'overlap';
   }
   return null;
+}
+
+// ---------- Support: every brick is held up all the way down to the ground ----------
+
+/** A brick needs at least this many steps of its bottom edge on what holds it up. */
+const MIN_REST = B.minSupportSteps;
+
+/** True when the brick stands on the foundation (its bottom edge is the bottom of the plot). */
+export const onFoundation = (p: Placed): boolean => rectOf(p)?.b === PLOT_STEPS.h;
+
+/** Steps of the bottom edges of `top` that sit exactly on the top edges of `under`. */
+function contact(top: readonly Rect[], under: readonly Rect[]): number {
+  let n = 0;
+  for (const a of top) {
+    for (const b of under) {
+      if (a.b === b.t) n += Math.max(0, Math.min(a.r, b.r) - Math.max(a.l, b.l));
+    }
+  }
+  return n;
+}
+
+/** Could a bottom edge of box `a` meet a top edge of box `b`? A quick test before the squares. */
+const mayRest = (a: Rect, b: Rect): boolean => a.l < b.r && b.l < a.r && b.t <= a.b && a.t < b.b;
+
+/**
+ * How many steps of `top` rest on `under`: the bottom edge of a filled square of `top` lies
+ * exactly on the top edge of a filled square of `under`, counted sideways. A gap gives 0.
+ */
+export function restOverlap(top: Placed, under: Placed): number {
+  const a = rectOf(top);
+  const b = rectOf(under);
+  if (!a || !b || !mayRest(a, b)) return 0;
+  return contact(occupiedRects(top), occupiedRects(under));
+}
+
+/**
+ * For each brick, true when it is held up: it stands on the foundation, or it rests (by at least
+ * BASE_BUILDER.minSupportSteps) on a brick that is itself held up. A brick that only touches
+ * another at a corner, or only from the side, is not held up by it.
+ */
+export function heldUp(pieces: readonly Placed[]): boolean[] {
+  const held = pieces.map(onFoundation);
+  const restsOnMe: number[][] = pieces.map(() => []);
+  for (let i = 0; i < pieces.length; i++) {
+    for (let j = 0; j < pieces.length; j++) {
+      if (i !== j && restOverlap(pieces[i] as Placed, pieces[j] as Placed) >= MIN_REST) {
+        (restsOnMe[j] as number[]).push(i);
+      }
+    }
+  }
+  const queue = held.flatMap((h, i) => (h ? [i] : []));
+  while (queue.length > 0) {
+    const j = queue.shift() as number;
+    for (const i of restsOnMe[j] as number[]) {
+      if (!held[i]) {
+        held[i] = true;
+        queue.push(i);
+      }
+    }
+  }
+  return held;
+}
+
+/** The bricks without the one at `skip`: which are held up, and if any of them need `skip`. */
+type SupportCtx = {
+  rest: Placed[];
+  restHeld: boolean[];
+  /** Held up before, in the same order as `rest`. */
+  before: boolean[];
+  /** A brick that was held up is not held up without `skip`. */
+  leansOnSkip: boolean;
+};
+const ctxCache = new WeakMap<readonly Placed[], Map<number | null, SupportCtx>>();
+
+function supportCtx(pieces: readonly Placed[], skip: number | null): SupportCtx {
+  let perList = ctxCache.get(pieces);
+  if (!perList) {
+    perList = new Map();
+    ctxCache.set(pieces, perList);
+  }
+  let ctx = perList.get(skip);
+  if (!ctx) {
+    const all = heldUp(pieces);
+    const rest = pieces.filter((_, i) => i !== skip);
+    const restHeld = heldUp(rest);
+    const before = all.filter((_, i) => i !== skip);
+    ctx = { rest, restHeld, before, leansOnSkip: before.some((h, k) => h && !restHeld[k]) };
+    perList.set(skip, ctx);
+  }
+  return ctx;
+}
+
+/**
+ * Why `cand` cannot go on the plot (the brick at `skip` is the one being moved), or null when it
+ * may. Bricks may not overlap, and the brick must be held up. A move may not leave a brick that
+ * rested on the old place with nothing under it (`holding`, checked before `floating`).
+ */
+export function placeProblem(
+  pieces: readonly Placed[],
+  cand: Placed,
+  skip: number | null = null,
+): PlaceRefusal | null {
+  const why = check(pieces, cand, skip);
+  if (why) return why;
+  const ctx = supportCtx(pieces, skip);
+  if (!ctx.leansOnSkip) {
+    // Nothing needs the moved brick, so only the brick itself must be held up.
+    const held =
+      onFoundation(cand) ||
+      ctx.rest.some((p, k) => ctx.restHeld[k] && restOverlap(cand, p) >= MIN_REST);
+    return held ? null : 'floating';
+  }
+  const after = heldUp([...ctx.rest, cand]);
+  if (ctx.before.some((h, k) => h && !after[k])) return 'holding';
+  return after[ctx.rest.length] ? null : 'floating';
+}
+
+/** True when taking the brick at `index` away would leave another brick with nothing under it. */
+export function isHolding(pieces: readonly Placed[], index: number): boolean {
+  return isWhole(index, 0, pieces.length - 1) && supportCtx(pieces, index).leansOnSkip;
+}
+
+const posOf = (p: Pos): Pos => ({ x: p.x, y: p.y, ox: p.ox, oy: p.oy });
+
+const shiftDown = (p: Placed, d: number): Placed => ({
+  ...p,
+  ...splitSteps(p.x * S + p.ox, p.y * S + p.oy + d),
+});
+
+/**
+ * A brick let go just above something lands on it: it slides straight down, at most
+ * BASE_BUILDER.dropSnapSteps steps (less than one cell), to the first place it is held up.
+ * Null when nothing is that close under it.
+ */
+export function dropOnto(
+  pieces: readonly Placed[],
+  cand: Placed,
+  skip: number | null = null,
+): Placed | null {
+  for (let d = 1; d <= B.dropSnapSteps; d++) {
+    const next = shiftDown(cand, d);
+    const why = placeProblem(pieces, next, skip);
+    if (why === null) return next;
+    if (why !== 'floating') return null;
+  }
+  return null;
+}
+
+/** `cand` if it may go there, or the same brick dropped onto what is just under it, or null. */
+function legalNear(pieces: readonly Placed[], cand: Placed, skip: number | null): Placed | null {
+  const why = placeProblem(pieces, cand, skip);
+  if (why === null) return cand;
+  return why === 'floating' ? dropOnto(pieces, cand, skip) : null;
+}
+
+/**
+ * Where a carried brick lands when it is let go at `cand`: right there, or dropped onto what is
+ * just under it, or (when it overlaps a brick) the closest legal spot nearby. A brick let go in
+ * mid-air is refused (`floating`), so nothing ever hangs in the sky.
+ */
+export function landingFor(
+  pieces: readonly Placed[],
+  cand: Placed,
+  skip: number | null = null,
+): { pos: Pos; why: null } | { pos: null; why: PlaceRefusal } {
+  const why = placeProblem(pieces, cand, skip);
+  if (why === null) return { pos: posOf(cand), why: null };
+  if (why === 'floating') {
+    const near = dropOnto(pieces, cand, skip);
+    return near ? { pos: posOf(near), why: null } : { pos: null, why };
+  }
+  if (why === 'overlap') {
+    const near = findSpot(pieces, cand, skip);
+    return near ? { pos: near, why: null } : { pos: null, why };
+  }
+  return { pos: null, why };
 }
 
 /** Top-left of a brick from a point in fractional cells. Snap rounds to whole cells. */
@@ -281,8 +463,9 @@ export function clampToPlot(def: PieceDef, rot: Rotation, pos: Pos): Pos {
 }
 
 /**
- * The closest legal spot to `pos`, trying whole-cell shifts outward up to `radius` cells.
- * Returns null if nothing near is free.
+ * The closest legal spot to `pos` (free and held up), trying whole-cell shifts outward up to
+ * `radius` cells. A shift that leaves the brick just above something drops it onto that.
+ * Returns null if nothing near is legal.
  */
 export function findSpot(
   pieces: readonly Placed[],
@@ -305,7 +488,8 @@ export function findSpot(
       base.rot,
       splitSteps(start.x * S + start.ox + dx * S, start.y * S + start.oy + dy * S),
     );
-    if (check(pieces, { ...base, ...pos }, skip) === null) return pos;
+    const near = legalNear(pieces, { ...base, ...pos }, skip);
+    if (near) return posOf(near);
   }
   return null;
 }
@@ -365,7 +549,7 @@ export function placePiece(
   if (!def || def.team !== state.team) return { ok: false, reason: 'unknown' };
   if (state.pieces.length >= B.maxPieces) return { ok: false, reason: 'full' };
   const cand: Placed = { piece: id, ...pos, rot, hp: def.hp };
-  const why = check(state.pieces, cand);
+  const why = placeProblem(state.pieces, cand);
   if (why) return { ok: false, reason: why };
   return {
     ok: true,
@@ -374,18 +558,25 @@ export function placePiece(
   };
 }
 
-/** Moves a brick that is already placed. */
-export function movePiece(state: BuildState, index: number, pos: Pos): BuildResult {
+/**
+ * Moves a brick that is already placed, turned to `rot` when given. The new place must be held
+ * up, and no brick may be left with nothing under it (`holding`).
+ */
+export function movePiece(state: BuildState, index: number, pos: Pos, rot?: Rotation): BuildResult {
   const cur = state.pieces[index];
   if (!cur) return { ok: false, reason: 'nothing' };
-  const next: Placed = { ...cur, ...pos };
-  const why = check(state.pieces, next, index);
+  if (rot !== undefined && !isRotation(rot)) return { ok: false, reason: 'unknown' };
+  const next: Placed = { ...cur, ...posOf(pos), rot: rot ?? cur.rot };
+  const why = placeProblem(state.pieces, next, index);
   if (why) return { ok: false, reason: why };
   const pieces = state.pieces.map((p, i) => (i === index ? next : p));
   return { ok: true, state: commit(state, pieces), index };
 }
 
-/** Turns a brick a quarter turn about its middle. It slides to the nearest free spot if needed. */
+/**
+ * Turns a brick a quarter turn about its middle. It slides to the nearest legal spot if needed.
+ * A brick that another brick rests on usually cannot turn (the reason is `holding`).
+ */
 export function turnPiece(state: BuildState, index: number): BuildResult {
   const cur = state.pieces[index];
   const def = cur && pieceById(cur.piece);
@@ -398,13 +589,17 @@ export function turnPiece(state: BuildState, index: number): BuildResult {
   const sy = cur.y * S + cur.oy + Math.round(((before.h - after.h) * S) / 2);
   const turned: Placed = { ...cur, ...splitSteps(sx, sy), rot };
   const spot = findSpot(state.pieces, turned, index);
-  if (!spot) return { ok: false, reason: 'overlap' };
+  if (!spot) {
+    return { ok: false, reason: isHolding(state.pieces, index) ? 'holding' : 'overlap' };
+  }
   const pieces = state.pieces.map((p, i) => (i === index ? { ...turned, ...spot } : p));
   return { ok: true, state: commit(state, pieces), index };
 }
 
+/** Takes a brick off. A brick that another brick rests on stays (the reason is `holding`). */
 export function removePiece(state: BuildState, index: number): BuildResult {
   if (!state.pieces[index]) return { ok: false, reason: 'nothing' };
+  if (isHolding(state.pieces, index)) return { ok: false, reason: 'holding' };
   return {
     ok: true,
     state: commit(
@@ -415,7 +610,7 @@ export function removePiece(state: BuildState, index: number): BuildResult {
   };
 }
 
-/** Takes every brick off. Undo brings them back. */
+/** Takes every brick off. Undo brings them back. Clear and Undo always work. */
 export function clearBuild(state: BuildState): BuildState {
   return state.pieces.length === 0 ? state : commit(state, []);
 }
@@ -477,8 +672,7 @@ export const spotsUsed = (spots: readonly Spot[]): number =>
   spots.filter((s) => s.weapon !== undefined).length;
 
 export type SpotRefusal = 'nospot' | 'unknown' | 'locked' | 'empty' | 'outside';
-export type SpotResult =
-  { ok: true; state: BuildState } | { ok: false; reason: SpotRefusal };
+export type SpotResult = { ok: true; state: BuildState } | { ok: false; reason: SpotRefusal };
 
 const withSpot = (state: BuildState, index: number, next: Spot): BuildState =>
   commit(
@@ -584,8 +778,43 @@ export const serializeBase = (pieces: readonly Placed[], spots?: readonly Spot[]
  * Cleans the weapon spots of a saved base (an object or its JSON text). Nothing is trusted: an
  * unknown weapon, one for the other side, or one not owned (when `owned` is given) is dropped,
  * and a pad that sits outside the plot goes back to its automatic place. Always `count` spots.
+ * A pinned pad rides on its brick: when an old floating brick is settled (see `settleBase`), the
+ * pad moves down with it, and a pad whose brick had to go follows the base again.
  */
 export function repairSpots(raw: unknown, team: Team, owned?: ReadonlySet<string>): Spot[] {
+  const spots = cleanSpots(raw, team, owned);
+  const pieces = cleanPieces(raw, team);
+  const { drop } = settleBase(pieces);
+  if (drop.every((d) => d === 0)) return spots;
+  return spots.map((spot) => {
+    if (spot.x === undefined || spot.y === undefined) return spot;
+    const rider = riderOf(pieces, spot.x, spot.y);
+    const d = rider === null ? 0 : drop[rider];
+    if (d === 0) return spot;
+    const y = spot.y + (d ?? 0);
+    if (d !== null && d !== undefined && padFits(spot.x, y)) return { ...spot, y };
+    const loose: Spot = { ...spot };
+    delete loose.x;
+    delete loose.y;
+    return loose;
+  });
+}
+
+/** The brick a pad sits on: the highest brick under the pad's width (the battle uses the same). */
+function riderOf(pieces: readonly Placed[], x: number, y: number): number | null {
+  let best: number | null = null;
+  let bestTop = Infinity;
+  pieces.forEach((p, i) => {
+    const r = rectOf(p);
+    if (r && r.l < x + PAD && r.r > x - PAD && r.t >= y && r.t < bestTop) {
+      best = i;
+      bestTop = r.t;
+    }
+  });
+  return best;
+}
+
+function cleanSpots(raw: unknown, team: Team, owned?: ReadonlySet<string>): Spot[] {
   let data = raw;
   if (typeof raw === 'string') {
     try {
@@ -614,8 +843,85 @@ export function repairSpots(raw: unknown, team: Team, owned?: ReadonlySet<string
  * Cleans a saved base. Nothing from storage is trusted: a bad brick is dropped, the rest stay.
  * Bricks that overlap an earlier brick, stick out of the plot, belong to the other team, or are
  * not owned (when `owned` is given) are dropped. HP is capped at the piece's full strength.
+ * A brick saved floating in mid-air (before the support rule) drops down until it lands (see
+ * `settleBase`). The builder and the battle both read bases through here.
  */
 export function repairBase(raw: unknown, team: Team, owned?: ReadonlySet<string>): Placed[] {
+  return settleBase(cleanPieces(raw, team, owned)).pieces;
+}
+
+/** True when loading this saved base had to move or take off a floating brick. */
+export function baseWasSettled(raw: unknown, team: Team, owned?: ReadonlySet<string>): boolean {
+  return settleBase(cleanPieces(raw, team, owned)).drop.some((d) => d !== 0);
+}
+
+/**
+ * Makes every brick held up. Bricks that are not held up drop straight down, one at a time,
+ * lowest first, then leftmost (then by index), until each lands on the foundation or on a brick
+ * that is held up, without overlapping anything. A brick that cannot land (it would come to rest
+ * on a corner only, or on a brick that never lands) is taken off as a last resort. `drop[i]` is
+ * how many steps brick i fell, or null when it was taken off. Same input, same result.
+ */
+export function settleBase(pieces: readonly Placed[]): {
+  pieces: Placed[];
+  drop: Array<number | null>;
+} {
+  const cur = pieces.slice();
+  const drop: Array<number | null> = pieces.map(() => 0);
+  let held = heldUp(cur);
+  if (held.every(Boolean)) return { pieces: cur, drop };
+  const alive = pieces.map(() => true);
+  const bottom = (i: number): number => rectOf(cur[i] as Placed)?.b ?? 0;
+  const left = (i: number): number => rectOf(cur[i] as Placed)?.l ?? 0;
+  let waiting = pieces
+    .map((_, i) => i)
+    .filter((i) => !held[i])
+    .sort((a, b) => bottom(b) - bottom(a) || left(a) - left(b) || a - b);
+  const liveHeld = (): boolean[] => {
+    const idx = cur.map((_, i) => i).filter((i) => alive[i]);
+    const h = heldUp(idx.map((i) => cur[i] as Placed));
+    const out = cur.map(() => false);
+    idx.forEach((i, k) => (out[i] = h[k] as boolean));
+    return out;
+  };
+  let moved = true;
+  while (moved && waiting.length > 0) {
+    moved = false;
+    const still: number[] = [];
+    for (const i of waiting) {
+      if (held[i]) continue;
+      const others = cur.filter((_, j) => j !== i && alive[j]);
+      const othersHeld = held.filter((_, j) => j !== i && alive[j]);
+      const isHeld = (p: Placed): boolean =>
+        onFoundation(p) || others.some((o, k) => othersHeld[k] && restOverlap(p, o) >= MIN_REST);
+      let d = 0;
+      let landed: Placed | null = null;
+      for (;;) {
+        const next = shiftDown(cur[i] as Placed, d + 1);
+        if (check(others, next) !== null) break;
+        d++;
+        if (isHeld(next)) {
+          landed = next;
+          break;
+        }
+      }
+      if (landed) {
+        cur[i] = landed;
+        drop[i] = (drop[i] ?? 0) + d;
+        held = liveHeld();
+        moved = true;
+      } else still.push(i);
+    }
+    waiting = still;
+  }
+  for (const i of waiting) {
+    alive[i] = false;
+    drop[i] = null;
+  }
+  return { pieces: cur.filter((_, i) => alive[i]), drop };
+}
+
+function cleanPieces(raw: unknown, team: Team, owned?: ReadonlySet<string>): Placed[] {
   let data = raw;
   if (typeof raw === 'string') {
     try {
@@ -732,7 +1038,8 @@ export function shapesOf(state: BasesState, name: string, team: Team): string[] 
 
 export type ShapeSaveRefusal = ShapeProblem | 'duplicate' | 'full' | 'noname';
 export type ShapeSaveResult =
-  { ok: true; state: BasesState; key: string; id: string } | { ok: false; reason: ShapeSaveRefusal };
+  | { ok: true; state: BasesState; key: string; id: string }
+  | { ok: false; reason: ShapeSaveRefusal };
 
 /**
  * Saves a drawing in the player's list for this side. It is free. The same shape drawn in another
@@ -831,8 +1138,9 @@ export function parseBases(raw: unknown): BasesState | null {
         ...(shapes.length ? { shapes } : {}),
         chosen: isWhole(t.chosen, 0, B.slots - 1) ? t.chosen : 0,
         slots: Array.from({ length: B.slots }, (_, i) => {
-          const pieces = repairBase(slots[i], team);
-          const spots = repairSpots(slots[i], team);
+          // Cleaned but not settled: the builder settles a base when it opens it, so it can say so.
+          const pieces = cleanPieces(slots[i], team);
+          const spots = cleanSpots(slots[i], team);
           return pieces.length || spots.some(spotHasData) ? toSaved(pieces, spots) : null;
         }),
       };

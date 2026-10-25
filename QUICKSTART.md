@@ -19,6 +19,7 @@ npm run typecheck
 npm run build        # builds to dist/
 npm run check:dist   # fails if the build still holds the e2e test hook
 npm run e2e          # browser tests (Chromium and WebKit, several sizes)
+npx playwright test --project=chromium-1280x800   # the one browser job a pull request runs in CI
 UPDATE_SCREENSHOTS=1 npm run e2e   # same, and also retakes docs/screenshots (normal runs leave them alone)
 npm run check:questions
 npm run build && npm start   # the built site and spoken clips at http://localhost:8080

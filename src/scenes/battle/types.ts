@@ -1,9 +1,12 @@
 // Contracts for the Battle scene. The scene draws; BattleFlow (flow.ts) decides what happens.
 // Nothing here imports Phaser, so the flow and helpers run in plain Vitest.
 import type { AudioManager } from '../../audio/types';
+import type { BirdPath } from '../../game/disturbance';
 import type {
   AimInput,
+  BirdBump,
   BlastOutcome,
+  GustHit,
   MatchController,
   MatchOptions,
   Rect,
@@ -51,7 +54,7 @@ export type ViewStatus = {
   activeTeam: Team | null;
   names: Record<Team, string>;
   baseHp: Record<Team, number>;
-  /** Each base's full health. Missing means 100. An upgrade can raise it. */
+  /** Each base's full health. Missing means DAMAGE.startingBaseHp. An upgrade can raise it. */
   maxBaseHp?: Record<Team, number>;
   scrap: Record<Team, number>;
   wind: number;
@@ -87,6 +90,14 @@ export interface BattleView {
   setWalls?(walls: readonly Rect[]): void;
   /** Phase 2: the base zips aside and back (a Hoverboard Dodge). Resolves when it is back. */
   playDodge?(team: Team): Promise<void>;
+  /** Disturbances: draw this turn's birds and start the bird clock at 0. null clears them. */
+  showBirds?(birds: readonly BirdPath[] | null): void;
+  /** ms on the bird clock since showBirds. The shot is fired with it, so it meets the birds drawn. */
+  birdClockMs?(): number;
+  /** A shell bumped a bird: feathers, a spin and the "Squawk!" word. */
+  playBirdBump?(bump: BirdBump): void;
+  /** The turn's gust blew on the shell: streaks, an arrow and the "Whoosh!" word. */
+  playGust?(gust: GustHit): void;
 }
 
 /** What Victory needs. */

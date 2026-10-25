@@ -1,7 +1,10 @@
 import { resolveAmmo } from './ammo';
-import { AIM, BALLISTICS } from './config';
+import { AIM, BALLISTICS, DISTURBANCE } from './config';
+import { birdAt, bumpVelocity, gustPushAt, segmentGap } from './disturbance';
 import type {
+  BirdBump,
   ClampAim,
+  GustHit,
   CollisionHit,
   Polygon,
   Rect,
@@ -90,12 +93,19 @@ export const simulateShot = (input: AmmoShotInput): AmmoShotResult => {
   const start: Vec2 = { x: origin.x, y: origin.y };
   const path: Vec2[] = [start];
   let bounced = false;
+  // Birds and the gust (DISTURBANCE). Without the input the flight is the plain physics.
+  const disturbance = input.disturbance;
+  const bumps: BirdBump[] = [];
+  const bumped = new Set<number>();
+  let gust: GustHit | undefined;
   const finish = (hit: CollisionHit, landing: Vec2): AmmoShotResult => ({
     path,
     landing,
     hit,
     steps: path.length - 1,
     ...(ammo.bounces > 0 ? { bounced } : {}),
+    ...(disturbance ? { bumps } : {}),
+    ...(gust ? { gust } : {}),
   });
 
   const buried = solids.find((s) => inside(start, s.poly));
@@ -110,9 +120,23 @@ export const simulateShot = (input: AmmoShotInput): AmmoShotResult => {
   let pos = start;
   let bouncesLeft = ammo.bounces;
   const windPush = wind * ammo.windScale;
+  const stepsPerSecond = Math.round(1 / dt);
+  // The gust starts a share of the way through the plain flight, so fly that first (cheap).
+  const plainFlightMs = disturbance?.gust
+    ? (simulateShot({ ...input, disturbance: undefined }).steps * 1000) / stepsPerSecond
+    : 0;
 
   for (let step = 0; step < BALLISTICS.maxSteps; step++) {
-    vx += windPush * dt;
+    const gustPush = disturbance
+      ? gustPushAt(disturbance.gust, (step * 1000) / stepsPerSecond, plainFlightMs)
+      : 0;
+    if (gustPush !== 0) {
+      // Path point `step` is where this step starts; the push shows from the next point on.
+      gust = gust
+        ? { ...gust, toStep: step + 1 }
+        : { push: gustPush, fromStep: step + 1, toStep: step + 1, at: pos };
+    }
+    vx += (windPush + gustPush * ammo.windScale) * dt;
     vy += BALLISTICS.gravity * dt;
     const next: Vec2 = { x: pos.x + vx * dt, y: pos.y + vy * dt };
 
@@ -142,6 +166,22 @@ export const simulateShot = (input: AmmoShotInput): AmmoShotResult => {
       return finish({ kind: 'out_of_bounds' }, pos);
     }
     path.push(next);
+    if (disturbance && disturbance.birds.length > 0) {
+      // Each bird bumps a shell at most once. Its place comes from the bird clock, so the same
+      // launch time always meets the bird at the same spot.
+      const flownMs = ((step + 1) * 1000) / stepsPerSecond;
+      if (flownMs >= DISTURBANCE.birds.launchGraceMs) {
+        const clock = Number.isFinite(disturbance.birdMs) ? disturbance.birdMs : 0;
+        for (const bird of disturbance.birds) {
+          if (bumped.has(bird.id)) continue;
+          const at = birdAt(bird, clock + flownMs);
+          if (segmentGap(at, pos, next) > DISTURBANCE.birds.hitRadius) continue;
+          bumped.add(bird.id);
+          bumps.push({ bird: bird.id, step: path.length - 1, at: next, birdAt: at });
+          ({ vx, vy } = bumpVelocity({ vx, vy }, next, at));
+        }
+      }
+    }
     pos = next;
   }
   return finish({ kind: 'timeout' }, pos);

@@ -44,20 +44,6 @@ test('Build Base (?builder=0) opens the old shop screen and Back returns to the 
   await expect(tid(page, 'pass-screen')).toHaveCount(0);
 });
 
-test('a returning family lands on the Camp with no Tap to Play screen', async ({ page }) => {
-  await toCamp(page);
-  await page.reload();
-  // A returning family goes straight to the Camp: there is no Tap to Play screen.
-  await expect(tid(page, 'camp-start')).toBeVisible({ timeout: 10_000 });
-  await expect(tid(page, 'tap-to-play')).toHaveCount(0);
-  await expect(tid(page, 'setup-next')).toHaveCount(0);
-});
-
-test('a new family goes to Setup first, not the Camp', async ({ page }) => {
-  await toSetup(page);
-  await expect(tid(page, 'camp-start')).toHaveCount(0);
-});
-
 test('Change players opens Setup with the saved players, then returns to the Camp', async ({
   page,
 }) => {

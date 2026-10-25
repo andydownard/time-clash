@@ -1,6 +1,8 @@
 // Phase 2 end to end: the Battle Plan (place and base spot), special ammo unlocked with Scrap and
 // fired in battle, and the evasion abilities. The turn is still two shots, then a reload.
 import type { Page } from '@playwright/test';
+import type { BattleLayout } from '../src/game/types';
+import { ANGLE_LABEL_MAX, fighterKeepOut } from '../src/scenes/battle/angleLabel';
 import { expect, test } from './fixtures';
 import { giveScrap, savedCamp } from './support/camp';
 import { saveShot } from './support/shots';
@@ -118,6 +120,19 @@ test('every castle place and base spot draws on the field where shells hit', asy
     expect(l.bases.PAST.y).toBe(t.pastY);
     expect(l.terrain.obstacles).toHaveLength(3);
     await readyUp(page);
+    // The angle number fits the size the unit sweep checks, and sits on no fighter.
+    const label = (await page.evaluate(() => window.__timeclash!.aim()))?.label;
+    expect(label).toBeTruthy();
+    expect(label!.w).toBeLessThanOrEqual(ANGLE_LABEL_MAX.w);
+    expect(label!.h).toBeLessThanOrEqual(ANGLE_LABEL_MAX.h);
+    for (const k of fighterKeepOut(l as BattleLayout))
+      expect(
+        label!.x < k.x + k.w &&
+          k.x < label!.x + label!.w &&
+          label!.y < k.y + k.h &&
+          k.y < label!.y + label!.h,
+        `label on a fighter at ${t.fort}`,
+      ).toBe(false);
     await saveShot(page, browserName, `battle-${t.fort}-${t.spot}`);
     await tid(page, 'pause').click();
     await tid(page, 'pause-leave').click();

@@ -1,7 +1,6 @@
 // The Computer player: one child plays alone. It is on for everyone (PRACTICE_BOT.enabled), and
 // ?computer=0 on the address switches it off, so these tests prove it works by default and that
 // nothing shows when it is switched off.
-import type { Page } from '@playwright/test';
 import { expect, test } from './fixtures';
 import { smallTargets, smallText } from './support/audit';
 import {
@@ -12,20 +11,13 @@ import {
   PAST_SIDE,
   takeShot,
   tid,
+  toSetup,
 } from './support/game';
 import { saveShot } from './support/shots';
 import './support/globals';
 
-async function toSetupWith(page: Page, query: string): Promise<void> {
-  await page.goto(`/?e2e=1${query}`);
-  await page.waitForFunction(() => Boolean(window.__timeclash));
-  await tid(page, 'tap-to-play').click();
-  await tid(page, 'intro-skip').click();
-  await expect(tid(page, 'setup-next')).toBeVisible({ timeout: 10_000 });
-}
-
 test('switched off (?computer=0): Setup shows no computer choice anywhere', async ({ page }) => {
-  await toSetupWith(page, '&computer=0');
+  await toSetup(page, '&computer=0');
   await expect(tid(page, 'play-with-computer')).toHaveCount(0);
   await expect(tid(page, 'play-with-person')).toHaveCount(0);
   await expect(tid(page, 'computer-card')).toHaveCount(0);
@@ -39,13 +31,13 @@ test('switched off (?computer=0): Setup shows no computer choice anywhere', asyn
 test('on by default: Setup offers it with no address flag, Another player first', async ({
   page,
 }) => {
-  await toSetupWith(page, '');
+  await toSetup(page, '');
   await expect(tid(page, 'play-with-computer')).toBeVisible();
   await expect(tid(page, 'play-with-person')).toHaveAttribute('aria-checked', 'true');
 });
 
 test('on by default: any other ?computer= value keeps it on', async ({ page }) => {
-  await toSetupWith(page, '&computer=true');
+  await toSetup(page, '&computer=true');
   await expect(tid(page, 'play-with-computer')).toBeVisible();
 });
 
@@ -54,7 +46,7 @@ test('pick Computer player and Hard, play a whole match to Victory', async ({
   browserName,
 }) => {
   test.slow();
-  await toSetupWith(page, '');
+  await toSetup(page, '');
   await expect(tid(page, 'play-with-person')).toHaveAttribute('aria-checked', 'true');
   await saveShot(page, browserName, 'computer-player-setup-choice');
 
@@ -164,7 +156,7 @@ test('pick Computer player and Hard, play a whole match to Victory', async ({
 });
 
 test('the last choice is remembered next time', async ({ page }) => {
-  await toSetupWith(page, '');
+  await toSetup(page, '');
   await tid(page, 'play-with-computer').click();
   await tid(page, 'computer-level-easy').click();
   await tid(page, 'setup-next').click();

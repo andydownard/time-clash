@@ -15,6 +15,11 @@ import { TEST_IDS } from '../../src/ui/types';
 import type { BattleSceneData } from '../../src/scenes/battle/types';
 import { click, flush, pickGrade, q } from '../ui/helpers';
 import { freshCamp, freshLoadout, freshWallet, walletOf, withWallet } from '../../src/game/loadout';
+import { DAMAGE } from '../../src/game/config';
+import { upgradeById } from '../../src/game/upgrades';
+
+/** Base health one tower level adds. */
+const TOWER_STEP = upgradeById('tower')!.perLevel;
 import { campWith } from '../helpers/camp';
 import { loadCamp } from '../../src/storage/storage';
 import { fakeController, makeServices, players, tinyBank } from './fakes';
@@ -312,8 +317,8 @@ describe('camp step', () => {
     const match = runCampStep(t.services);
     await clash();
     const data = (await match).data as BattleSceneData;
-    expect(data.match.snapshot().maxBaseHp.PAST).toBe(112);
-    expect(data.match.snapshot().baseHp.PAST).toBe(112);
+    expect(data.match.snapshot().maxBaseHp.PAST).toBe(DAMAGE.startingBaseHp + TOWER_STEP);
+    expect(data.match.snapshot().baseHp.PAST).toBe(DAMAGE.startingBaseHp + TOWER_STEP);
   });
 });
 
@@ -405,7 +410,9 @@ describe('camp step: Build Base and the builder flag', () => {
     expect(q(TEST_IDS.campUpgrade)).toBeNull();
     click(q(TEST_IDS.campBuild));
     await flush();
-    expect(document.querySelector('[data-screen="builder"]')!.getAttribute('data-team')).toBe('PAST');
+    expect(document.querySelector('[data-screen="builder"]')!.getAttribute('data-team')).toBe(
+      'PAST',
+    );
     expect(document.querySelector('[data-screen="upgrade"]')).toBeNull();
     click(q('bb-back'));
     expect(await p).toEqual({ key: SCENE_KEYS.camp });
@@ -417,10 +424,14 @@ describe('camp step: Build Base and the builder flag', () => {
     await flush();
     click(q('bb-team-FUTURE'));
     await flush();
-    expect(document.querySelector('[data-screen="builder"]')!.getAttribute('data-team')).toBe('FUTURE');
+    expect(document.querySelector('[data-screen="builder"]')!.getAttribute('data-team')).toBe(
+      'FUTURE',
+    );
     click(q('bb-team-PAST'));
     await flush();
-    expect(document.querySelector('[data-screen="builder"]')!.getAttribute('data-team')).toBe('PAST');
+    expect(document.querySelector('[data-screen="builder"]')!.getAttribute('data-team')).toBe(
+      'PAST',
+    );
     click(q('bb-back'));
     expect(await p).toEqual({ key: SCENE_KEYS.camp });
     expect(document.querySelector('[data-screen="builder"]')).toBeNull();
@@ -487,8 +498,8 @@ describe('camp step: weapons and upgrades', () => {
     const p = runCampStep(t.services);
     await clash();
     const data = (await p).data as BattleSceneData;
-    expect(data.match.snapshot().maxBaseHp.PAST).toBe(100 + 2 * 12);
-    expect(data.match.snapshot().maxBaseHp.FUTURE).toBe(100);
+    expect(data.match.snapshot().maxBaseHp.PAST).toBe(DAMAGE.startingBaseHp + 2 * TOWER_STEP);
+    expect(data.match.snapshot().maxBaseHp.FUTURE).toBe(DAMAGE.startingBaseHp);
   });
   it('plays a fresh game with Phase 1 numbers when nothing was bought', async () => {
     t.services.session.bank = tinyBank;
@@ -496,7 +507,10 @@ describe('camp step: weapons and upgrades', () => {
     const p = runCampStep(t.services);
     await clash();
     const data = (await p).data as BattleSceneData;
-    expect(data.match.snapshot().maxBaseHp).toEqual({ PAST: 100, FUTURE: 100 });
+    expect(data.match.snapshot().maxBaseHp).toEqual({
+      PAST: DAMAGE.startingBaseHp,
+      FUTURE: DAMAGE.startingBaseHp,
+    });
   });
   it('carries the same effects into the rematch', async () => {
     t.services.session.bank = tinyBank;

@@ -89,6 +89,7 @@ const mk = (
   over: { baseInBattle?: boolean; characterHealth?: boolean } = {},
 ): MatchController =>
   createMatch({
+    disturbances: false,
     players: PLAYERS,
     seed,
     characterHealth: over.characterHealth ?? true,
@@ -607,6 +608,7 @@ describe('flags', () => {
   it('flag off: bases are ignored and the match plays the same', () => {
     const run = (withBases: boolean): { snap: Match; shots: ShotResult[]; out: BlastOutcome[] } => {
       const c = createMatch({
+        disturbances: false,
         players: PLAYERS,
         seed: 9,
         characterHealth: true,
@@ -687,7 +689,7 @@ describe('Computer player', () => {
   });
 
   it('without built bases the choice is exactly what it was', () => {
-    const c = createMatch({ players: PLAYERS, seed: 3, characterHealth: true });
+    const c = createMatch({ disturbances: false, players: PLAYERS, seed: 3, characterHealth: true });
     c.ready();
     const shot = chooseShot(c.snapshot(), 'PAST', 'medium', createRng(4));
     expect(shot.mount).toBeUndefined();

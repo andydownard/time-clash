@@ -161,11 +161,11 @@ describe('loadout effects', () => {
     });
     // Alex plays Past: the tower counts, the Future force field does not.
     const asPast = matchEffectsFor(camp, { PAST: 'Alex', FUTURE: 'Sam' });
-    expect(asPast.PAST.maxHp).toBe(124);
+    expect(asPast.PAST.maxHp).toBe(DAMAGE.startingBaseHp + 2 * upgradeById('tower')!.perLevel);
     expect(asPast.FUTURE.shieldHits).toBe(0);
     // Alex plays Future next time: the force field counts, the Past tower does not.
     const asFuture = matchEffectsFor(camp, { PAST: 'Sam', FUTURE: 'alex' });
     expect(asFuture.FUTURE.shieldHits).toBe(3);
-    expect(asFuture.PAST.maxHp).toBe(100);
+    expect(asFuture.PAST.maxHp).toBe(DAMAGE.startingBaseHp);
   });
 });
