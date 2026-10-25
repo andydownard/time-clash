@@ -12,14 +12,15 @@ export const tid = (page: Page, id: string): Locator => page.getByTestId(id);
 /** Seed used by every full-game test, so a run repeats. */
 export const SEED = 4242;
 
-export async function openGame(page: Page): Promise<void> {
-  await page.goto('/?e2e=1');
+/** `query` adds to the address, such as "&builder=0" for the old Build Base shop. */
+export async function openGame(page: Page, query = ''): Promise<void> {
+  await page.goto(`/?e2e=1${query}`);
   await page.waitForFunction(() => Boolean(window.__timeclash));
 }
 
 /** First visit: tap, Skip the intro, wait out Loading, land on Setup. */
-export async function toSetup(page: Page): Promise<void> {
-  await openGame(page);
+export async function toSetup(page: Page, query = ''): Promise<void> {
+  await openGame(page, query);
   await tid(page, 'tap-to-play').click();
   await tid(page, 'intro-skip').click();
   await expect(tid(page, 'setup-next')).toBeVisible({ timeout: 10_000 });

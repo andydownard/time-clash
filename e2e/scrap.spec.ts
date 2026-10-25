@@ -13,7 +13,7 @@ import {
 } from './support/game';
 
 async function toCamp(page: Parameters<typeof tid>[0]): Promise<void> {
-  await toSetup(page);
+  await toSetup(page, '&builder=0');
   await fillTeam(page, 'PAST', PAST_SIDE);
   await fillTeam(page, 'FUTURE', FUTURE_SIDE);
   await tid(page, 'setup-next').click();

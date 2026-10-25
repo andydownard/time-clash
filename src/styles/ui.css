@@ -4553,6 +4553,10 @@ button.tc-forge-row[aria-disabled='true'],
   color: var(--tc-ember);
   text-transform: uppercase;
 }
+/* Beat the root h2 margin, so four groups still fit a 1133x744 iPad mini without scrolling. */
+.tc-plan .tc-plan-heading {
+  margin: 0;
+}
 .tc-plan-hint {
   margin: 0;
   font-size: var(--tc-text-min);

@@ -3,6 +3,7 @@
 import type { Page } from '@playwright/test';
 import { expect, test } from './fixtures';
 import { giveScrap, savedCamp } from './support/camp';
+import { saveShot } from './support/shots';
 import {
   FUTURE_SIDE,
   PAST_SIDE,
@@ -56,6 +57,73 @@ test('the Battle Plan picks the place and the base spot, and remembers them', as
   await expect(tid(page, 'plan-spot-skyscraper')).toHaveAttribute('aria-checked', 'true');
 });
 
+test('Team Past places its castle on the Battle Plan by keyboard, and it is remembered', async ({
+  page,
+  browserName,
+}) => {
+  await toCamp(page);
+  await tid(page, 'camp-start').click();
+  await expect(page.locator('[data-screen="plan"]')).toContainText('Alex, place your castle');
+  // A family with no castle place yet sees none picked (the castle stays where it always was).
+  for (const id of ['hillFort', 'villageWall', 'drawbridge'])
+    await expect(tid(page, `plan-fort-${id}`)).toHaveAttribute('aria-checked', 'false');
+  const card = tid(page, 'plan-fort-drawbridge');
+  const box = (await card.boundingBox())!;
+  expect(box.height).toBeGreaterThanOrEqual(56);
+  await card.focus();
+  await page.keyboard.press('Space');
+  await expect(card).toHaveAttribute('aria-checked', 'true');
+  await expect(tid(page, 'plan-spot-foodTruck')).toHaveAttribute('aria-checked', 'true');
+  await saveShot(page, browserName, 'plan-castle');
+  await tid(page, 'plan-go').click();
+  await expect(tid(page, 'pass-screen')).toBeVisible({ timeout: 10_000 });
+  const l = (await layout(page))!;
+  expect(l.fort).toBe('drawbridge');
+  expect(l.bases.PAST.y).toBe(520);
+  // The aspen hill, the food truck wall, and the drawbridge.
+  expect(l.terrain.obstacles).toHaveLength(3);
+  await readyUp(page);
+  await tid(page, 'pause').click();
+  await tid(page, 'pause-leave').click();
+  await tid(page, 'pause-leave-yes').click();
+  await expect(tid(page, 'camp-start')).toBeVisible({ timeout: 10_000 });
+  await tid(page, 'camp-start').click();
+  await expect(tid(page, 'plan-fort-drawbridge')).toHaveAttribute('aria-checked', 'true');
+});
+
+test('every castle place and base spot draws on the field where shells hit', async ({
+  page,
+  browserName,
+}) => {
+  test.setTimeout(120_000);
+  const tour = [
+    { biome: 'aspen', fort: 'hillFort', spot: 'skyscraper', pastY: 330 },
+    { biome: 'cherry', fort: 'villageWall', spot: 'foodTruck', pastY: 470 },
+    { biome: 'temple', fort: 'drawbridge', spot: 'bridge', pastY: 520 },
+  ] as const;
+  await toCamp(page);
+  for (const t of tour) {
+    await tid(page, 'camp-start').click();
+    await tid(page, `plan-biome-${t.biome}`).click();
+    await tid(page, `plan-fort-${t.fort}`).click();
+    await tid(page, `plan-spot-${t.spot}`).click();
+    await tid(page, 'plan-go').click();
+    await expect(tid(page, 'pass-screen')).toBeVisible({ timeout: 10_000 });
+    const l = (await layout(page))!;
+    expect(l.biome).toBe(t.biome);
+    expect(l.fort).toBe(t.fort);
+    expect(l.spot).toBe(t.spot);
+    expect(l.bases.PAST.y).toBe(t.pastY);
+    expect(l.terrain.obstacles).toHaveLength(3);
+    await readyUp(page);
+    await saveShot(page, browserName, `battle-${t.fort}-${t.spot}`);
+    await tid(page, 'pause').click();
+    await tid(page, 'pause-leave').click();
+    await tid(page, 'pause-leave-yes').click();
+    await expect(tid(page, 'camp-start')).toBeVisible({ timeout: 10_000 });
+  }
+});
+
 test('Back on the Battle Plan returns to the Camp and starts nothing', async ({ page }) => {
   await toCamp(page);
   await tid(page, 'camp-start').click();
@@ -64,7 +132,9 @@ test('Back on the Battle Plan returns to the Camp and starts nothing', async ({ 
   expect(await page.evaluate(() => window.__timeclash!.match())).toBeNull();
 });
 
-test('special ammo: unlock with Scrap, load it in battle, and a shot uses one', async ({ page }) => {
+test('special ammo: unlock with Scrap, load it in battle, and a shot uses one', async ({
+  page,
+}) => {
   await toCamp(page);
   await giveScrap(page, 20, 0);
   await page.reload();

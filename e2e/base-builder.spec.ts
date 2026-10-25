@@ -1,5 +1,5 @@
 // Base builder: drag bricks onto the plot, turn, undo, keep three saved bases, and see the chosen
-// base again after a reload. The builder is behind ?builder=1 until the panel has reviewed it.
+// base again after a reload.
 import { expect, test } from './fixtures';
 import {
   bricks,
@@ -14,23 +14,21 @@ import { giveScrap } from './support/camp';
 import { tid } from './support/game';
 import { saveShot } from './support/shots';
 
-test('the Camp has no Build buttons unless the builder is switched on', async ({ page }) => {
-  await page.goto('/?e2e=1');
-  await page.waitForFunction(() => Boolean(window.__timeclash));
-  await expect(tid(page, 'camp-build-PAST')).toHaveCount(0);
-  await expect(tid(page, 'camp-build-FUTURE')).toHaveCount(0);
-});
-
-test('with the builder on, each side has one Build Base button and no old shop button', async ({
+test('there is one Build Base button, no pictures of the bases, and a Past and Future picker inside', async ({
   page,
 }) => {
   await toBuilderCamp(page);
   await expect(tid(page, 'camp-upgrade')).toHaveCount(0);
-  await expect(tid(page, 'camp-build-PAST')).toHaveText('Build Base');
-  await expect(tid(page, 'camp-build-FUTURE')).toHaveText('Build Base');
-  await tid(page, 'camp-build-FUTURE').click();
-  await expect(page.locator('[data-screen="builder"]')).toBeVisible();
+  await expect(tid(page, 'camp-build')).toHaveText('Build Base');
+  await expect(page.locator('.tc-camp-base')).toHaveCount(0);
+  await tid(page, 'camp-build').click();
+  await expect(page.locator('[data-screen="builder"][data-team="PAST"]')).toBeVisible();
   await expect(page.locator('[data-screen="upgrade"]')).toHaveCount(0);
+  await tid(page, 'bb-team-FUTURE').click();
+  await expect(page.locator('[data-screen="builder"][data-team="FUTURE"]')).toBeVisible();
+  await expect(tid(page, 'bb-team-FUTURE')).toHaveAttribute('aria-checked', 'true');
+  await tid(page, 'bb-team-PAST').click();
+  await expect(page.locator('[data-screen="builder"][data-team="PAST"]')).toBeVisible();
 });
 
 test('drag, turn, undo, save to slot 2, reload and see the base again', async ({ page }) => {
@@ -53,11 +51,9 @@ test('drag, turn, undo, save to slot 2, reload and see the base again', async ({
   await expect(bricks(page)).toHaveCount(2);
 
   await tid(page, 'bb-done').click();
-  await expect(tid(page, 'camp-base-PAST')).toHaveAttribute('data-bricks', '2');
 
   await page.reload();
   await expect(tid(page, 'camp-start')).toBeVisible({ timeout: 10_000 });
-  await expect(tid(page, 'camp-base-PAST')).toHaveAttribute('data-bricks', '2');
   await openBuilder(page, 'PAST');
   await expect(tid(page, 'bb-slot-2')).toHaveAttribute('aria-pressed', 'true');
   await expect(bricks(page)).toHaveCount(2);

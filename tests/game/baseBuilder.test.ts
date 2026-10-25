@@ -90,13 +90,12 @@ describe('catalog', () => {
     expect(ownedPieceIds('PAST', ['laserBase']).has('laserBase')).toBe(false);
     expect(ownedPieceIds('PAST', undefined).has('stone')).toBe(true);
   });
-  it('is off by default and the query string turns it on', () => {
-    expect(B.enabled).toBe(false);
-    expect(baseBuilderOn('')).toBe(false);
+  it('is on by default, and the query string can force it either way', () => {
+    expect(B.enabled).toBe(true);
+    expect(baseBuilderOn('')).toBe(true);
     expect(baseBuilderOn('?builder=1')).toBe(true);
-    expect(baseBuilderOn('?e2e=1&builder=1')).toBe(true);
-    expect(baseBuilderOn('?builder=0')).toBe(false);
-    expect(baseBuilderOn('?builder=true')).toBe(false);
+    expect(baseBuilderOn('?e2e=1&builder=0')).toBe(false);
+    expect(baseBuilderOn('?builder=true')).toBe(true);
   });
 });
 

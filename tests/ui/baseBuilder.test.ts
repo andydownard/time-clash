@@ -4,7 +4,7 @@
 // is one pixel, so a cell is 40px and the plot is 960 by 480.
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
   freshBases,
   newBuild,
@@ -18,12 +18,10 @@ import { BASE_BUILDER as B, UI } from '../../src/game/config';
 import { BUILDER_COPY } from '../../src/data/copy';
 import { walletOf, type CampState } from '../../src/game/loadout';
 import { plotPoint } from '../../src/ui/baseBuilderScreen';
+import type { Team } from '../../src/game/types';
 import { TEST_IDS } from '../../src/ui/types';
 import { NAMES, campWith } from '../helpers/camp';
-import { click, flush, q, qa, setup } from './helpers';
-
-// Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
-vi.setConfig({ testTimeout: 120_000 });
+import { click, q, qa, setup } from './helpers';
 
 const css = readFileSync(join(process.cwd(), 'src/styles/baseBuilder.css'), 'utf8');
 const tokens = readFileSync(join(process.cwd(), 'src/styles/tokens.css'), 'utf8');
@@ -56,7 +54,7 @@ afterEach(() => {
 type Opened = {
   saved: BasesState[];
   camps: CampState[];
-  done: Promise<void>;
+  done: Promise<Team | null>;
 };
 
 function open(
@@ -442,34 +440,35 @@ describe('Scrap and locked pieces', () => {
   });
 });
 
-describe('Camp buttons and thumbnails', () => {
-  it('shows nothing new unless the builder is on', () => {
+describe('Camp button', () => {
+  it('shows no Build Base button unless the builder is on', () => {
     void s.overlay.showCamp();
-    expect(q(TEST_IDS.campBuild('PAST'))).toBeNull();
+    expect(q(TEST_IDS.campBuild)).toBeNull();
     void s.overlay.showCamp({ builder: false });
-    expect(q(TEST_IDS.campBuild('PAST'))).toBeNull();
+    expect(q(TEST_IDS.campBuild)).toBeNull();
   });
-  it('shows a Build button and a picture for each side, and the button opens that side', async () => {
-    const r = placePiece(newBuild('PAST'), 'stone', { x: 2, y: 3, ox: 0, oy: 0 });
-    if (!r.ok) throw new Error('place');
-    const choice = s.overlay.showCamp({
-      builder: true,
-      names: NAMES,
-      bases: { PAST: [...r.state.pieces], FUTURE: [] },
-    });
-    expect(q(TEST_IDS.campBuild('PAST'))!.textContent).toBe(BUILDER_COPY.campButton.PAST);
-    expect(q(TEST_IDS.campBuild('FUTURE'))!.textContent).toBe(BUILDER_COPY.campButton.FUTURE);
-    expect(q(TEST_IDS.campBase('PAST'))!.getAttribute('data-bricks')).toBe('1');
-    expect(q(TEST_IDS.campBase('FUTURE'))!.getAttribute('data-bricks')).toBe('0');
-    expect(q(TEST_IDS.campBase('PAST'))!.getAttribute('aria-label')).toBe("Alex's Castle");
-    click(q(TEST_IDS.campBuild('FUTURE')));
-    await flush();
-    await expect(choice).resolves.toBe('buildFuture');
+});
+
+describe('team picker', () => {
+  it('has a Past and a Future choice, with the current side checked', () => {
+    open('FUTURE');
+    expect(q('bb-team-PAST')!.getAttribute('aria-checked')).toBe('false');
+    expect(q('bb-team-FUTURE')!.getAttribute('aria-checked')).toBe('true');
+    expect(q('bb-team-PAST')!.textContent).toBe('Team Past');
+    expect(q('bb-team-FUTURE')!.textContent).toBe('Team Future');
   });
-  it('the Past button opens the Past side', async () => {
-    const choice = s.overlay.showCamp({ builder: true });
-    click(q(TEST_IDS.campBuild('PAST')));
-    await expect(choice).resolves.toBe('buildPast');
+  it('tapping the other side closes this screen and answers with that side', async () => {
+    const { done } = open('PAST');
+    click(q('bb-team-FUTURE'));
+    await expect(done).resolves.toBe('FUTURE');
+    expect(document.querySelector('[data-screen="builder"]')).toBeNull();
+  });
+  it('tapping the side you are on does nothing, and Back and Done answer null', async () => {
+    const { done } = open('PAST');
+    click(q('bb-team-PAST'));
+    expect(document.querySelector('[data-screen="builder"]')).not.toBeNull();
+    click(q('bb-back'));
+    await expect(done).resolves.toBeNull();
   });
 });
 

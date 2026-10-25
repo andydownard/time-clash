@@ -514,19 +514,25 @@ export const PLAN_COPY = {
   back: 'Back',
   go: 'Lock it in!',
   placeHeading: 'Pick a place',
+  fortHeading: (pastName: string): string => `${pastName}, place your castle`,
   spotHeading: (futureName: string): string => `${futureName}, hide your base`,
   ammoHeading: 'Special ammo',
   ammoNote: 'A few shots each match. Unlock it once with Scrap.',
   scrap: 'Scrap',
   biomes: {
-    aspen: { name: 'Aspen Forest', note: 'A big hill in the middle.' },
+    aspen: { name: 'Aspen Forest', note: 'A big hill.' },
     cherry: { name: 'Cherry Blossoms', note: 'A low, wide hill.' },
     temple: { name: 'Ruined Temple', note: 'A tall old pillar.' },
   },
   spots: {
-    skyscraper: { name: 'Skyscraper', height: 'Height: high', note: 'No cover.' },
-    foodTruck: { name: 'Food Trucks', height: 'Height: middle', note: 'A low wall.' },
-    bridge: { name: 'Bridge', height: 'Height: low', note: 'Blocks flat shots.' },
+    skyscraper: { name: 'Skyscraper', height: 'High', note: 'No cover.' },
+    foodTruck: { name: 'Food Trucks', height: 'Middle', note: 'A low wall.' },
+    bridge: { name: 'Bridge', height: 'Low', note: 'Blocks flat shots.' },
+  },
+  forts: {
+    hillFort: { name: 'Hill Fort', height: 'High', note: 'Solid rock below.' },
+    villageWall: { name: 'Village Wall', height: 'Middle', note: 'A low wall.' },
+    drawbridge: { name: 'Drawbridge', height: 'Low', note: 'Blocks flat shots.' },
   },
   ammo: {
     confetti: { name: 'Confetti', note: 'Bigger blast.' },
@@ -573,11 +579,9 @@ export const GEAR_COPY = {
 export const BUILDER_COPY = {
   /** The screen is called Build Base for both sides. */
   title: { PAST: 'Build Base', FUTURE: 'Build Base' } as Record<Team, string>,
-  /** The one Camp button per side that opens the builder. */
-  campButton: { PAST: 'Build Base', FUTURE: 'Build Base' } as Record<Team, string>,
   /** A tap on a locked piece or weapon when the purse is short. */
   needMore: (n: number): string => `Not enough Scrap yet. You need ${n} more.`,
-  campThumb: (team: Team, name: string): string => `${name}'s ${TEAM_HOMES[team]}`,
+  pickTeam: 'Choose a team',
   back: 'Back',
   scrap: 'Scrap',
   slots: 'Saved bases',

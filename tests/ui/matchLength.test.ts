@@ -1,10 +1,8 @@
 // @vitest-environment jsdom
 // Setup: a parent picks Short, Normal or Long. Normal unless they touch it.
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { TEST_IDS } from '../../src/ui/types';
 import { click, q, setup } from './helpers';
-
-vi.setConfig({ testTimeout: 120_000 });
 
 let s: ReturnType<typeof setup>;
 beforeEach(() => {

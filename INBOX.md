@@ -9,9 +9,8 @@ Raw ideas land here. Triage promotes them to BACKLOG.md. Items expire after 30 d
   - Team Past horseman: comes more often, can stab, and pushes a person along with him. The pushed person says "Ah, yeah, this is funny."
   - Helicopter crew lose 2 health when they fall, then must shoot the enemy. Once they are hit down, the helicopter and the tank reappear.
   - In the base builder, players choose where their cannon, catapult or person stands (weapon spots are in; unit placement is not).
-  - Base builder "make your own shapes": built (the "My own shape" pad, behind the base builder switch).
+  - Base builder "make your own shapes": built (the "My own shape" pad).
   - Forge: after buying every item, unlock balloons, chariots and catapults (and a Future set, names still to decide), with several versions of each like the sword, bow and cannon. The Past arrow-maker should be making a bow, not swinging an arrow.
   - Castle and bunkers explode, then are rebuilt, then explode again (a battle idle loop on the design canvas; the real game ends a match on base health).
   - Owner answers (2026-10-21): Future Forge units are Hover Balloon, Rocket Sled and Zap Catapult. The Camp button stays "Build Base". Lasers are Future only. Each team keeps one evasion ability (Past Stone Wall, Future Hoverboard Dodge).
 
-- (2026-10-21) Flaky unit tests under load: `vitest.config.ts` now sets a 30 s test and hook limit, because a full run beside builds and other agents stretched ~40 ms tests past 5 s (different tests each run, in `tests/ui` and `tests/game`). `tests/ui/baseBuilder.test.ts` still carries its own 120 s `vi.setConfig` (line 26); drop it if it never trips. Check whether any test truly needs more than 30 s. A full `npm test` on 2026-10-23 passed 3,487 tests in about 64 s.

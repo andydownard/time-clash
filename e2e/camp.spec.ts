@@ -11,8 +11,8 @@ import {
   clashFromCamp,
 } from './support/game';
 
-async function toCamp(page: Parameters<typeof tid>[0]): Promise<void> {
-  await toSetup(page);
+async function toCamp(page: Parameters<typeof tid>[0], query = ''): Promise<void> {
+  await toSetup(page, query);
   await fillTeam(page, 'PAST', PAST_SIDE);
   await fillTeam(page, 'FUTURE', FUTURE_SIDE);
   await tid(page, 'setup-next').click();
@@ -33,10 +33,10 @@ test('Setup leads to the Camp, and Time to Clash! starts the match', async ({ pa
   ]);
 });
 
-test('Build Base (builder off) opens the old shop screen and Back returns to the Camp', async ({ page }) => {
-  await toCamp(page);
+test('Build Base (?builder=0) opens the old shop screen and Back returns to the Camp', async ({ page }) => {
+  await toCamp(page, '&builder=0');
   await expect(tid(page, 'camp-upgrade')).toHaveText('Build Base');
-  await expect(tid(page, 'camp-build-PAST')).toHaveCount(0);
+  await expect(tid(page, 'camp-build')).toHaveCount(0);
   await tid(page, 'camp-upgrade').click();
   await expect(page.locator('[data-screen="upgrade"] h1')).toHaveText('Build Base');
   await tid(page, 'upgrade-back').click();

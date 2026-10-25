@@ -1,13 +1,10 @@
 // One child alone against the Computer player, inside the battle loop (no Phaser).
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { COMPUTER } from '../../../src/data/computerCopy';
 import { PRACTICE_BOT, type BotLevel } from '../../../src/game/config';
 import { withComputer } from '../../../src/game/practice';
 import { BattleFlow } from '../../../src/scenes/battle/flow';
 import { PLAYERS, makeWorld, settle } from './flowHarness';
-
-// Heavy under CPU load (a full run, or a build running beside it): a longer limit for this file only.
-vi.setConfig({ testTimeout: 120_000 });
 
 const SHORT = { angleDeg: 45, power: 20 };
 

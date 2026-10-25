@@ -1,11 +1,9 @@
 // @vitest-environment jsdom
 // Setup opens with the grades and Focus the family picked last time.
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import type { Players } from '../../src/game/types';
 import { TEST_IDS } from '../../src/ui/types';
 import { click, flush, q, setup } from './helpers';
-
-vi.setConfig({ testTimeout: 120_000 });
 
 let s: ReturnType<typeof setup>;
 beforeEach(() => {
