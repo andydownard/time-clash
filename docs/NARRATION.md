@@ -38,6 +38,17 @@ Card title: "Wipeouts and Turns"
 
 **Total:** about 40 seconds (the five recorded clips add up to 42.2 s). Card 4 has 4 captions. Jokes: the wind rascal, Chrono tripping, and the lost dignity.
 
+## Squads: the 2-goes wording (re-record needed)
+Squads is on, so a turn is 2 goes, not 2 shots. The recorded clips for cards 3 and 4 still say "two shots" and "After shot two". The words below replace them when the clips are re-recorded with the same Kokoro settings. Until then the cards play the old clips with matching captions, so voice and captions never disagree.
+- Card 3, "Two Goes": "You get two goes each turn. Fire your launcher, or send your helper walking. Hit the other base to lower its health. Empty the bar and you win!"
+- Card 4, first sentence: "After go two, answer a question to reload." The rest of the card stays.
+
+## Squads lines (built)
+Every line is said by the device voice only after a tap (`noClip`, no network request), and shows the same words as a caption. No line holds a child's name or any question text.
+- First go of a match, per side: "Press Fire! Or pick a helper and tap Walk out!" (`SQUAD_COPY.firstGo`).
+- Hear it: "Cannon Crew fires a ball. Press Fire!" or "Sir Bonk walks to the other side and bonks every turn. Tap Walk out!" (`SQUAD_COPY.hearLine`, with each side's helper names).
+- Captions only (not spoken): "Sir Bonk walks out. He bonks every turn!", "Sir Bonk walks home.", "Sir Bonk: Bonk! The base wobbles.", "Sir Bonk: Bonk! Bonk!", "Bop! Sir Bonk loses a heart.", "Sir Bonk wobbles.", and "Sir Bonk tumbles and walks home dizzy." followed by a funny line from the wipeout bag. That funny line is spoken like any wipeout line when the voice service is set up.
+
 ## Pass screen line (built)
 Each time the pass screen (the cover between turns) opens, Chrono says its own words: "Pass the screen! No peeking at their question!" (`src/ui/passScreen.ts`, built from `PASS_SCREEN.heading` and `PASS_SCREEN.noPeeking`).
 - It goes through the AudioManager, so it is silent before the first tap, while muted, and in a browser driven by a test tool. The caption shows in every case, above the cover, unless captions are off in Settings.

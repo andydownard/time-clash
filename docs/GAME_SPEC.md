@@ -25,7 +25,7 @@ Time Clash is an educational, turn-based artillery web application built with a 
 [ Base Deployment ] ───────► Choose secret base location in futuristic Austin
          │
          ▼
-[ Battle Arena ] ──────────► 2 Shots ➔ Awkward Tumbles ➔ Math/Reading Reload
+[ Battle Arena ] ──────────► 2 Goes ➔ Awkward Tumbles ➔ Math/Reading Reload
          │
          ▼
 [ Victory & Wipeout Screen ]
@@ -99,8 +99,8 @@ E. Slapstick Wipeouts & Recovery
 
 F. K–12 Educational Reload Loop
 
-⚬ Turn Sequence: 2 shots per turn.
-⚬ Reload Modal: Pops up immediately after shot 2.
+⚬ Turn Sequence: 2 goes per turn. A go is a launcher shot, or the walking helper's Walk out or Come back.
+⚬ Reload Modal: Pops up immediately after go 2.
 ⚬ Power Shot: A right answer (fast or slow) earns exactly one extra shot that does 1.5 times the damage (`BONUS.damageMultiplier`). Walls and force fields still apply. It has no question and no bonus of its own. A wrong answer earns no Power Shot but never blocks play.
 ⚬ Asymmetric Tuning: Player 1 (e.g., 2nd Grade Reading) reads and picks sight words to reload; Player 2 (e.g., 8th Grade Math) solves pre-algebra equations.
 ⚬ Fast answers grant bonus scrap materials to spend in the Camp Hub.
@@ -113,7 +113,7 @@ Phase 1: Local Single-Computer Core Loop (MVP)
 ⚬ Features:
   ⚬ Two-player name entry and turn-indicator banners (Player 1's Turn / Player 2's Turn).
   ⚬ Basic 2D ballistics engine (angle, power, arc, wind).
-  ⚬ 2-shot limit triggering the Educational Reload Modal.
+  ⚬ 2-go limit triggering the Educational Reload Modal.
   ⚬ Elementary question bank (Math & Reading) with grade-band selection.
   ⚬ Flat base health (100 HP) with the first awkward tumble animation and post-fall comic speech bubbles.
   ⚬ 1 Funny Loading Screen with rotating humor prompts.
@@ -167,8 +167,20 @@ Screen 2: Funny Loading Screen
 Screen 3: Battle Screen & Turn Transition
 
 ⚬ Environment: Left side shows an ornate medieval castle; right side shows a futuristic Austin cyber-base tucked under a glowing solar skyway.
-⚬ Active Indicator: Prominent comic banner at top center reading: "PLAYER 1: ALEX — YOUR TURN! (SHOT 1 OF 2)" with glowing directional arrows.
+⚬ Active Indicator: Prominent comic banner at top center reading: "ALEX, YOUR TURN!" with "GO 1 OF 2" and two dots beside it ("SHOT 1 OF 2" with Squads off) with glowing directional arrows.
 ⚬ Slapstick Moment: A character who was just knocked over lies hilariously flat on their stomach with arms spread out, a cartoon speech bubble above them saying: "Just checking the lawn for four-leaf clovers!"
+## Squads: the walking helper (on)
+
+Each side has two helpers: its launcher (the fighter that shoots, picked with "Pick one") and one walking helper. Team Past has Sir Bonk, a small knight with a pink foam mallet. Team Future has Robo Bonk, a small robot with a glow noodle. A turn is still 2 goes, then the reload question. The Power Shot is always the launcher's.
+
+- **Walk out (one go).** Pick the helper, then tap Walk out. He walks along the ground from his base. The hill, mound, pillar or wall in the middle never stops him: he is drawn walking in front of it. He stops next to the first enemy thing in front: the enemy helper, or the enemy base.
+- **He keeps bonking.** At the start of every turn after that, the enemy's turn too, he bonks what is next to him, with a "Bonk!" and a puff. A bonk takes 12 base health (`SQUADS.standBonkDamage`, about an eighth of a perfect turn). The castle gate upgrade cuts it (never below 1). A force field or a Hoverboard Dodge stops it like a shot. Two helpers side by side bonk each other (1 health each) and leave the bases alone.
+- **Health.** He has a heart and pips above him (`CHARACTER_HEALTH.hp`). A shell from the other side that lands on him costs 1 (2 for a Power Shot). A near miss costs nothing, but he wobbles. At 0 he does a silly tumble, says a funny line (with a caption), walks home dizzy, and sits out one full turn of his team. His own side's shells never hurt him. Nobody is hurt.
+- **Come back (one go).** While he is out, Come back replaces Walk out. He walks home and is ready again on his team's next turn.
+- **Sound.** A soft step sound for a walk and a foam knock for a bonk, made in code. Only after a tap, and never with sound off.
+
+Pace: a player with perfect aim still needs about five turns of their own to win. A helper left alone all match helps a lot but cannot win alone (`tests/game/squadPace.test.ts`). Matches always end, even when a side never aims (`tests/game/squadWalk.test.ts`). The Computer player leaves its helper home.
+
 ## Practice opponent
 
 A rules-based opponent so one child can play alone, and later fill a seat when no second player is there. Pure logic in `src/game/bot.ts` (and `botPlay.ts` for simulated matches, `practice.ts` for turn ownership and pacing). Off by default: `PRACTICE_BOT.enabled = false` in `src/game/config.ts`. `?computer=1` on the address shows the choice for testing before the panel review. With it off the game is exactly as before.
@@ -208,7 +220,7 @@ Bot against bot (row wins): easy 30.9% vs medium, 20.6% vs hard; medium 67.5% vs
 
 ### Match length (parent setting)
 
-Setup has a Match length choice: Short, Normal, Long. Normal is the default and is exactly the balance below (base health 100, or 3 health per fighter). Short halves full health (base 50, fighters 2). Long is one and a half times (base 150, fighters 5, rounded to whole numbers, never below 1). A direct hit still does 25 base damage (1 fighter health, 2 for a Power Shot), so Short ends in 2 direct hits and Long in 6, against 4 at Normal. It does not change the 2-shots-then-reload turn, the reload question, timing or Scrap. It is saved on the device and "Clear my data" resets it. Numbers: `MATCH_LENGTH` in `src/game/config.ts`.
+Setup has a Match length choice: Short, Normal, Long. Normal is the default and is exactly the balance below (base health 100, or 3 health per fighter). Short halves full health (base 50, fighters 2). Long is one and a half times (base 150, fighters 5, rounded to whole numbers, never below 1). A direct hit still does 25 base damage (1 fighter health, 2 for a Power Shot), so Short ends in 2 direct hits and Long in 6, against 4 at Normal. It does not change the 2-goes-then-reload turn, the reload question, timing or Scrap. It is saved on the device and "Clear my data" resets it. Numbers: `MATCH_LENGTH` in `src/game/config.ts`.
 
 Owner decision (2026-10-20): "Every character has three health. It REPLACES base health." The rules are pure, in `src/game/damage.ts` and `src/game/match.ts`, with numbers in `CHARACTER_HEALTH` in `src/game/config.ts`. The flag is `CHARACTER_HEALTH.enabled = false`. It stays off until the Battle scene and the HUD draw health pips and play the awkward fall. With it off the game is exactly as before. A match reads it as the default of `MatchOptions.characterHealth`; tests pass the option and never change the constant.
 
@@ -228,9 +240,9 @@ The Power Shot is "1.5 times as hard". Health is whole numbers, so 1 x 1.5 round
 
 A fighter at 0 is knocked out. It takes no more hits or tumbles, it cannot be picked (`selectUnit` throws), and it cannot fire. If the team's pick is knocked out, the pick moves to a standing fighter (the default if it stands). The `knockedOut` list on the shot result names each fighter once, on the shot that took it to 0, so the scene plays the fall one time.
 
-Win: a team loses when ALL its fighters are knocked out. The last fighter standing keeps the turn shape: 2 shots, then reload, and a right answer earns one Power Shot. `winnerOfMatch` gives the winner in both modes (fighters when the flag is on, base health when off). Matches always end: a test plays 200 seeded Computer player matches with the flag on and each one ends with a winner under the turn cap. The Computer player (`chooseShot`) only picks standing fighters and aims at a standing enemy fighter.
+Win: a team loses when ALL its fighters are knocked out. The last fighter standing keeps the turn shape: 2 goes, then reload, and a right answer earns one Power Shot. `winnerOfMatch` gives the winner in both modes (fighters when the flag is on, base health when off). Matches always end: a test plays 200 seeded Computer player matches with the flag on and each one ends with a winner under the turn cap. The Computer player (`chooseShot`) only picks standing fighters and aims at a standing enemy fighter.
 
-What stays the same: 2 shots then reload, the Power Shot, wind, scrap, the reload question, the tumble lines, seeded randomness.
+What stays the same: 2 goes then reload, the Power Shot, wind, scrap, the reload question, the tumble lines, seeded randomness.
 
 ## Built bases in battle (rules built, flag off)
 
