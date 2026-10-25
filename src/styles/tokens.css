@@ -176,6 +176,12 @@
   /* Shadows and glows */
   --tc-shadow-wood: 0 6px 0 var(--tc-purple-900), inset 0 3px 0 rgb(255 255 255 / 25%);
   --tc-shadow-card: 0 8px 0 var(--tc-purple-700);
+  /* Buttons stand on a bottom edge and press down onto it (translateY by --tc-btn-press). */
+  --tc-btn-edge: 0 4px 0 var(--tc-purple-700);
+  --tc-btn-edge-neon: 0 4px 0 var(--tc-blue-700);
+  --tc-btn-press: 4px;
+  /* A selector's outline. Cream on the dark screens; ui.css swaps it on parchment and team cards. */
+  --tc-sel-edge: var(--tc-on-dark);
   --tc-shadow-banner: 0 0 0 4px var(--tc-parchment-warm), 0 8px 0 var(--tc-purple-700);
   --tc-glow-neon:
     0 0 0 3px rgb(79 216 255 / 25%), 0 0 26px var(--tc-blue-500),

@@ -132,12 +132,12 @@ describe('HUD readouts', () => {
   it('has no separate shots panel: the bar header holds the turn name and the pips', () => {
     expect(css).not.toContain('.tc-hud-center');
   });
-  it('Sound sits top left under the ? and gear, and uses the shared button font', () => {
+  it('Sound sits top left under the ? and gear, and uses the shared control font', () => {
     const corner = bodyOf('.tc-hud-corner');
     expect(corner).toMatch(/top:/);
     expect(corner).not.toMatch(/bottom:/);
     expect(corner).toMatch(/left:/);
-    expect(bodyOf('.tc-hud-corner .tc-btn')).not.toMatch(/font-family/);
+    expect(bodyOf('.tc-hud-corner .tc-toggle')).not.toMatch(/font-family/);
   });
   it('portrait lays the HUD out as a grid with cards side by side', () => {
     expect(css).toMatch(/grid-template-areas:\s*'past future';/);
@@ -199,8 +199,13 @@ describe('Setup', () => {
     expect(vars['--tc-chip-picked-text']).toBe(vars['--tc-ink-deep']);
     expect(vars['--tc-chip-past-edge']).toBe(vars['--tc-purple-300']);
     expect(vars['--tc-chip-future-edge']).toBe(vars['--tc-blue-300']);
-    expect(bodyOf(".tc-team-card .tc-chip[aria-checked='true']")).toContain('--tc-chip-picked-bg');
-    expect(bodyOf('.tc-team-card .tc-chip')).toMatch(/background:\s*transparent/);
+    expect(bodyOf(".tc-chip[aria-checked='true']")).toContain('--tc-chip-picked-bg');
+    expect(bodyOf(".tc-chip[aria-checked='true']")).toContain('--tc-chip-picked-text');
+    expect(bodyOf('.tc-chip')).toMatch(/background:\s*transparent/);
+    expect(bodyOf('.tc-team-card')).toContain('--tc-sel-edge: var(--tc-chip-past-edge)');
+    expect(bodyOf(".tc-team-card[data-team='FUTURE']")).toContain(
+      '--tc-sel-edge: var(--tc-chip-future-edge)',
+    );
     expect(bodyOf(".tc-chip[aria-checked='true']::before")).toContain('margin-right');
   });
   it('the grade is a dropdown in plain letters, at least 56px tall and 20px text', () => {
@@ -240,7 +245,7 @@ describe('Reload card', () => {
     void s.overlay.showReloadModal({ question: mathQ, team: 'PAST', playerName: 'Alex' });
     expect(q('reload-speak')).toBeNull();
     expect(q('cover-mute')!.getAttribute('data-muted')).toBe('false');
-    expect(bodyOf('.tc-cover-mute::before')).toContain('content');
+    expect(bodyOf('.tc-toggle.tc-cover-mute::before')).toContain('content');
   });
   it('the timer line is one idea and leads with Bonus', () => {
     void s.overlay.showReloadModal({ question: mathQ, team: 'PAST', playerName: 'Alex' });

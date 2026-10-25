@@ -50,6 +50,28 @@ Fallbacks are system fonts (Palatino, Georgia, Arial Black), so a slow or blocke
 
 Spacing is a 4px scale: `--tc-s-1` 4, `-2` 8, `-3` 12, `-4` 16, `-5` 24, `-6` 32, `-7` 48, `-8` 64. Radii: chip 14, button 16, large button 20, card 18, bubble 26, pill 999. Shadows and glows: `--tc-shadow-wood`, `--tc-shadow-card`, `--tc-shadow-banner`, `--tc-glow-neon`, `--tc-glow-ready`. Under `prefers-reduced-motion`, keep glows static (no pulsing) and drop the banner tilt animation.
 
+## Controls: Button, Selector, Link
+
+Every control is one of three kinds, and each kind has one look everywhere. A child should know what a thing does from how it looks. The owner asked for this on 2026-10-24 ("make buttons buttony and selectors selectors").
+
+| Kind | What it does | Look | Classes | Role |
+|---|---|---|---|---|
+| **Button** | Starts an action (Let's clash!, Time to Clash!, Fire!, Done, Back, I'm ready!) | Solid and raised: it stands on a bottom edge (`--tc-btn-edge`, Purple 700; neon buttons use `--tc-btn-edge-neon`) and presses down onto it on `:active` (moves `--tc-btn-press`, the edge folds away). | `.tc-btn` plus one recipe: `-primary`, `-neutral`, `-past`, `-future`, `-fire` | a plain `<button>`, never `role="radio"` or `"switch"` |
+| **Selector** | Picks a value from a set (subject, match length, Play with, How hard, place, castle spot, base spot, team picker) or turns one setting on or off (Sound, Captions, Music, Motion, Bonus ring) | Flat: see-through, an outline, no edge, never moves when pressed. Options sit in one connected strip: neighbours share one edge and only the ends are rounded. The picked option is filled Ember (`--tc-chip-picked-bg`) with Ink words and a check mark. An on/off setting is one option on its own with a drawn switch track: the knob sits right and the track is Ember when on. The words also say the state ("Sound on"). | strip `.tc-chips` (also `.tc-forge-picker`, `.tc-plan-cards`), option `.tc-chip`, on/off `.tc-chip.tc-toggle` | `role="radiogroup"` with `role="radio"` options (one Tab stop, arrow keys move), or `role="switch"` with `aria-checked` |
+| **Link** | A quiet, rare action (Clear my data) | Underlined body text at `--tc-fs-label`, no box, color from the surface. Padding keeps the tap area 56px tall. | `.tc-link` | a plain `<button>` |
+
+Rules:
+
+1. **One filled primary per screen or panel** (`.tc-btn-primary`, or a team's wood or neon button where the team is the point, such as "I'm ready!" on the pass screen). Other buttons are the outlined neutral (`.tc-btn-neutral`).
+2. **Destructive is never the primary.** "Yes, clear it" and "Leave game" are neutral. In a "Leave this game?" or Pause panel the safe choice (Stay, Keep playing) is the primary and gets focus.
+3. **Dropdown when the set is big.** More than about five values (the grade, K to 12) is a native `<select>` (`.tc-select` in a `.tc-select-wrap`), never a wall of chips. A native select gives an iPad its own big picker wheel and gives the keyboard its own keys.
+4. **The outline follows the surface.** `--tc-sel-edge` is cream on the dark screens, Ink on parchment panels (Settings, reload card, intro card), and the team edge on a Setup team card. A selector floating over the picture (the battle Sound switch) sits on an Ink backing.
+5. **Never color alone.** A picked option has a check mark, a switch has its knob position and its words, and a button has its words.
+
+Shared code: `radioGroup` and `switchChip` in `src/ui/selector.ts` build selectors, so a new screen gets the roles, the arrow keys and the classes for free. `tests/ui/controls.test.ts` opens every screen (except the Base Builder, which is being laid out again) and checks each control against this table.
+
+Not yet on the rule (see the panel notes, `docs/panel/2026-10-24-batch.md`): the Base Builder screen, the Forge weapon rows (`.tc-forge-pick`, a pressed-state card), the battle fighter picker (`.tc-unit`, round letter tokens that match the letters drawn over the fighters on the canvas) and the Squads helper picker (behind a flag).
+
 ## Component recipes
 
 All interactive parts are at least 56px tall and wide (`--tc-tap`).
@@ -70,13 +92,13 @@ All interactive parts are at least 56px tall and wide (`--tc-tap`).
 
 **Celebrations.** Victory drops one burst of confetti (`confetti` in `src/ui/simpleScreens.ts`, `CELEBRATE` in config, palette tokens only, `aria-hidden`, out of the layout, hidden under reduced motion). A fast right answer pops a "+2 scrap" burst on the reload card with the caption "Ka-ching!" and the `bonus` sound (made in code, plays only through the audio manager, so Mute and the tap rule hold). Slow and wrong answers get no burst, and nothing is taken away.
 
-**Bonus ring.** The reload card shows a ring and the line "Bonus scrap if you answer fast. No rush!" (`.tc-timer`). Settings has a "Bonus ring: shown / hidden" button (56px or more, text in words) for slow readers. When hidden, the ring and its line are not drawn at all, so a screen reader hears no timer either. Nothing else changes: the same question, the same fast-answer clock (`fastWindowMs`), the same bonus Scrap, and a slow answer still loses nothing. The choice is `hideBonusRing` in `timeclash.settings`, and Clear my data resets it.
+**Bonus ring.** The reload card shows a ring and the line "Bonus scrap if you answer fast. No rush!" (`.tc-timer`). Settings has a "Bonus ring: shown / hidden" switch (56px or more, text in words) for slow readers. When hidden, the ring and its line are not drawn at all, so a screen reader hears no timer either. Nothing else changes: the same question, the same fast-answer clock (`fastWindowMs`), the same bonus Scrap, and a slow answer still loses nothing. The choice is `hideBonusRing` in `timeclash.settings`, and Clear my data resets it.
 
 **Chrono's lines.** On the reload card, Chrono's quip shows his face and "Chrono:" before the line. On Victory, Chrono's line fits the match: close, one side landed nothing, or a plain good match (`src/ui/victoryMood.ts`, `VICTORY_CHRONO`). "My dignity needs a rematch" belongs to the losing fighter's bubble on the canvas, never to Chrono.
 
 **Progress bar.** Track `--tc-bar-track`, 3px edge in `--tc-bar-edge`, fill `--tc-bar-fill`, height `--tc-bar-h` (26px). The label above it shows the percent as a number ("64%"), so the fill is never the only signal. Label text is `--tc-on-future` at `--tc-fs-lead`.
 
-**Chips (subject, match length, Play with).** Orbitron 800, `--tc-fs-label`. Unselected: `--tc-chip-bg`, `--tc-chip-text`, `--tc-chip-border`. Selected: `--tc-chip-on-bg`, `--tc-chip-on-text`, `--tc-chip-on-border`, plus a check mark so selection is not color-only. Size at least `--tc-chip-min` (56px) square.
+**Selector options (`.tc-chip`).** Orbitron 700, `--tc-fs-label`, see-through with a 3px `--tc-sel-edge` outline. Picked: `--tc-chip-picked-bg` (Ember) with `--tc-chip-picked-text` (Ink) and a check mark, so selection is not color-only. Size at least `--tc-chip-min` (56px) square. The older parchment-and-blue chip tokens (`--tc-chip-bg`, `--tc-chip-on-*`) are kept for the contrast table and the Base Builder until it moves over.
 
 **Grade dropdown (Setup).** A native `<select>` per team (`.tc-select` in a `.tc-select-wrap`), K and Grades 1 to 12. It looks like the name field: `--tc-input-bg`, `--tc-input-text`, `--tc-input-border`, at least 56px tall, `--tc-fs-button` text in the plain rounded stack (Orbitron draws 1 as a bar), with a visible "Grade" label and a ▾ arrow drawn by CSS. A native select gives an iPad its own big picker wheel and gives the keyboard arrow keys for free. While a team's grade is K or 1, one quiet line shows under it: "A grown-up can read the questions with you." (no read-aloud).
 
@@ -88,7 +110,7 @@ All interactive parts are at least 56px tall and wide (`--tc-tap`).
 
 ### Match length (Setup)
 
-A radio group of three chips (Short, Normal, Long) with the label "Match length", on the same row as Let's clash! so Setup keeps fitting 1024x768 and 1133x744 with no scroll. Chips are 56px tall, 20px type, a cream outline. The chosen chip is Ember with an Ink border and a check mark (not color alone). One Tab stop; arrow keys move. Styles: `.tc-length` in `src/styles/ui.css`.
+A selector strip of three options (Short, Normal, Long) with the label "Match length", on the same row as Let's clash! so Setup keeps fitting 1024x768 and 1133x744 with no scroll. Options are 56px tall, 20px type, a cream outline. The chosen one is Ember with a check mark (not color alone). One Tab stop; arrow keys move. Styles: `.tc-length` in `src/styles/ui.css`.
 
 ## Battle layout
 

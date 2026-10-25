@@ -87,7 +87,16 @@ body {
   outline-color: var(--tc-focus-on-light);
 }
 
-/* ---------- Buttons and controls (56px floor) ---------- */
+/* ---------- Controls (56px floor) ----------
+   Three kinds, one look each (docs/DESIGN_SYSTEM.md, "Controls"):
+   - Button (.tc-btn) starts an action. Solid and raised on a bottom edge that folds away when
+     pressed. One filled primary per screen. Secondary is the outlined neutral. Destructive is
+     never the primary.
+   - Selector picks a value. Flat, never raised, never pressed down: options in one connected
+     strip (.tc-chips of .tc-chip, role radio), the picked one Ember with a check mark. An on/off
+     setting is one .tc-chip.tc-toggle (role switch). More than about five values: a dropdown
+     (.tc-select).
+   - Link (.tc-link) is a quiet, rare action: underlined text, no box. */
 .tc-btn,
 .tc-chip,
 .tc-input,
@@ -119,14 +128,17 @@ body {
   line-height: var(--tc-lh-tight);
   letter-spacing: var(--tc-ls-caps);
   text-transform: uppercase;
+  box-shadow: var(--tc-btn-edge);
 }
 .tc-btn:hover,
-.tc-chip:hover,
 .tc-choice:hover {
   filter: brightness(1.08);
 }
-.tc-btn:active,
-.tc-chip:active,
+/* A button presses down onto its edge. Selectors never move. */
+.tc-btn:active:not(:disabled):not([aria-disabled='true']) {
+  transform: translateY(var(--tc-btn-press));
+  box-shadow: none;
+}
 .tc-choice:active {
   transform: translateY(2px);
 }
@@ -164,7 +176,7 @@ body {
   background: var(--tc-btn-neon-bg);
   color: var(--tc-btn-neon-text);
   border: var(--tc-btn-neon-border);
-  box-shadow: var(--tc-glow-neon);
+  box-shadow: var(--tc-btn-edge-neon), var(--tc-glow-neon);
   text-shadow: var(--tc-btn-neon-text-shadow);
 }
 /* Primary (READY style): gold border, purple to blue. One per screen. */
@@ -178,7 +190,7 @@ body {
   background: var(--tc-btn-primary-bg);
   color: var(--tc-btn-primary-text);
   border: var(--tc-btn-primary-border);
-  box-shadow: var(--tc-glow-ready);
+  box-shadow: var(--tc-btn-edge), var(--tc-glow-ready);
   text-shadow: var(--tc-btn-primary-text-shadow);
 }
 .tc-btn-fire {
@@ -310,15 +322,29 @@ body {
 .tc-link:hover {
   text-decoration-thickness: 3px;
 }
-/* Chips: grade and subject pickers. The chosen chip also shows a check mark. */
+/* Selector option. Flat: see-through with an outline, no edge, no press. The picked option is
+   filled Ember with Ink words and a check mark, so the pick is never color alone. The outline
+   color (--tc-sel-edge) follows the surface, so a strip stays one unbroken shape. */
+.tc-panel,
+.tc-reload-card,
+.tc-intro-card {
+  --tc-sel-edge: var(--tc-on-light);
+}
+.tc-team-card {
+  --tc-sel-edge: var(--tc-chip-past-edge);
+}
+.tc-team-card[data-team='FUTURE'] {
+  --tc-sel-edge: var(--tc-chip-future-edge);
+}
 .tc-chip {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: var(--tc-s-1);
-  background: var(--tc-chip-bg);
-  color: var(--tc-chip-text);
-  border: var(--tc-chip-border);
+  background: transparent;
+  color: inherit;
+  border: 3px solid var(--tc-sel-edge, currentColor);
   border-radius: var(--tc-r-chip);
   min-width: var(--tc-chip-min);
   padding: var(--tc-s-2) var(--tc-s-3);
@@ -332,30 +358,69 @@ body {
   white-space: nowrap;
 }
 .tc-chip[aria-checked='true'] {
-  background: var(--tc-chip-on-bg);
-  color: var(--tc-chip-on-text);
-  border: var(--tc-chip-on-border);
+  z-index: 1;
+  background: var(--tc-chip-picked-bg);
+  color: var(--tc-chip-picked-text);
   font-weight: var(--tc-fw-new-heavy);
-  box-shadow: 0 0 0 3px var(--tc-parchment-warm);
 }
 .tc-chip[aria-checked='true']::before {
   content: '\2713';
   margin-right: var(--tc-s-1);
 }
-/* On a team card (setup board): the chip is see-through with the team's edge and cream text.
-   The chosen chip is Ember with an Ink border and a check mark. */
-.tc-team-card .tc-chip {
+/* One connected strip: neighbours share an edge and only the ends are rounded. */
+.tc-chips,
+.tc-forge-picker,
+.tc-plan-cards {
+  gap: 0;
+}
+.tc-chips {
+  display: flex;
+  flex-wrap: nowrap;
+}
+:is(.tc-chips, .tc-forge-picker, .tc-plan-cards) > .tc-chip + .tc-chip {
+  margin-left: -3px;
+}
+:is(.tc-chips, .tc-forge-picker, .tc-plan-cards) > .tc-chip:not(:first-child) {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+:is(.tc-chips, .tc-forge-picker, .tc-plan-cards) > .tc-chip:not(:last-child) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+/* An on/off switch: one option on its own, with a drawn switch track. The knob sits right and
+   the track is Ember when on, so the state is a shape too, not only color. The words also say
+   it ("Sound on"). No check mark: the knob is the mark. */
+.tc-toggle {
+  gap: var(--tc-s-2);
+  padding-inline: var(--tc-s-4);
+}
+.tc-toggle[aria-checked='true'] {
   background: transparent;
-  color: var(--tc-on-dark);
-  border: 3px solid var(--tc-chip-past-edge);
+  color: inherit;
 }
-.tc-team-card[data-team='FUTURE'] .tc-chip {
-  border-color: var(--tc-chip-future-edge);
+.tc-toggle[aria-checked='true']::before {
+  content: none;
 }
-.tc-team-card .tc-chip[aria-checked='true'] {
-  background: var(--tc-chip-picked-bg);
-  color: var(--tc-chip-picked-text);
-  border: 4px solid var(--tc-chip-picked-edge);
+.tc-toggle::after {
+  content: '';
+  flex: none;
+  order: 2;
+  width: 48px;
+  height: 28px;
+  border: 3px solid currentColor;
+  border-radius: var(--tc-r-pill);
+  background: radial-gradient(circle at 11px 50%, currentColor 0 7px, transparent 8px);
+}
+.tc-toggle[aria-checked='true']::after {
+  border-color: var(--tc-chip-picked-edge);
+  background:
+    radial-gradient(
+      circle at calc(100% - 11px) 50%,
+      var(--tc-chip-picked-text) 0 7px,
+      transparent 8px
+    ),
+    var(--tc-chip-picked-bg);
 }
 /* Answer tiles. A number badge (from data-key) matches the 1 to 4 keys. */
 .tc-choice {
@@ -782,9 +847,19 @@ body {
   display: flex;
   gap: 8px;
 }
-.tc-hud-corner .tc-btn {
-  padding-inline: var(--tc-s-4);
+/* The Sound switch floats over the sky, so it sits on an Ink backing to stay readable. It is
+   packed tight so it stays clear of the Team Past card on a 1024 wide screen. */
+.tc-hud-corner .tc-toggle {
+  gap: var(--tc-s-1);
+  padding-inline: var(--tc-s-2);
+  letter-spacing: 0.02em;
   white-space: nowrap;
+  background: var(--tc-ink-deep);
+  color: var(--tc-on-dark);
+}
+.tc-hud-corner .tc-toggle::after {
+  width: 40px;
+  height: 24px;
 }
 /* Team cards. Past is purple, Future is blue with a Pulse glow. The active card also shows a
    marker and a thicker edge, so the turn is never shown by color alone. */
@@ -1131,11 +1206,6 @@ body {
   letter-spacing: var(--tc-ls-caps);
   text-transform: uppercase;
 }
-.tc-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--tc-s-2);
-}
 .tc-setup-form .tc-row .tc-btn-primary {
   min-height: 72px;
   min-width: 280px;
@@ -1154,25 +1224,10 @@ body {
   margin: 0;
   white-space: nowrap;
 }
-.tc-length .tc-chips {
-  flex-wrap: nowrap;
-  gap: var(--tc-s-1);
-}
 .tc-length .tc-chip {
-  min-height: var(--tc-tap);
-  font-size: var(--tc-fs-label);
   flex: none;
   white-space: nowrap;
   padding-inline: var(--tc-s-3);
-  background: transparent;
-  color: var(--tc-on-dark);
-  border: 3px solid var(--tc-on-dark);
-}
-/* The chosen length is Ember with a check mark, like the grade chips. */
-.tc-length .tc-chip[aria-checked='true'] {
-  background: var(--tc-chip-picked-bg);
-  color: var(--tc-chip-picked-text);
-  border: 4px solid var(--tc-chip-picked-edge);
 }
 .tc-privacy {
   display: flex;
@@ -1602,11 +1657,12 @@ body {
 .tc-cover-mute {
   justify-self: center;
 }
-.tc-cover-mute::before {
+/* The speaker picture stands in for the switch's check mark (the words still say on or off). */
+.tc-toggle.tc-cover-mute::before {
   content: '\1F50A';
   margin-right: var(--tc-s-2);
 }
-.tc-cover-mute[data-muted='true']::before {
+.tc-toggle.tc-cover-mute[data-muted='true']::before {
   content: '\1F507';
 }
 /* Empty live regions and the Next slot reserve no space until they have something to say. */
@@ -2280,8 +2336,11 @@ body {
 }
 .tc-forge-picker {
   display: flex;
-  justify-content: center;
-  gap: var(--tc-s-3);
+  width: fit-content;
+  margin-inline: auto;
+  border-radius: var(--tc-r-chip);
+  background: var(--tc-ink-deep);
+  color: var(--tc-on-dark);
 }
 .tc-forge-list {
   width: min(960px, 100%);
@@ -4568,7 +4627,6 @@ button.tc-forge-row[aria-disabled='true'],
 .tc-plan-cards {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--tc-s-2);
 }
 .tc-plan-card {
   justify-content: flex-start;

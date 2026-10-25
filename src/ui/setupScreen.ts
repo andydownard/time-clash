@@ -21,6 +21,7 @@ import { COMPUTER_TEAM, createPracticeSetup } from './computerPlayer';
 import { LOCAL_IDS } from './constants';
 import type { UiCtx } from './ctx';
 import { h } from './dom';
+import { radioGroup } from './selector';
 import { validateSetup, type TeamErrors } from './setupForm';
 import { TEST_IDS } from './types';
 
@@ -84,61 +85,6 @@ export function showSetup(
   const gradeSelects = {} as Record<Team, HTMLSelectElement>;
   const errorEls = {} as Record<Team, HTMLElement>;
 
-  /** A group of radio-style chips with arrow-key movement. */
-  function chipGroup<T extends string | number>(
-    team: Team | null,
-    label: string,
-    values: readonly T[],
-    current: () => T,
-    set: (v: T) => void,
-    make: (v: T) => HTMLButtonElement,
-    describedBy?: string,
-  ): { el: HTMLElement; chips: HTMLButtonElement[]; paint: () => void } {
-    const chips = values.map((v) => make(v));
-    // A radio group is one stop in the Tab order. The arrow keys move inside it.
-    const paint = (): void => {
-      chips.forEach((c, i) => {
-        const on = values[i] === current();
-        c.setAttribute('aria-checked', String(on));
-        c.tabIndex = on ? 0 : -1;
-      });
-    };
-    chips.forEach((chip, i) => {
-      chip.addEventListener('click', () => {
-        set(values[i] as T);
-        paint();
-        onPick();
-      });
-      chip.addEventListener('keydown', (e) => {
-        const move =
-          e.key === 'ArrowRight' || e.key === 'ArrowDown'
-            ? 1
-            : e.key === 'ArrowLeft' || e.key === 'ArrowUp'
-              ? -1
-              : 0;
-        if (!move) return;
-        e.preventDefault();
-        const to = Math.min(values.length - 1, Math.max(0, i + move));
-        set(values[to] as T);
-        paint();
-        onPick();
-        chips[to]?.focus();
-      });
-    });
-    const el = h(
-      doc,
-      'div',
-      {
-        class: 'tc-chips',
-        role: 'radiogroup',
-        'aria-label': team ? `${TEAM_NAMES[team]} ${label}` : label,
-        'aria-describedby': describedBy,
-      },
-      ...chips,
-    );
-    return { el, chips, paint };
-  }
-
   const painters: Array<() => void> = [];
   // The Play with choice. Off by default: with no `computer` option nothing below changes Setup.
   const practice = options?.computer
@@ -147,22 +93,15 @@ export function showSetup(
 
   // How long the match runs. Normal unless a parent changed it. It sits on the button row, so Setup stays one screen.
   let matchLength: MatchLength = loadMatchLength(ctx.storage);
-  const lengthGroup = chipGroup<MatchLength>(
-    null,
-    SETUP.matchLengthLabel,
-    MATCH_LENGTH.ids,
-    () => matchLength,
-    (v) => (matchLength = normalizeMatchLength(v)),
-    (v) =>
-      h(doc, 'button', {
-        type: 'button',
-        class: 'tc-chip',
-        role: 'radio',
-        'data-testid': TEST_IDS.setupMatchLength(v),
-        text: SETUP.matchLengthChips[v],
-      }),
-    'tc-length-help',
-  );
+  const lengthGroup = radioGroup<MatchLength>(doc, {
+    label: SETUP.matchLengthLabel,
+    values: MATCH_LENGTH.ids,
+    current: () => matchLength,
+    set: (v) => (matchLength = normalizeMatchLength(v)),
+    option: (v) => ({ text: SETUP.matchLengthChips[v] ?? v, testId: TEST_IDS.setupMatchLength(v) }),
+    onPick: () => onPick(),
+    describedBy: 'tc-length-help',
+  });
   painters.push(lengthGroup.paint);
   const lengthRow = h(
     doc,
@@ -232,21 +171,15 @@ export function showSetup(
       paintGrade();
       onPick();
     });
-    const subjects = chipGroup<Subject>(
-      team,
-      SETUP.subjectLabel,
-      SUBJECTS,
-      () => state[team].subject,
-      (s) => (state[team].subject = s),
-      (s) =>
-        h(doc, 'button', {
-          type: 'button',
-          class: 'tc-chip tc-chip-wide',
-          role: 'radio',
-          'data-testid': TEST_IDS.setupSubject(team, s),
-          text: SUBJECT_LABELS[s],
-        }),
-    );
+    const subjects = radioGroup<Subject>(doc, {
+      label: `${TEAM_NAMES[team]} ${SETUP.subjectLabel}`,
+      values: SUBJECTS,
+      current: () => state[team].subject,
+      set: (v) => (state[team].subject = v),
+      option: (v) => ({ text: SUBJECT_LABELS[v], testId: TEST_IDS.setupSubject(team, v) }),
+      onPick: () => onPick(),
+      optionClass: 'tc-chip-wide',
+    });
     painters.push(paintGrade, subjects.paint);
 
     return h(
