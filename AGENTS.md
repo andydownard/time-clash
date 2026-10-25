@@ -140,7 +140,9 @@ Phases 1 to 3 are built and live on Railway. Phase 4 (two iPads) and signed-in p
 
 **Base builder (on).** `BASE_BUILDER.enabled` is on (owner, 2026-10-23): The Camp has one Build Base button (right side, like Forge Weapon on the left). It opens the builder, which has a Team Past and Team Future picker like the Forge, and no small picture of the bases on the Camp. `?builder=0` shows the old shop screen instead. Built bases are saved but not yet used in battle.
 
-**Behind flags (all off in production).** `PRACTICE_BOT.enabled` (try with `?computer=1`): the Computer player so one child can play alone. `CHARACTER_HEALTH.enabled`: 3 health per fighter in place of base health. `BASE_IN_BATTLE.enabled`: built bases take hits in a match (needs character health, and the scene does not draw it yet). `SQUADS.enabled`: Squads S1 (a dasher helper per side). Each flag has tests and a section in [docs/GAME_SPEC.md](./docs/GAME_SPEC.md) or [docs/SQUADS_PLAN.md](./docs/SQUADS_PLAN.md). Open polish and content items are in `BACKLOG.md`.
+**Computer player (on).** One child can play alone against the Computer player (`PRACTICE_BOT.enabled`, on since 2026-10-24; `?computer=0` hides it). Setup has "Play with: Another player / Computer player", with Another player picked first. The child keeps the screen (no pass-the-mouse cover) and still answers every own reload question.
+
+**Behind flags (all off in production).** `CHARACTER_HEALTH.enabled`: 3 health per fighter in place of base health. `BASE_IN_BATTLE.enabled`: built bases take hits in a match (needs character health, and the scene does not draw it yet). `SQUADS.enabled`: Squads S1 (a dasher helper per side). Each flag has tests and a section in [docs/GAME_SPEC.md](./docs/GAME_SPEC.md) or [docs/SQUADS_PLAN.md](./docs/SQUADS_PLAN.md). Open polish and content items are in `BACKLOG.md`.
 
 ## Pre-merge checklist
 1. `npm test`, `npm run lint`, `npm run typecheck`, `npm run build` pass with zero failures.

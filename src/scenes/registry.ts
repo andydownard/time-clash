@@ -65,7 +65,7 @@ export type AppServices = {
   loadBank: () => Promise<QuestionBank>;
   /** A fresh match seed. The e2e hook can pin it. */
   newSeed: () => number;
-  /** True when Setup offers the Computer player (config flag or `?computer=1`). Off means today's game. */
+  /** True when Setup offers the Computer player (config flag, or `?computer=1` / `?computer=0`). */
   computerPlayer?: boolean;
   /** Switches only the e2e hook sets (Squads on). Empty in a real game, so config decides. */
   flags?: { squads?: boolean };
