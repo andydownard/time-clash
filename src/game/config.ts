@@ -41,8 +41,14 @@ export const AIM = {
 } as const;
 
 // ---------- Damage and health ----------
+/**
+ * Pace (owner, 2026-10-24): a player with perfect aim and a right answer every turn needs about
+ * five turns of their own to win, so a match never ends in one or two turns. A perfect turn is
+ * two shots and a Power Shot, so full health is about four times the damage of a perfect turn
+ * is wrong; it is about five times what one perfect turn does. `tests/game/pace.test.ts` plays it.
+ */
 export const DAMAGE = {
-  startingBaseHp: 100,
+  startingBaseHp: 400,
   /** Impact within this distance of the base rect is a direct hit. */
   directRadius: 48,
   /** Impact within this distance is a near miss (tumble). */
@@ -59,8 +65,8 @@ export const DAMAGE = {
  */
 export const CHARACTER_HEALTH = {
   enabled: false,
-  /** Health each fighter starts with. */
-  hp: 3,
+  /** Health each fighter starts with. Four, so a perfect team needs five turns to beat. */
+  hp: 4,
   /** Health lost to a direct hit. */
   directHit: 1,
   /**
