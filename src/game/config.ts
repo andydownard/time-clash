@@ -386,10 +386,12 @@ export const EVASION = {
 
 // ---------- Timing (ms) ----------
 export const TIMING = {
-  /** Loading screen waits at least this long so jokes can be read. */
-  loadingMinMs: 1500,
+  /** Loading screen waits at least this long so the jokes and the balloon riders can be enjoyed. */
+  loadingMinMs: 5000,
   /** A new family sees the longer, funnier load once. Returning families use loadingMinMs. */
-  loadingFirstMinMs: 4000,
+  loadingFirstMinMs: 8000,
+  /** Browser tests (the e2e hook is on) wait this long, so a full run is not slowed by the jokes. */
+  loadingQuickMs: 1500,
   loadingMessageMs: 2500,
   bannerDropMs: 400,
   bannerHoldMs: 1800,
