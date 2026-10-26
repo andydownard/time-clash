@@ -462,6 +462,11 @@ export const HIT_LINES = {
 export const DISTURBANCE_COPY = {
   squawk: 'Squawk!',
   gust: 'Gust!',
+  /**
+   * The first time recoil moves the Angle and Power dials in a match, this shows in the message
+   * lane, so a child knows why the dials moved (owner, 2026-10-25). Once per match.
+   */
+  kick: 'Kick! Your aim moved.',
 } as const;
 
 /** Chrono's quick joke after a reload. Warm, and always at Chrono's expense. */

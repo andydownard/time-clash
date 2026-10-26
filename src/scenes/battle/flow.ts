@@ -35,6 +35,7 @@ import type {
   Vec2,
 } from '../../game/types';
 import {
+  DISTURBANCE_COPY,
   GEAR_COPY,
   HIT_LINES,
   RELOAD as RELOAD_COPY,
@@ -129,6 +130,15 @@ export class BattleFlow {
   private fieldHeld = 0;
   /** Squads S1: sides that already took a go in this match, so the first-go hint shows once each. */
   private readonly hintDone = new Set<Team>();
+  /**
+   * Recoil's "Kick!" line has shown in this match. Kept on the flow only (never saved), so a
+   * rematch, which builds a new flow, shows it once again.
+   */
+  private kickShown = false;
+  /** Recoil moved the dials on this shot for the first time. The line shows once it lands. */
+  private kickPending = false;
+  /** The "Kick!" line is in the lane now. It comes down at the next shot or the reload. */
+  private kickUp = false;
   /** The Computer player's own random stream and the time it has spent thinking this turn. */
   private readonly botRng: Rng;
   private thinkingSpentMs = 0;
@@ -545,6 +555,7 @@ export class BattleFlow {
   /** Fire the shot already aimed in the rules layer, fly it, and apply it. */
   private async launch(team: Team): Promise<void> {
     const { match, view, audio } = this.deps;
+    this.clearKick();
     view.setAimDragHandler(null);
     view.showPreview(team, null);
     this.pushStatus(false);
@@ -614,6 +625,33 @@ export class BattleFlow {
         });
       }
     }
+    await this.sayKick();
+  }
+
+  /**
+   * The first kick of the match says why the dials moved, in the message lane (a caption, so it
+   * never covers the controls). It waits until the shot has landed, so it never hides the shell
+   * or the "Gust!" word. While the player aims again it stays up until the next shot. When a
+   * reload or the end comes next, it shows for a short beat and comes down first.
+   */
+  private async sayKick(): Promise<void> {
+    if (!this.kickPending) return;
+    this.kickPending = false;
+    this.kickUp = true;
+    this.deps.overlay.setCaption(DISTURBANCE_COPY.kick);
+    const s = this.deps.match.snapshot();
+    const aimsAgain =
+      s.status === 'PLAYING' && (s.turn.phase === 'AIMING' || s.turn.phase === 'BONUS_AIMING');
+    if (aimsAgain) return;
+    await this.deps.wait(DISTURBANCE.kickCueMs);
+    this.live();
+    this.clearKick();
+  }
+
+  private clearKick(): void {
+    if (!this.kickUp) return;
+    this.kickUp = false;
+    this.deps.overlay.setCaption(null);
   }
 
   /**
@@ -656,6 +694,12 @@ export class BattleFlow {
   /** Recoil: the Angle and Power dials slide to the kicked aim. Reduced motion: they jump. */
   private async slideRecoil(from: AimInput, to: AimInput): Promise<void> {
     if (from.angleDeg === to.angleDeg && from.power === to.power) return;
+    // The first kick of the match gets its "Kick!" line once the shot lands (sayKick). It shows
+    // with reduced motion too.
+    if (!this.kickShown) {
+      this.kickShown = true;
+      this.kickPending = true;
+    }
     const reduced = this.deps.reducedMotion?.() === true;
     const steps = reduced ? 1 : DISTURBANCE.recoilSlideSteps;
     for (let i = 1; i <= steps; i++) {
@@ -691,6 +735,7 @@ export class BattleFlow {
   private async reload(team: Team): Promise<boolean> {
     // The question cover goes up next: nothing about the last shot stays on the board.
     this.deps.view.showTrace(team, null);
+    this.clearKick();
     if (this.isComputer(team)) return this.computerReload(team);
     const { match, overlay, view, audio, bank } = this.deps;
     const player = match.snapshot().players[team === 'PAST' ? 0 : 1];
