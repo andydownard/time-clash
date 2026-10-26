@@ -37,6 +37,7 @@ test: `npm test` · lint: `npm run lint` · typecheck: `npm run typecheck` · bu
 | Rematch | `rematch` | retry, play again |
 | How to Play | `intro` | tutorial |
 | Build Base | `builder` / `upgrade` (code names kept) | Upgrade Base (retired), Build Castle, buy, shop |
+| Cannon Crew (Team Past), Laser Crew (Team Future): the launcher helpers | `PAST-launcher`, `FUTURE-launcher` (S3 plan id `rocketButton` kept) | Rocket Button (retired 2026-10-25), missile |
 | Village (Team Past's middle castle place) | `villageWall` (code id kept) | Village Wall (retired 2026-10-25: it sounded like the Stone Wall ability) |
 | Go (one of the 2 per turn) | `action` / a shot or a dash (`turn.shotsFired` counts both) | shot (in banners when Squads is on) |
 | Helper | `helper` (`launcher` or `dasher` in `src/game/crew.ts`) | soldier, army, troops |

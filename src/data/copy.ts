@@ -345,7 +345,7 @@ export const SQUAD_COPY = {
   helperName: {
     'PAST-launcher': 'Cannon Crew',
     'PAST-dasher': 'Sir Bonk',
-    'FUTURE-launcher': 'Rocket Button',
+    'FUTURE-launcher': 'Laser Crew',
     'FUTURE-dasher': 'Robo Bonk',
   } as Record<string, string>,
   /** What each helper does, said once under the name. */

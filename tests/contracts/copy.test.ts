@@ -82,6 +82,13 @@ describe('copy: content', () => {
     );
   });
 
+  it('names the Future launcher Laser Crew, to match Cannon Crew (never Rocket Button)', () => {
+    // Owner, 2026-10-25: Rocket Button was also planned as a new crew member. The code id stays.
+    expect(COPY.SQUAD_COPY.helperName['FUTURE-launcher']).toBe('Laser Crew');
+    expect(COPY.SQUAD_COPY.helperName['PAST-launcher']).toBe('Cannon Crew');
+    expect(allStrings().filter((s) => s.includes('Rocket Button'))).toEqual([]);
+  });
+
   it('turns a name down the same friendly way in the Workshop, My shape and Setup', () => {
     expect(COPY.WORKSHOP_COPY.nameProblem.blocked).toBe("Let's pick a friendlier name.");
     expect(SHAPE_COPY.SHAPE_COPY.nameProblem.blocked).toBe("Let's pick a friendlier name.");

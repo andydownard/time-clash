@@ -27,7 +27,7 @@ const HARD_WORDS = [
 const ARG_SETS: readonly unknown[][] = [
   ['Alex', 1, 'Sam'],
   ['dasher', 'Robo Bonk'],
-  ['launcher', 'Rocket Button'],
+  ['launcher', 'Laser Crew'],
   ['Sir Bonk', 2, 4],
   [true],
   [false],
