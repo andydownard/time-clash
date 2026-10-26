@@ -121,6 +121,8 @@ export const TEST_IDS = {
   helperRecall: 'helper-recall',
   dasherResting: 'dasher-resting',
   goHint: 'go-hint',
+  /** The message lane: the coach line and the first-go hint (src/ui/messageLane.ts). */
+  messageLane: 'message-lane',
   wind: 'wind',
   baseHp: (team: Team) => `base-hp-${team}`,
   shotsLeft: 'shots-left',

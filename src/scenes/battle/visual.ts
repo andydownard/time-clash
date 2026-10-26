@@ -118,6 +118,13 @@ export const PANEL = {
 /** Longest wind arrow, in world px. */
 export const WIND_ARROW_MAX = 120;
 
+/**
+ * The wind sign: the arrow's middle, in world px. The frame starts 26px above it. Its words start
+ * 22px below it, and the frame ends 8px under the words. The message lane (src/ui/messageLane.ts)
+ * sits under the sign.
+ */
+export const WIND_SIGN = { x: 640, y: 168 } as const;
+
 /** The dotted preview keeps every Nth path step. */
 export const PREVIEW_STRIDE = 3;
 /** Alpha of the last preview dot. The first is 1. */

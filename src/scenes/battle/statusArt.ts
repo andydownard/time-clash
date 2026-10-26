@@ -10,10 +10,10 @@ import { hpFraction, shotIcons, windArrow, windGusts } from './geometry';
 import { textStyle } from './textStyle';
 import type { LabelScaler } from './textScale';
 import type { ViewStatus } from './types';
-import { PALETTE, PANEL, TEXT_MIN_PX, WIND_ARROW_MAX } from './visual';
+import { PALETTE, PANEL, TEXT_MIN_PX, WIND_ARROW_MAX, WIND_SIGN } from './visual';
 
 const SHOT = { r: 9, step: 26 } as const;
-const WIND_POS = { x: 640, y: 168 } as const;
+const WIND_POS = WIND_SIGN;
 
 export type StatusArt = {
   sync(status: ViewStatus): void;

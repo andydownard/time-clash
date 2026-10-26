@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { readFileSync } from 'node:fs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { BUTTONS, HUD, tumblePool, windLabel, turnBanner } from '../../src/data/copy';
 import { AIM, DAMAGE, TIMING } from '../../src/game/config';
@@ -662,6 +663,35 @@ describe('HUD bar and coach line', () => {
     expect(hint.textContent).toContain(HUD.keyboardHint);
     expect(hint.querySelector('.tc-sr-only')!.textContent).toContain(HUD.keyboardHint);
     expect(HUD.coach).toBe('Slide Angle and Power. Then press Fire!');
+  });
+
+  it('puts the coach line in the message lane, out of the control bar (Regression 22)', () => {
+    s.overlay.showHud(handlers());
+    s.overlay.updateHud(state());
+    const hint = document.querySelector<HTMLElement>('.tc-hint')!;
+    const lane = q(TEST_IDS.messageLane)!;
+    expect(lane.contains(hint)).toBe(true);
+    expect(hint.closest('.tc-hud-bottom')).toBeNull();
+    // The HUD writes the lane box on the page root, and takes it away with the HUD.
+    expect(document.documentElement.style.getPropertyValue('--tc-lane-top')).not.toBe('');
+    s.overlay.hideHud();
+    expect(document.documentElement.style.getPropertyValue('--tc-lane-top')).toBe('');
+  });
+
+  it('keeps the lane and the caption bar out of the way of taps, and hides hints under a caption', () => {
+    const css = readFileSync('src/styles/ui.css', 'utf8');
+    const rule = (sel: string): string => {
+      const at = css.indexOf(`${sel} {`);
+      expect(at, sel).toBeGreaterThanOrEqual(0);
+      return css.slice(at, css.indexOf('}', at));
+    };
+    expect(rule('.tc-lane')).toMatch(/pointer-events:\s*none/);
+    expect(rule('.tc-lane')).toMatch(/top:\s*var\(--tc-lane-top\)/);
+    expect(rule('body:has(.tc-caption:not([hidden])) .tc-lane')).toMatch(/visibility:\s*hidden/);
+    // In Battle (no cover, no screen) the caption moves into the lane.
+    expect(css).toMatch(
+      /body:has\(\.tc-hud\):not\(\[data-cover\]\):not\(:has\(\[data-layer='screen'\] > \*\)\) \.tc-caption \{[^}]*top:\s*var\(--tc-lane-top\)/,
+    );
   });
 
   it('hides the coach line after the first Fire tap, and keeps it hidden next turn', () => {

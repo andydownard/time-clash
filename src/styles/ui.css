@@ -738,6 +738,54 @@ body {
   line-height: var(--tc-lh-body);
   text-align: center;
 }
+/* ---------- Message lane (Battle) ----------
+   One fixed band of sky under the wind sign, between Balloon A and the Helicopter, above every
+   fighter's letter tag (src/ui/messageLane.ts, MESSAGE_LANE). The HUD measures the canvas and
+   writes --tc-lane-*. The coach line, the first-go hint and the caption bar all show here, so
+   they never cover the team cards, the control bar, a fighter or a base. Only one message is up
+   at a time: the hints step aside while a caption shows. Nothing here takes a tap, so the angle
+   dial under it still drags. */
+.tc-lane {
+  position: absolute;
+  left: var(--tc-lane-left);
+  top: var(--tc-lane-top);
+  width: var(--tc-lane-width);
+  max-height: var(--tc-lane-height);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--tc-s-2);
+  pointer-events: none;
+  text-align: center;
+  text-wrap: balance;
+}
+.tc-lane > * {
+  pointer-events: none;
+}
+body:has(.tc-caption:not([hidden])) .tc-lane {
+  visibility: hidden;
+}
+/* In Battle (no cover and no full screen up), the caption bar moves into the lane. Covers and
+   screens keep it at the bottom, above them. */
+body:has(.tc-hud):not([data-cover]):not(:has([data-layer='screen'] > *)) .tc-caption {
+  top: var(--tc-lane-top);
+  bottom: auto;
+  left: calc(var(--tc-lane-left) + var(--tc-lane-width) / 2);
+  box-sizing: border-box;
+  width: max-content;
+  max-width: var(--tc-lane-width);
+  max-height: var(--tc-lane-height);
+  padding: var(--tc-s-2) var(--tc-s-4);
+  font-size: var(--tc-fs-lead);
+  text-wrap: balance;
+}
+/* Narrower screens (iPad, iPad mini) have a narrower lane: the caption steps down to the floor. */
+@media (max-width: 1180px) {
+  body:has(.tc-hud):not([data-cover]):not(:has([data-layer='screen'] > *)) .tc-caption {
+    font-size: var(--tc-fs-body);
+  }
+}
+
 /* An author display rule (like .tc-row) must never beat the hidden attribute. */
 [hidden] {
   display: none !important;
@@ -1025,14 +1073,11 @@ body {
   gap: 10px;
   align-items: center;
 }
+/* The coach line sits in the message lane (see "Message lane" above), never on the field. */
 .tc-hint {
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: max-content;
+  width: fit-content;
   max-width: 100%;
-  margin: 0 0 8px;
+  margin: 0;
   padding: 4px 12px;
   font-size: var(--tc-text-min);
   text-align: center;
@@ -5240,14 +5285,10 @@ button.tc-forge-row[aria-disabled='true'],
 .tc-go-hint[hidden] {
   display: none;
 }
+/* The first-go hint sits in the message lane, like the coach line. */
 .tc-go-hint {
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  margin-bottom: 6px;
-  width: max-content;
-  max-width: 90vw;
+  width: fit-content;
+  max-width: 100%;
   padding: 4px 12px;
   background: var(--tc-surface-dark);
   border: 2px solid var(--tc-steel-blue);

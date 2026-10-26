@@ -11,6 +11,7 @@ import { h } from './dom';
 import { setSwitch, switchChip } from './selector';
 import { createGear } from './hudGear';
 import { createSquadBar, type SquadBar } from './squadBar';
+import { clearLane, placeLane } from './messageLane';
 import { hudIcon } from './hudIcons';
 import { myWeaponIcon, weaponIcon } from './baseBuilderArt';
 import { TEST_IDS, type HudHandlers, type HudMount, type HudState } from './types';
@@ -425,6 +426,17 @@ export function createHud(ctx: UiCtx) {
       h(doc, 'span', { class: 'tc-sr-only', text: ` ${HUD.keyboardHint}` }),
     );
 
+    // The coach line and the first-go hint show in the message lane, a band of sky that no
+    // fighter, base or control uses. Chrono's caption bar uses the same lane (ui.css), and the
+    // hints step aside while a caption shows, so only one message is up at a time.
+    const lane = h(
+      doc,
+      'div',
+      { class: 'tc-lane', 'data-testid': TEST_IDS.messageLane },
+      hint,
+      squadBar.hint,
+    );
+
     // Phase 2 gear (ammo and the evasion ability) floats by Fire, outside the one-row layout.
     const gear = createGear(ctx, {
       ammo: (id) => h_.onAmmo?.(id),
@@ -442,6 +454,7 @@ export function createHud(ctx: UiCtx) {
         ...TEAMS.slice(1).map((t) => panel[t]),
         h(doc, 'div', { class: 'tc-hud-corner' }, mute),
       ),
+      lane,
       h(
         doc,
         'div',
@@ -452,7 +465,6 @@ export function createHud(ctx: UiCtx) {
         aimPanel,
         squadBar.panel,
         fire,
-        hint,
         wind,
         shots,
         gear.root,
@@ -489,6 +501,17 @@ export function createHud(ctx: UiCtx) {
   const placeGear = (): void => {
     if (parts) parts.gear.place(parts.fire, [parts.strip, parts.units, parts.aimPanel]);
   };
+  // Phaser refits the canvas on the frame after a resize, so the lane is measured after that.
+  let laneFrame = 0;
+  const onResize = (): void => {
+    placeGear();
+    const view = doc.defaultView;
+    if (!view?.requestAnimationFrame) return placeLane(doc);
+    view.cancelAnimationFrame(laneFrame);
+    laneFrame = view.requestAnimationFrame(() => {
+      laneFrame = view.requestAnimationFrame(() => placeLane(doc));
+    });
+  };
 
   return {
     show(next: HudHandlers): void {
@@ -498,7 +521,8 @@ export function createHud(ctx: UiCtx) {
       ctx.layer.hud.append(parts.root);
       parts.root.style.pointerEvents = 'auto';
       doc.addEventListener('keydown', onKey);
-      doc.defaultView?.addEventListener('resize', placeGear);
+      doc.defaultView?.addEventListener('resize', onResize);
+      placeLane(doc);
       unsubscribe = ctx.onSettings(() => {
         if (parts) paintMute(parts.mute);
       });
@@ -524,6 +548,7 @@ export function createHud(ctx: UiCtx) {
       paintUnits(state);
       parts.gear.update(state.gear, canFire);
       placeGear();
+      placeLane(doc);
       // A disabled control drops focus to the page. Keep it inside the HUD instead.
       const active = doc.activeElement;
       if (
@@ -594,7 +619,9 @@ export function createHud(ctx: UiCtx) {
     },
     hide(): void {
       doc.removeEventListener('keydown', onKey);
-      doc.defaultView?.removeEventListener('resize', placeGear);
+      doc.defaultView?.removeEventListener('resize', onResize);
+      doc.defaultView?.cancelAnimationFrame?.(laneFrame);
+      clearLane(doc);
       unsubscribe?.();
       unsubscribe = null;
       parts?.root.remove();
