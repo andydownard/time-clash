@@ -2732,6 +2732,16 @@ button.tc-forge-row[aria-disabled='true'],
   font-weight: var(--tc-fw-new-heavy);
   font-size: var(--tc-text-min);
 }
+/* Safari keeps a native dropdown 34px tall, so drop the native look (the wrapper draws the arrow). */
+.tc-ws-select {
+  appearance: none;
+  padding-right: calc(var(--tc-s-6) + var(--tc-s-3));
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.tc-workshop .tc-select-wrap::after {
+  color: var(--tc-ink-deep);
+}
 .tc-workshop[data-team='FUTURE'] .tc-ws-select,
 .tc-workshop[data-team='FUTURE'] .tc-ws-typed {
   border-color: var(--tc-pulse);

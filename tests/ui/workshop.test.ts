@@ -1,6 +1,8 @@
 // @vitest-environment jsdom
 // The Weapon Workshop (Make my own weapon) and the Forge's My weapons section. A tap that cannot
 // work says why in words and changes nothing. A typed name that is not okay is never used.
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { FORGE_COPY, WORKSHOP_COPY } from '../../src/data/copy';
 import { WORKSHOP } from '../../src/game/config';
@@ -195,6 +197,19 @@ describe('naming it', () => {
       t.replace(/[a-z]/g, (c) => String.fromCharCode(((c.charCodeAt(0) - 97 + 13) % 26) + 97));
     typeName(`Big ${rot13('cbea').replace('o', '0')}`);
     expect(previewName()).toBe('Wobbly Thunder');
+  });
+
+  // Safari draws a native dropdown 34px tall whatever min-height says. The word pickers drop the
+  // native look (like the Setup grade) and sit in the shared arrow wrapper, so they stay 56px.
+  it('the word pickers drop the native look so Safari keeps them 56px tall', () => {
+    openForge(campWith(0));
+    click(q(TEST_IDS.forgeMake));
+    for (const id of [TEST_IDS.workshopWord1, TEST_IDS.workshopWord2]) {
+      expect(q(id)!.parentElement!.classList.contains('tc-select-wrap')).toBe(true);
+    }
+    const css = readFileSync(join(import.meta.dirname, '../../src/styles/ui.css'), 'utf8');
+    const rule = /\.tc-ws-select\s*\{([^}]*)\}/.exec(css);
+    expect(rule?.[1]).toMatch(/appearance:\s*none/);
   });
 
   it('limits typing to the max length', () => {
