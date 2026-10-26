@@ -122,7 +122,7 @@ describe('Intro look', () => {
     expect(q(TEST_IDS.introCard)!.querySelector('.tc-art svg')).not.toBeNull();
   });
 
-  it('keeps Skip, Replay, Mute, and the caption bar', async () => {
+  it('keeps Skip, Replay, the Sound switch, and the caption bar', async () => {
     void s.audio.unlock();
     void s.overlay.showIntro(INTRO_SCRIPT, () => Promise.resolve());
     await flush();

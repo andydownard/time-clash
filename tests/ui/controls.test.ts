@@ -50,7 +50,9 @@ function checkControls(where: string): void {
   }
   // The selector look is only for selectors, and a button never pretends to be one.
   for (const el of qa('.tc-chip')) {
-    expect(['radio', 'switch'], `${where}: chip ${el.outerHTML}`).toContain(el.getAttribute('role'));
+    expect(['radio', 'switch'], `${where}: chip ${el.outerHTML}`).toContain(
+      el.getAttribute('role'),
+    );
   }
   for (const el of qa('.tc-btn')) {
     expect(el.getAttribute('role'), `${where}: button ${el.outerHTML}`).toBeNull();
@@ -78,9 +80,13 @@ describe('controls follow one rule on every screen', () => {
     expect(q('tap-to-play')!.classList.contains('tc-btn-primary')).toBe(true);
   });
 
-  it('How to Play', () => {
+  it('How to Play: Sound is a switch, Skip and Replay are buttons', () => {
     void s.overlay.showIntro(INTRO_SCRIPT, () => Promise.resolve());
     checkControls('intro');
+    expect(q('intro-mute')!.getAttribute('role')).toBe('switch');
+    expect(q('intro-mute')!.classList.contains('tc-btn')).toBe(false);
+    expect(q('intro-skip')!.classList.contains('tc-btn')).toBe(true);
+    expect(q('intro-replay')!.classList.contains('tc-btn')).toBe(true);
   });
 
   it('Setup with the Computer player choice: selectors, a dropdown and a link', () => {
@@ -104,7 +110,12 @@ describe('controls follow one rule on every screen', () => {
   });
 
   it('Battle Plan: place cards are selectors', () => {
-    void s.overlay.showPlan({ plan: DEFAULT_PLAN, camp: campWith(0), names: NAMES, save: () => {} });
+    void s.overlay.showPlan({
+      plan: DEFAULT_PLAN,
+      camp: campWith(0),
+      names: NAMES,
+      save: () => {},
+    });
     checkControls('plan');
     expect(qa('[role="radio"]').length).toBeGreaterThanOrEqual(6);
   });

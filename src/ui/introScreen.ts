@@ -8,6 +8,7 @@ import { LOCAL_IDS } from './constants';
 import type { UiCtx } from './ctx';
 import { h } from './dom';
 import { createIntroController } from './introController';
+import { createSoundSwitch } from './muteButton';
 import { TEST_IDS, type IntroResult } from './types';
 
 /**
@@ -75,10 +76,8 @@ export function showIntro(
   const skip = button(TEST_IDS.introSkip, INTRO.skip);
   const replay = button(TEST_IDS.introReplay, INTRO.replay);
   const next = button(LOCAL_IDS.introNext, INTRO.next, 'tc-btn tc-btn-primary');
-  const mute = button(LOCAL_IDS.introMute, INTRO.mute);
-  const isMuted = (): boolean => (audio ? audio.muted : ctx.settings().muted);
-  const paintMute = (): void => void (mute.textContent = isMuted() ? INTRO.unmute : INTRO.mute);
-  paintMute();
+  // Sound is the same on/off switch as on Settings and the covers ("Sound on" / "Sound off").
+  const sound = createSoundSwitch(ctx, { testId: LOCAL_IDS.introMute });
 
   const screen = h(
     doc,
@@ -94,7 +93,7 @@ export function showIntro(
     ),
     cardHolder,
     dots,
-    h(doc, 'div', { class: 'tc-row' }, replay, next, mute, skip),
+    h(doc, 'div', { class: 'tc-row' }, replay, next, sound.el, skip),
   );
   const closeScreen = ctx.openScreen(screen);
 
@@ -138,17 +137,9 @@ export function showIntro(
     skip.addEventListener('click', () => controller.skip());
     replay.addEventListener('click', () => controller.replay());
     next.addEventListener('click', () => controller.next());
-    mute.addEventListener('click', () => {
-      if (audio) {
-        audio.setMuted(!audio.muted);
-        ctx.patchSettings({ muted: audio.muted });
-      } else {
-        ctx.patchSettings({ muted: !ctx.settings().muted });
-      }
-      paintMute();
-    });
 
     void controller.start().then((result) => {
+      sound.dispose();
       closeScreen();
       resolve(result);
     });

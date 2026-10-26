@@ -237,8 +237,6 @@ export const INTRO = {
   heading: 'How to Play',
   skip: 'Skip',
   replay: 'Replay',
-  mute: 'Mute',
-  unmute: 'Unmute',
   next: 'Next card',
   cardOf: (n: number, total: number): string => `Card ${n} of ${total}`,
 } as const;
