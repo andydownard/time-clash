@@ -36,6 +36,8 @@ const VOCAB_BANNED = [
   'lobby',
   'menu',
   'death',
+  // A helper loses a heart, never a life (vocabulary table, owner 2026-10-25).
+  'life',
   'lives',
   'retry',
   'play again',

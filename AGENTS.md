@@ -33,6 +33,7 @@ test: `npm test` · lint: `npm run lint` · typecheck: `npm run typecheck` · bu
 | Camp | `camp` | lobby, menu |
 | Wipeout | `tumble` | death, kill, die, dead, defeat |
 | Health (per character, 4 each) | `unitHp` | lives |
+| Heart (a helper's health, shown as hearts) | `hp` on the dasher | life, lives |
 | Base health (replaced by per-character health when `CHARACTER_HEALTH` is on) | `baseHp` | lives |
 | Rematch | `rematch` | retry, play again |
 | How to Play | `intro` | tutorial |
