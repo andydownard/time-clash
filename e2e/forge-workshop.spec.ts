@@ -73,7 +73,7 @@ test('make, name and forge my own weapon; it is equipped and still there after a
 
   // A typed name that is not okay is never used; a good one is.
   await tid(page, 'workshop-typed').fill('Alex Zapper');
-  await expect(tid(page, 'workshop-status')).toContainText('Keep your own name a secret.');
+  await expect(tid(page, 'workshop-status')).toContainText('Use a made-up name, not a real one.');
   await expect(tid(page, 'workshop-preview')).toContainText('Wobbly Thunder');
   await tid(page, 'workshop-typed').fill('Big Bonk');
   await expect(tid(page, 'workshop-preview')).toContainText('Big Bonk');

@@ -120,7 +120,7 @@ export const WORKSHOP_COPY = {
     long: 'That name is too long.',
     letters: 'Use only letters, numbers and spaces.',
     blocked: "Let's pick a friendlier name.",
-    private: 'Keep your own name a secret.',
+    private: 'Use a made-up name, not a real one.',
     digits: 'Use fewer numbers in a row.',
   },
   keepPicked: (name: string): string => `We will use ${name}.`,

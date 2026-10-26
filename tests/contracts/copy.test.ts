@@ -104,6 +104,12 @@ describe('copy: content', () => {
     expect(COPY.upgradeEffect('nearCut', 2)).not.toMatch(/hurt/);
   });
 
+  it('asks for a made-up name in the Workshop and My shape, the same words in both', () => {
+    // Owner, 2026-10-25: a child knows what to do, not just what not to do.
+    expect(COPY.WORKSHOP_COPY.nameProblem.private).toBe('Use a made-up name, not a real one.');
+    expect(SHAPE_COPY.SHAPE_COPY.nameProblem.private).toBe(COPY.WORKSHOP_COPY.nameProblem.private);
+  });
+
   it('says the My shape square limit in words, not "max"', () => {
     expect(SHAPE_COPY.SHAPE_COPY.problem.big).toMatch(/^Too many squares\. \d+ is the most\.$/);
   });
