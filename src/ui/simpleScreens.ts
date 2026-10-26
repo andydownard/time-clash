@@ -314,11 +314,7 @@ export function showVictory(ctx: UiCtx, options: VictoryOptions): Promise<Victor
       },
       confetti(doc),
       toyBlocks(doc),
-      h(doc, 'p', {
-        class: 'tc-team-eyebrow',
-        'data-role': 'winner-team',
-        text: TEAM_NAMES[winner],
-      }),
+      // No team line over the winner: the award card below names the team, in its colors.
       h(doc, 'h1', { class: 'tc-title', text: VICTORY.heading(names[winner]) }),
       h(doc, 'p', { class: 'tc-big tc-wipeout', text: VICTORY.wipeoutLine(TEAM_HOMES[loser]) }),
       h(

@@ -45,7 +45,10 @@ const state = (over: Partial<HudState> = {}): HudState => ({
   units: [],
   ...over,
 });
-const handlers = (): HudHandlers => ({ onAim: () => {}, onFire: () => {}, onMuteToggle: () => {},
+const handlers = (): HudHandlers => ({
+  onAim: () => {},
+  onFire: () => {},
+  onMuteToggle: () => {},
   onSelect: () => {},
 });
 
@@ -273,10 +276,16 @@ describe('Wipeout screen', () => {
     names: { PAST: 'Alex', FUTURE: 'Sam' },
     stats: { PAST: st(4, 4), FUTURE: st(1, 3) },
   };
-  it('names the winning team, never labels the player who lost, and shows brain stats', () => {
+  it('names the winner with no team line above it, never labels the player who lost, and shows brain stats', () => {
     void s.overlay.showVictory(opts);
     const v = q(TEST_IDS.victory)!;
-    expect(v.querySelector('[data-role="winner-team"]')!.textContent).toBe('Team Past');
+    // The small "TEAM PAST" line over "<name> wins!" is cut: the award card names the team.
+    expect(v.querySelector('[data-role="winner-team"]')).toBeNull();
+    expect(v.querySelector(':scope > .tc-team-eyebrow')).toBeNull();
+    expect(v.querySelector('h1')!.textContent).toBe(VICTORY.heading('Alex'));
+    expect(v.querySelector('[data-award-team="PAST"] .tc-team-eyebrow')!.textContent).toBe(
+      'Team Past',
+    );
     expect(v.textContent).not.toContain('Sam: Wipeout');
     expect(v.textContent).toContain(VICTORY.wipeoutLine('Secret Base'));
     const stats = qa('[data-role="brain-stats"]').map((e) => e.textContent);

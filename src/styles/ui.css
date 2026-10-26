@@ -1864,12 +1864,6 @@ body:has(.tc-hud):not([data-cover]):not(:has([data-layer='screen'] > *)) .tc-cap
   letter-spacing: var(--tc-ls-caps-wide);
   text-transform: uppercase;
 }
-.tc-victory[data-team='PAST'] > .tc-team-eyebrow {
-  color: var(--tc-eyebrow-past);
-}
-.tc-victory[data-team='FUTURE'] > .tc-team-eyebrow {
-  color: var(--tc-eyebrow-future);
-}
 .tc-brain-stats,
 .tc-scrap-stats {
   display: flex;
