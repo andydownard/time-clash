@@ -1329,5 +1329,128 @@
     "hint": "Burrs stick to fabric and fur.",
     "tags": ["mainidea", "vocabulary-in-context"],
     "passage": "The inventor George de Mestral took a walk in the mountains and came home with burrs clinging to his pants and to his dog. Curious, he studied one under a microscope and saw hundreds of tiny hooks that caught on loops of fabric. He spent years testing materials until he made two strips, one covered with hooks and one with loops, that pressed together and held tight. His invention now closes shoes, bags, and even space suits."
+  },
+  {
+    "id": "reading-6-0091",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "vocab",
+    "prompt": "What does \"hesitate\" mean in this sentence? Do not hesitate to ask for help if you get stuck on a problem.",
+    "choices": ["pause before acting", "act too fast", "feel proud", "give up"],
+    "answer": "pause before acting",
+    "hint": "The sentence says to ask for help right away.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-6-0092",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "vocab",
+    "prompt": "What does \"versatile\" mean in this sentence? A versatile tool, like a pocketknife, can be used in many ways.",
+    "choices": ["hard to carry", "useful in many ways", "very costly", "easily lost"],
+    "answer": "useful in many ways",
+    "hint": "The tool can be used in many ways.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-6-0093",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "vocab",
+    "prompt": "What does \"meager\" mean in this sentence? The meager meal of one slice of bread left the hikers hungry.",
+    "choices": ["too spicy", "very fancy", "too small", "extra large"],
+    "answer": "too small",
+    "hint": "They were still hungry.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-6-0094",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "vocab",
+    "prompt": "What does \"diligent\" mean in this sentence? The diligent student studied every night before the test.",
+    "choices": ["lazy", "forgetful", "noisy", "hard-working"],
+    "answer": "hard-working",
+    "hint": "She studied every night.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-6-0095",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "vocab",
+    "prompt": "What does \"obsolete\" mean in this sentence? Cassette players are obsolete now that most people stream music.",
+    "choices": ["no longer used", "newly made", "very loud", "highly prized"],
+    "answer": "no longer used",
+    "hint": "Most people have switched to something else.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-6-0096",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "grammar",
+    "prompt": "Which pronoun fits? \"Maya lost ___ jacket at the park.\"",
+    "choices": ["she", "her", "herself", "they"],
+    "answer": "her",
+    "hint": "The jacket belongs to Maya.",
+    "tags": ["grammar", "pronouns"]
+  },
+  {
+    "id": "reading-6-0097",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "grammar",
+    "prompt": "Which sentence is correct?",
+    "choices": ["The birds sings every morning.", "The birds singing every morning.", "The birds sing every morning.", "The birds sings every mornings."],
+    "answer": "The birds sing every morning.",
+    "hint": "A plural subject needs a plural verb.",
+    "tags": ["grammar", "subject-verb-agreement"]
+  },
+  {
+    "id": "reading-6-0098",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "grammar",
+    "prompt": "Which sentence joins two whole thoughts with a comma and \"and\"?",
+    "choices": ["I like soup and salad.", "Because I like soup.", "Eating soup and salad.", "I like soup, and my brother likes salad."],
+    "answer": "I like soup, and my brother likes salad.",
+    "hint": "A compound sentence joins two whole thoughts.",
+    "tags": ["grammar", "sentences"]
+  },
+  {
+    "id": "reading-6-0099",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "grammar",
+    "prompt": "Which is the correct contraction for \"do not\"?",
+    "choices": ["don't", "do'nt", "dont'", "d'ont"],
+    "answer": "don't",
+    "hint": "The apostrophe takes the place of the missing letter.",
+    "tags": ["grammar", "contractions"]
+  },
+  {
+    "id": "reading-6-0100",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "choices": ["Monarchs live only in Mexico.", "Monarch butterflies make a long trip over several lifetimes.", "Butterflies cannot fly far.", "Scientists have solved every mystery."],
+    "answer": "Monarch butterflies make a long trip over several lifetimes.",
+    "hint": "Think about who finishes the trip.",
+    "tags": ["mainidea", "main-idea"],
+    "passage": "Each fall, monarch butterflies fly thousands of miles to warm forests in Mexico. No single butterfly makes the whole round trip. The ones that fly south lay eggs along the way, and their young finish the journey north the next spring. Scientists are still studying how the butterflies find their way."
+  },
+  {
+    "id": "reading-6-0101",
+    "subject": "reading",
+    "grade": 6,
+    "kind": "mainidea",
+    "prompt": "What do scientists still want to learn?",
+    "choices": ["Where the forests are", "When the eggs hatch", "How the butterflies find their way", "How many wings they have"],
+    "answer": "How the butterflies find their way",
+    "hint": "Read the last sentence.",
+    "tags": ["mainidea", "detail"],
+    "passage": "Each fall, monarch butterflies fly thousands of miles to warm forests in Mexico. No single butterfly makes the whole round trip. The ones that fly south lay eggs along the way, and their young finish the journey north the next spring. Scientists are still studying how the butterflies find their way."
   }
 ]
