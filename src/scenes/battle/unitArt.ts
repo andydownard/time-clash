@@ -374,6 +374,27 @@ export type UnitArt = {
   destroy(): void;
 };
 
+/** A heater shield (flat top, pointed foot) that fits inside the tag circle. Team Past's tag. */
+export function shieldPoints(t: {
+  x: number;
+  y: number;
+  r: number;
+}): Array<{ x: number; y: number }> {
+  const at = (fx: number, fy: number): { x: number; y: number } => ({
+    x: t.x + fx * t.r,
+    y: t.y + fy * t.r,
+  });
+  return [
+    at(-0.7, -0.7),
+    at(0.7, -0.7),
+    at(0.7, 0.1),
+    at(0.45, 0.62),
+    at(0, 1),
+    at(-0.45, 0.62),
+    at(-0.7, 0.1),
+  ];
+}
+
 /** One fighter: its drawing, round token and (hidden until selected) pointing arrow. */
 function drawOne(
   scene: Phaser.Scene,
@@ -394,9 +415,16 @@ function drawOne(
   const { token } = spot;
   const disk = scene.add.graphics();
   disk.fillStyle(spot.team === 'PAST' ? P.deep : F.night, 1);
-  disk.fillCircle(token.x, token.y, token.r);
   disk.lineStyle(3, spot.team === 'PAST' ? P.gold : F.glow, 1);
-  disk.strokeCircle(token.x, token.y, token.r);
+  if (spot.team === 'PAST') {
+    // Team Past: the letter sits on a shield.
+    const pts = shieldPoints(token);
+    disk.fillPoints(pts, true);
+    disk.strokePoints(pts, true, true);
+  } else {
+    disk.fillCircle(token.x, token.y, token.r);
+    disk.strokeCircle(token.x, token.y, token.r);
+  }
   const label = scene.add
     .text(token.x, token.y, spot.id, {
       fontFamily: FONT_FAMILY.new,

@@ -24,6 +24,10 @@ export type SquadBar = {
   panel: HTMLElement;
   /** Repaint. `active` is false while a shot flies or a cover is up. Returns true when a dasher is picked (Fire stays off). */
   update(squads: HudSquads | undefined, active: boolean): boolean;
+  /** The Escape key: Back, when a helper's Back is showing. Returns true when it used the press. */
+  pressBack(): boolean;
+  /** The H key: Hear it. Returns true when it used the press. */
+  pressHear(): boolean;
 };
 
 const KIND_ICON: Record<string, string> = { launcher: '🎯', dasher: '🛡' };
@@ -95,6 +99,16 @@ export function createSquadBar(doc: Document, handlers: () => HudHandlers | null
     hint,
     goRow,
     panel,
+    pressBack(): boolean {
+      if (!live || !launcherId || back.hidden) return false;
+      handlers()?.onHelper?.(launcherId);
+      return true;
+    },
+    pressHear(): boolean {
+      if (!live || root.hidden) return false;
+      handlers()?.onHearHelper?.();
+      return true;
+    },
     update(squads, active): boolean {
       root.hidden = !squads;
       goRow.hidden = !squads;

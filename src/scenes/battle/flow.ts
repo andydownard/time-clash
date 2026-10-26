@@ -188,6 +188,7 @@ export class BattleFlow {
   async run(): Promise<void> {
     const { match, overlay } = this.deps;
     overlay.showHud(this.hudHandlers());
+    this.deps.view.setUnitPickHandler?.((id) => this.selectUnit(id));
     try {
       while (match.snapshot().status === 'PLAYING') {
         const done = await this.playTurn();
@@ -198,6 +199,7 @@ export class BattleFlow {
     } finally {
       this.deps.audio?.stopMusic?.();
       this.deps.view.setAimDragHandler(null);
+      this.deps.view.setUnitPickHandler?.(null);
     }
   }
 
@@ -205,6 +207,7 @@ export class BattleFlow {
   destroy(): void {
     this.stopped = true;
     this.deps.view.setAimDragHandler(null);
+    this.deps.view.setUnitPickHandler?.(null);
     const release = this.awaitingFire;
     this.awaitingFire = null;
     release?.();

@@ -76,6 +76,7 @@ import {
 } from './battle/types';
 import { FALL_DX, FALL_MS, REDUCED_FADE_MS, TEAM_COLOR } from './battle/visual';
 import { drawUnits, type UnitArt } from './battle/unitArt';
+import { unitAt } from './battle/unitSpots';
 import { DasherLayer, type DasherDebug } from './battle/dasherLayer';
 import { builtLayerFor, type BaseLayer, type BaseLayerDebug } from './battle/baseLayer';
 import { RiderLayer } from './battle/riderArt';
@@ -98,6 +99,7 @@ export class BattleScene extends Phaser.Scene implements BattleView {
   private glows = {} as Record<Team, Phaser.GameObjects.Ellipse>;
   private characters = {} as Record<Team, Character>;
   private dragHandler: ((aim: AimInput) => void) | null = null;
+  private pickHandler: ((id: UnitId) => void) | null = null;
   private lastAim: AimInput = { angleDeg: 45, power: 60 };
   private resumeWaiters: Array<() => void> = [];
   private paused = false;
@@ -182,7 +184,8 @@ export class BattleScene extends Phaser.Scene implements BattleView {
     void preloadCanvasFonts(document.fonts, () => this.refreshLabels());
 
     this.input.on('pointerdown', (p: Phaser.Input.Pointer) => {
-      if (this.dragHandler) this.aimArt.pointerDown({ x: p.worldX, y: p.worldY });
+      if (this.dragHandler && this.aimArt.pointerDown({ x: p.worldX, y: p.worldY })) return;
+      this.tapFighter({ x: p.worldX, y: p.worldY });
     });
     this.input.on('pointermove', (p: Phaser.Input.Pointer) => {
       const aim = this.aimArt.pointerMove({ x: p.worldX, y: p.worldY });
@@ -324,6 +327,28 @@ export class BattleScene extends Phaser.Scene implements BattleView {
 
   showTrace(team: Team, points: readonly Vec2[] | null): void {
     this.aimArt.showTrace(team, points);
+  }
+
+  setUnitPickHandler(handler: ((id: UnitId) => void) | null): void {
+    this.pickHandler = handler;
+  }
+
+  /** A tap on one of the active team's fighters picks it (the same as its token in the bar). */
+  private tapFighter(p: Vec2): void {
+    const team = this.lastStatus?.activeTeam;
+    if (!this.pickHandler || !team || !this.fighters) return;
+    // A fighter standing on a built base is drawn shifted; undo the shift before looking.
+    const near = (id: UnitId): Vec2 => {
+      const c = this.fighters![id].container;
+      return { x: p.x - c.x, y: p.y - c.y };
+    };
+    const ids = UNITS.filter((u) => u.team === team).map((u) => u.id);
+    for (const id of ids) {
+      if (unitAt(near(id), team) === id) {
+        this.pickHandler(id);
+        return;
+      }
+    }
   }
 
   setAimDragHandler(handler: ((aim: AimInput) => void) | null): void {
@@ -743,6 +768,7 @@ export class BattleScene extends Phaser.Scene implements BattleView {
     this.disturb?.destroy();
     this.disturb = null;
     this.dragHandler = null;
+    this.pickHandler = null;
     this.input.off('pointerdown');
     this.input.off('pointermove');
     this.input.off('pointerup');

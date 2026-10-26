@@ -71,7 +71,9 @@ Rules:
 
 Shared code: `radioGroup` and `switchChip` in `src/ui/selector.ts` build selectors, so a new screen gets the roles, the arrow keys and the classes for free. `tests/ui/controls.test.ts` opens every screen (except the Base Builder, which is being laid out again) and checks each control against this table.
 
-Not yet on the rule (see the panel notes, `docs/panel/2026-10-24-batch.md`): the Base Builder screen, the Forge weapon rows (`.tc-forge-pick`, a pressed-state card), the battle fighter picker (`.tc-unit`, round letter tokens that match the letters drawn over the fighters on the canvas) and the Squads helper picker (behind a flag).
+**Escape is Back (2026-10-25).** On Setup (with Back), the Battle Plan, the Forge, the Workshop, Upgrade and Build Base, Escape presses the screen's Back button (`openScreen` in `src/ui/overlay.ts`). It stands aside for a press another handler used, the Settings panel, a cover, pause, and typing in a box. In Battle, Escape is Back for the walking helper and H is Hear it (`docs/SQUADS_PLAN.md`). Tests: `tests/ui/escapeHearKeys.test.ts`.
+
+Not yet on the rule (see the panel notes, `docs/panel/2026-10-24-batch.md`): the Base Builder screen, the Forge weapon rows (`.tc-forge-pick`, a pressed-state card), the battle fighter picker (`.tc-unit`, round letter tokens that match the letters drawn over the fighters on the canvas: a shield for Team Past, a round tag for Team Future; tapping the fighter in the picture also picks it) and the Squads helper picker (behind a flag).
 
 ## Component recipes
 

@@ -1791,6 +1791,7 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
             focusPiece(selected);
           } else say(refusalText(r.why ?? 'overlap'));
         } else if (k === 'Escape') {
+          e.preventDefault();
           armed = null;
           cursor = null;
           hintDefault();

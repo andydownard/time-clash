@@ -94,3 +94,41 @@ export function overlapShare(a: Rect, b: Rect): number {
 export function rectsOverlap(a: Rect, b: Rect): boolean {
   return overlapShare(a, b) > 0;
 }
+
+/**
+ * The smallest a tap zone gets, in world pixels. The picture is never drawn narrower than 768 of
+ * 1280 px (iPad portrait is not played, but a small window is), so 96 world px is 57.6 on screen.
+ */
+export const TAP_MIN = 96;
+
+/** Where a tap picks this fighter: its drawing and its tag, grown to at least TAP_MIN each way. */
+export function unitHitZone(s: UnitSpot): Rect {
+  const top = s.token.y - s.token.r;
+  const x0 = Math.min(s.box.x, s.token.x - s.token.r);
+  const x1 = Math.max(s.box.x + s.box.w, s.token.x + s.token.r);
+  const y1 = s.box.y + s.box.h;
+  const w = Math.max(x1 - x0, TAP_MIN);
+  const h = Math.max(y1 - top, TAP_MIN);
+  const cx = (x0 + x1) / 2;
+  return { x: cx - w / 2, y: top, w, h };
+}
+
+/**
+ * The fighter of `team` under a tap at `p` (world space), or null. Where zones overlap the
+ * fighter whose drawing centre is nearest wins, so a tap always has one clear answer.
+ */
+export function unitAt(p: { x: number; y: number }, team: Team): UnitId | null {
+  let best: UnitId | null = null;
+  let bestD = Infinity;
+  for (const s of unitSpots()) {
+    if (s.team !== team) continue;
+    const z = unitHitZone(s);
+    if (p.x < z.x || p.x > z.x + z.w || p.y < z.y || p.y > z.y + z.h) continue;
+    const d = Math.hypot(p.x - (s.box.x + s.box.w / 2), p.y - (s.box.y + s.box.h / 2));
+    if (d < bestD) {
+      bestD = d;
+      best = s.id;
+    }
+  }
+  return best;
+}
