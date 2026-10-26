@@ -168,7 +168,10 @@ export function showReloadModal(ctx: UiCtx, options: ReloadModalOptions): Promis
           doc,
           'div',
           { class: 'tc-reload-info' },
-          h(doc, 'p', { class: 'tc-instructions', text: COPY.instructions }),
+          // A new child learns what the card is for once a match. After that it is known.
+          options.firstReload
+            ? h(doc, 'p', { class: 'tc-instructions', text: COPY.instructions })
+            : null,
           timerBlock,
         ),
         question.passage

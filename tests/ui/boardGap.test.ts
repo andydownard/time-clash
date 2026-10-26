@@ -50,6 +50,26 @@ describe('Reload board gap', () => {
     expect(q(TEST_IDS.reloadModal)!.querySelectorAll('.tc-turn-chip')).toHaveLength(1);
   });
 
+  it('says "Answer to reload your launcher." only when told it is the first reload', () => {
+    void s.overlay.showReloadModal({
+      question: mathQ,
+      team: 'PAST',
+      playerName: 'Alex',
+      firstReload: true,
+    });
+    expect(q(TEST_IDS.reloadModal)!.querySelector('.tc-instructions')!.textContent).toBe(
+      RELOAD.instructions,
+    );
+  });
+
+  it('a later reload has no "Answer to reload" line (the timer still shows)', () => {
+    void s.overlay.showReloadModal({ question: mathQ, team: 'PAST', playerName: 'Alex' });
+    const card = q(TEST_IDS.reloadModal)!;
+    expect(card.querySelector('.tc-instructions')).toBeNull();
+    expect(card.textContent).not.toContain(RELOAD.instructions);
+    expect(card.querySelector('[data-testid="reload-timer"]')).not.toBeNull();
+  });
+
   it('a story is labelled', () => {
     void open(mainIdeaQ);
     const p = q(TEST_IDS.reloadModal)!.querySelector('.tc-passage')!;

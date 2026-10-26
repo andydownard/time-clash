@@ -129,6 +129,8 @@ export class BattleFlow {
   private fieldHeld = 0;
   /** Squads S1: sides that already took a go in this match, so the first-go hint shows once each. */
   private readonly hintDone = new Set<Team>();
+  /** A reload card was shown in this match, so the card's "Answer to reload" line is not needed again. */
+  private reloadCardShown = false;
   /** The Computer player's own random stream and the time it has spent thinking this turn. */
   private readonly botRng: Rng;
   private thinkingSpentMs = 0;
@@ -717,10 +719,13 @@ export class BattleFlow {
       this.deps.onHistory?.(pick.history);
       asked = { kind: pick.question.kind, grade: pick.question.grade };
       await this.gate();
+      const firstReload = !this.reloadCardShown;
+      this.reloadCardShown = true;
       answer = await overlay.showReloadModal({
         question: pick.question,
         team,
         playerName: player.name,
+        firstReload,
         waiting: {
           team: team === 'PAST' ? 'FUTURE' : 'PAST',
           name: match.snapshot().players[team === 'PAST' ? 1 : 0].name,
