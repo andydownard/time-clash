@@ -4,7 +4,7 @@
 //   pass screen -> ready() -> banner -> setAim -> wind-up -> fire() -> animate path -> shotLanded()
 //   -> (tumble, bubble) -> ... -> pickQuestion -> showReloadModal -> reloadDone() -> pass()
 import type { AudioManager } from '../../audio/types';
-import { firingOrigin, unitById, unitsOf, type UnitId } from '../../game/units';
+import { firingOrigin, unitById, unitsOf } from '../../game/units';
 import { answerReload, chooseShot } from '../../game/bot';
 import { COMPUTER } from '../../data/computerCopy';
 import {
@@ -26,7 +26,9 @@ import type {
   BlastOutcome,
   BuiltEvents,
   MatchController,
+  MountView,
   Rng,
+  ShooterId,
   ShotResult,
   StandBonk,
   Team,
@@ -284,8 +286,9 @@ export class BattleFlow {
       ...(practice.effects ? { effects: practice.effects } : {}),
     });
     try {
-      match.selectUnit(shot.unit);
-      view.setSelectedUnit(team, shot.unit);
+      // A weapon on a base pad when it picked one (the fighter stays picked underneath).
+      match.selectUnit(shot.mount ?? shot.unit);
+      this.showPick(team);
     } catch {
       // The default fighter stays up. The aim below is still legal.
     }
@@ -515,10 +518,16 @@ export class BattleFlow {
     const result = match.fire({ birdMs: view.birdClockMs?.() ?? 0 });
     const kickedTo = { ...match.snapshot().aim[team] };
     audio?.playSfx(team === 'PAST' ? 'cannonBoom' : 'laserPew');
+    // A weapon on a base pad: its pad flashes as it fires, and it fires its own shells.
+    const pad = this.pickedMount(team);
+    if (pad) view.flashPad?.(team, pad.spot);
     this.pushStatus(false, kickedFrom);
     const unit = unitById(match.snapshot().selected[team]);
+    const kind = pad ? undefined : unit ? kindForRole(unit.role) : undefined;
+    // A volley flies all its small shells at once.
+    const shells = result.volley ?? [result];
     await Promise.all([
-      view.animateShot(team, result, unit ? kindForRole(unit.role) : undefined),
+      ...shells.map((shell) => view.animateShot(team, shell, kind)),
       this.flightCues(result),
       this.slideRecoil(kickedFrom, kickedTo),
     ]);
@@ -896,18 +905,33 @@ export class BattleFlow {
     this.pushStatus(true);
   }
 
-  private selectUnit(id: UnitId): void {
+  private selectUnit(id: ShooterId): void {
     if (!this.awaitingFire || this.stopped) return;
-    const { match, view } = this.deps;
+    const { match } = this.deps;
     try {
       match.selectUnit(id);
     } catch {
-      return; // wrong phase, wrong team or unknown fighter; ignore
+      return; // wrong phase, wrong team, unknown fighter, or a pad that is empty or gone; ignore
     }
     const team = match.snapshot().turn.team;
     this.drawPreview(team);
-    view.setSelectedUnit(team, id);
+    this.showPick(team);
     this.pushStatus(true);
+  }
+
+  /** The view marks what is picked: the fighter, and the weapon's pad when a weapon is picked. */
+  private showPick(team: Team): void {
+    const { match, view } = this.deps;
+    const s = match.snapshot();
+    view.setSelectedUnit(team, s.selected[team]);
+    view.setSelectedMount?.(team, s.selectedMount?.[team] ?? null);
+  }
+
+  /** The weapon on a base pad the team has picked, or undefined for a fighter. */
+  private pickedMount(team: Team): MountView | undefined {
+    const s = this.deps.match.snapshot();
+    const id = s.selectedMount?.[team];
+    return id ? s.mounts?.[team].find((m) => m.id === id && m.alive) : undefined;
   }
 
   private setAim(aim: AimInput): void {
@@ -953,6 +977,21 @@ export class BattleFlow {
       canFire,
       selected: s.selected[team],
       units: unitsOf(team).map((u) => ({ id: u.id, name: u.name })),
+      ...(s.mounts
+        ? {
+            mounts: s.mounts[team]
+              .filter((m) => m.alive && m.canFire)
+              .map((m) => ({
+                id: m.id,
+                spot: m.spot,
+                name: m.name,
+                art: m.art,
+                // A weapon of your own wears its style's picture, so its art is not its id.
+                mine: m.art !== m.weapon,
+              })),
+            selectedMount: s.selectedMount?.[team] ?? null,
+          }
+        : {}),
       ...(this.deps.practice ? { computerTeam: this.deps.practice.team } : {}),
       gear: { ammo: s.ammo[team], ammoLeft: s.ammoLeft[team], evasion: s.evasion[team] },
       ...(s.squads
@@ -1007,9 +1046,11 @@ export class BattleFlow {
     view.showPreview(team, previewDots(sim.path));
   }
 
-  /** Same function match.fire() uses, so the preview and the guide start at the real muzzle. */
+  /** Same point match.fire() uses, so the preview and the guide start at the real muzzle. */
   private originFor(team: Team) {
     const { match } = this.deps;
+    const pad = this.pickedMount(team);
+    if (pad) return { ...pad.origin };
     return firingOrigin(team, match.snapshot().selected[team], match.layout);
   }
 
@@ -1020,6 +1061,8 @@ export class BattleFlow {
     if (!bricks) return;
     await this.deps.view.playBricks?.(team, built.bricksFell, bricks);
     this.live();
+    // A picked weapon whose pad fell is put back by the rules: the view follows.
+    if (built.mountDown.length > 0) this.showPick(team);
   }
 
   // ---------- helpers ----------

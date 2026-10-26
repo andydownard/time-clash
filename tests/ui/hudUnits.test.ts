@@ -35,7 +35,7 @@ const handlers = () => {
     onAim: () => {},
     onFire: () => {},
     onMuteToggle: () => {},
-    onSelect: (id) => picks.push(id),
+    onSelect: (id) => picks.push(id as UnitId),
   };
   return { h, picks };
 };

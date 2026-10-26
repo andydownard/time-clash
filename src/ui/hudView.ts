@@ -3,7 +3,7 @@
 import { COMPUTER, computerTurnBanner } from '../data/computerCopy';
 import { BUTTONS, HUD, TEAM_NAMES, goTurnBanner, turnBanner, windLabel } from '../data/copy';
 import { AIM, DAMAGE, TIMING, TURN, WIND } from '../game/config';
-import { TEAMS, type Team } from '../game/types';
+import { TEAMS, type ShooterId, type Team } from '../game/types';
 import type { UnitId } from '../game/units';
 import { LOCAL_IDS } from './constants';
 import type { UiCtx } from './ctx';
@@ -12,9 +12,12 @@ import { setSwitch, switchChip } from './selector';
 import { createGear } from './hudGear';
 import { createSquadBar, type SquadBar } from './squadBar';
 import { hudIcon } from './hudIcons';
-import { TEST_IDS, type HudHandlers, type HudState } from './types';
+import { myWeaponIcon, weaponIcon } from './baseBuilderArt';
+import { TEST_IDS, type HudHandlers, type HudMount, type HudState } from './types';
 
 const clamp = (n: number, lo: number, hi: number): number => Math.min(hi, Math.max(lo, n));
+/** A weapon's picture on its round selector token, in px (the token is 56px). */
+const MOUNT_ICON_PX = 34;
 
 type Parts = {
   root: HTMLElement;
@@ -56,6 +59,8 @@ export function createHud(ctx: UiCtx) {
   let dasherUp = false;
   /** The active team's fighter ids, as last drawn. Keys outside this list do nothing. */
   let unitIds: UnitId[] = [];
+  /** What the selector tokens were last built for. Taps and keys only move the pick. */
+  let tokenKey = '';
   /** The coach line stays until the first shot of the session, so a new player learns the controls. */
   let hasFired = false;
   let unsubscribe: (() => void) | null = null;
@@ -147,39 +152,116 @@ export function createHud(ctx: UiCtx) {
     );
   };
 
-  // Rebuild the tokens only when the roster changes. Otherwise just move the selection.
+  /** One round token in "Pick one". A tap picks `pick` (a fighter or a weapon on a pad). */
+  const token = (
+    pick: ShooterId,
+    attrs: Record<string, string | undefined>,
+    ...children: Array<Node | string>
+  ): HTMLElement => {
+    const b = h(
+      doc,
+      'button',
+      { type: 'button', role: 'radio', 'data-pick': pick, ...attrs },
+      ...children,
+    );
+    b.addEventListener('click', () => {
+      if (canFire) handlers?.onSelect(pick);
+    });
+    return b;
+  };
+
+  const mountIcon = (m: HudMount, team: Team): SVGElement =>
+    m.mine ? myWeaponIcon(doc, m.art, team, MOUNT_ICON_PX) : weaponIcon(doc, m.art, MOUNT_ICON_PX);
+
+  // Rebuild the tokens only when what they show changes. Otherwise just move the selection.
+  // With weapons on the base pads, one more token switches between the fighters and the weapons,
+  // so the tokens on show always hold what Fire will shoot.
   const paintUnits = (state: HudState): void => {
     if (!parts) return;
-    const ids = state.units.map((u) => u.id);
-    if (ids.join('') !== unitIds.join('')) {
-      unitIds = ids;
-      const tokens = state.units.map((u) => {
-        const b = h(doc, 'button', {
-          type: 'button',
-          role: 'radio',
-          class: 'tc-unit',
-          'data-unit': u.id,
-          'data-testid': TEST_IDS.unit(u.id),
-          'aria-label': HUD.unitLabel(u.name, u.id),
-          text: u.id,
-        });
-        b.addEventListener('click', () => {
-          if (canFire) handlers?.onSelect(u.id);
-        });
-        return b;
-      });
+    unitIds = state.units.map((u) => u.id);
+    const team = state.activeTeam;
+    const mounts = team ? (state.mounts ?? []) : [];
+    const mount = mounts.find((m) => m.id === state.selectedMount);
+    const fighter = state.units.find((u) => u.id === state.selected);
+    const key = [
+      team,
+      mount ? 'weapons' : 'fighters',
+      unitIds.join(''),
+      mounts.map((m) => `${m.id}:${m.art}:${m.mine}`).join(','),
+      mount ? state.selected : '',
+    ].join('|');
+    if (key !== tokenKey && team) {
+      tokenKey = key;
+      const tokens = mount
+        ? [
+            ...mounts.map((m) =>
+              token(
+                m.id,
+                {
+                  class: 'tc-unit tc-unit-mount',
+                  'data-testid': TEST_IDS.unit(m.id),
+                  'aria-label': HUD.mountLabel(m.spot + 1, m.name),
+                },
+                mountIcon(m, team),
+                h(doc, 'span', { class: 'tc-unit-spot', 'aria-hidden': 'true', text: m.spot + 1 }),
+              ),
+            ),
+            token(state.selected, {
+              class: 'tc-unit tc-unit-swap',
+              'data-testid': TEST_IDS.unitFighters,
+              'aria-label': HUD.fightersLabel(fighter?.name ?? '', state.selected),
+              text: state.selected,
+            }),
+          ]
+        : [
+            ...state.units.map((u) =>
+              token(u.id, {
+                class: 'tc-unit',
+                'data-unit': u.id,
+                'data-testid': TEST_IDS.unit(u.id),
+                'aria-label': HUD.unitLabel(u.name, u.id),
+                text: u.id,
+              }),
+            ),
+            ...(mounts[0]
+              ? [
+                  token(
+                    mounts[0].id,
+                    {
+                      class: 'tc-unit tc-unit-swap',
+                      'data-testid': TEST_IDS.unitWeapons,
+                      'aria-label': HUD.baseWeapons,
+                      title: HUD.baseWeapons,
+                    },
+                    mountIcon(mounts[0], team),
+                  ),
+                ]
+              : []),
+          ];
       parts.units.replaceChildren(
         h(doc, 'span', { class: 'tc-units-label', text: HUD.pickOne }),
         ...tokens,
         parts.unitName,
       );
+    } else if (!team && tokenKey !== '') {
+      tokenKey = '';
+      parts.units.replaceChildren(
+        h(doc, 'span', { class: 'tc-units-label', text: HUD.pickOne }),
+        parts.unitName,
+      );
     }
-    parts.units.setAttribute('data-team', state.activeTeam ?? 'none');
+    parts.units.setAttribute('data-team', team ?? 'none');
+    parts.units.toggleAttribute('data-weapons', Boolean(mount));
+    // With weapons on the pads the selector has a sixth token. It is laid out more tightly (the
+    // label moves under the tokens), so the bar still fits one row at 1024px.
+    parts.units.toggleAttribute('data-swap', mounts.length > 0);
+    const picked: string = mount ? mount.id : state.selected;
     for (const b of parts.units.querySelectorAll<HTMLElement>('.tc-unit')) {
-      b.setAttribute('aria-checked', String(b.dataset.unit === state.selected));
+      const swap = b.classList.contains('tc-unit-swap');
+      b.setAttribute('aria-checked', String(!swap && b.dataset.pick === picked));
       b.setAttribute('aria-disabled', String(!canFire));
     }
-    parts.unitName.textContent = state.units.find((u) => u.id === state.selected)?.name ?? '';
+    parts.unitName.textContent = mount ? mount.name : (fighter?.name ?? '');
   };
 
   const fireNow = (h_: HudHandlers): void => {
@@ -520,6 +602,7 @@ export function createHud(ctx: UiCtx) {
       handlers = null;
       canFire = false;
       unitIds = [];
+      tokenKey = '';
       dasherUp = false;
     },
   };

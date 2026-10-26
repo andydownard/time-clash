@@ -1,5 +1,6 @@
 // Sample built bases for tests: the smallest, a typical and the biggest a player can build.
-import type { Placed, Rotation } from '../../src/game/baseBuilder';
+import { resolveSpots, type Placed, type Rotation } from '../../src/game/baseBuilder';
+import type { CustomWeapon } from '../../src/game/customWeapons';
 import type { ChosenBase, Team } from '../../src/game/types';
 
 export const brick = (
@@ -40,3 +41,26 @@ export const HUGE = (team: Team): ChosenBase => {
 };
 
 export const SIZES = { tiny: TINY, typical: TYPICAL, huge: HUGE } as const;
+
+/**
+ * A base with weapons on its pads, placed the way the builder places them (`resolveSpots`). Each
+ * entry is a catalog weapon id, a Workshop weapon of your own, or null for an empty pad.
+ */
+export const armed = (
+  base: ChosenBase,
+  weapons: ReadonlyArray<string | CustomWeapon | null>,
+): ChosenBase => ({
+  pieces: base.pieces,
+  spots: resolveSpots(
+    base.pieces,
+    weapons.map((w) =>
+      w === null ? {} : typeof w === 'string' ? { weapon: w } : { weapon: w.id, mine: w },
+    ),
+  ),
+});
+
+/** The strongest weapons each side can mount, four of them (the pace test uses these). */
+export const STRONGEST: Record<Team, readonly string[]> = {
+  PAST: ['ballista', 'catapult', 'ballista', 'archerPost'],
+  FUTURE: ['missilePod', 'laser', 'turret', 'missilePod'],
+};

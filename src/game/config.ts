@@ -758,6 +758,14 @@ export const BASE_IN_BATTLE = {
    * Perfect aim does 88 a turn, so a foundation of at least 360 needs five turns of hits.
    */
   health: { perHp: 1.5, band: { min: 1, max: 1.25 }, foundationShare: 0.9 },
+  /**
+   * Base health mode: a weapon on a pad hits like a fighter, scaled by `mountScale` = its catalog
+   * damage x its role multiplier (`brickDamage.roleMultiplier`) x its shells, divided by
+   * `refDamage` (a Cannon's 20), and never above `maxScale`. A volley's shells share it. The cap
+   * is the pace rule: a perfect turn may do at most 88 (25 + 25 + 38), and the foundation always
+   * holds at least 360, so no weapon may hit harder than a fighter's standard shot.
+   */
+  baseHealthMount: { refDamage: 20, maxScale: 1 },
 } as const;
 
 // ---------- Disturbances: birds, gusts and recoil ----------

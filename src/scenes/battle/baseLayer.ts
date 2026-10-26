@@ -9,12 +9,14 @@ import {
   crackLines,
   crumblePlan,
   dustPuffs,
+  padFlash,
+  padRing,
   padSprites,
   stepPxOf,
   type BrickSprite,
   type PadSprite,
 } from './basePlan';
-import { PALETTE } from './visual';
+import { PALETTE, TEAM_COLOR } from './visual';
 
 /** What the e2e hook reads about one built base. Never secret. */
 export type BaseLayerDebug = {
@@ -27,6 +29,15 @@ export type BaseLayerDebug = {
   crumbled: number;
   /** The drawn bricks' boxes, world px. */
   boxes: Rect[];
+  /** The weapon pads: where each is, whether its picture is up, picked, and how often it fired. */
+  pads: Array<{
+    spot: number;
+    x: number;
+    y: number;
+    drawn: boolean;
+    picked: boolean;
+    flashes: number;
+  }>;
 };
 
 /** Turns an SVG text into a texture once. Resolves when it is ready, or when it fails. */
@@ -74,6 +85,10 @@ export class BaseLayer {
   private readonly pads: Array<{ pad: PadSprite; image: Phaser.GameObjects.Image | null }> = [];
   private readonly cracks: Phaser.GameObjects.Graphics;
   private readonly crumbled = new Set<BrickId>();
+  /** The ring round the picked weapon's pad, and which spot it is on. */
+  private ring: Phaser.GameObjects.Arc | null = null;
+  private picked: number | null = null;
+  private readonly flashes = new Map<number, number>();
   private views: Record<BrickId, BrickView>;
   private dead = false;
 
@@ -175,6 +190,7 @@ export class BaseLayer {
           };
           jobs.push(this.crumble(slot.image, box, order));
           slot.image = null;
+          if (this.picked === slot.pad.index) this.markPad(null);
         }
       }
     });
@@ -229,6 +245,47 @@ export class BaseLayer {
     });
   }
 
+  private padOn(spot: number): PadSprite | undefined {
+    return this.pads.find((p) => p.pad.index === spot)?.pad;
+  }
+
+  /** A pad whose brick fell is gone: its picture tumbled with it. */
+  private padGone(pad: PadSprite): boolean {
+    return pad.brick !== null && !this.views[pad.brick]?.alive;
+  }
+
+  /** Rings the picked weapon's pad (null takes the ring away), so the pick is seen on the field. */
+  markPad(spot: number | null): void {
+    this.ring?.destroy();
+    this.ring = null;
+    this.picked = null;
+    const pad = spot === null ? undefined : this.padOn(spot);
+    if (!pad || this.padGone(pad) || this.dead) return;
+    const r = padRing(pad, this.team);
+    this.ring = this.scene.add.circle(r.x, r.y, r.r).setStrokeStyle(r.width, r.color, 1);
+    this.ring.setFillStyle(r.color, 0);
+    this.container.add(this.ring);
+    this.picked = pad.index;
+  }
+
+  /** The pad flashes as its weapon fires: a disc that grows and fades (a blink with reduced motion). */
+  flashPad(spot: number): void {
+    const pad = this.padOn(spot);
+    if (!pad || this.dead) return;
+    this.flashes.set(spot, (this.flashes.get(spot) ?? 0) + 1);
+    const f = padFlash(pad.size, this.reduced());
+    const disc = this.scene.add
+      .circle(pad.x, pad.y, f.r, TEAM_COLOR[this.team], f.alpha)
+      .setDepth(14);
+    this.scene.tweens.add({
+      targets: disc,
+      alpha: 0,
+      scale: f.toScale,
+      duration: f.ms,
+      onComplete: () => disc.destroy(),
+    });
+  }
+
   state(): BaseLayerDebug {
     const boxes: Rect[] = [];
     for (const d of this.bricks.values()) if (d.image) boxes.push({ ...d.box });
@@ -238,6 +295,14 @@ export class BaseLayer {
       standing: Object.values(this.views).filter((v) => v.team === this.team && v.alive).length,
       crumbled: this.crumbled.size,
       boxes,
+      pads: this.pads.map(({ pad, image }) => ({
+        spot: pad.index,
+        x: pad.x,
+        y: pad.y,
+        drawn: image !== null,
+        picked: this.picked === pad.index,
+        flashes: this.flashes.get(pad.index) ?? 0,
+      })),
     };
   }
 

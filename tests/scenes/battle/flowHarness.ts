@@ -9,7 +9,9 @@ import type {
   BlastResult,
   MatchController,
   MatchOptions,
+  MountId,
   Players,
+  ShooterId,
   Team,
 } from '../../../src/game/types';
 import { windForTurn } from '../../../src/game/wind';
@@ -54,7 +56,8 @@ export type Log = string[];
 export function makeWorld(
   opts: {
     seed?: number;
-    script?: AimInput[];
+    /** Aims fired one by one. `pick` (a fighter or a weapon on a pad) is picked first. */
+    script?: Array<AimInput & { pick?: ShooterId }>;
     answers?: Array<'right' | 'wrong'>;
     waitIfPaused?: () => Promise<void>;
     bank?: FlowDeps['bank'];
@@ -98,6 +101,9 @@ export function makeWorld(
   const fields: Array<SquadField | null> = [];
   /** Built bases: every time the flow asked the view to redraw a side's bricks. */
   const brickPlays: Array<{ team: Team; fell: string[]; standing: number }> = [];
+  /** Built bases: the weapon each side shows as picked, and every pad that flashed when it fired. */
+  const mountSelections: Array<{ team: Team; id: MountId | null }> = [];
+  const padFlashes: Array<{ team: Team; spot: number }> = [];
   let cover: 'pass' | 'reload' | null = null;
   const coverViolations: string[] = [];
   let handlers: HudHandlers | null = null;
@@ -132,6 +138,12 @@ export function makeWorld(
       dragHandler = h;
     },
     setSelectedUnit: (team, id) => void selections.push({ team, id }),
+    setSelectedMount: (team, id) => void mountSelections.push({ team, id }),
+    flashPad: (team, spot) => {
+      guard('flashPad');
+      padFlashes.push({ team, spot });
+      log.push(`pad:${team}:${spot}`);
+    },
     animateShot: async (shooter, result, kind) => {
       guard('animateShot');
       shots.push({ team: shooter, kind, start: { ...result.path[0]! } });
@@ -196,6 +208,7 @@ export function makeWorld(
     const aim = script.shift();
     if (!h || !aim) return;
     queueMicrotask(() => {
+      if (aim.pick) h.onSelect(aim.pick);
       h.onAim(aim);
       h.onFire();
     });
@@ -299,6 +312,8 @@ export function makeWorld(
     results,
     fields,
     brickPlays,
+    mountSelections,
+    padFlashes,
     coverViolations,
     handlers: () => handlers,
     drag: (aim: AimInput) => dragHandler?.(aim),
