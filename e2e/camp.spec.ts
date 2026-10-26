@@ -69,3 +69,54 @@ test('reduced motion stops the Camp animation', async ({ page }) => {
   );
   expect(names).toEqual([]);
 });
+
+// Regression 25: at 4:3 and 16:10 the Camp picture filled the height and lost its side castles and
+// bases to the window edge. The whole 16:9 picture must show at every supported size.
+const CAMP_SIZES = [
+  [1024, 768],
+  [1133, 744],
+  [1280, 800],
+  [1376, 1032],
+] as const;
+for (const [w, h] of CAMP_SIZES) {
+  test(`the whole Camp picture shows, and buttons stay 56px, at ${w}x${h}`, async ({ page }) => {
+    await page.setViewportSize({ width: w, height: h });
+    await toCamp(page);
+    await page.evaluate(() => document.fonts.ready);
+    const m = await page.evaluate(() => {
+      const box = (el: Element) => el.getBoundingClientRect();
+      const art = document.querySelector('.tc-camp-art')!;
+      const castles = [...art.querySelectorAll('use[href="#tcCampCastle"]')].map(box);
+      const bases = [...art.querySelectorAll('use[href="#tcCampBase"]')].map(box);
+      return {
+        art: box(art).toJSON(),
+        left: Math.min(...castles.map((b) => b.left)),
+        right: Math.max(...bases.map((b) => b.right)),
+        logo: box(document.querySelector('.tc-camp-logo')!).toJSON(),
+        buttons: [...document.querySelectorAll<HTMLElement>('[data-screen="camp"] button')].map(
+          (b) => ({ id: b.dataset.testid, ...box(b).toJSON() }),
+        ),
+        w: innerWidth,
+        h: innerHeight,
+      };
+    });
+    // The picture is the whole 16:9 frame inside the window, never wider than it.
+    expect(m.art.width).toBeLessThanOrEqual(m.w + 1);
+    expect(Math.abs(m.art.height - (m.art.width * 9) / 16)).toBeLessThanOrEqual(1);
+    expect(m.art.bottom).toBeLessThanOrEqual(m.h + 1);
+    // The edge castle and the edge base are inside the window (a castle shadow reaches 23 picture
+    // units past the edge, so allow 2.5 percent of the width).
+    expect(m.left).toBeGreaterThanOrEqual(-0.025 * m.w);
+    expect(m.right).toBeLessThanOrEqual(m.w * 1.025);
+    expect(m.logo.left).toBeGreaterThanOrEqual(0);
+    expect(m.logo.right).toBeLessThanOrEqual(m.w);
+    expect(m.logo.top).toBeGreaterThanOrEqual(0);
+    for (const b of m.buttons) {
+      expect(b.height, `${b.id} height`).toBeGreaterThanOrEqual(56);
+      expect(b.left, `${b.id} left`).toBeGreaterThanOrEqual(0);
+      expect(b.right, `${b.id} right`).toBeLessThanOrEqual(m.w);
+      expect(b.bottom, `${b.id} bottom`).toBeLessThanOrEqual(m.h);
+    }
+    await page.screenshot({ path: `test-results/camp-${w}x${h}.png` });
+  });
+}

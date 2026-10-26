@@ -68,4 +68,12 @@ describe('Camp art', () => {
     expect(classes.size).toBeGreaterThan(5);
     for (const c of classes) expect(ui, c).toContain(`.${c}`);
   });
+
+  it('shows the whole picture on a screen narrower than 16:9 (Regression 25)', () => {
+    const rule = ui.match(/@media \(max-aspect-ratio: 16 \/ 9\) \{[\s\S]*?\n\}\n/);
+    expect(rule, 'the narrow-screen Camp rule').not.toBeNull();
+    expect(rule![0]).toContain('.tc-screen > .tc-camp-art');
+    expect(rule![0]).toContain('aspect-ratio: 16 / 9');
+    expect(rule![0]).toContain('height: auto');
+  });
 });
