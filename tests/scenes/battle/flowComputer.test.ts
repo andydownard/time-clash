@@ -1,6 +1,8 @@
 // One child alone against the Computer player, inside the battle loop (no Phaser).
 import { describe, expect, it } from 'vitest';
 import { COMPUTER } from '../../../src/data/computerCopy';
+import { SQUAD_COPY } from '../../../src/data/copy';
+import { dasherHomePoint, dasherOf, groundSpotPoint } from '../../../src/game/crew';
 import { PRACTICE_BOT, type BotLevel } from '../../../src/game/config';
 import { withComputer } from '../../../src/game/practice';
 import { BattleFlow } from '../../../src/scenes/battle/flow';
@@ -176,5 +178,93 @@ describe('BattleFlow with the Computer player', () => {
     await settle();
     expect(w.log).toContain('pass:PAST');
     expect(w.log).toContain('pass:FUTURE');
+  });
+});
+
+describe('the Computer player and its walking helper', () => {
+  /** The child walks the helper out on go 1, then fires a harmless go 2. The computer is Hard. */
+  async function childWalksOut(level: BotLevel = 'hard', reduced = false) {
+    const w = makeWorld({ seed: 11, players: withComputer(PLAYERS, 'FUTURE') });
+    const events: string[] = [];
+    let showing = false;
+    const flow = new BattleFlow({
+      ...w.deps,
+      overlay: {
+        ...(w.deps.overlay as object),
+        showThinking: (o: { text: string } | null) => {
+          showing = o !== null;
+          events.push(o ? `think:${o.text}` : 'think:off');
+        },
+      } as unknown as typeof w.deps.overlay,
+      view: {
+        ...w.deps.view,
+        walkDasher: async (team, from, to, dizzy) => {
+          events.push(`walk:${team}:${showing ? 'thinking' : 'clear'}`);
+          await w.deps.view.walkDasher?.(team, from, to, dizzy);
+        },
+      },
+      practice: { team: 'FUTURE', level },
+      reducedMotion: () => reduced,
+      wait: async (ms) => void events.push(`wait:${ms}:${showing}`),
+    });
+    void flow.run();
+    await settle();
+    const h = w.handlers()!;
+    h.onHelper!('PAST-dasher');
+    h.onDash!(w.match.helperTargets()[0]!);
+    await settle();
+    h.onHelper!('PAST-launcher');
+    h.onAim({ angleDeg: 90, power: 0 });
+    h.onFire();
+    // The child's reload (wrong by default), then the whole computer turn, then the child again.
+    await settle();
+    return { ...w, flow, events };
+  }
+
+  it("meets the child's helper with the same walk a child gets, as go 1 of its turn", async () => {
+    const w = await childWalksOut();
+    const LAYOUT = w.match.layout;
+    const home = Math.round(dasherHomePoint('FUTURE', LAYOUT).x);
+    const doorstep = Math.round(groundSpotPoint('g4', LAYOUT).x);
+    expect(w.log).toContain(`walk:FUTURE:${home}>${doorstep}`);
+    expect(w.captions).toContain(
+      SQUAD_COPY.walked(SQUAD_COPY.helperName['FUTURE-dasher'] as string),
+    );
+    // The walk is go 1. Go 2 is a normal shot with the launcher, then a Power Shot only after a
+    // right answer. Nothing else: no third go of its own.
+    const future = w.log.filter((l) => /^(walk|fly):FUTURE/.test(l));
+    expect(future[0]).toBe(`walk:FUTURE:${home}>${doorstep}`);
+    expect(future.slice(1).every((l) => l === 'fly:FUTURE')).toBe(true);
+    expect(future.length).toBeGreaterThanOrEqual(2);
+    expect(future.length).toBeLessThanOrEqual(3);
+    expect(w.match.snapshot().stats.FUTURE.shotsFired).toBe(future.length - 1);
+    // A short "thinking" note shows first, and is gone before he walks.
+    const walk = w.events.indexOf('walk:FUTURE:clear');
+    expect(walk).toBeGreaterThan(0);
+    expect(w.events.slice(0, walk)).toContain(`think:${COMPUTER.thinking}`);
+    expect(w.events.slice(0, walk)).toContain(`wait:${PRACTICE_BOT.helper.thinkMs}:true`);
+    // Both helpers are out now, next to each other, and the child is back on its turn.
+    const crew = w.match.snapshot().squads!.crew;
+    expect(dasherOf(crew, 'FUTURE').state).toBe('out');
+    expect(w.match.snapshot().turn.team).toBe('PAST');
+    expect(w.coverViolations).toEqual([]);
+    w.flow.destroy();
+  });
+
+  it('with reduced motion the note before a helper go is short too', async () => {
+    const w = await childWalksOut('hard', true);
+    expect(w.events).toContain(
+      `wait:${Math.min(PRACTICE_BOT.helper.thinkMs, PRACTICE_BOT.pace.reducedBeatMs)}:true`,
+    );
+    expect(w.events).toContain('walk:FUTURE:clear');
+    w.flow.destroy();
+  });
+
+  it('never walks out on an empty field at its levels (it answers the child in kind)', async () => {
+    for (const level of ['easy', 'medium', 'hard'] as const) {
+      const w = computerWorld(level, 11);
+      await w.flow.run();
+      expect(w.log.some((l) => l.startsWith('walk:FUTURE'))).toBe(false);
+    }
   });
 });
