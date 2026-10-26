@@ -65,7 +65,7 @@ export const WORKSHOP_COPY = {
   stats: {
     power: { name: 'Power', help: 'Hits hard' },
     reach: { name: 'Reach', help: 'Throws far' },
-    splash: { name: 'Splash', help: 'Near misses hurt' },
+    splash: { name: 'Splash', help: 'Near misses count' },
   },
   more: (stat: string): string => `More ${stat}`,
   less: (stat: string): string => `Less ${stat}`,
@@ -138,7 +138,7 @@ export const upgradeEffect = (effect: UpgradeEffect, n: number): string => {
     case 'directCut':
       return `Direct hits hurt ${n} less`;
     case 'nearCut':
-      return `Near misses hurt ${n} less`;
+      return `Near misses count ${n} less`;
     case 'shieldHits':
       return n === 1 ? 'Blocks 1 hit each match' : `Blocks ${n} hits each match`;
     case 'directBonus':

@@ -88,6 +88,13 @@ describe('copy: content', () => {
     expect(COPY.SETUP.nameBlocked.startsWith("Let's")).toBe(true);
   });
 
+  it('says near misses "count", never "hurt", in the Workshop and the Build Base list', () => {
+    // A gentler word for a kids' game (owner, 2026-10-25).
+    expect(COPY.WORKSHOP_COPY.stats.splash.help).toBe('Near misses count');
+    expect(COPY.upgradeEffect('nearCut', 2)).toBe('Near misses count 2 less');
+    expect(COPY.upgradeEffect('nearCut', 2)).not.toMatch(/hurt/);
+  });
+
   it('says the My shape square limit in words, not "max"', () => {
     expect(SHAPE_COPY.SHAPE_COPY.problem.big).toMatch(/^Too many squares\. \d+ is the most\.$/);
   });
