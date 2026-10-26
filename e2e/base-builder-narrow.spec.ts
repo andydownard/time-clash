@@ -125,7 +125,7 @@ test.describe('a tall, narrow window (768 by 1024, mouse)', () => {
       await chooseSpot(page, 1);
       if (team === 'FUTURE') await expect(tid(page, 'bb-mine')).toBeVisible();
       await whole(page, `${team} weapons, spot 1`);
-      // The list may sit over a far pad (as it always could), so pick spot 4 by keyboard.
+      // Pick spot 4 by keyboard, the way a keyboard player moves between pads.
       await spotPad(page, 4).focus();
       await page.keyboard.press('Enter');
       await expect(spotPad(page, 4)).toHaveAttribute('data-selected', 'true');

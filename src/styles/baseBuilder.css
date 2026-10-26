@@ -456,11 +456,11 @@
   cursor: default;
 }
 
+/* The weapon list never covers a pad. src/ui/weaponListPlace.ts picks its place: beside the plot,
+   on the side away from the chosen pad, when that side has room for two columns (420px, its
+   SIDE_LIST_PX), or else a bottom sheet under the plot in the bar's place (bricks wait in Weapons
+   mode). Either way it is a compact grid of 56px tiles with 20px words. */
 .tc-bb-weapons {
-  position: absolute;
-  top: var(--tc-s-3);
-  width: min(264px, 34%);
-  max-height: calc(100% - var(--tc-s-3) * 2);
   z-index: 2;
   display: flex;
   flex-direction: column;
@@ -472,50 +472,74 @@
   border-radius: 18px;
   box-shadow: 0 8px 0 rgb(0 0 0 / 35%);
 }
+.tc-bb-weapons:is([data-side='left'], [data-side='right']) {
+  position: absolute;
+  top: var(--tc-s-3);
+  width: 420px;
+  max-height: calc(100% - var(--tc-s-3) * 2);
+}
 .tc-bb-weapons[data-side='right'] {
   right: var(--tc-s-3);
 }
 .tc-bb-weapons[data-side='left'] {
   left: var(--tc-s-3);
 }
+/* The sheet takes the bar's place: at least the bar's height (--bb-sheet-h, set by the screen),
+   and more if the plot row has spare room under the picture. The plot row never gets shorter than
+   its rails and tools need, so Done and every tool stay whole; the sheet scrolls past that. */
+.tc-bb-weapons[data-side='sheet'] {
+  flex: 0 1 auto;
+  min-height: var(--bb-sheet-h, 0);
+}
+.tc-bb[data-list='sheet'] .tc-bb-main {
+  min-height: min-content;
+}
+/* Done keeps room for its picture and word when the plot row gives some height to the sheet. */
+.tc-bb[data-list='sheet'] .tc-bb-done {
+  min-height: 92px;
+}
+/* In the sheet, "My weapons" (or the Forge link) is the first cell of the grid, not a row. */
+.tc-bb-weapons[data-side='sheet'] :is(.tc-bb-group-title, .tc-bb-make) {
+  grid-column: auto;
+  align-self: center;
+}
+.tc-bb[data-list='sheet'] .tc-bb-tray {
+  display: none;
+}
+/* The status line already says "Spot N chosen. Pick a weapon for it.", so the title is for a
+   screen reader only and the tiles get the room. */
 .tc-bb-weapons-title {
+  position: absolute;
+  width: 1px;
+  height: 1px;
   margin: 0;
-  color: var(--tc-parchment-warm);
-  font-family: var(--tc-font-voice-old);
-  font-weight: 400;
-  font-size: var(--tc-text-min);
-  line-height: 1.1;
-}
-.tc-bb[data-team='FUTURE'] .tc-bb-weapons-title {
-  font-family: var(--tc-font-voice-new);
-  font-weight: var(--tc-fw-new-heavy);
-}
-/* On a short screen the status line under the plot already says "Spot N chosen. Pick a weapon
-   for it.", so the title steps aside and the whole list fits beside the spot. */
-@media (max-height: 790px) {
-  .tc-bb-weapons-title {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-  }
-  .tc-bb-weapons {
-    gap: 2px;
-  }
+  overflow: hidden;
+  clip-path: inset(50%);
 }
 .tc-bb-weapons-list {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+  --bb-tile-w: 188px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--tc-s-1);
+}
+.tc-bb[data-team='FUTURE'] .tc-bb-weapons-list {
+  --bb-tile-w: 208px;
+}
+.tc-bb-weapons[data-side='sheet'] .tc-bb-weapons-list {
+  grid-template-columns: repeat(auto-fill, minmax(var(--bb-tile-w), 1fr));
+}
+/* Group titles, the line and the Forge link take a whole row. */
+.tc-bb-weapons-list > :not(.tc-bb-weapon) {
+  grid-column: 1 / -1;
 }
 .tc-bb-weapon {
   position: relative;
+  min-width: 0;
   min-height: 56px;
   display: flex;
   align-items: center;
-  gap: var(--tc-s-2);
-  padding: 0 var(--tc-s-2);
+  gap: var(--tc-s-1);
+  padding: 2px var(--tc-s-1);
   background: var(--tc-parchment-warm);
   color: var(--tc-ink-deep);
   border: 4px solid var(--tc-purple-700);
@@ -547,16 +571,28 @@
 .tc-bb-weapon[data-state='locked'] .tc-bb-weapon-icon {
   opacity: 0.6;
 }
+/* In a weapon tile the lock sits on the dimmed picture, so it never covers the words. */
+.tc-bb-weapon .tc-bb-lock {
+  top: auto;
+  right: auto;
+  bottom: 2px;
+  left: 14px;
+}
 .tc-bb-weapon-icon {
   flex: none;
-  width: 40px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
 }
 .tc-bb-weapon-words {
   display: flex;
   flex-direction: column;
   gap: 2px;
   min-width: 0;
+}
+/* A long word (Shield generator in Orbitron) breaks with a hyphen, never in silence. */
+.tc-bb-weapon-name {
+  hyphens: auto;
+  overflow-wrap: break-word;
 }
 .tc-bb-weapon-clear {
   justify-content: center;
@@ -566,14 +602,7 @@
 .tc-bb-weapon-clear[aria-disabled='true'] {
   opacity: 0.55;
 }
-/* "My weapons": the player's own Workshop weapons, at the top of the list, two to a row. While
-   the group shows, the list is as wide as the room on the far side of the chosen pad allows
-   (--bb-list-w, set by the screen), the base weapons go two to a row too, and the list may run
-   past the plot picture into the empty band under it. */
-.tc-bb-weapons[data-mine='some'] {
-  width: var(--bb-list-w, min(400px, 46%));
-  max-height: calc(100% - var(--tc-s-3));
-}
+/* "My weapons": the player's own Workshop weapons, at the top of the list, on the same grid. */
 .tc-bb-group-line {
   height: 0;
   margin: 3px 0;
@@ -582,27 +611,8 @@
   color: transparent;
   font-size: var(--tc-text-min);
 }
-.tc-bb-weapons[data-mine='some'] .tc-bb-weapons-list {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-.tc-bb-weapons[data-mine='some'] .tc-bb-weapons-list > :not(.tc-bb-weapon) {
-  grid-column: 1 / -1;
-}
-.tc-bb-weapons[data-mine='some'] .tc-bb-weapon {
-  gap: 4px;
-  padding: 2px 4px;
-}
-.tc-bb-weapons[data-mine='some'] .tc-bb-weapon-icon {
-  width: 32px;
-  height: 32px;
-}
-/* A long word (Shield generator in Orbitron) breaks with a hyphen, never in silence. */
-.tc-bb-weapons[data-mine='some'] .tc-bb-weapon-name {
-  hyphens: auto;
-  overflow-wrap: break-word;
-}
 .tc-bb-group-title {
+  grid-column: 1 / -1;
   margin: 0;
   color: var(--tc-parchment-warm);
   font-family: var(--tc-font-voice-old);
@@ -614,37 +624,23 @@
   font-family: var(--tc-font-voice-new);
   font-weight: var(--tc-fw-new-heavy);
 }
+/* The group's title and tiles sit on the list's own columns (subgrid). */
 .tc-bb-myw {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.tc-bb-myw-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 2px;
+  grid-template-columns: subgrid;
+  gap: var(--tc-s-1);
 }
 .tc-bb-myw-tile {
   display: grid;
   grid-template-columns: 32px minmax(0, 1fr);
   grid-template-rows: auto auto;
   align-content: center;
-  column-gap: 4px;
+  column-gap: var(--tc-s-1);
   row-gap: 0;
-  padding: 2px 4px;
 }
 .tc-bb-myw-damage {
   grid-column: 1 / -1;
   white-space: nowrap;
-}
-/* The status line already says "Spot N chosen. Pick a weapon for it.", so with My weapons showing
-   the spot title steps aside (as on a short screen) and the two group titles lead. */
-.tc-bb-weapons[data-mine='some'] .tc-bb-weapons-title {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
 }
 /* On this spot: a check badge on the corner of the picture, clear of every word. */
 .tc-bb-myw-check {
@@ -653,7 +649,7 @@
   top: 20px;
 }
 .tc-bb-make {
-  align-self: flex-start;
+  justify-self: start;
   color: var(--tc-parchment-warm);
 }
 .tc-bb[data-mode='weapons'] .tc-bb-tray {
@@ -1116,6 +1112,10 @@
      weapon list get its room. */
   .tc-bb[data-mode='weapons'] .tc-bb-tray {
     display: none;
+  }
+  /* With no bar to stand in for, the sheet fits its tiles, up to about half the space. */
+  .tc-bb-weapons[data-side='sheet'] {
+    max-height: 52%;
   }
   /* The name box takes the whole width of the side panel, under its label. */
   .tc-bb-pad-field {

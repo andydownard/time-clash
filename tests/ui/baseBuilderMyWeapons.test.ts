@@ -144,9 +144,12 @@ describe('My weapons in the Weapons list', () => {
     expect(document.activeElement).toBe(q('bb-mine-custom:P:2'));
   });
 
-  it('the group is a two-column grid and the list widens while it has some', () => {
-    expect(css).toMatch(/\.tc-bb-myw-grid\s*{[^}]*grid-template-columns:\s*repeat\(2/);
-    expect(css).toMatch(/\.tc-bb-weapons\[data-mine='some'\]\s*{[^}]*width:/);
+  it('the group sits on the list’s compact grid: two columns beside the plot, more in a sheet', () => {
+    expect(css).toMatch(/\.tc-bb-weapons-list\s*{[^}]*grid-template-columns:\s*repeat\(2/);
+    expect(css).toMatch(/\.tc-bb-myw\s*{[^}]*grid-template-columns:\s*subgrid/);
+    expect(css).toMatch(
+      /\.tc-bb-weapons\[data-side='sheet'\] \.tc-bb-weapons-list\s*{[^}]*auto-fill/,
+    );
     // A clash with the saved-shape tiles (.tc-bb-mine) once painted the group as a tile.
     expect(css).not.toMatch(/\.tc-bb-myw\s*{[^}]*background/);
   });

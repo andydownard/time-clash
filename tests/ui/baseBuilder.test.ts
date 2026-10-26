@@ -851,13 +851,31 @@ describe('weapon spots', () => {
     expect(o.camps).toHaveLength(0);
     expect(q('bb-weapon-ballista')!.getAttribute('data-state')).toBe('locked');
   });
-  it('the list sits on the side away from the chosen spot', () => {
+  it('with no room beside the plot the list is a bottom sheet in the bar’s place', () => {
+    // jsdom has no layout, so no side has room (weaponListPlace.test.ts covers the sides).
     open();
     toWeapons();
     tap(pad(1));
-    expect(weapons().getAttribute('data-side')).toBe('right');
-    tap(pad(4));
-    expect(weapons().getAttribute('data-side')).toBe('left');
+    const screen = document.querySelector('[data-screen="builder"]')!;
+    expect(weapons().getAttribute('data-side')).toBe('sheet');
+    expect(screen.getAttribute('data-list')).toBe('sheet');
+    // Under the plot row and above the status line, so it never sits on the plot.
+    expect(weapons().parentElement!.classList.contains('tc-bb-body')).toBe(true);
+    expect(weapons().nextElementSibling).toBe(q('bb-status'));
+    expect(css).toMatch(/\.tc-bb\[data-list='sheet'\] \.tc-bb-tray \{[^}]*display: none/);
+    // Letting go of the spot brings the bar back.
+    tap(plot());
+    expect(weapons().hidden).toBe(true);
+    expect(screen.hasAttribute('data-list')).toBe(false);
+  });
+  it('pads carry a test id by number, and Clear spot is the last tile of the grid', () => {
+    open();
+    toWeapons();
+    tap(pad(2));
+    expect(q('bb-spot-2')).toBe(pad(2));
+    expect(weapons().querySelector('.tc-bb-weapons-list')!.lastElementChild).toBe(
+      q('bb-spot-clear'),
+    );
   });
   it('tapping the plot away from a pad lets go of the spot', () => {
     open();
