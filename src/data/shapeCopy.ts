@@ -18,7 +18,7 @@ export const SHAPE_COPY = {
   materials: {
     stone: 'Stone',
     wood: 'Wood',
-    panel: 'Panel',
+    panel: 'Space Tile',
     metal: 'Metal',
     glass: 'Glass',
     jelly: 'Jelly',
