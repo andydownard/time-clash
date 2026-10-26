@@ -145,3 +145,37 @@ export async function chooseSpot(page: Page, n: number, tap = false): Promise<vo
   else await spotPad(page, n).click();
   await expect(tid(page, 'bb-weapon-panel')).toBeVisible();
 }
+
+/** Saves `n` shapes for this side straight into storage, named One, Two, ... and reloads. */
+export async function seedShapes(page: Page, team: 'PAST' | 'FUTURE', n: number): Promise<void> {
+  await page.evaluate(
+    ([team, n]) => {
+      const keys = [
+        '10/10/11',
+        'w1j',
+        '111/0g0',
+        'jj/jj',
+        'g/g/g',
+        '1w1/1w1',
+        'wwww',
+        '010/111/010',
+      ];
+      const words = ['One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight'];
+      const shapes = keys
+        .slice(0, n as number)
+        .map((k) => (team === 'FUTURE' ? k.replace(/w/g, 'm') : k));
+      const shapeNames: Record<string, string> = {};
+      shapes.forEach((k, i) => (shapeNames[k] = words[i]!));
+      const raw = localStorage.getItem('timeclash.bases');
+      const st = raw ? JSON.parse(raw) : { players: {} };
+      const who = team === 'PAST' ? 'alex' : 'sam';
+      const empty = () => ({ chosen: 0, slots: [null, null, null] });
+      st.players[who] ??= { PAST: empty(), FUTURE: empty() };
+      st.players[who][team as string] = { ...st.players[who][team as string], shapes, shapeNames };
+      localStorage.setItem('timeclash.bases', JSON.stringify(st));
+    },
+    [team, n] as const,
+  );
+  await page.reload();
+  await expect(tid(page, 'camp-start')).toBeVisible({ timeout: 10_000 });
+}

@@ -1047,3 +1047,80 @@
     gap: 0;
   }
 }
+
+/* A tall, narrow window (under 900px wide, such as a desktop window at 768 by 1024 with a mouse; a
+   touch tablet held upright shows "Turn your iPad sideways" instead). The rail goes above the plot
+   as one row, the tools go under it as one row, and the plot takes the full width and whatever
+   height is left, so it shrinks before anything else is cut. The page order stays the order on
+   screen. The landscape layout above is untouched. e2e/base-builder-narrow.spec.ts checks it. */
+@media (max-width: 900px) {
+  .tc-bb-top {
+    flex-wrap: wrap;
+  }
+  .tc-bb-main {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    gap: var(--tc-s-3);
+  }
+  .tc-bb-rail {
+    flex-direction: row;
+    align-items: stretch;
+  }
+  /* The team names wrap to two lines. Build and Weapons stay on one line, so they get more room. */
+  .tc-bb-teams {
+    flex: 1.8 1 0;
+    flex-direction: row;
+  }
+  .tc-bb-team,
+  .tc-bb-mode-btn {
+    flex: 1 1 0;
+  }
+  .tc-bb-rail-line {
+    width: 0;
+    border-top: 0;
+    border-left: 3px solid var(--tc-ember);
+  }
+  .tc-bb-mode {
+    flex: 2.2 1 0;
+    flex-direction: row;
+  }
+  .tc-bb-mode-btn + .tc-bb-mode-btn {
+    border-top: 0;
+    border-left: 3px solid var(--tc-purple-700);
+  }
+  .tc-bb-count {
+    flex: 1 1 0;
+    align-self: center;
+  }
+  .tc-bb-tools {
+    flex-direction: row;
+  }
+  .tc-bb-tool {
+    min-width: 0;
+  }
+  /* With 8 saved shapes the bar stays at three rows for both teams: seven Team Past tiles or six
+     wider Team Future tiles to a row (each still fits "10 Scrap"). */
+  .tc-bb-tray {
+    column-gap: 6px;
+    padding-inline: var(--tc-s-2);
+  }
+  .tc-bb-tool svg,
+  .tc-bb-done svg {
+    width: 28px;
+    height: 28px;
+  }
+  .tc-bb-done {
+    flex: 1.4 1 0;
+  }
+  /* Bricks and shapes wait while weapons are picked, so the bar steps aside and the plot and the
+     weapon list get its room. */
+  .tc-bb[data-mode='weapons'] .tc-bb-tray {
+    display: none;
+  }
+  /* The name box takes the whole width of the side panel, under its label. */
+  .tc-bb-pad-field {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--tc-s-1);
+  }
+}
