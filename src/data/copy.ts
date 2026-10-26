@@ -618,7 +618,7 @@ export const PLAN_COPY = {
   fortHeading: (pastName: string): string => `${pastName}, place your castle`,
   spotHeading: (futureName: string): string => `${futureName}, hide your base`,
   ammoHeading: 'Special ammo',
-  ammoNote: 'A few shots each match. Unlock it once with Scrap.',
+  ammoNote: 'Unlock once with Scrap.',
   scrap: 'Scrap',
   biomes: {
     aspen: { name: 'Aspen Forest', note: 'A big hill.' },
