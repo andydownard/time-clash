@@ -582,6 +582,14 @@ export const VICTORY = {
   } as Record<AwardId, string>,
   rematch: 'Rematch',
   backToCamp: 'Back to Camp',
+  /**
+   * Chrono's second line on Victory, to each side whose built base lost bricks this match, by
+   * name. A match never changes a saved base (owner, 2026-10-25).
+   */
+  savedBaseSafe: (name: string, other?: string): string =>
+    other
+      ? `${name} and ${other}, your saved bases are safe. Build them again any time!`
+      : `${name}, your saved base is safe. Build it again any time!`,
 } as const;
 
 /**

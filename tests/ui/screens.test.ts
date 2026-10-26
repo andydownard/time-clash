@@ -593,6 +593,40 @@ describe('victory screen', () => {
     expect(bubble.getAttribute('role')).toBe('status');
   });
 
+  it('Chrono tells a side whose built base lost bricks, by name, that its saved base is safe', () => {
+    void s.overlay.showVictory({ ...opts, crumbled: ['FUTURE'] });
+    const v = q(TEST_IDS.victory)!;
+    const lines = v.querySelectorAll('[data-role="saved-base"]');
+    expect(lines).toHaveLength(1);
+    expect(lines[0]!.textContent).toBe('Sam, your saved base is safe. Build it again any time!');
+    expect(lines[0]!.textContent).toBe(VICTORY.savedBaseSafe('Sam'));
+    // In Chrono's bubble, a status region, so a screen reader says it too. Never hidden.
+    const bubble = lines[0]!.closest('[data-role="chrono-says"]')!;
+    expect(bubble.getAttribute('role')).toBe('status');
+    expect(lines[0]!.closest('[aria-hidden="true"]')).toBeNull();
+    expect(lines[0]!.hasAttribute('hidden')).toBe(false);
+    expect(lines[0]!.getAttribute('data-teams')).toBe('FUTURE');
+    // The Awards heading makes room by going screen-reader only, so it is still in the page.
+    expect(v.hasAttribute('data-saved-base')).toBe(true);
+    expect(v.querySelector('.tc-awards h2')!.textContent).toBe(VICTORY.awardsHeading);
+  });
+
+  it('names both sides when both lost bricks, and says nothing when no built base did', () => {
+    void s.overlay.showVictory({ ...opts, crumbled: ['FUTURE', 'PAST'] });
+    const both = q(TEST_IDS.victory)!.querySelector('[data-role="saved-base"]')!;
+    expect(both.textContent).toBe(
+      'Alex and Sam, your saved bases are safe. Build them again any time!',
+    );
+    expect(both.getAttribute('data-teams')).toBe('PAST FUTURE');
+    q(TEST_IDS.rematch)!.click();
+    void s.overlay.showVictory(opts);
+    expect(q(TEST_IDS.victory)!.querySelectorAll('[data-role="saved-base"]')).toHaveLength(0);
+    expect(q(TEST_IDS.victory)!.hasAttribute('data-saved-base')).toBe(false);
+    q(TEST_IDS.rematch)!.click();
+    void s.overlay.showVictory({ ...opts, crumbled: [] });
+    expect(q(TEST_IDS.victory)!.textContent).not.toMatch(/saved base/);
+  });
+
   it('Rematch is the biggest button on the screen', () => {
     void s.overlay.showVictory(opts);
     expect(q(TEST_IDS.rematch)!.classList.contains('tc-btn-big')).toBe(true);

@@ -4,6 +4,7 @@
 // Screenshots are retaken only with UPDATE_SCREENSHOTS=1 (see e2e/support/shots.ts).
 import type { Page } from '@playwright/test';
 import { DAMAGE, LAUNCH_ORIGINS } from '../src/game/config';
+import { VICTORY } from '../src/data/copy';
 import { expect, test } from './fixtures';
 import { smallTargets, smallText } from './support/audit';
 import {
@@ -168,6 +169,64 @@ test('the page links no outside style, script or font', async ({ page }) => {
       ),
   );
   expect(outside).toEqual([]);
+});
+
+// A built base that lost bricks: Chrono tells that side, by name, that its saved base is safe
+// (owner, 2026-10-25). The fullest screen: both sides tie every award (six medals each), a Scrap
+// row with a plus, and the line for both sides. It must still fit on one screen at every iPad
+// size. The test hook opens the real Victory screen with these results, so no whole match is
+// needed.
+test('Victory says a crumbled built base is safe, and still fits on one screen', async ({
+  page,
+  browserName,
+}) => {
+  const startSize = page.viewportSize()!;
+  await toSetup(page);
+  // Victory opens over Setup here (a real match has the podium behind it), so hide Setup.
+  await page.evaluate(() => {
+    for (const el of document.querySelectorAll<HTMLElement>('[data-screen="setup"]')) {
+      el.style.visibility = 'hidden';
+    }
+  });
+  const full = {
+    shotsFired: 30,
+    directHits: 12,
+    nearHits: 9,
+    questionsAnswered: 10,
+    correctAnswers: 10,
+    fastestAnswerMs: 2100,
+    scrapEarned: 14,
+  };
+  const show = (crumbled: Array<'PAST' | 'FUTURE'>) =>
+    page.evaluate((o) => window.__timeclash!.previewVictory(o), {
+      winner: 'PAST' as const,
+      names: { PAST: PAST_SIDE.name, FUTURE: FUTURE_SIDE.name },
+      stats: { PAST: full, FUTURE: full },
+      crumbled,
+    });
+  await show(['PAST', 'FUTURE']);
+  const victory = tid(page, 'victory');
+  await expect(victory).toBeVisible();
+  const line = victory.locator('[data-role="saved-base"]');
+  await expect(line).toHaveText(VICTORY.savedBaseSafe(PAST_SIDE.name, FUTURE_SIDE.name));
+  await expect(line).toBeVisible();
+  // Chrono's bubble is a status region, so a screen reader says the line as well.
+  await expect(victory.locator('[role="status"] [data-role="saved-base"]')).toBeVisible();
+  await floors(page, 'Victory with the saved-base line');
+  await fitsOnScreen(page, 'victory', 'Victory with the saved-base line');
+  await saveShot(page, browserName, 'victory-saved-base');
+  const dir = process.env.VICTORY_SHOTS;
+  for (const { w, h } of IPAD_SIZES) {
+    await page.setViewportSize({ width: w, height: h });
+    await fitsOnScreen(page, 'victory', `Victory with the saved-base line ${w}x${h}`);
+    if (dir) await page.screenshot({ path: `${dir}/victory-saved-base-${w}x${h}.png` });
+  }
+  await page.setViewportSize(startSize);
+  // Only the side that lost bricks is named.
+  await tid(page, 'rematch').click();
+  await show(['FUTURE']);
+  await expect(line).toHaveText(VICTORY.savedBaseSafe(FUTURE_SIDE.name));
+  await expect(line).not.toContainText(PAST_SIDE.name);
 });
 
 // How the test reaches Victory without editing the app: the ?e2e=1 hook pins the seed and reads

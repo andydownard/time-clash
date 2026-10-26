@@ -1974,6 +1974,21 @@ body:has(.tc-hud):not([data-cover]):not(:has([data-layer='screen'] > *)) .tc-cap
 .tc-award-card li {
   list-style: none;
 }
+/* Chrono's second row: "your saved base is safe", for a side whose built base lost bricks. */
+.tc-saved-base {
+  display: block;
+}
+/* That row needs room, so the "Awards" heading is then for screen readers only (the cards
+   show plainly what they are). Victory stays on one screen with six medals a card. */
+.tc-victory[data-saved-base] .tc-awards h2 {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
 /* A medal: a round picture on the left, the award's name on the right. The name is always written,
    so the picture and its color are never the only clue. */
 .tc-badge {

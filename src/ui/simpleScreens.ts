@@ -244,6 +244,7 @@ function statLine(
 export function showVictory(ctx: UiCtx, options: VictoryOptions): Promise<VictoryChoice> {
   const { doc } = ctx;
   const { winner, names, stats } = options;
+  const crumbled = TEAMS.filter((t) => options.crumbled?.includes(t));
   const loser = otherTeam(winner);
   return new Promise<VictoryChoice>((resolve) => {
     // Awards, not a side-by-side score. Every player wins at least one (src/game/awards.ts).
@@ -334,6 +335,7 @@ export function showVictory(ctx: UiCtx, options: VictoryOptions): Promise<Victor
         'data-testid': TEST_IDS.victory,
         'data-team': winner,
         'data-motion': ctx.motion(),
+        'data-saved-base': crumbled.length > 0,
       },
       confetti(doc),
       toyBlocks(doc),
@@ -356,6 +358,21 @@ export function showVictory(ctx: UiCtx, options: VictoryOptions): Promise<Victor
           h(doc, 'strong', { text: `${UI_EXTRA.chronoName}: ` }),
           // Chrono's line fits the match. The dignity line belongs to the losing fighter (canvas).
           h(doc, 'span', { text: VICTORY_CHRONO[victoryMood(winner, stats)] }),
+          // A side whose built base lost bricks hears that its saved base is safe, by name. It
+          // sits in Chrono's bubble (a status region, so screen readers say it too), where a
+          // second row costs almost no height, so Victory still fits on one screen.
+          ...(crumbled.length > 0
+            ? [
+                h(doc, 'span', {
+                  class: 'tc-saved-base',
+                  'data-role': 'saved-base',
+                  'data-teams': crumbled.join(' '),
+                  text: VICTORY.savedBaseSafe(
+                    ...(crumbled.map((t) => names[t] || TEAM_NAMES[t]) as [string, string?]),
+                  ),
+                }),
+              ]
+            : []),
         ),
       ),
       table,

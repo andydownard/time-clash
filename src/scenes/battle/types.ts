@@ -150,6 +150,8 @@ export type BattleResult = {
   stats: Record<Team, TeamStats>;
   /** Same players, seed + 1, the other team starts. */
   rematch: MatchOptions;
+  /** Sides whose built base lost bricks this match (Victory says the saved base is safe). */
+  crumbled?: Team[];
 };
 
 /** Data handed to the scene when it starts. main.ts builds it. */

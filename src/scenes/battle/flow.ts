@@ -43,6 +43,7 @@ import {
   SQUAD_COPY,
   tumblePool,
 } from '../../data/copy';
+import { crumbledTeams } from '../../game/crumbled';
 import {
   dasherHomePoint,
   dasherOf,
@@ -726,6 +727,7 @@ export class BattleFlow {
         names: this.names(),
         stats: snap.stats,
         rematch: match.rematchOptions(),
+        crumbled: crumbledTeams(snap),
       });
     }
   }

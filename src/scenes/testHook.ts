@@ -8,6 +8,7 @@ import type { Session } from './registry';
 import { controllerFrom } from './flow';
 import type { DasherDebug } from './battle/dasherLayer';
 import type { BaseLayerDebug } from './battle/baseLayer';
+import type { VictoryOptions } from '../ui/types';
 
 export type TimeClashHook = {
   version: 1;
@@ -43,6 +44,11 @@ export type TimeClashHook = {
   dashers(): DasherDebug[];
   /** Built bases: how many bricks each side has drawn, standing and crumbled, and their boxes. */
   bricks(): BaseLayerDebug[];
+  /**
+   * Opens the real Victory screen (DOM only) with made-up results, so a test can check its words
+   * and that it fits, without playing a whole match. Does nothing without an overlay.
+   */
+  previewVictory(options: VictoryOptions): void;
 };
 
 export function e2eEnabled(search: string, mode: string): boolean {
@@ -99,6 +105,8 @@ export type HookDeps = {
   storage: TypedStorage;
   session: Session;
   activeScenes: () => readonly ActiveScene[];
+  /** The overlay that draws the Victory screen. */
+  overlay?: { showVictory(options: VictoryOptions): Promise<unknown> };
 };
 
 export function installTestHook(win: { __timeclash?: TimeClashHook }, deps: HookDeps): boolean {
@@ -144,6 +152,9 @@ export function installTestHook(win: { __timeclash?: TimeClashHook }, deps: Hook
         .activeScenes()
         .find((s) => s.builtState)
         ?.builtState?.() ?? [],
+    previewVictory: (options) => {
+      void deps.overlay?.showVictory(options);
+    },
   };
   return true;
 }
