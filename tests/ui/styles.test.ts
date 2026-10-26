@@ -177,8 +177,10 @@ describe('ui.css: focus and motion', () => {
     expect(reduced).toMatch(/animation:\s*none !important/);
   });
 
-  it('shows the chosen chip and the right answer with a mark, not color alone', () => {
-    expect(ui).toMatch(/\.tc-chip\[aria-checked='true'\]::before/);
+  it('shows the chosen chip as a solid fill and the right answer with a mark, not color alone', () => {
+    expect(ui).toMatch(
+      /\.tc-chip\[aria-checked='true'\]\s*\{[^}]*background:\s*var\(--tc-chip-picked-bg\)/,
+    );
     expect(ui).toMatch(/\.tc-choice\[data-state='right'\]::after/);
   });
 });
