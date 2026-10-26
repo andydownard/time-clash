@@ -119,7 +119,7 @@ export const WORKSHOP_COPY = {
     empty: '',
     long: 'That name is too long.',
     letters: 'Use only letters, numbers and spaces.',
-    blocked: 'Let us pick a friendlier name.',
+    blocked: "Let's pick a friendlier name.",
     private: 'Keep your own name a secret.',
     digits: 'Use fewer numbers in a row.',
   },
@@ -382,7 +382,7 @@ export const SQUAD_COPY = {
   /** What Chrono says on Hear it. Plain words, one short line per kind of helper. */
   hearLine: (kind: string, name: string): string =>
     kind === 'dasher'
-      ? `${name} walks to the other side and bonks every turn. Tap Walk out!`
+      ? `${name} walks across. He bonks every turn. Tap Walk out!`
       : `${name} fires a ball. Press Fire!`,
 } as const;
 
@@ -483,7 +483,10 @@ export const RELOAD_QUIPS = {
   ],
 } as const;
 
-/** Said by whoever tumbled. Picked with a seeded shuffle bag, so each one shows up. */
+/**
+ * Said by whoever tumbled. Picked with a seeded shuffle bag, so each one shows up. The last six
+ * (2026-10-25) have no recorded clip yet: they use the browser voice, always with a caption.
+ */
 export const TUMBLE_LINES = [
   'Just inspecting the floor for loose pennies!',
   'Oops! My legs forgot how to stand!',
@@ -497,19 +500,28 @@ export const TUMBLE_LINES = [
   'My knees tied a bow. Ta-da!',
   'Whoa! The world is sideways now!',
   'I am a pancake. A proud pancake!',
+  'Boing! I bounce like a ball!',
+  'That was my best cartwheel ever!',
+  'I am a starfish now!',
+  'Wobble, wobble, flop!',
+  'My hat landed before I did!',
+  'Wheee! Can we do that again?',
 ] as const;
 
 /** Extra lines only Team Past says when they wipe out. Silly, kind, and nobody is hurt. */
 export const TUMBLE_LINES_PAST = [
-  'I meant to do that!',
   'Ouch! My dignity!',
   'The floor started it.',
   'Five more minutes, Mom.',
   'My armor is too shiny. Oops.',
   "I'm just resting my eyes.",
   'That was my good helmet!',
-  'Whoa. The sky is sideways.',
   'Tell my horse I was brave.',
+  'My armor goes clink, clank, clonk!',
+  'Squire! Bring me a pillow, please!',
+  'My horse is laughing at me.',
+  'Who left a banana peel here?',
+  'Even my mustache fell over!',
 ] as const;
 
 /** Extra lines only Team Future says when they wipe out. */
@@ -517,12 +529,15 @@ export const TUMBLE_LINES_FUTURE = [
   'Oops. My legs went offline.',
   'My hoverboard would never!',
   'Rebooting... please wait.',
-  'I was just checking the floor.',
   'Beep boop. Ouch boop.',
   'Plan B was also falling.',
   'Somebody update my legs.',
   'I landed exactly as planned.',
   'Does this count as a nap?',
+  'Oops. My jetpack forgot to jet.',
+  'My robot socks need new batteries.',
+  'I slipped on a space taco!',
+  'Robot dance! Nailed it. Mostly.',
 ] as const;
 
 /**
@@ -616,7 +631,8 @@ export const PLAN_COPY = {
   },
   forts: {
     hillFort: { name: 'Hill Fort', height: 'High', note: 'Solid rock below.' },
-    villageWall: { name: 'Village Wall', height: 'Middle', note: 'A low wall.' },
+    /** Code id `villageWall`. The label is just "Village", so it never sounds like the Stone Wall ability. */
+    villageWall: { name: 'Village', height: 'Middle', note: 'A low wall.' },
     drawbridge: { name: 'Drawbridge', height: 'Low', note: 'Blocks flat shots.' },
   },
   ammo: {

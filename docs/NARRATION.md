@@ -46,7 +46,7 @@ Squads is on, so a turn is 2 goes, not 2 shots. The recorded clips for cards 3 a
 ## Squads lines (built)
 Every line is said by the device voice only after a tap (`noClip`, no network request), and shows the same words as a caption. No line holds a child's name or any question text.
 - First go of a match, per side: "Press Fire! Or pick a helper and tap Walk out!" (`SQUAD_COPY.firstGo`).
-- Hear it: "Cannon Crew fires a ball. Press Fire!" or "Sir Bonk walks to the other side and bonks every turn. Tap Walk out!" (`SQUAD_COPY.hearLine`, with each side's helper names).
+- Hear it: "Cannon Crew fires a ball. Press Fire!" or "Sir Bonk walks across. He bonks every turn. Tap Walk out!" (`SQUAD_COPY.hearLine`, with each side's helper names).
 - Captions only (not spoken): "Sir Bonk walks out. He bonks every turn!", "Sir Bonk walks home.", "Sir Bonk: Bonk! The base wobbles.", "Sir Bonk: Bonk! Bonk!", "Bop! Sir Bonk loses a heart.", "Sir Bonk wobbles.", and "Sir Bonk tumbles and walks home dizzy." followed by a funny line from the wipeout bag. That funny line is spoken like any wipeout line when the voice service is set up.
 
 ## Pass screen line (built)

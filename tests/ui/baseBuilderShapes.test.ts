@@ -314,7 +314,7 @@ describe('what cannot be saved', () => {
     for (let r = 1; r <= 6; r++)
       for (let c = 1; c <= 6; c++) if (!sq(r, c).matches('[aria-pressed="true"]')) click(sq(r, c));
     expect(filled()).toBe(36);
-    expect(msg()).toBe('Too many squares (12 max)');
+    expect(msg()).toBe('Too many squares. 12 is the most.');
     click(q('bb-pad-save'));
     expect(o.saved).toHaveLength(0);
   });
@@ -329,7 +329,7 @@ describe('what cannot be saved', () => {
     expect(filled()).toBe(12);
     expect(msg()).toBe(SHAPE_COPY.ok);
     click(sq(3, 1));
-    expect(msg()).toBe('Too many squares (12 max)');
+    expect(msg()).toBe('Too many squares. 12 is the most.');
   });
   it('refuses a shape that is already saved', () => {
     const o = open('PAST', withL());

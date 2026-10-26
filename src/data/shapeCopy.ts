@@ -36,7 +36,7 @@ export const SHAPE_COPY = {
     empty: '',
     long: 'That name is too long.',
     letters: 'Use only letters, numbers and spaces.',
-    blocked: 'Let us pick a friendlier name.',
+    blocked: "Let's pick a friendlier name.",
     private: 'Keep your own name a secret.',
     digits: 'Use fewer numbers in a row.',
   } as Record<NameProblem, string>,
@@ -51,7 +51,7 @@ export const SHAPE_COPY = {
   problem: {
     empty: 'Tap squares to draw a shape.',
     apart: 'Squares must touch side to side.',
-    big: `Too many squares (${B.maxShapeCells} max)`,
+    big: `Too many squares. ${B.maxShapeCells} is the most.`,
     outside: 'Draw inside the pad.',
     material: 'Pick a material from the list.',
     duplicate: 'You already have this shape.',

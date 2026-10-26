@@ -1,7 +1,9 @@
 // Child-facing words must be easy to read (AGENTS.md "Voice and writing": third-grade level).
 import { describe, expect, it } from 'vitest';
 import * as COPY from '../../src/data/copy';
+import * as COMPUTER_COPY from '../../src/data/computerCopy';
 import { INTRO_SCRIPT } from '../../src/data/introScript';
+import * as SHAPE_COPY from '../../src/data/shapeCopy';
 
 const MAX_WORDS = 10;
 const HARD_WORDS = [
@@ -18,15 +20,47 @@ const HARD_WORDS = [
   'initialize',
 ];
 
+/**
+ * Each copy function is called with several sets of arguments, so every branch is read. One call
+ * with ('Alex', 1, 'Sam') once missed an 11-word sentence in the dasher's Hear it line.
+ */
+const ARG_SETS: readonly unknown[][] = [
+  ['Alex', 1, 'Sam'],
+  ['dasher', 'Robo Bonk'],
+  ['launcher', 'Rocket Button'],
+  ['Sir Bonk', 2, 4],
+  [true],
+  [false],
+  ['Rail Cannon', 'Bounces once.', true, 12, 3],
+  ['Rail Cannon', 'Bounces once.', false, 12, 3],
+  [null, 3, true],
+  ['POWER'],
+];
+
 function allStrings(): string[] {
   const out: string[] = [];
   const visit = (v: unknown): void => {
     if (typeof v === 'string') out.push(v);
-    else if (typeof v === 'function') visit((v as (...a: unknown[]) => unknown)('Alex', 1, 'Sam'));
-    else if (Array.isArray(v)) v.forEach(visit);
+    else if (typeof v === 'function') {
+      const fn = v as (...a: unknown[]) => unknown;
+      visit(fn(...ARG_SETS[0]!));
+      // The other sets may not fit every function's types. A call that throws is skipped.
+      for (const args of ARG_SETS.slice(1)) {
+        let got: unknown;
+        try {
+          got = fn(...args);
+        } catch {
+          got = null;
+        }
+        visit(got);
+      }
+    } else if (Array.isArray(v)) v.forEach(visit);
     else if (v && typeof v === 'object') Object.values(v).forEach(visit);
   };
+  // Every module of words a child reads: the main copy, My shape, and the Computer player.
   visit(COPY);
+  visit(SHAPE_COPY);
+  visit(COMPUTER_COPY);
   for (const card of INTRO_SCRIPT) for (const c of card.captions) out.push(c.text);
   return out;
 }

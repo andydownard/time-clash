@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import * as COPY from '../../src/data/copy';
+import * as COMPUTER_COPY from '../../src/data/computerCopy';
+import * as SHAPE_COPY from '../../src/data/shapeCopy';
 
 /** Every string reachable from the copy module, including template outputs. */
 function allStrings(): string[] {
@@ -13,6 +15,9 @@ function allStrings(): string[] {
     else if (v && typeof v === 'object') Object.values(v).forEach(visit);
   };
   visit(COPY);
+  // My shape and the Computer player keep their words in their own files. Check them too.
+  visit(SHAPE_COPY);
+  visit(COMPUTER_COPY);
   return out;
 }
 
@@ -62,10 +67,29 @@ describe('copy: banned words', () => {
 });
 
 describe('copy: content', () => {
-  it('has the 12 tumble bubble lines', () => {
-    expect(COPY.TUMBLE_LINES).toHaveLength(12);
-    expect(new Set(COPY.TUMBLE_LINES).size).toBe(12);
+  it('has the 18 shared tumble bubble lines', () => {
+    expect(COPY.TUMBLE_LINES).toHaveLength(18);
+    expect(new Set(COPY.TUMBLE_LINES).size).toBe(18);
     expect(COPY.TUMBLE_LINES).toContain('Just checking the lawn for four-leaf clovers!');
+  });
+
+  it('says the Hear it line for both kinds of helper in short sentences', () => {
+    expect(COPY.SQUAD_COPY.hearLine('dasher', 'Sir Bonk')).toBe(
+      'Sir Bonk walks across. He bonks every turn. Tap Walk out!',
+    );
+    expect(COPY.SQUAD_COPY.hearLine('launcher', 'Cannon Crew')).toBe(
+      'Cannon Crew fires a ball. Press Fire!',
+    );
+  });
+
+  it('turns a name down the same friendly way in the Workshop, My shape and Setup', () => {
+    expect(COPY.WORKSHOP_COPY.nameProblem.blocked).toBe("Let's pick a friendlier name.");
+    expect(SHAPE_COPY.SHAPE_COPY.nameProblem.blocked).toBe("Let's pick a friendlier name.");
+    expect(COPY.SETUP.nameBlocked.startsWith("Let's")).toBe(true);
+  });
+
+  it('says the My shape square limit in words, not "max"', () => {
+    expect(SHAPE_COPY.SHAPE_COPY.problem.big).toMatch(/^Too many squares\. \d+ is the most\.$/);
   });
 
   it('has the 6 loading messages from DESIGN_BRIEF.md', () => {

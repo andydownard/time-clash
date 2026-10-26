@@ -83,9 +83,9 @@ Instead of a fixed spawn point, the Future player can choose where to plant thei
 Team Past gets the same kind of choice for its castle (added 2026-10-23, owner request: "the past needs a way to have things that block too"):
 
 ⚬ Hill Fort: high on a solid rock. The best view. Low shots thud into the rock.
-⚬ Village Wall: on the ground, behind a low stone wall out in front.
+⚬ Village (code id `villageWall`): on the ground, behind a low stone wall out in front. It was called Village Wall until 2026-10-25, when the panel found it sounded like the Stone Wall ability.
 ⚬ Drawbridge: low, behind a raised wooden drawbridge that stops flat shots, so players lob.
-⚬ Village Wall is the default (owner decision, 2026-10-24), the way Food Trucks is for Team Future. A new family, and every plan saved before castle places, starts at Village Wall. One castle card is always picked.
+⚬ The Village is the default (owner decision, 2026-10-24), the way Food Trucks is for Team Future. A new family, and every plan saved before castle places, starts at the Village. One castle card is always picked.
 
 Every blocking shape is drawn as the thing it is (stone courses, moss and grass, cherry petals, temple vines, tower windows with neon trim, a steel truss, a taco truck, oak planks with iron bands), never a plain dark box. The picture and the solid shape are the same outline, so a shell hits exactly what a child sees.
 
@@ -221,23 +221,29 @@ Rules:
 - With one child alone, the pass-the-mouse cover is not shown at all (nobody to hide the board from). Two players still get it.
 - The rules have no turn cap. Matches end because shots hit. A test plays 1,000 seeded matches and all end with a winner.
 
-Levels (tunables in `PRACTICE_BOT.levels`):
+Levels (tunables in `PRACTICE_BOT.levels`, retuned 2026-10-25):
 
 | Level | Angle error | Power error | Wind read | Right answers (grade 0) |
 |---|---|---|---|---|
-| easy | 7.5 deg | 12 pts | 30% | 65% |
+| easy | 6 deg | 10.5 pts | 35% | 70% |
 | medium | 5 deg | 9 pts | 60% | 80% |
-| hard | 2 deg | 4 pts | 90% | 92% |
+| hard | 4.25 deg | 8.5 pts | 65% | 85% |
 
-Simulation (`npx tsx scripts/simulate-bot.ts 2000`: 2,000 seeded matches per pairing, sides and first turn alternate). The "decent human" is a scripted player (4.5 deg, 9 pts, reads 50% of wind, 75% right).
+Simulation (`npx tsx scripts/simulate-bot.ts 2000`: 2,000 seeded matches per pairing, sides and first turn alternate). The "decent human" is a scripted player (4.5 deg, 9 pts, reads 50% of wind, 75% right). It runs in the live setup: base health 400, birds, gusts and recoil on, Squads on, and no built base.
 
-| Level | Bot wins vs decent human | Target |
-|---|---|---|
-| easy | 13.1% (human wins 86.9%) | human wins 65 to 75% |
-| medium | 51.9% | 45 to 55% |
-| hard | 93.3% | 60 to 65% |
+| Level | Bot wins vs decent human (before, 2026-10-25) | After the retune | Target |
+|---|---|---|---|
+| easy | 15.8% | 30.3% | 25 to 35% |
+| medium | 50.0% | 50.0% (unchanged) | about 45 to 55% |
+| hard | 89.3% | 63.4% | 60 to 65% |
 
-Bot against bot (row wins): easy 13.7% vs medium, 0.9% vs hard; medium 86.0% vs easy, 7.0% vs hard; hard 99.5% vs easy, 92.3% vs medium. Matches against the decent human last about 10 to 14 turns (both teams counted). These numbers are after the pace rule (2026-10-24). Longer matches leave less to luck, so Easy and Hard are now outside their targets (before the pace rule they were 31.8% and 62.8%, in about 3 to 4 turns). The levels need retuning before the Computer player is switched on (see BACKLOG.md).
+A second seed set (seeds from 90,000) gives 29.9%, 50.1% and 61.6%. With a typical built base on both sides (600 matches) the levels win 22.7%, 46.2% and 62.3%: Easy is a little weaker there, because built-base matches run longer (about 22 to 24 turns), which leaves less to luck.
+
+Bot against bot (row wins): easy 28.6% vs medium, 20.4% vs hard; medium 71.2% vs easy, 38.8% vs hard; hard 80.4% vs easy, 59.9% vs medium. Matches against the decent human last about 13 to 14 turns (both teams counted). `tests/game/botLevels.test.ts` plays 200 seeded matches per level and pins each level inside a band around its target.
+
+What the levels do not do yet (measured 2026-10-25, 600 matches, noted for later in BACKLOG.md):
+- The Computer player never walks its dasher out or calls him home. A child who walks the dasher out once a match beats it far more often: Hard drops from about 61% to 17%, Easy to 4%. When both sides walk their dashers out, the levels land near their targets again (34%, 49%, 58%).
+- The Computer player has no upgrades. A child with a one-level Force Field (it blocks the first damaging hit of the match) drops Hard from about 61% to 53%. Three levels drop it to about 32%.
 
 ## Character health (rules built, flag off)
 

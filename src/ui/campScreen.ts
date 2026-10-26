@@ -13,18 +13,21 @@ import { TEST_IDS, type CampChoice, type CampOptions } from './types';
 export function showCamp(ctx: UiCtx, options?: CampOptions): Promise<CampChoice> {
   const { doc } = ctx;
   return new Promise<CampChoice>((resolve) => {
-    /** A side button. It leaves the Camp for its own screen. */
-    const side = (testId: string, label: string, kind: 'past' | 'future'): HTMLButtonElement =>
+    /**
+     * A side button. It leaves the Camp for its own screen. Both are team-neutral: each screen opens
+     * a Past and Future picker, so a wood or neon look would say it is for one team only.
+     */
+    const side = (testId: string, label: string): HTMLButtonElement =>
       h(doc, 'button', {
         type: 'button',
-        class: `tc-btn tc-btn-${kind} tc-camp-side`,
+        class: 'tc-btn tc-btn-neutral tc-camp-side',
         'data-testid': testId,
         text: label,
       });
-    const forge = side(TEST_IDS.campForge, CAMP.forge, 'past');
-    // One Build Base button on the Future side opens the builder or, with it off, the old shop.
+    const forge = side(TEST_IDS.campForge, CAMP.forge);
+    // One Build Base button on the right opens the builder or, with it off, the old shop.
     const builder = options?.builder === true;
-    const upgrade = side(builder ? TEST_IDS.campBuild : TEST_IDS.campUpgrade, CAMP.upgrade, 'future');
+    const upgrade = side(builder ? TEST_IDS.campBuild : TEST_IDS.campUpgrade, CAMP.upgrade);
 
     const start = h(doc, 'button', {
       type: 'button',

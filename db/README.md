@@ -19,7 +19,7 @@
 - The voice does not read that text raw. `toSpoken()` (`src/audio/toSpoken.ts`) rewrites symbols for the ear: `x` becomes "times", `+` "plus", `-` between numbers "minus", `=` "equals", `%` "percent", `^` "to the power of", `___` "blank", and so on. `text_sha256` is the sha256 of that spoken form, so changing `toSpoken` rebuilds the affected clips.
 - Audio: mono AAC in MP4, 48 kbps, mime `audio/mp4`. Voice: Kokoro `am_michael`, speed 0.95, `en-us`. `kind` is `bark`, `question`, `passage` or `intro` (reading passages are spoken inside the question, so there are no `passage` rows today).
 
-**Manifest.** `npx tsx scripts/voice-manifest.ts --grades 0-4` prints `[{id, kind, text, spoken}]`. It fails if two different texts share an id. Wipeout lines are the shared tumble lines plus both teams' own lines.
+**Manifest.** `npx tsx scripts/voice-manifest.ts --grades 0-4` prints `[{id, kind, text, spoken}]`. It fails if two different texts share an id. Wipeout lines are the shared tumble lines plus both teams' own lines: 42 today. The volumes hold the 30 recorded before 2026-10-25 (27 still used: three near twins were dropped). The 15 lines added on 2026-10-25 have no clip yet; the app server answers 404 and the game falls back to the browser voice with the caption (`tests/audio/tumbleVoice.test.ts` lists them). Rebuild the volumes to record them.
 
 **Rebuild** (Python venv with `kokoro-onnx` and `soundfile`, Kokoro v1.0 model files, macOS `afconvert`):
 
