@@ -1,7 +1,8 @@
 // Where each screen leads. Pure functions, no Phaser and no DOM, so every route is unit tested.
 import { TURN } from '../game/config';
+import { crumbledTeams } from '../game/crumbled';
 import type { MatchEffects } from '../game/loadout';
-import type { MatchController, MatchOptions, Players } from '../game/types';
+import { TEAMS, type MatchController, type MatchOptions, type Players } from '../game/types';
 import type { QuestionBank } from '../questions/types';
 import type { TypedStorage } from '../storage/types';
 import type { VictoryChoice, VictoryOptions } from '../ui/types';
@@ -101,6 +102,7 @@ function planFromController(controller: MatchController): VictoryPlan | null {
       winner: m.winner,
       names: { PAST: m.players[0].name, FUTURE: m.players[1].name },
       stats: m.stats,
+      crumbled: crumbledTeams(m),
     },
     rematch: controller.rematchOptions(),
   };
@@ -108,7 +110,7 @@ function planFromController(controller: MatchController): VictoryPlan | null {
 
 /** The shape BattleScene sends: { winner, names, stats, rematch }. */
 function planFromResult(data: Record<string, unknown>): VictoryPlan | null {
-  const { winner, names, stats, rematch } = data;
+  const { winner, names, stats, rematch, crumbled } = data;
   if (!isTeam(winner) || !isRecord(names) || !isRecord(stats) || !isRecord(rematch)) return null;
   if (!isRecord(stats.PAST) || !isRecord(stats.FUTURE)) return null;
   if (typeof names.PAST !== 'string' || typeof names.FUTURE !== 'string') return null;
@@ -118,6 +120,7 @@ function planFromResult(data: Record<string, unknown>): VictoryPlan | null {
       winner,
       names: { PAST: names.PAST, FUTURE: names.FUTURE },
       stats: stats as unknown as VictoryOptions['stats'],
+      crumbled: Array.isArray(crumbled) ? TEAMS.filter((t) => crumbled.includes(t)) : [],
     },
     rematch: rematch as unknown as MatchOptions,
   };

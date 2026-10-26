@@ -65,7 +65,7 @@ export const WORKSHOP_COPY = {
   stats: {
     power: { name: 'Power', help: 'Hits hard' },
     reach: { name: 'Reach', help: 'Throws far' },
-    splash: { name: 'Splash', help: 'Near misses hurt' },
+    splash: { name: 'Splash', help: 'Near misses count' },
   },
   more: (stat: string): string => `More ${stat}`,
   less: (stat: string): string => `Less ${stat}`,
@@ -120,7 +120,7 @@ export const WORKSHOP_COPY = {
     long: 'That name is too long.',
     letters: 'Use only letters, numbers and spaces.',
     blocked: "Let's pick a friendlier name.",
-    private: 'Keep your own name a secret.',
+    private: 'Use a made-up name, not a real one.',
     digits: 'Use fewer numbers in a row.',
   },
   keepPicked: (name: string): string => `We will use ${name}.`,
@@ -138,7 +138,7 @@ export const upgradeEffect = (effect: UpgradeEffect, n: number): string => {
     case 'directCut':
       return `Direct hits hurt ${n} less`;
     case 'nearCut':
-      return `Near misses hurt ${n} less`;
+      return `Near misses count ${n} less`;
     case 'shieldHits':
       return n === 1 ? 'Blocks 1 hit each match' : `Blocks ${n} hits each match`;
     case 'directBonus':
@@ -345,7 +345,7 @@ export const SQUAD_COPY = {
   helperName: {
     'PAST-launcher': 'Cannon Crew',
     'PAST-dasher': 'Sir Bonk',
-    'FUTURE-launcher': 'Rocket Button',
+    'FUTURE-launcher': 'Laser Crew',
     'FUTURE-dasher': 'Robo Bonk',
   } as Record<string, string>,
   /** What each helper does, said once under the name. */
@@ -455,12 +455,18 @@ export const HIT_LINES = {
 } as const;
 
 /**
- * The sound words for birds and gusts. Each one floats over the board when it happens, so the
- * squawk and the whoosh are never sound-only cues.
+ * The words for birds and gusts. Each one floats over the board when it happens, so the squawk
+ * and the whoosh sound are never sound-only cues. A gust says "Gust!", not "Whoosh!", because
+ * "Whoosh!" already means a miss and a dodge (owner, 2026-10-25).
  */
 export const DISTURBANCE_COPY = {
   squawk: 'Squawk!',
-  whoosh: 'Whoosh!',
+  gust: 'Gust!',
+  /**
+   * The first time recoil moves the Angle and Power dials in a match, this shows in the message
+   * lane, so a child knows why the dials moved (owner, 2026-10-25). Once per match.
+   */
+  kick: 'Kick! Your aim moved.',
 } as const;
 
 /** Chrono's quick joke after a reload. Warm, and always at Chrono's expense. */
@@ -576,6 +582,14 @@ export const VICTORY = {
   } as Record<AwardId, string>,
   rematch: 'Rematch',
   backToCamp: 'Back to Camp',
+  /**
+   * Chrono's second line on Victory, to each side whose built base lost bricks this match, by
+   * name. A match never changes a saved base (owner, 2026-10-25).
+   */
+  savedBaseSafe: (name: string, other?: string): string =>
+    other
+      ? `${name} and ${other}, your saved bases are safe. Build them again any time!`
+      : `${name}, your saved base is safe. Build it again any time!`,
 } as const;
 
 /**
@@ -617,7 +631,7 @@ export const PLAN_COPY = {
   fortHeading: (pastName: string): string => `${pastName}, place your castle`,
   spotHeading: (futureName: string): string => `${futureName}, hide your base`,
   ammoHeading: 'Special ammo',
-  ammoNote: 'A few shots each match. Unlock it once with Scrap.',
+  ammoNote: 'Unlock once with Scrap.',
   scrap: 'Scrap',
   biomes: {
     aspen: { name: 'Aspen Forest', note: 'A big hill.' },

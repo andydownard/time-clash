@@ -10,7 +10,7 @@ export type GustCue = {
   streaks: { x1: number; x2: number; y: number }[];
   /** A closed arrow outline ahead of the shell, pointing the gust's way. */
   arrow: Vec2[];
-  /** Where the "Whoosh!" word floats up from. */
+  /** Where the "Gust!" word floats up from. */
   label: Vec2;
   /** The streak line width, px. */
   width: number;

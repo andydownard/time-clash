@@ -938,6 +938,11 @@ export const DISTURBANCE = {
   /** The dials slide to the kicked aim over this long, in this many steps (reduced motion: one jump). */
   recoilSlideMs: 320,
   recoilSlideSteps: 8,
+  /**
+   * The first kick's "Kick! Your aim moved." line stays this long when a reload or the end comes
+   * next (otherwise it stays up while the player aims again).
+   */
+  kickCueMs: 1500,
 } as const;
 
 // ---------- Weapon Workshop (make your own Forge weapon) ----------

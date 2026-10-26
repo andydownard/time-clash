@@ -117,6 +117,30 @@ describe('installTestHook', () => {
     expect(t.flags.disturbances).toBeUndefined();
     expect(make({ mode: 'production' }).flags.disturbances).toBeUndefined();
   });
+  it('opens the Victory screen with the options a test gives, and is quiet with no overlay', () => {
+    const shown: unknown[] = [];
+    const win: { __timeclash?: TimeClashHook } = {};
+    installTestHook(win, {
+      search: '?e2e=1',
+      mode: 'development',
+      seeds: createSeedSource(() => 0.5),
+      faults: createLoadFaults(),
+      flags: createFlags(),
+      storage: createStorage(null),
+      session: { match: null, bank: null },
+      activeScenes: () => [],
+      overlay: { showVictory: (o) => (shown.push(o), Promise.resolve('rematch')) },
+    });
+    const opts = {
+      winner: 'PAST' as const,
+      names: { PAST: 'A', FUTURE: 'B' },
+      stats: fakeController().snapshot().stats,
+      crumbled: ['FUTURE' as const],
+    };
+    win.__timeclash!.previewVictory(opts);
+    expect(shown).toEqual([opts]);
+    expect(() => make().win.__timeclash!.previewVictory(opts)).not.toThrow();
+  });
   it('reads the birds from the active scene, or null', () => {
     const t = make();
     expect(t.win.__timeclash!.birds()).toBeNull();

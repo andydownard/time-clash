@@ -234,6 +234,10 @@ describe('materials', () => {
       'glass',
       'jelly',
     ]);
+    // A 6-year-old knows "Space Tile", not "Panel". The saved id stays panel (owner, 2026-10-25).
+    expect(q('bb-mat-panel')!.textContent).toContain('Space Tile');
+    expect(q('bb-mat-panel')!.textContent).not.toContain('Panel');
+    expect(q('bb-mat-panel')!.getAttribute('aria-label')).toBe('Space Tile, strength 8 a square');
   });
   it('a tap fills a square with the picked material, shows its picture, adds its strength', () => {
     open();

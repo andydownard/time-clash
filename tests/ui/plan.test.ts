@@ -195,6 +195,13 @@ describe('special ammo on the Battle Plan', () => {
     );
   });
 
+  it('says the ammo note in four words (owner, 2026-10-25)', () => {
+    open(campWith(15, 4));
+    const notes = [...document.querySelectorAll('.tc-plan-hint')].map((n) => n.textContent);
+    expect(notes).toContain('Unlock once with Scrap.');
+    expect(document.body.textContent).not.toContain('A few shots each match');
+  });
+
   it('unlocks a kind for that side, pays once, saves at once and says so', async () => {
     const o = open(campWith(15, 0));
     click(q(TEST_IDS.planAmmo('PAST', 'confetti')));

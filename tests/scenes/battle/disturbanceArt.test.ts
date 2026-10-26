@@ -181,7 +181,9 @@ describe('gustCue', () => {
 describe('words and rules', () => {
   it('the sound words are short, friendly and never banned', () => {
     expect(DISTURBANCE_COPY.squawk).toBe('Squawk!');
-    expect(DISTURBANCE_COPY.whoosh).toBe('Whoosh!');
+    expect(DISTURBANCE_COPY.gust).toBe('Gust!');
+    // "Whoosh!" means a miss and a dodge, so a gust has its own word (owner, 2026-10-25).
+    expect(Object.values(DISTURBANCE_COPY)).not.toContain('Whoosh!');
     for (const t of Object.values(DISTURBANCE_COPY)) expect(findBanned(t)).toEqual([]);
   });
 

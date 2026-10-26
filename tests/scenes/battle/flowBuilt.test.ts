@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { createMatch } from '../../../src/game/match';
 import type { AimInput, MatchOptions } from '../../../src/game/types';
 import { HUGE, TYPICAL, baseOf, brick } from '../../helpers/builtBases';
-import { PLAYERS, findAim, makeWorld, settle } from './flowHarness';
+import { PLAYERS, QUICK_END, findAim, makeWorld, settle } from './flowHarness';
 
 const SEED = 7;
 
@@ -82,6 +82,53 @@ describe('BattleFlow with a built base', () => {
     expect(play.team).toBe('FUTURE');
     const snap = w.match.snapshot();
     for (const id of play.fell) expect(snap.bricks![id as `FUTURE:${number}`]!.alive).toBe(false);
+    w.flow.destroy();
+  });
+
+  it('the result names each side whose built base lost bricks, for the Victory line', async () => {
+    // A built base takes many turns to wear down, so the match ends on quick health and the
+    // snapshot at the end carries one knocked-out Future brick (crumbledTeams reads real rules
+    // in tests/game/crumbled.test.ts).
+    const direct = findAim(SEED, 0, 'PAST', 'direct');
+    const w = makeWorld({
+      seed: SEED,
+      script: Array(12).fill(direct),
+      answers: Array(6).fill('right'),
+      matchOptions: QUICK_END,
+    });
+    const real = w.match.snapshot.bind(w.match);
+    const fallen = {
+      team: 'FUTURE' as const,
+      piece: 'panel',
+      hp: 0,
+      maxHp: 20,
+      box: { x: 0, y: 0, w: 1, h: 1 },
+      alive: false,
+    };
+    w.match.snapshot = () => {
+      const m = real();
+      return m.status === 'OVER' ? { ...m, bricks: { 'FUTURE:0': fallen } } : m;
+    };
+    void w.flow.run();
+    await settle();
+    expect(w.results).toHaveLength(1);
+    expect(w.results[0]!.winner).toBe('PAST');
+    expect(w.results[0]!.crumbled).toEqual(['FUTURE']);
+    w.flow.destroy();
+  });
+
+  it('a match with no built base finishes with nothing crumbled', async () => {
+    const direct = findAim(SEED, 0, 'PAST', 'direct');
+    const w = makeWorld({
+      seed: SEED,
+      script: Array(12).fill(direct),
+      answers: Array(6).fill('right'),
+      matchOptions: QUICK_END,
+    });
+    void w.flow.run();
+    await settle();
+    expect(w.results).toHaveLength(1);
+    expect(w.results[0]!.crumbled).toEqual([]);
     w.flow.destroy();
   });
 
