@@ -4,7 +4,8 @@ Offline content tool, not part of the web build. Needs kokoro-onnx and soundfile
 (kokoro-v1.0.onnx, voices-v1.0.bin), macOS afconvert, and node (npx tsx) for the manifest.
 Usage: python scripts/build-voice-index.py <model_dir> --grades 0-4 --out db/voice-k4.sqlite [--workers 3] [--bitrate 48000]
 
-Resumable: rows that already exist with the same spoken text are kept; changed ones are rebuilt.
+Resumable: rows that already exist with the same spoken text are kept; changed and missing ones are built.
+Rerun it after anyone adds a line: only the missing clips are recorded. Nothing is deleted.
 Id = "t:" + FNV-1a 64 of the whitespace-normalized ORIGINAL text. The voice is given the "spoken" form (toSpoken).
 """
 import argparse, datetime, hashlib, json, multiprocessing as mp, os, sqlite3, subprocess, sys, tempfile
@@ -29,8 +30,10 @@ _kokoro = None
 
 def _init(model_dir):
     global _kokoro
-    from kokoro_onnx import Kokoro
-    _kokoro = Kokoro(f"{model_dir}/kokoro-v1.0.onnx", f"{model_dir}/voices-v1.0.bin")
+    from kokoro_onnx import EspeakConfig, Kokoro
+    # ESPEAK_DATA_PATH: a short copy of espeak-ng-data, for when espeak fails on a long path (db/README.md).
+    _kokoro = Kokoro(f"{model_dir}/kokoro-v1.0.onnx", f"{model_dir}/voices-v1.0.bin",
+                     espeak_config=EspeakConfig(data_path=os.environ.get("ESPEAK_DATA_PATH")))
 
 
 def _make(job):
