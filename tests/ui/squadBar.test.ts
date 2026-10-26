@@ -194,6 +194,13 @@ describe('Back, Hear it and the first-go hint', () => {
     s.overlay.updateHud(state({ squads: squads({ hint: false }) }));
     expect(q(TEST_IDS.goHint)!.hidden).toBe(true);
   });
+  it('puts the hint in the message lane, off the field and out of the control bar (Regression 22)', () => {
+    show({ squads: squads({ hint: true }) });
+    const hint = q(TEST_IDS.goHint)!;
+    expect(hint.closest(`[data-testid="${TEST_IDS.messageLane}"]`)).not.toBeNull();
+    expect(hint.closest('.tc-hud-bottom')).toBeNull();
+    expect(hint.closest('.tc-squad-bar')).toBeNull();
+  });
   it('gives the new buttons 56px targets and 20px text, and stills the finger under reduced motion', () => {
     const css = readFileSync('src/styles/ui.css', 'utf8');
     expect(css).toMatch(/\.tc-helper-back/);

@@ -1,9 +1,10 @@
-// Squads S1 helper controls, in three places so the control bar keeps its two rows:
+// Squads S1 helper controls, in four places so the control bar keeps its two rows:
 // - the helper row (the two helpers and Hear it) floats just under the ground line, between the
 //   two base health tags, where the coach line sat;
 // - "GO 1 OF 2" with two dots sits in the turn strip;
 // - the dasher panel (Walk out, Come back or a resting note, and Back) takes the aim panel's
-//   place while the dasher is picked, since a walk needs no aim.
+//   place while the dasher is picked, since a walk needs no aim;
+// - the first-go hint shows in the message lane (src/ui/messageLane.ts), clear of the field.
 // Hidden when there is no squad state. Plain DOM, 56px targets, 20px text.
 // Picked is shown by a thick border and an arrow, never by color alone.
 import { SQUAD_COPY } from '../data/copy';
@@ -13,8 +14,10 @@ import { h } from './dom';
 import { TEST_IDS, type HudHandlers, type HudSquads } from './types';
 
 export type SquadBar = {
-  /** The helper row: the two helpers, Hear it, and the first-go hint. */
+  /** The helper row: the two helpers and Hear it. */
   root: HTMLElement;
+  /** The first-go hint, for the message lane. */
+  hint: HTMLElement;
   /** "GO 1 OF 2" and two dots, for the turn strip. */
   goRow: HTMLElement;
   /** The dasher's move and Back. Shown in place of the aim panel while the dasher is picked. */
@@ -78,7 +81,7 @@ export function createSquadBar(doc: Document, handlers: () => HudHandlers | null
   hear.addEventListener('click', () => {
     if (live) handlers()?.onHearHelper?.();
   });
-  const root = h(doc, 'div', { class: 'tc-squad-bar', hidden: true }, helpers, hear, hint);
+  const root = h(doc, 'div', { class: 'tc-squad-bar', hidden: true }, helpers, hear);
   const panel = h(
     doc,
     'div',
@@ -89,12 +92,14 @@ export function createSquadBar(doc: Document, handlers: () => HudHandlers | null
 
   return {
     root,
+    hint,
     goRow,
     panel,
     update(squads, active): boolean {
       root.hidden = !squads;
       goRow.hidden = !squads;
       if (!squads) {
+        hint.hidden = true;
         panel.hidden = true;
         return false;
       }

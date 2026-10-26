@@ -36,6 +36,12 @@
   --tc-chrome-clear: calc(var(--tc-tap) * 2 + 36px);
   /* How far the Battle picture drops below the top. Portrait raises it (ui.css). */
   --tc-battle-drop: 0px;
+  /* The Battle message lane (src/ui/messageLane.ts). The HUD measures the canvas and writes the
+     real box on the page root. These are the 1024x768 values, used only before that. */
+  --tc-lane-left: 275px;
+  --tc-lane-top: 202px;
+  --tc-lane-width: 474px;
+  --tc-lane-height: 141px;
   /* Height of the HUD card row. The turn banner sits below it. */
   --tc-hud-row: 184px;
   --tc-focus: #2f6fed;

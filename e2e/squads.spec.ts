@@ -23,6 +23,7 @@ import {
   waitBonusAiming,
   waitPassScreen,
 } from './support/game';
+import { expectMessageClear } from './support/layout';
 import { saveShot } from './support/shots';
 
 async function toSquadMatch(page: Page, on: boolean | null): Promise<void> {
@@ -211,6 +212,13 @@ test('the dasher walks out past the middle, keeps bonking on the enemy turn, and
     .toMatch(/tumble|walk/);
   await saveShot(page, browserName, 'squads-tumble');
   await expect.poll(async () => (await captionsSeen(page)).join('|')).toContain('tumbles');
+  // The tumble caption sits in the message lane: clear of Pick one, Angle, Fire, the cards, every
+  // fighter, the walking helper and the bases.
+  await expect(tid(page, 'caption-bar')).toContainText('tumbles');
+  await expectMessageClear(page, tid(page, 'caption-bar'), 'helper tumble caption');
+  await page.screenshot({
+    path: test.info().outputPath(`lane-tumble-${test.info().project.name}.png`),
+  });
   // He walks home and rests there.
   await expect
     .poll(async () => {
