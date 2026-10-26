@@ -2086,6 +2086,25 @@ body:has(.tc-hud):not([data-cover]):not(:has([data-layer='screen'] > *)) .tc-cap
   height: 100%;
   pointer-events: none;
 }
+/* A screen narrower than the 16:9 picture (iPad at 4:3, 1280x800, 1133x744) used to crop the sides:
+   the picture filled the height and lost its edge castles and bases. Now the whole picture sits at
+   the bottom at its own 16:9 shape, and its top edge fades into the sky above (where the name is). */
+@media (max-aspect-ratio: 16 / 9) {
+  .tc-camp {
+    background: linear-gradient(
+      var(--tc-blue-900),
+      var(--tc-blue-700) 35%,
+      var(--tc-purple-500) 62%,
+      var(--tc-purple-300)
+    );
+  }
+  .tc-screen > .tc-camp-art {
+    inset: auto 0 0;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    mask-image: linear-gradient(to bottom, transparent, var(--tc-ink) 30%);
+  }
+}
 /* The name: Time in the old voice, Clash in the new one. The h1 says it to a screen reader. */
 .tc-camp-logo {
   margin: 0;
