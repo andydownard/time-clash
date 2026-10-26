@@ -1847,7 +1847,6 @@ body:has(.tc-hud):not([data-cover]):not(:has([data-layer='screen'] > *)) .tc-cap
 .tc-awards {
   text-align: center;
 }
-.tc-awards h2,
 .tc-award-card h3 {
   margin: 0 0 var(--tc-s-2);
 }

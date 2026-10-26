@@ -196,7 +196,12 @@ function confetti(doc: Document): HTMLElement {
     b.style.setProperty('--tc-bit-x', `${((i * 37) % 100) + 0.5}%`);
     b.style.setProperty('--tc-bit-delay', `${(i % 8) * 0.12}s`);
   });
-  return h(doc, 'div', { class: 'tc-confetti', 'data-role': 'confetti', 'aria-hidden': 'true' }, ...bits);
+  return h(
+    doc,
+    'div',
+    { class: 'tc-confetti', 'data-role': 'confetti', 'aria-hidden': 'true' },
+    ...bits,
+  );
 }
 
 /** One stat: the words for readers, then a picture row for counting. Screen readers hear the picture's label once. */
@@ -229,7 +234,8 @@ export function showVictory(ctx: UiCtx, options: VictoryOptions): Promise<Victor
       doc,
       'section',
       { class: 'tc-awards', 'aria-labelledby': 'tc-awards-heading' },
-      h(doc, 'h2', { id: 'tc-awards-heading', text: VICTORY.awardsHeading }),
+      // The cards are plainly awards, so the heading is for screen readers only.
+      h(doc, 'h2', { id: 'tc-awards-heading', class: 'tc-sr-only', text: VICTORY.awardsHeading }),
       h(
         doc,
         'div',

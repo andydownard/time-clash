@@ -294,6 +294,16 @@ describe('Wipeout screen', () => {
       `Brain stats: ${VICTORY.brainStatsValue(1, 3)}`,
     ]);
   });
+  it('the Awards heading is for screen readers only, and still names the awards section', () => {
+    void s.overlay.showVictory(opts);
+    const heading = q(TEST_IDS.victory)!.querySelector<HTMLElement>('#tc-awards-heading')!;
+    expect(heading.tagName).toBe('H2');
+    expect(heading.textContent).toBe(VICTORY.awardsHeading);
+    expect(heading.classList.contains('tc-sr-only')).toBe(true);
+    expect(q(TEST_IDS.victory)!.querySelector('.tc-awards')!.getAttribute('aria-labelledby')).toBe(
+      'tc-awards-heading',
+    );
+  });
   it('both cards get Good Sport and the same size, each in its team look', () => {
     void s.overlay.showVictory(opts);
     for (const t of ['PAST', 'FUTURE']) {
