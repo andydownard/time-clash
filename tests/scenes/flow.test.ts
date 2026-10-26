@@ -195,6 +195,28 @@ describe('victoryFrom', () => {
     expect(v.options.winner).toBe('FUTURE');
     expect(v.rematch.seed).toBe(12);
   });
+  it('carries the sides whose built base lost bricks, from a result or a controller', () => {
+    const result = {
+      winner: 'FUTURE',
+      names: { PAST: 'Alex', FUTURE: 'Sam' },
+      stats: { PAST: stats(), FUTURE: stats() },
+      rematch: { players, seed: 12, firstTeam: 'FUTURE' },
+      crumbled: ['PAST', 'NOBODY', 7],
+    };
+    expect(victoryFrom(result)!.options.crumbled).toEqual(['PAST']);
+    expect(victoryFrom({ ...result, crumbled: 'PAST' })!.options.crumbled).toEqual([]);
+    const brick = {
+      team: 'FUTURE' as const,
+      piece: 'panel',
+      hp: 0,
+      maxHp: 20,
+      box: { x: 0, y: 0, w: 1, h: 1 },
+      alive: false,
+    };
+    const c = fakeController({ bricks: { 'FUTURE:0': brick } });
+    expect(victoryFrom(c)!.options.crumbled).toEqual(['FUTURE']);
+    expect(victoryFrom(fakeController())!.options.crumbled).toEqual([]);
+  });
   it('is null while the match is still playing', () => {
     expect(victoryFrom(fakeController({ status: 'PLAYING', winner: null }))).toBeNull();
   });

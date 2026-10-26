@@ -16,6 +16,7 @@ import {
   type BrickSprite,
   type PadSprite,
 } from './basePlan';
+import type { RiderDebug } from './riderArt';
 import { PALETTE, TEAM_COLOR } from './visual';
 
 /** What the e2e hook reads about one built base. Never secret. */
@@ -38,6 +39,8 @@ export type BaseLayerDebug = {
     picked: boolean;
     flashes: number;
   }>;
+  /** The fighters standing on this base (filled in by the scene, riderArt.ts). */
+  riders?: RiderDebug[];
 };
 
 /** Turns an SVG text into a texture once. Resolves when it is ready, or when it fails. */

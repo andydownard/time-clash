@@ -25,7 +25,7 @@ export type DisturbanceLayer = {
   clockMs(): number;
   /** A shell bumped a bird: feathers, a spin and the "Squawk!" word. */
   bump(b: BirdBump): void;
-  /** The gust blew: streaks, an arrow and the "Whoosh!" word. */
+  /** The gust blew: streaks, an arrow and the "Gust!" word. */
   gust(g: GustHit): void;
   state(): BirdLayerState;
   destroy(): void;
@@ -138,15 +138,16 @@ export function createDisturbanceLayer(
 
     gust(hit) {
       const dir: 1 | -1 = hit.push >= 0 ? 1 : -1;
-      const cue = gustCue(hit.at, dir);
+      // A stronger turn level draws a bigger cue with more streaks (no words added).
+      const cue = gustCue(hit.at, dir, undefined, hit.level);
       const g = scene.add.graphics().setDepth(CUE_DEPTH);
-      g.lineStyle(6, PALETTE.shared.white, 1);
+      g.lineStyle(cue.width, PALETTE.shared.white, 1);
       for (const s of cue.streaks) g.lineBetween(s.x1, s.y, s.x2, s.y);
       g.fillStyle(PALETTE.shared.white, 1);
       g.fillPoints(cue.arrow, true);
       g.lineStyle(2.5, PALETTE.shared.ink, 1);
       g.strokePoints(cue.arrow, true);
-      floatLabel(scene, cue.label, DISTURBANCE_COPY.whoosh, 'hit', opts.fontPx);
+      floatLabel(scene, cue.label, DISTURBANCE_COPY.gust, 'hit', opts.fontPx);
       const reduced = opts.reduced();
       // The streaks and arrow slide the gust's way, stay bright while it blows, then fade.
       // Reduced motion: they stay put and only fade.

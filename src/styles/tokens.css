@@ -179,6 +179,15 @@
   --tc-s-7: 48px;
   --tc-s-8: 64px;
 
+  /* Room to breathe on card screens (owner, 2026-10-25: "more padding"). Setup uses all of them;
+     the other card screens share --tc-card-pad. A short window (max-height 760px) trims only the
+     gaps a little (field 12, row 20). Card padding and the label gap never shrink. */
+  --tc-card-pad: var(--tc-s-5);
+  --tc-label-gap: var(--tc-s-2);
+  --tc-field-gap: var(--tc-s-4);
+  --tc-row-gap: var(--tc-s-5);
+  --tc-vs-lane: 96px;
+
   /* Shadows and glows */
   --tc-shadow-wood: 0 6px 0 var(--tc-purple-900), inset 0 3px 0 rgb(255 255 255 / 25%);
   --tc-shadow-card: 0 8px 0 var(--tc-purple-700);

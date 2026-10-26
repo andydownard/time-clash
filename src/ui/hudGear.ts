@@ -52,7 +52,7 @@ export function createGear(ctx: UiCtx, on: { ammo: (id: AmmoId) => void; evasion
   );
   const evaIcon = h(doc, 'span', { class: 'tc-gear-icon', 'aria-hidden': 'true' });
   const evaWord = h(doc, 'span', { class: 'tc-gear-word tc-gear-long', 'aria-hidden': 'true' });
-  /** The short form for a narrow screen: a check mark, the turns left, or a dash. */
+  /** The short form for a narrow screen: the turns left, a dash, or nothing. */
   const evaMark = h(doc, 'span', { class: 'tc-gear-word tc-gear-short', 'aria-hidden': 'true' });
   const evasion = h(
     doc,
@@ -116,20 +116,12 @@ export function createGear(ctx: UiCtx, on: { ammo: (id: AmmoId) => void; evasion
               : e.phase === 'recharging'
                 ? GEAR_COPY.recharging(words.name, e.turnsLeft)
                 : GEAR_COPY.used(words.name);
+      // Armed keeps the ready words: the Ember ring and aria-pressed say it, and the button
+      // keeps its size (Regression 24).
       evaWord.textContent =
-        e.phase === 'armed'
-          ? `✓ ${words.short}`
-          : e.phase === 'recharging'
-            ? `${words.short} ${e.turnsLeft}`
-            : words.short;
+        e.phase === 'recharging' ? `${words.short} ${e.turnsLeft}` : words.short;
       evaMark.textContent =
-        e.phase === 'armed'
-          ? '\u2713'
-          : e.phase === 'recharging'
-            ? String(e.turnsLeft)
-            : e.phase === 'used'
-              ? '\u2013'
-              : '';
+        e.phase === 'recharging' ? String(e.turnsLeft) : e.phase === 'used' ? '\u2013' : '';
       evasion.setAttribute('aria-label', label);
       evasion.title = label;
       evasion.setAttribute('aria-pressed', String(e.phase === 'armed'));
