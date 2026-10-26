@@ -1,6 +1,6 @@
-// The base fall lines (2026-10-25) have no recorded clip yet. Each one asks the app server, gets
-// a 404, and falls back to the browser voice at once, with its caption. Never silent, never
-// uncaptioned. INBOX.md tracks recording them.
+// The base fall lines (2026-10-25) are recorded in all three clip volumes. If a clip ever goes
+// missing, the app server answers 404 and the game falls back to the browser voice at once, with
+// its caption. Never silent, never uncaptioned.
 import { fileURLToPath } from 'node:url';
 import { DatabaseSync } from 'node:sqlite';
 import { describe, expect, it } from 'vitest';
@@ -10,10 +10,12 @@ import { createClipPlayer } from '../../src/audio/clipPlayer';
 import { baseFallPool } from '../../src/data/copy';
 import { createHarness } from './fakes';
 
-const DB = fileURLToPath(new URL('../../db/voice-k4.sqlite', import.meta.url));
+const VOLUMES = ['voice-k4.sqlite', 'voice-5-8.sqlite', 'voice-9-12.sqlite'];
 
-function recordedIds(): Set<string> {
-  const db = new DatabaseSync(DB, { readOnly: true });
+function recordedIds(volume: string): Set<string> {
+  const db = new DatabaseSync(fileURLToPath(new URL(`../../db/${volume}`, import.meta.url)), {
+    readOnly: true,
+  });
   try {
     const rows = db.prepare('SELECT id FROM voice_clip_index').all() as Array<{ id: string }>;
     return new Set(rows.map((r) => r.id));
@@ -25,9 +27,9 @@ function recordedIds(): Set<string> {
 const allLines = [...new Set([...baseFallPool('PAST'), ...baseFallPool('FUTURE')])];
 
 describe('base fall lines and the voice', () => {
-  it('none has a recorded clip yet', () => {
-    const recorded = recordedIds();
-    expect(allLines.filter((l) => recorded.has(clipId(l)))).toEqual([]);
+  it.each(VOLUMES)('every line has a recorded clip in %s', (volume) => {
+    const recorded = recordedIds(volume);
+    expect(allLines.filter((l) => !recorded.has(clipId(l)))).toEqual([]);
   });
 
   it.each(allLines)(
