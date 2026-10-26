@@ -455,12 +455,13 @@ export const HIT_LINES = {
 } as const;
 
 /**
- * The sound words for birds and gusts. Each one floats over the board when it happens, so the
- * squawk and the whoosh are never sound-only cues.
+ * The words for birds and gusts. Each one floats over the board when it happens, so the squawk
+ * and the whoosh sound are never sound-only cues. A gust says "Gust!", not "Whoosh!", because
+ * "Whoosh!" already means a miss and a dodge (owner, 2026-10-25).
  */
 export const DISTURBANCE_COPY = {
   squawk: 'Squawk!',
-  whoosh: 'Whoosh!',
+  gust: 'Gust!',
 } as const;
 
 /** Chrono's quick joke after a reload. Warm, and always at Chrono's expense. */

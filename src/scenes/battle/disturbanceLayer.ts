@@ -25,7 +25,7 @@ export type DisturbanceLayer = {
   clockMs(): number;
   /** A shell bumped a bird: feathers, a spin and the "Squawk!" word. */
   bump(b: BirdBump): void;
-  /** The gust blew: streaks, an arrow and the "Whoosh!" word. */
+  /** The gust blew: streaks, an arrow and the "Gust!" word. */
   gust(g: GustHit): void;
   state(): BirdLayerState;
   destroy(): void;
@@ -146,7 +146,7 @@ export function createDisturbanceLayer(
       g.fillPoints(cue.arrow, true);
       g.lineStyle(2.5, PALETTE.shared.ink, 1);
       g.strokePoints(cue.arrow, true);
-      floatLabel(scene, cue.label, DISTURBANCE_COPY.whoosh, 'hit', opts.fontPx);
+      floatLabel(scene, cue.label, DISTURBANCE_COPY.gust, 'hit', opts.fontPx);
       const reduced = opts.reduced();
       // The streaks and arrow slide the gust's way, stay bright while it blows, then fade.
       // Reduced motion: they stay put and only fade.

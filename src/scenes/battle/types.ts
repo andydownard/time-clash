@@ -130,7 +130,7 @@ export interface BattleView {
   birdClockMs?(): number;
   /** A shell bumped a bird: feathers, a spin and the "Squawk!" word. */
   playBirdBump?(bump: BirdBump): void;
-  /** The turn's gust blew on the shell: streaks, an arrow and the "Whoosh!" word. */
+  /** The turn's gust blew on the shell: streaks, an arrow and the "Gust!" word. */
   playGust?(gust: GustHit): void;
   /**
    * Built bases: redraw `team`'s bricks as the rules have them now. The bricks in `fell` (the
