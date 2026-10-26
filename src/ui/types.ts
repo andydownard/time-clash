@@ -41,8 +41,6 @@ export type CoverKind = 'pass' | 'reload';
 /** Stable hooks for Playwright. Use as data-testid values. */
 export const TEST_IDS = {
   tapToPlay: 'tap-to-play',
-  muteToggle: 'mute-toggle',
-  captionsToggle: 'captions-toggle',
   howToPlay: 'how-to-play',
   introSkip: 'intro-skip',
   introReplay: 'intro-replay',
@@ -142,8 +140,11 @@ export type ReloadModalOptions = {
   question: Question;
   team: Team;
   playerName: string;
-  /** The other side, shown as a "Waiting" tag. Optional. Their name is not secret. */
-  waiting?: { team: Team; name: string };
+  /**
+   * The first reload of this match. Only then does the card say "Answer to reload your
+   * launcher." (Andy, 2026-10-25). Kept per match, never stored. Default false.
+   */
+  firstReload?: boolean;
   /** Chrono's quick joke for the answer. Optional. */
   quip?: (outcome: 'fast' | 'slow' | 'wrong') => string | null;
   /** Injected clock for tests. Default performance.now. */
@@ -328,10 +329,7 @@ export interface Overlay {
 
   // Screens (full viewport at Z.screen)
   /** Resolves inside the tap handler, so the caller can call AudioManager.unlock() synchronously. */
-  showTapToStart(handlers: {
-    onMuteToggle: () => void;
-    onCaptionsToggle: () => void;
-  }): Promise<void>;
+  showTapToStart(): Promise<void>;
   showIntro(script: IntroScript, play: (cardIndex: number) => Promise<void>): Promise<IntroResult>;
   showLoading(messages: readonly string[]): LoadingHandle;
   /** Resolves with validated players (index 0 PAST, 1 FUTURE). */

@@ -1,6 +1,12 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it } from 'vitest';
-import { BUTTONS, PASS_SCREEN, RELOAD as RELOAD_COPY, UI_EXTRA } from '../../src/data/copy';
+import {
+  BUTTONS,
+  PASS_SCREEN,
+  RELOAD as RELOAD_COPY,
+  TEAM_NAMES,
+  UI_EXTRA,
+} from '../../src/data/copy';
 import { RELOAD, TIMING, UI } from '../../src/game/config';
 import { fastWindowMs } from '../../src/game/reload';
 import { TEST_IDS, Z } from '../../src/ui/types';
@@ -101,12 +107,16 @@ describe('pass-the-mouse cover', () => {
     expect(q(TEST_IDS.passScreen)!.textContent).toContain('<img src=x');
   });
 
-  it("shows the next team's icon (a castle or a base) so the hand-off is not color alone", () => {
+  it('names the next team in words, with the picture, and no round team icon', () => {
     void s.overlay.showPassScreen({ nextName: 'Sam', nextTeam: 'FUTURE' });
-    const icon = q(TEST_IDS.passScreen)!.querySelector('[data-role="team-icon"]')!;
-    expect(icon.getAttribute('aria-hidden')).toBe('true');
-    expect(icon.textContent).toBe(PASS_SCREEN.icon.FUTURE);
-    expect(PASS_SCREEN.icon.PAST).not.toBe(PASS_SCREEN.icon.FUTURE);
+    const el = q(TEST_IDS.passScreen)!;
+    expect(el.querySelector('[data-role="team-icon"], .tc-team-icon')).toBeNull();
+    expect(el.textContent).not.toContain(PASS_SCREEN.icon.FUTURE);
+    // Not color alone: the team tag says the side in words.
+    expect(el.querySelector('.tc-team-tag')!.textContent).toBe(TEAM_NAMES.FUTURE);
+    expect(el.querySelector('.tc-pass-art')).not.toBeNull();
+    expect(q(TEST_IDS.passReady)!.textContent).toBe(PASS_SCREEN.ready);
+    expect(q('cover-mute')).not.toBeNull();
   });
 
   it('has a Sound on/off button on the pass screen, and it holds no question text', () => {
@@ -158,7 +168,7 @@ describe('pass cover voice line', () => {
     expect(captionLayerZ()).toBeGreaterThan(Z.cover);
   });
 
-  it('never says or captions the child\'s name (names stay on the device)', () => {
+  it("never says or captions the child's name (names stay on the device)", () => {
     const said: string[] = [];
     const real = s.audio.speak.bind(s.audio);
     s.audio.speak = (line, o) => {

@@ -29,13 +29,9 @@ import {
   type MatchSetup,
   type SceneRoute,
 } from './registry';
-import { toggleCaptions, toggleMute } from './settingsActions';
 
 export async function runTapStep(s: AppServices): Promise<SceneRoute> {
-  await s.overlay.showTapToStart({
-    onMuteToggle: () => void toggleMute(s.audio, s.storage),
-    onCaptionsToggle: () => void toggleCaptions(s.storage),
-  });
+  await s.overlay.showTapToStart();
   return routeAfterTap(s.storage);
 }
 

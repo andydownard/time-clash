@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 // Weapons on the pads in the "Pick one" selector (docs/GAME_SPEC.md "Weapons on the pads"). One
 // Base weapons token after the fighters switches the selector to the base's weapons and picks
-// the first; a token with the fighter's letter switches back. The tokens on show always hold
+// the first; a Fighters token (a person and the word) switches back. The tokens on show always hold
 // what Fire will shoot, and the selector is never wider than five fighters plus one token.
 import { beforeEach, describe, expect, it } from 'vitest';
 import { HUD } from '../../src/data/copy';
@@ -116,13 +116,30 @@ describe('the weapons view', () => {
     expect(name()).toBe('Catapult');
   });
 
-  it('the fighter token shows the picked fighter and switches back to it', () => {
+  it('the Fighters token says "Fighters" with a person picture, and switches back to the picked fighter', () => {
     const { picks } = show({ selectedMount: 'mount:0', selected: 'D' });
     const back = q(TEST_IDS.unitFighters)!;
-    expect(back.textContent).toBe('D');
+    expect(back.tagName).toBe('BUTTON');
+    expect(back.textContent).toBe(HUD.fighters);
+    expect(HUD.fighters).toBe('Fighters');
+    expect(back.querySelector('.tc-unit-back-label')!.textContent).toBe(HUD.fighters);
+    // A picture as well as words, so a pre-reader can find it.
+    const icon = back.querySelector('svg[data-icon="fighter"]')!;
+    expect(icon.getAttribute('aria-hidden')).toBe('true');
+    expect(back.classList.contains('tc-unit-back')).toBe(true);
+    // A screen reader still hears which fighter it goes back to.
     expect(back.getAttribute('aria-label')).toBe(HUD.fightersLabel('Catapult', 'D'));
     click(back);
     expect(picks).toEqual(['D']);
+  });
+
+  it('the Fighters token is reachable by Tab (it is a real button, never disabled while aiming)', () => {
+    show({ selectedMount: 'mount:0' });
+    const back = q<HTMLButtonElement>(TEST_IDS.unitFighters)!;
+    expect(back.disabled).toBe(false);
+    expect(back.tabIndex).toBeGreaterThanOrEqual(0);
+    back.focus();
+    expect(document.activeElement).toBe(back);
   });
 
   it('a weapon token picks that weapon', () => {

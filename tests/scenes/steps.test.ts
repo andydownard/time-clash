@@ -24,6 +24,7 @@ import { campWith } from '../helpers/camp';
 import { loadCamp } from '../../src/storage/storage';
 import { fakeController, makeServices, players, tinyBank } from './fakes';
 import { loadSettings } from '../../src/storage/storage';
+import { toggleMute } from '../../src/scenes/settingsActions';
 
 let t: ReturnType<typeof makeServices>;
 beforeEach(() => {
@@ -57,29 +58,20 @@ describe('tap step', () => {
     click(q(TEST_IDS.tapToPlay));
     expect((await p).key).toBe(SCENE_KEYS.loading);
   });
-  it('mute toggle mutes the audio and saves it', async () => {
+  it('has no Sound or Captions switch of its own: Settings (the gear) has them', async () => {
     void runTapStep(t.services);
-    click(q(TEST_IDS.muteToggle));
-    expect(t.audio.muted).toBe(true);
-    expect(loadSettings(t.storage).muted).toBe(true);
-    click(q(TEST_IDS.muteToggle));
-    expect(t.audio.muted).toBe(false);
-    expect(loadSettings(t.storage).muted).toBe(false);
+    await flush();
+    expect(q('mute-toggle')).toBeNull();
+    expect(q('captions-toggle')).toBeNull();
+    expect(document.querySelector('[data-screen="tap"] [role="switch"]')).toBeNull();
   });
-  it('captions toggle is saved', async () => {
-    void runTapStep(t.services);
-    expect(loadSettings(t.storage).captions).toBe(true);
-    click(q(TEST_IDS.captionsToggle));
-    expect(loadSettings(t.storage).captions).toBe(false);
-    click(q(TEST_IDS.captionsToggle));
-    expect(loadSettings(t.storage).captions).toBe(true);
-  });
-  it('keeps the mute choice made before the tap when the tap unlocks audio', async () => {
+  it('keeps a mute made in Settings before the tap when the tap unlocks audio', async () => {
     const p = runTapStep(t.services);
-    click(q(TEST_IDS.muteToggle));
+    toggleMute(t.audio, t.storage);
     click(q(TEST_IDS.tapToPlay));
     await p;
     expect(t.audio.muted).toBe(true);
+    expect(loadSettings(t.storage).muted).toBe(true);
   });
 });
 

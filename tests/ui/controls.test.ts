@@ -77,17 +77,21 @@ describe('controls follow one rule on every screen', () => {
     s = setup();
   });
 
-  it('Tap to Play: Sound and Captions are switches, Tap to Play is the one primary', () => {
-    void s.overlay.showTapToStart({ onMuteToggle: () => {}, onCaptionsToggle: () => {} });
+  it('Tap to Play: Tap to Play is the one primary, and Sound and Captions live in Settings', () => {
+    void s.overlay.showTapToStart();
     checkControls('tap');
-    expect(q('mute-toggle')!.getAttribute('role')).toBe('switch');
-    expect(q('captions-toggle')!.getAttribute('role')).toBe('switch');
+    expect(q('mute-toggle')).toBeNull();
+    expect(q('captions-toggle')).toBeNull();
     expect(q('tap-to-play')!.classList.contains('tc-btn-primary')).toBe(true);
   });
 
-  it('How to Play', () => {
+  it('How to Play: Sound is a switch, Skip and Replay are buttons', () => {
     void s.overlay.showIntro(INTRO_SCRIPT, () => Promise.resolve());
     checkControls('intro');
+    expect(q('intro-mute')!.getAttribute('role')).toBe('switch');
+    expect(q('intro-mute')!.classList.contains('tc-btn')).toBe(false);
+    expect(q('intro-skip')!.classList.contains('tc-btn')).toBe(true);
+    expect(q('intro-replay')!.classList.contains('tc-btn')).toBe(true);
   });
 
   it('Setup with the Computer player choice: selectors, a dropdown and a link', () => {

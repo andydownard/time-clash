@@ -28,6 +28,10 @@ const state = (over: Partial<HudState> = {}): HudState => ({
   ...over,
 });
 
+/** What a screen reader hears for a team's health. The card itself shows no number (the pill by the base does). */
+const hpSaid = (t: 'PAST' | 'FUTURE'): string | null =>
+  q(TEST_IDS.baseHp(t))!.querySelector('[role="meter"]')!.getAttribute('aria-valuetext');
+
 const handlers = (): HudHandlers & {
   calls: string[];
   aims: Array<{ angleDeg: number; power: number }>;
@@ -135,8 +139,8 @@ describe('HUD', () => {
     expect(q<HTMLInputElement>(TEST_IDS.powerControl)!.value).toBe('60');
     expect(q(TEST_IDS.fireButton)!.textContent).toBe(HUD.fire);
     expect(q(TEST_IDS.wind)!.textContent).toBe(windLabel(-12));
-    expect(q(TEST_IDS.baseHp('PAST'))!.textContent).toContain(HUD.hpValue(100));
-    expect(q(TEST_IDS.baseHp('FUTURE'))!.textContent).toContain(HUD.hpValue(75));
+    expect(hpSaid('PAST')).toBe(HUD.hpValue(100));
+    expect(hpSaid('FUTURE')).toBe(HUD.hpValue(75));
     expect(q(TEST_IDS.shotsLeft)!.textContent).toContain(HUD.shotsValue(2));
     expect(q('hud-scrap-PAST')!.textContent).toContain('3');
   });
@@ -185,7 +189,21 @@ describe('HUD', () => {
     expect(document.querySelectorAll('.tc-pip-bonus')).toHaveLength(0);
   });
 
-  it('health bars are meters with numbers', () => {
+  it('the team card shows health once, as a meter: no number (the pill by the base has it)', () => {
+    s.overlay.showHud(handlers());
+    s.overlay.updateHud(state());
+    for (const t of ['PAST', 'FUTURE'] as const) {
+      const card = q(TEST_IDS.baseHp(t))!.closest<HTMLElement>('[data-team]')!;
+      expect(card.textContent).not.toMatch(/\d+\s*\/\s*\d+/);
+      expect(card.querySelector('.tc-hp-text')).toBeNull();
+      // The name, the Scrap and the pictures stay.
+      expect(card.textContent).toContain(t === 'PAST' ? 'Alex' : 'Sam');
+      expect(card.querySelector('[data-icon="health"]')).not.toBeNull();
+      expect(card.querySelector('[data-icon="scrap"]')).not.toBeNull();
+    }
+  });
+
+  it('health bars are meters a screen reader can read', () => {
     s.overlay.showHud(handlers());
     s.overlay.updateHud(state());
     const meter = q(TEST_IDS.baseHp('FUTURE'))!.querySelector(
@@ -731,7 +749,7 @@ describe('HUD health with a raised maximum (Rebuild the Tower)', () => {
     const full = DAMAGE.startingBaseHp;
     s.overlay.showHud(handlers());
     s.overlay.updateHud(state({ baseHp: { PAST: full, FUTURE: 75 } }));
-    expect(q(TEST_IDS.baseHp('PAST'))!.textContent).toContain(`${full} / ${full}`);
+    expect(hpSaid('PAST')).toBe(`${full} / ${full}`);
     const meter = document.querySelector('[data-team="PAST"] [role="meter"]')!;
     expect(meter.getAttribute('aria-valuemax')).toBe(String(full));
     expect(HUD.hpValue(full)).toBe(`${full} / ${full}`);
@@ -742,7 +760,7 @@ describe('HUD health with a raised maximum (Rebuild the Tower)', () => {
     s.overlay.updateHud(
       state({ baseHp: { PAST: 124, FUTURE: 100 }, maxBaseHp: { PAST: 124, FUTURE: 100 } }),
     );
-    expect(q(TEST_IDS.baseHp('PAST'))!.textContent).toContain('124 / 124');
+    expect(hpSaid('PAST')).toBe('124 / 124');
     const meter = document.querySelector('[data-team="PAST"] [role="meter"]')!;
     expect(meter.getAttribute('aria-valuemax')).toBe('124');
     expect(meter.getAttribute('aria-valuenow')).toBe('124');
@@ -763,7 +781,7 @@ describe('HUD health with a raised maximum (Rebuild the Tower)', () => {
     s.overlay.updateHud(
       state({ baseHp: { PAST: 999, FUTURE: -5 }, maxBaseHp: { PAST: 112, FUTURE: 100 } }),
     );
-    expect(q(TEST_IDS.baseHp('PAST'))!.textContent).toContain('112 / 112');
-    expect(q(TEST_IDS.baseHp('FUTURE'))!.textContent).toContain('0 / 100');
+    expect(hpSaid('PAST')).toBe('112 / 112');
+    expect(hpSaid('FUTURE')).toBe('0 / 100');
   });
 });

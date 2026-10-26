@@ -45,7 +45,10 @@ const state = (over: Partial<HudState> = {}): HudState => ({
   units: [],
   ...over,
 });
-const handlers = (): HudHandlers => ({ onAim: () => {}, onFire: () => {}, onMuteToggle: () => {},
+const handlers = (): HudHandlers => ({
+  onAim: () => {},
+  onFire: () => {},
+  onMuteToggle: () => {},
   onSelect: () => {},
 });
 
@@ -89,13 +92,14 @@ describe('HUD team cards', () => {
     expect(mark?.textContent).toBe('▶');
     expect(bodyOf(".tc-team-panel[data-active='true'] .tc-active-mark")).toContain('visible');
   });
-  it('labels health once and keeps the value beside the meter', () => {
+  it('labels health once: a meter with no number beside it (the base pill shows the number)', () => {
     s.overlay.showHud(handlers());
     s.overlay.updateHud(state());
     const hp = q(TEST_IDS.baseHp('FUTURE'))!;
     expect(hp.querySelector('.tc-hp-label')!.textContent).toBe(HUD.baseHealth);
     expect(hp.querySelector('.tc-hp-row .tc-hp-meter')).not.toBeNull();
-    expect(hp.querySelector('.tc-hp-row .tc-hp-text')!.textContent).toBe(HUD.hpValue(75));
+    expect(hp.querySelector('.tc-hp-text')).toBeNull();
+    expect(hp.querySelector('.tc-hp-meter')!.getAttribute('aria-valuetext')).toBe(HUD.hpValue(75));
   });
 });
 
@@ -288,10 +292,16 @@ describe('Wipeout screen', () => {
     names: { PAST: 'Alex', FUTURE: 'Sam' },
     stats: { PAST: st(4, 4), FUTURE: st(1, 3) },
   };
-  it('names the winning team, never labels the player who lost, and shows brain stats', () => {
+  it('names the winner with no team line above it, never labels the player who lost, and shows brain stats', () => {
     void s.overlay.showVictory(opts);
     const v = q(TEST_IDS.victory)!;
-    expect(v.querySelector('[data-role="winner-team"]')!.textContent).toBe('Team Past');
+    // The small "TEAM PAST" line over "<name> wins!" is cut: the award card names the team.
+    expect(v.querySelector('[data-role="winner-team"]')).toBeNull();
+    expect(v.querySelector(':scope > .tc-team-eyebrow')).toBeNull();
+    expect(v.querySelector('h1')!.textContent).toBe(VICTORY.heading('Alex'));
+    expect(v.querySelector('[data-award-team="PAST"] .tc-team-eyebrow')!.textContent).toBe(
+      'Team Past',
+    );
     expect(v.textContent).not.toContain('Sam: Wipeout');
     expect(v.textContent).toContain(VICTORY.wipeoutLine('Secret Base'));
     const stats = qa('[data-role="brain-stats"]').map((e) => e.textContent);
@@ -299,6 +309,16 @@ describe('Wipeout screen', () => {
       `Brain stats: ${VICTORY.brainStatsValue(4, 4)}`,
       `Brain stats: ${VICTORY.brainStatsValue(1, 3)}`,
     ]);
+  });
+  it('the Awards heading is for screen readers only, and still names the awards section', () => {
+    void s.overlay.showVictory(opts);
+    const heading = q(TEST_IDS.victory)!.querySelector<HTMLElement>('#tc-awards-heading')!;
+    expect(heading.tagName).toBe('H2');
+    expect(heading.textContent).toBe(VICTORY.awardsHeading);
+    expect(heading.classList.contains('tc-sr-only')).toBe(true);
+    expect(q(TEST_IDS.victory)!.querySelector('.tc-awards')!.getAttribute('aria-labelledby')).toBe(
+      'tc-awards-heading',
+    );
   });
   it('both cards get Good Sport and the same size, each in its team look', () => {
     void s.overlay.showVictory(opts);

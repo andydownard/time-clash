@@ -125,9 +125,9 @@ for (const [past, future] of [
     const m = await startWithBases(page, past, future);
     await readyUp(page);
     await waitDrawn(page, m);
-    // The HUD shows the brick total on one line, as "N / M".
-    const pill = tid(page, 'base-hp-FUTURE');
-    await expect(pill).toContainText(`${m.baseHp.FUTURE}`);
+    // The HUD meter carries the brick total as "N / M" (the pill by the base shows it).
+    const meter = tid(page, 'base-hp-FUTURE').getByRole('meter');
+    await expect(meter).toHaveAttribute('aria-valuetext', new RegExp(`^${m.baseHp.FUTURE} / `));
     await expectBricksClear(page, `${past}/${future}`);
     await page.screenshot({
       path: info.outputPath(`built-${past}-${future}-${info.project.name}.png`),
@@ -159,7 +159,10 @@ test('a shell knocks out a top brick: it crumbles, the HUD drops, nobody is hurt
   const after = await snap(page);
   expect(after.baseHp.FUTURE).toBeLessThan(m.baseHp.FUTURE);
   expect(after.maxBaseHp.FUTURE).toBe(m.maxBaseHp.FUTURE);
-  await expect(tid(page, 'base-hp-FUTURE')).toContainText(`${after.baseHp.FUTURE}`);
+  await expect(tid(page, 'base-hp-FUTURE').getByRole('meter')).toHaveAttribute(
+    'aria-valuetext',
+    new RegExp(`^${after.baseHp.FUTURE} / `),
+  );
   // The shooter's own fighters and base are untouched.
   expect(after.baseHp.PAST).toBe(m.baseHp.PAST);
   await expectBricksClear(page, 'after the crumble');

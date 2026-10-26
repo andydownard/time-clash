@@ -237,8 +237,6 @@ export const INTRO = {
   heading: 'How to Play',
   skip: 'Skip',
   replay: 'Replay',
-  mute: 'Mute',
-  unmute: 'Unmute',
   next: 'Next card',
   cardOf: (n: number, total: number): string => `Card ${n} of ${total}`,
 } as const;
@@ -306,7 +304,9 @@ export const HUD = {
   baseWeapons: 'Base weapons',
   /** A weapon token: its spot number (1 to 4) and its name. */
   mountLabel: (spot: number, name: string): string => `Spot ${spot}: ${name}`,
-  /** The token that switches back to the fighters, with the picked fighter on it. */
+  /** The words on the token that switches back to the fighters. */
+  fighters: 'Fighters',
+  /** The token that switches back to the fighters: what a screen reader hears. */
   fightersLabel: (name: string, id: string): string => `Fighters: ${name} ${id}`,
   /** The gold star pip and screen-reader text while the Power Shot is up. */
   powerShot: 'Power Shot!',
@@ -410,7 +410,6 @@ export const RELOAD = {
   hint: 'Hint',
   hintIcon: '💡',
   yourTurn: 'Your turn!',
-  waiting: 'Waiting',
   readStory: 'Read the story',
   gotIt: 'Got it',
   why: (hint: string): string => `Clue: ${hint}`,

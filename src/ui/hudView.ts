@@ -39,7 +39,6 @@ type Parts = {
   mute: HTMLButtonElement;
   panel: Record<Team, HTMLElement>;
   name: Record<Team, HTMLElement>;
-  hpText: Record<Team, HTMLElement>;
   hpMeter: Record<Team, HTMLElement>;
   hpFill: Record<Team, HTMLElement>;
   scrap: Record<Team, HTMLElement>;
@@ -175,7 +174,7 @@ export function createHud(ctx: UiCtx) {
     m.mine ? myWeaponIcon(doc, m.art, team, MOUNT_ICON_PX) : weaponIcon(doc, m.art, MOUNT_ICON_PX);
 
   // Rebuild the tokens only when what they show changes. Otherwise just move the selection.
-  // With weapons on the base pads, one more token switches between the fighters and the weapons,
+  // With weapons on the base pads, one more token (Base weapons, or Fighters) switches views,
   // so the tokens on show always hold what Fire will shoot.
   const paintUnits = (state: HudState): void => {
     if (!parts) return;
@@ -207,12 +206,17 @@ export function createHud(ctx: UiCtx) {
                 h(doc, 'span', { class: 'tc-unit-spot', 'aria-hidden': 'true', text: m.spot + 1 }),
               ),
             ),
-            token(state.selected, {
-              class: 'tc-unit tc-unit-swap',
-              'data-testid': TEST_IDS.unitFighters,
-              'aria-label': HUD.fightersLabel(fighter?.name ?? '', state.selected),
-              text: state.selected,
-            }),
+            // Back to the fighters: a person picture and the word, on a wide pill (two places).
+            token(
+              state.selected,
+              {
+                class: 'tc-unit tc-unit-swap tc-unit-back',
+                'data-testid': TEST_IDS.unitFighters,
+                'aria-label': HUD.fightersLabel(fighter?.name ?? '', state.selected),
+              },
+              hudIcon(doc, 'fighter'),
+              h(doc, 'span', { class: 'tc-unit-back-label', text: HUD.fighters }),
+            ),
           ]
         : [
             ...state.units.map((u) =>
@@ -344,7 +348,6 @@ export function createHud(ctx: UiCtx) {
     });
 
     const name = record((t) => h(doc, 'span', { class: 'tc-team-name', 'data-role': `name-${t}` }));
-    const hpText = record(() => h(doc, 'span', { class: 'tc-hp-text' }));
     const hpFill = record(() => h(doc, 'span', { class: 'tc-hp-fill' }));
     const hpMeter = record((t) =>
       h(
@@ -377,7 +380,9 @@ export function createHud(ctx: UiCtx) {
           'div',
           { 'data-testid': TEST_IDS.baseHp(t), class: 'tc-hp' },
           h(doc, 'span', { class: 'tc-hp-label tc-sr-only', text: HUD.baseHealth }),
-          h(doc, 'div', { class: 'tc-hp-row' }, hudIcon(doc, 'health'), hpMeter[t], hpText[t]),
+          // Health shows once as a number: on the pill by the base, where the hits land. The card
+          // keeps the meter, and a screen reader hears the number from the meter itself.
+          h(doc, 'div', { class: 'tc-hp-row' }, hudIcon(doc, 'health'), hpMeter[t]),
         ),
         h(
           doc,
@@ -489,7 +494,6 @@ export function createHud(ctx: UiCtx) {
       mute,
       panel,
       name,
-      hpText,
       hpMeter,
       hpFill,
       scrap,
@@ -587,8 +591,8 @@ export function createHud(ctx: UiCtx) {
         const max = Math.max(1, Math.round(state.maxBaseHp?.[t] ?? DAMAGE.startingBaseHp));
         const hp = clamp(Math.round(state.baseHp[t]), 0, max);
         parts.name[t].textContent = state.names[t];
-        parts.hpText[t].textContent = HUD.hpValue(hp, max);
         parts.hpMeter[t].setAttribute('aria-valuenow', String(hp));
+        parts.hpMeter[t].setAttribute('aria-valuetext', HUD.hpValue(hp, max));
         parts.hpMeter[t].setAttribute('aria-valuemax', String(max));
         parts.hpFill[t].style.width = `${(hp / max) * 100}%`;
         parts.scrap[t].textContent = String(state.scrap[t]);

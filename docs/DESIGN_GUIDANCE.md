@@ -52,7 +52,7 @@ Compared Setup, Math, Reading and Base Destroyed on the design canvas with the g
 - Button "START BATTLE". Left: the game says "Let's clash!" and the Camp has "Time to Clash!".
 
 **Math reload card**
-- Turn-order tags (turn and waiting). Fixed on screens wider than 900 px. On narrower screens the waiting tag is hidden so the card fits 768x1024.
+- Turn-order tags (turn and waiting). The waiting tag was cut on 2026-10-25 (Andy): the turn tag already says whose turn it is. The card shows the one turn tag.
 - Header "Math Challenge", "Player 1: Jack, your turn! (shot 1 of 2)" and "Solve it to load your shot!". Left: the game says "Reload time!" for every subject. A reload comes after both shots, so "shot 1 of 2" would be wrong.
 - Answer text in Orbitron. Left: regression 12. Math numbers keep the plain numeral face.
 - Letters A to D on the answers. Left: the 1 to 4 keys already match the numbers shown.

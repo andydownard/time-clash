@@ -568,26 +568,6 @@ body {
 .tc-pass-card > * {
   margin: 0;
 }
-.tc-team-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  border: 6px solid var(--tc-parchment-warm);
-  background: var(--tc-ink-deep);
-  font-size: var(--tc-fs-hero);
-  line-height: 1;
-}
-.tc-pass[data-team='PAST'] .tc-team-icon {
-  box-shadow: 0 0 0 6px var(--tc-purple-500);
-}
-.tc-pass[data-team='FUTURE'] .tc-team-icon {
-  box-shadow:
-    0 0 0 6px var(--tc-blue-500),
-    var(--tc-glow-neon);
-}
 .tc-pass-art {
   width: 240px;
   height: 90px;
@@ -621,9 +601,6 @@ body {
   gap: var(--tc-s-3);
   justify-content: center;
   align-items: center;
-}
-.tc-corner {
-  align-self: flex-end;
 }
 .tc-error {
   min-height: 0;
@@ -1492,18 +1469,6 @@ body:has(.tc-hud):not([data-cover]):not(:has([data-layer='screen'] > *)) .tc-cap
   align-items: flex-end;
   gap: var(--tc-s-1);
 }
-/* On a narrow screen the second tag has no room, and the card must fit without scrolling. */
-@media (max-width: 900px) {
-  .tc-turn-chip[data-state='waiting'] {
-    display: none;
-  }
-}
-.tc-turn-chip[data-state='waiting'] {
-  border-color: var(--tc-strip-text);
-  background: transparent;
-  color: var(--tc-strip-text);
-  box-shadow: none;
-}
 .tc-reload-who::before,
 .tc-turn-tag::before {
   content: '\00B7';
@@ -1903,7 +1868,6 @@ body:has(.tc-hud):not([data-cover]):not(:has([data-layer='screen'] > *)) .tc-cap
 .tc-awards {
   text-align: center;
 }
-.tc-awards h2,
 .tc-award-card h3 {
   margin: 0 0 var(--tc-s-2);
 }
@@ -1919,12 +1883,6 @@ body:has(.tc-hud):not([data-cover]):not(:has([data-layer='screen'] > *)) .tc-cap
   font-size: var(--tc-fs-label);
   letter-spacing: var(--tc-ls-caps-wide);
   text-transform: uppercase;
-}
-.tc-victory[data-team='PAST'] > .tc-team-eyebrow {
-  color: var(--tc-eyebrow-past);
-}
-.tc-victory[data-team='FUTURE'] > .tc-team-eyebrow {
-  color: var(--tc-eyebrow-future);
 }
 .tc-brain-stats,
 .tc-scrap-stats {
@@ -4891,8 +4849,8 @@ button.tc-forge-row[aria-disabled='true'],
   overflow: hidden;
   text-overflow: ellipsis;
 }
-/* Weapons on the base pads (built bases). The swap token (Base weapons, or the fighter's letter
-   in the weapons view) has a dashed ring, so it reads as "switch" and never by color alone. A
+/* Weapons on the base pads (built bases). The swap token (Base weapons, or Fighters in the
+   weapons view) has a dashed ring, so it reads as "switch" and never by color alone. A
    weapon token shows the weapon's picture and its spot number. */
 .tc-unit-mount,
 .tc-unit-swap {
@@ -4908,6 +4866,32 @@ button.tc-forge-row[aria-disabled='true'],
 .tc-unit-swap svg {
   display: block;
   pointer-events: none;
+}
+/* The Fighters token in the weapons view: a person picture over the word, on a wide pill. It
+   takes two of the six places (at most four weapons sit beside it), so the selector keeps its
+   width and the bar keeps one row. The word is 20px and not spread out, so it fits the pill. */
+.tc-unit-back {
+  grid-column: span 2;
+  width: auto;
+  border-radius: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 0 4px;
+  overflow: hidden;
+}
+.tc-unit-back .tc-hud-icon {
+  width: 24px;
+  height: 24px;
+}
+.tc-unit-back-label {
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
 }
 .tc-unit-spot {
   position: absolute;

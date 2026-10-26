@@ -2,7 +2,15 @@
 // The markup behind the restyled screens: what the CSS hooks onto, and the rules that must
 // hold on every look (no color-only meaning, no question on the pass cover, real buttons).
 import { beforeEach, describe, expect, it } from 'vitest';
-import { INTRO, LOADING, PASS_SCREEN, RELOAD, SETUP, TEAM_NAMES, VICTORY_CHRONO } from '../../src/data/copy';
+import {
+  INTRO,
+  LOADING,
+  PASS_SCREEN,
+  RELOAD,
+  SETUP,
+  TEAM_NAMES,
+  VICTORY_CHRONO,
+} from '../../src/data/copy';
 import { INTRO_SCRIPT } from '../../src/data/introScript';
 import { TEST_IDS } from '../../src/ui/types';
 import {
@@ -89,10 +97,7 @@ describe('Setup look', () => {
 
 describe('Tap to Start look', () => {
   it('shows the title, the subtitle, and one primary button in a hero block', () => {
-    void s.overlay.showTapToStart({
-      onMuteToggle: () => undefined,
-      onCaptionsToggle: () => undefined,
-    });
+    void s.overlay.showTapToStart();
     const hero = qa('.tc-hero')[0]!;
     expect(hero.querySelector('h1')!.textContent).toBe('Time Clash');
     expect(hero.querySelector('.tc-subtitle')!.textContent).toBe('Past vs. Future');
@@ -117,7 +122,7 @@ describe('Intro look', () => {
     expect(q(TEST_IDS.introCard)!.querySelector('.tc-art svg')).not.toBeNull();
   });
 
-  it('keeps Skip, Replay, Mute, and the caption bar', async () => {
+  it('keeps Skip, Replay, the Sound switch, and the caption bar', async () => {
     void s.audio.unlock();
     void s.overlay.showIntro(INTRO_SCRIPT, () => Promise.resolve());
     await flush();
@@ -165,13 +170,16 @@ describe('Pass the mouse look', () => {
   it.each([
     ['PAST', 'tc-btn-past'],
     ['FUTURE', 'tc-btn-future'],
-  ] as const)('%s shows its name, its shape, and its own button recipe', (team, cls) => {
-    void s.overlay.showPassScreen({ nextName: 'Alex', nextTeam: team });
-    const el = q(TEST_IDS.passScreen)!;
-    expect(el.querySelector('.tc-team-tag')!.textContent).toBe(TEAM_NAMES[team]);
-    expect(el.querySelector('[data-role="team-icon"]')!.textContent).toBe(PASS_SCREEN.icon[team]);
-    expect(q(TEST_IDS.passReady)!.classList.contains(cls)).toBe(true);
-  });
+  ] as const)(
+    '%s shows its name and its own button recipe, with no round team icon',
+    (team, cls) => {
+      void s.overlay.showPassScreen({ nextName: 'Alex', nextTeam: team });
+      const el = q(TEST_IDS.passScreen)!;
+      expect(el.querySelector('.tc-team-tag')!.textContent).toBe(TEAM_NAMES[team]);
+      expect(el.querySelector('[data-role="team-icon"]')).toBeNull();
+      expect(q(TEST_IDS.passReady)!.classList.contains(cls)).toBe(true);
+    },
+  );
 
   it('holds no question text and no answer buttons', () => {
     void s.overlay.showPassScreen({ nextName: 'Alex', nextTeam: 'PAST' });

@@ -24,17 +24,8 @@ beforeEach(() => {
 });
 
 describe('tap to start', () => {
-  const handlers = () => {
-    const calls: string[] = [];
-    return {
-      calls,
-      onMuteToggle: () => calls.push('mute'),
-      onCaptionsToggle: () => calls.push('captions'),
-    };
-  };
-
   it('shows a big TAP TO PLAY button and the helper line, at screen level', () => {
-    void s.overlay.showTapToStart(handlers());
+    void s.overlay.showTapToStart();
     const b = q(TEST_IDS.tapToPlay)!;
     expect(b.tagName).toBe('BUTTON');
     expect(b.textContent).toBe(TAP_TO_START.button);
@@ -45,7 +36,7 @@ describe('tap to start', () => {
   it('makes no sound and calls no audio before the tap', () => {
     const unlock = vi.spyOn(s.audio, 'unlock');
     const speak = vi.spyOn(s.audio, 'speak');
-    void s.overlay.showTapToStart(handlers());
+    void s.overlay.showTapToStart();
     expect(unlock).not.toHaveBeenCalled();
     expect(speak).not.toHaveBeenCalled();
     expect(s.audio.unlocked).toBe(false);
@@ -54,40 +45,31 @@ describe('tap to start', () => {
   });
 
   it('unlocks sound inside the tap handler, then resolves and goes away', async () => {
-    const p = s.overlay.showTapToStart(handlers());
+    const p = s.overlay.showTapToStart();
     click(q(TEST_IDS.tapToPlay));
     expect(s.audio.unlocked).toBe(true);
     await p;
     expect(q(TEST_IDS.tapToPlay)).toBeNull();
   });
 
-  it('has a mute toggle and a captions toggle that call their handlers', () => {
-    const h = handlers();
-    void s.overlay.showTapToStart(h);
-    click(q(TEST_IDS.muteToggle));
-    click(q(TEST_IDS.captionsToggle));
-    expect(h.calls).toEqual(['mute', 'captions']);
-  });
-
-  it('toggle labels flip with the state', () => {
-    void s.overlay.showTapToStart(handlers());
-    expect(q(TEST_IDS.muteToggle)!.textContent).toBe(BUTTONS.soundOn);
-    click(q(TEST_IDS.muteToggle));
-    expect(q(TEST_IDS.muteToggle)!.textContent).toBe(BUTTONS.soundOff);
-    expect(q(TEST_IDS.captionsToggle)!.textContent).toBe(BUTTONS.captionsOn);
-    click(q(TEST_IDS.captionsToggle));
-    expect(q(TEST_IDS.captionsToggle)!.textContent).toBe(BUTTONS.captionsOff);
+  it('has no Sound or Captions switch: they live in Settings, and the sound promise stays', () => {
+    void s.overlay.showTapToStart();
+    expect(q('mute-toggle')).toBeNull();
+    expect(q('captions-toggle')).toBeNull();
+    expect(document.querySelector('[data-screen="tap"] [role="switch"]')).toBeNull();
+    expect(TAP_TO_START.helper).toContain('Sound starts after you tap.');
+    expect(document.body.textContent).toContain(TAP_TO_START.helper);
   });
 
   it('works with no audio manager at all', async () => {
     const t = setup({ withAudio: false });
-    const p = t.overlay.showTapToStart(handlers());
+    const p = t.overlay.showTapToStart();
     click(q(TEST_IDS.tapToPlay));
     await expect(p).resolves.toBeUndefined();
   });
 
   it('focuses the play button', () => {
-    void s.overlay.showTapToStart(handlers());
+    void s.overlay.showTapToStart();
     expect(document.activeElement).toBe(q(TEST_IDS.tapToPlay));
   });
 });
@@ -115,14 +97,21 @@ describe('intro screen', () => {
     expect(Number(layer.style.zIndex)).toBeGreaterThan(Z.screen);
   });
 
-  it('has Skip, Replay, and Mute as real buttons with the right words', async () => {
+  it('has Skip and Replay as real buttons, and Sound as the same switch as Settings', async () => {
     void start();
     expect(q(TEST_IDS.introSkip)!.textContent).toBe(INTRO.skip);
     expect(q(TEST_IDS.introReplay)!.textContent).toBe(INTRO.replay);
-    expect(q('intro-mute')!.textContent).toBe(INTRO.mute);
-    for (const id of [TEST_IDS.introSkip, TEST_IDS.introReplay, 'intro-mute']) {
+    for (const id of [TEST_IDS.introSkip, TEST_IDS.introReplay]) {
       expect(q(id)!.tagName).toBe('BUTTON');
+      expect(q(id)!.getAttribute('role')).toBeNull();
     }
+    const sound = q('intro-mute')!;
+    expect(sound.tagName).toBe('BUTTON');
+    expect(sound.getAttribute('role')).toBe('switch');
+    expect(sound.classList.contains('tc-chip')).toBe(true);
+    expect(sound.classList.contains('tc-toggle')).toBe(true);
+    expect(sound.getAttribute('aria-checked')).toBe('true');
+    expect(sound.textContent).toBe(BUTTONS.soundOn);
   });
 
   it('plays nothing before the first tap (audio locked), but shows captions', () => {
@@ -182,13 +171,40 @@ describe('intro screen', () => {
     expect(s.storage.get('timeclash.introSeen')).toBe(true);
   });
 
-  it('Mute toggles the audio manager and the button text', async () => {
+  it('the Sound switch mutes the audio manager, saves it, and says the state', async () => {
     void start();
     click(q('intro-mute'));
     expect(s.audio.muted).toBe(true);
-    expect(q('intro-mute')!.textContent).toBe(INTRO.unmute);
+    expect(q('intro-mute')!.textContent).toBe(BUTTONS.soundOff);
+    expect(q('intro-mute')!.getAttribute('aria-checked')).toBe('false');
     click(q('intro-mute'));
     expect(s.audio.muted).toBe(false);
+    expect(q('intro-mute')!.textContent).toBe(BUTTONS.soundOn);
+    expect(q('intro-mute')!.getAttribute('aria-checked')).toBe('true');
+  });
+
+  it('the Sound switch works on every card, and the captions keep coming', async () => {
+    void start();
+    await flush();
+    for (let i = 0; i < INTRO_SCRIPT.length; i++) {
+      const title = q(TEST_IDS.introCard)!.querySelector('[data-role="title"]')!.textContent;
+      expect(title).toBe(INTRO_SCRIPT[i]!.title);
+      const wasMuted = s.audio.muted;
+      click(q('intro-mute'));
+      expect(s.audio.muted, `card ${i + 1}`).toBe(!wasMuted);
+      expect(q('intro-mute')!.textContent).toBe(wasMuted ? BUTTONS.soundOn : BUTTONS.soundOff);
+      expect(q(TEST_IDS.captionBar)!.textContent).not.toBe('');
+      if (i < INTRO_SCRIPT.length - 1) {
+        click(q('intro-next'));
+        await flush();
+      }
+    }
+  });
+
+  it('the Sound switch follows a change made in Settings', async () => {
+    void start();
+    s.overlay.applySettings({ ...s.settings, muted: true });
+    expect(q('intro-mute')!.textContent).toBe(BUTTONS.soundOff);
   });
 
   it('a missing voice file falls back to speech and keeps captions', async () => {
@@ -691,7 +707,9 @@ describe('settings and misc', () => {
       'tc-icon-btn',
       'tc-range',
     ];
-    const bad = qa('button, input, select').filter((el) => !allowed.some((c) => el.classList.contains(c)));
+    const bad = qa('button, input, select').filter(
+      (el) => !allowed.some((c) => el.classList.contains(c)),
+    );
     expect(bad.map((b) => b.outerHTML)).toEqual([]);
   });
 });

@@ -1,5 +1,5 @@
 // Small pictures for pre-readers beside the HUD readouts: a heart for Base health, a ball for
-// Shots left, and a gear for Scrap. Original shapes in palette colors only, drawn here from fixed
+// Shots left, a gear for Scrap, and a person on the Fighters token. Original shapes in palette colors only, drawn here from fixed
 // strings. They are decorative (aria-hidden): the words always sit next to them, and the shape
 // carries the meaning, so nothing rests on color alone.
 import { svgFromString } from './svg';
@@ -10,7 +10,7 @@ const MAGENTA = '#ff3dae';
 const STEEL = '#b9c4d0';
 const EMBER = '#ffb23e';
 
-export const HUD_ICON_IDS = ['health', 'shots', 'scrap'] as const;
+export const HUD_ICON_IDS = ['health', 'shots', 'scrap', 'fighter'] as const;
 export type HudIconId = (typeof HUD_ICON_IDS)[number];
 
 const ICONS: Record<HudIconId, string> = {
@@ -20,6 +20,8 @@ const ICONS: Record<HudIconId, string> = {
   shots: `<svg viewBox="0 0 32 32"><path d="M2 11 H11 M4 16 H10 M2 21 H11" stroke="${INK}" stroke-width="2.6" stroke-linecap="round"/><circle cx="21" cy="16" r="9" fill="${INK}"/><circle cx="18" cy="13" r="2.6" fill="${CREAM}"/></svg>`,
   // A gear with a bolt in the middle: Scrap.
   scrap: `<svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="11.5" fill="none" stroke="${STEEL}" stroke-width="5" stroke-dasharray="4.5 4.5"/><circle cx="16" cy="16" r="9" fill="${STEEL}" stroke="${INK}" stroke-width="2"/><circle cx="16" cy="16" r="4" fill="${EMBER}" stroke="${INK}" stroke-width="2"/></svg>`,
+  // A person (head and shoulders): back to the fighters from the Base weapons view. Cream on Ink.
+  fighter: `<svg viewBox="0 0 32 32"><circle cx="16" cy="10" r="6" fill="${CREAM}" stroke="${INK}" stroke-width="2"/><path d="M5 29 C5 21 10 18 16 18 C22 18 27 21 27 29 Z" fill="${CREAM}" stroke="${INK}" stroke-width="2" stroke-linejoin="round"/></svg>`,
 };
 
 export function hudIcon(doc: Document, id: HudIconId): SVGElement {

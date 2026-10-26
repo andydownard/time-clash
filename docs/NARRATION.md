@@ -1,6 +1,6 @@
 # Intro Voice: "How to Play"
 
-A narrator named **Chrono** (a goofy time-traveling announcer) explains the game before the first match. It plays after the player taps "Tap to Play" (browsers block sound until a tap). It runs about 40 seconds. It has captions, a Skip button, a Replay button, and a Mute button. The same lesson is reachable later from the "?" button.
+A narrator named **Chrono** (a goofy time-traveling announcer) explains the game before the first match. It plays after the player taps "Tap to Play" (browsers block sound until a tap). It runs about 40 seconds. It has captions, a Skip button, a Replay button, and a Sound switch (the same "Sound on" / "Sound off" switch as Settings, since 2026-10-25). The same lesson is reachable later from the "?" button.
 
 ## Rules
 - Start the voice only after a user tap.

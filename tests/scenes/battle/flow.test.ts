@@ -205,6 +205,43 @@ describe('BattleFlow: the reload teaches', () => {
   });
 });
 
+describe('BattleFlow: the reload card line', () => {
+  it('"Answer to reload" shows on the first reload of a match only, not on later ones', async () => {
+    const script = [];
+    for (let turn = 0; turn < 3; turn++) {
+      const miss = findAim(SEED, turn, turn % 2 === 0 ? 'PAST' : 'FUTURE', 'miss');
+      script.push(miss, miss);
+    }
+    const w = makeWorld({ seed: SEED, script });
+    void w.flow.run();
+    await settle();
+    expect(w.modalOptions.length).toBeGreaterThanOrEqual(3);
+    expect(w.modalOptions.map((o) => o.firstReload)).toEqual([
+      true,
+      ...w.modalOptions.slice(1).map(() => false),
+    ]);
+  });
+
+  it('the card names only the player who reloads: no Waiting chip for the other side', async () => {
+    const miss = findAim(SEED, 0, 'PAST', 'miss');
+    const w = makeWorld({ seed: SEED, script: [miss, miss] });
+    void w.flow.run();
+    await settle();
+    expect(w.modalOptions[0]!.playerName).toBe('Alex');
+    expect('waiting' in w.modalOptions[0]!).toBe(false);
+  });
+
+  it('a new match shows the line again on its first reload', async () => {
+    for (let i = 0; i < 2; i++) {
+      const miss = findAim(SEED, 0, 'PAST', 'miss');
+      const w = makeWorld({ seed: SEED, script: [miss, miss] });
+      void w.flow.run();
+      await settle();
+      expect(w.modalOptions[0]!.firstReload).toBe(true);
+    }
+  });
+});
+
 describe('BattleFlow: jokes stay fresh', () => {
   it('impact labels come from the lines in copy.ts and never repeat back to back', async () => {
     const script = [];

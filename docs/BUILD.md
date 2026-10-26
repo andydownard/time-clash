@@ -65,7 +65,7 @@ TapToStart → Intro (spoken how-to-play) → Loading → Setup → Battle → V
 Camp, the Battle Plan, and biomes arrived in Phase 2. In Phase 1 the Future base used a fixed spot.
 
 ### Features and acceptance criteria
-1. **Tap to Start screen.** Unlocks audio. Mute and captions toggles. Done when: no sound plays before the first tap (test).
+1. **Tap to Start screen.** Unlocks audio. Sound and Captions live in Settings (the gear), not on this screen (Andy, 2026-10-25). Done when: no sound plays before the first tap (test).
 2. **Intro voice.** Implement per `docs/NARRATION.md`. Done when: 5 cards play in order with captions, Skip, Replay, Mute work, and a missing file falls back to speech synthesis.
 3. **Loading screen.** Rotating messages (list in DESIGN_BRIEF.md), timeline-shaped progress bar. It is real: it waits for assets to load, with a minimum of 1.5 seconds so jokes can be read. Done when: a failed asset shows a friendly error with Retry.
 4. **Setup screen.** Names, grade (K to 12), and subject (Reading, Math, Both) for each side. Validate: names 1 to 12 characters, trimmed, no profanity list match. Done when: values persist in localStorage and the two sides may differ.

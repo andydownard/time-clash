@@ -141,6 +141,8 @@ export class BattleFlow {
   private fieldHeld = 0;
   /** Squads S1: sides that already took a go in this match, so the first-go hint shows once each. */
   private readonly hintDone = new Set<Team>();
+  /** A reload card was shown in this match, so the card's "Answer to reload" line is not needed again. */
+  private reloadCardShown = false;
   /**
    * Recoil's "Kick!" line has shown in this match. Kept on the flow only (never saved), so a
    * rematch, which builds a new flow, shows it once again.
@@ -786,15 +788,14 @@ export class BattleFlow {
       this.deps.onHistory?.(pick.history);
       asked = { kind: pick.question.kind, grade: pick.question.grade };
       await this.gate();
+      const firstReload = !this.reloadCardShown;
+      this.reloadCardShown = true;
       this.endFallCaption();
       answer = await overlay.showReloadModal({
         question: pick.question,
         team,
         playerName: player.name,
-        waiting: {
-          team: team === 'PAST' ? 'FUTURE' : 'PAST',
-          name: match.snapshot().players[team === 'PAST' ? 1 : 0].name,
-        },
+        firstReload,
         quip: (kind) => RELOAD_QUIPS[kind][this.quipBags[kind].next()] ?? null,
       });
       this.live();

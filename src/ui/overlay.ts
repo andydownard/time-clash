@@ -213,7 +213,7 @@ export const createOverlay: CreateOverlayWithDeps = (
       renderCaption();
       notify();
     },
-    showTapToStart: (handlers) => showTapToStart(ctx, handlers),
+    showTapToStart: () => showTapToStart(ctx),
     showIntro: (script, play) => showIntro(ctx, script, play),
     showLoading: (messages) => showLoading(ctx, messages),
     showSetup: ((initial: Players | null, options?: { back?: true; computer?: boolean }) =>
