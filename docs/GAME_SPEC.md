@@ -202,7 +202,7 @@ Owner request, 2026-10-24: shots were too predictable. Three things now nudge a 
 
 ## Pace (owner decision, 2026-10-24)
 
-"Perfect aim should take about five turns; right now you can lose everything in one or two turns." So a player with perfect aim who answers every reload right needs five turns of their own to win. A base starts with 400 health (`DAMAGE.startingBaseHp`), and a fighter with 4 when character health is on (`CHARACTER_HEALTH.hp`). Hit damage is unchanged: direct 25, near 10, and the Power Shot 1.5 times (38). A perfect turn (two direct hits and a Power Shot) does 88, so a base lasts a little under five perfect turns. Weapons, ammo, walls and missiles keep their meaning because they change damage, not health. The two health upgrades grew four times with full health: Upgrade the Tower adds 48 a level, and Laser Squad heals 8 at the end of its own turn. A force field still blocks whole hits (1 a level). `tests/game/pace.test.ts` plays 40 seeded matches with perfect aim on both sides, in both health modes, and the shortest is 9 turns (both teams counted, so the first team wins on its fifth turn at the earliest). It also checks that a realistic player (`PRACTICE_BOT.scriptedHuman`) takes at least as long at the median. Measured: perfect aim 9 to 10 turns with base health and 9 to 12 with fighter health; the realistic player has a median of 12 turns with base health and 18 with fighter health.
+"Perfect aim should take about five turns; right now you can lose everything in one or two turns." So a player with perfect aim who answers every reload right needs five turns of their own to win. A base starts with 400 health (`DAMAGE.startingBaseHp`), and a fighter with 4 when character health is on (`CHARACTER_HEALTH.hp`). Hit damage is unchanged: direct 25, near 10, and the Power Shot 1.5 times (38). A perfect turn (two direct hits and a Power Shot) does 88, so a base lasts a little under five perfect turns. Weapons, ammo, walls and missiles keep their meaning because they change damage, not health. The two health upgrades grew four times with full health: Upgrade the Tower adds 48 a level, and Laser Squad heals 8 at the end of its own turn. A force field still blocks whole hits (1 a level). `tests/game/pace.test.ts` plays 40 seeded matches with perfect aim on both sides, in both health modes, and the shortest is 9 turns (both teams counted, so the first team wins on its fifth turn at the earliest). It also checks that a realistic player (`PRACTICE_BOT.scriptedHuman`) takes at least as long at the median. Every fighter is covered: the same perfect shooter plays each mirror pair (A~2, B~5, C~1, D~3, E~4, picked every turn) in the flat 400 game, and the old heavy hitters and the hardest hitters against the smallest built base, and a plain check holds every fighter's perfect turn to 88. So no fighter hits harder than the default (every `damageScale` is 1 or less, in `src/game/units.ts`): any scale above 1 rounds a direct hit to 26 or more. The Spearman and Saber Robot were 1.3 (116 a perfect turn, a win on their fourth turn) and the Catapult and Missile Bunkers 1.1 (98, too close to the 360 foundation). Since 2026-10-25 all four are 1.0. The fighters now differ by where they stand and how far they throw: the Catapult and Missile Bunkers reach farthest, the Spearman and Saber Robot stand closest with a slow launch that is easy to aim, and the Archer and Laser Gun Robot hit softer (0.8) with a little more reach. Measured: perfect aim 9 to 10 turns with base health and 9 to 12 with fighter health; the realistic player has a median of 12 turns with base health and 18 with fighter health.
 
 ## Practice opponent
 
@@ -220,29 +220,44 @@ Rules:
 - The Computer player's reload shows "Computer player is thinking" for up to 2.5 seconds. The child never sees its question, choices or answer. A wrong answer still reloads (Gate 2). All thinking in one computer turn, including the reload and a Power Shot aim, is under 8 seconds. The child's own reload questions, history and level nudges are unchanged.
 - With one child alone, the pass-the-mouse cover is not shown at all (nobody to hide the board from). Two players still get it.
 - The rules have no turn cap. Matches end because shots hit. A test plays 1,000 seeded matches and all end with a winner.
+- **The walking helper (Squads).** `chooseHelperGo(state, side, plan, rng)` in `bot.ts` decides once a turn, on go 1 of the computer's own turn, never on go 2 or the Power Shot. It uses the same match goes a child has (`selectHelper`, then `dash` or `recall`), so a walk-out or a call home uses up that go, and it can never do what the match refuses (a helper already out, a resting helper, no free spot). On screen the note "Computer player is thinking" shows for 0.9 s (`PRACTICE_BOT.helper.thinkMs`, shorter with reduced motion), then the same walk and caption as a child's Walk out or Come back button play. The next shot picks the launcher again.
+- When it walks out: once the other side has sent its helper (he is out, or resting after a bonk-off or a call home), it answers in kind with `replyChance`: it meets him at its doorstep, or goes while the way is clear. On a field where the other helper has never left home it uses `dashChance`, which is 0 at every level today (see the measurement below).
+- When it calls him home: only a hurt helper (a quarter of his full health or less, `hurtShare`) who is losing a bonk-off (the enemy helper is right next to him with more health), with `recallChance`. Even health means both tumble together, so he stays.
+- The simulation (`playBotMatch`) drives the helper the same way (`helpers` option), and both places draw from the computer's own seeded stream.
 
-Levels (tunables in `PRACTICE_BOT.levels`, retuned 2026-10-25):
+Levels (tunables in `PRACTICE_BOT.levels` and `PRACTICE_BOT.helper.levels`, retuned 2026-10-25; Hard again the same day when it learned to use its helper):
 
-| Level | Angle error | Power error | Wind read | Right answers (grade 0) |
+| Level | Angle error | Power error | Wind read | Right answers (grade 0) | Walk out first | Answer a walk-out | Call a losing helper home |
+|---|---|---|---|---|---|---|---|
+| easy | 6 deg | 10.5 pts | 35% | 70% | never | 75% | never |
+| medium | 5 deg | 9 pts | 60% | 80% | never | always | 10% |
+| hard | 4.75 deg | 8.5 pts | 65% | 92% | never | always | 10% |
+
+Hard was 4.25 deg and 85% right before the helper change. A wider aim with more right answers (more Power Shots) keeps Hard in its band when the child never walks out, and loses less when the child does.
+
+Simulation (`npx tsx scripts/simulate-bot.ts 2000`: 2,000 seeded matches per pairing, sides and first turn alternate). The "decent human" is a scripted player (4.5 deg, 9 pts, reads 50% of wind, 75% right). It runs in the live setup: base health 400, birds, gusts and recoil on, Squads on, and no built base. It is measured twice: a child who never walks the helper out (the case the levels are tuned for), and a child who walks him out every time he is home and ready (the strongest simple use; in practice about once or twice a match, because a helper left alone stays out).
+
+| Level | Child never walks out: before the retune | After the retune (helper unused) | Now (helper rule) | Target |
 |---|---|---|---|---|
-| easy | 6 deg | 10.5 pts | 35% | 70% |
-| medium | 5 deg | 9 pts | 60% | 80% |
-| hard | 4.25 deg | 8.5 pts | 65% | 85% |
+| easy | 15.8% | 30.3% | 30.3% | 25 to 35% |
+| medium | 50.0% | 50.0% | 50.0% | 45 to 55% |
+| hard | 89.3% | 63.4% | 64.8% | 60 to 65% |
 
-Simulation (`npx tsx scripts/simulate-bot.ts 2000`: 2,000 seeded matches per pairing, sides and first turn alternate). The "decent human" is a scripted player (4.5 deg, 9 pts, reads 50% of wind, 75% right). It runs in the live setup: base health 400, birds, gusts and recoil on, Squads on, and no built base.
-
-| Level | Bot wins vs decent human (before, 2026-10-25) | After the retune | Target |
+| Level | Child walks out: computer never uses its helper | Now (helper rule) | Floor |
 |---|---|---|---|
-| easy | 15.8% | 30.3% | 25 to 35% |
-| medium | 50.0% | 50.0% (unchanged) | about 45 to 55% |
-| hard | 89.3% | 63.4% | 60 to 65% |
+| easy | 4.3% | 14.5% | 10% |
+| medium | 12.5% | 31.6% | 25% |
+| hard | 18.6% | 42.9% | 40% |
 
-A second seed set (seeds from 90,000) gives 29.9%, 50.1% and 61.6%. With a typical built base on both sides (600 matches) the levels win 22.7%, 46.2% and 62.3%: Easy is a little weaker there, because built-base matches run longer (about 22 to 24 turns), which leaves less to luck.
+A second seed set (seeds from 90,000, 2,000 matches) gives 29.9%, 50.1% and 63.0% (never walks out) and 12.2%, 30.9% and 41.0% (walks out). Easy and Medium did not change when the child never walks out, because the rule draws no random number until the other helper has left home.
 
-Bot against bot (row wins): easy 28.6% vs medium, 20.4% vs hard; medium 71.2% vs easy, 38.8% vs hard; hard 80.4% vs easy, 59.9% vs medium. Matches against the decent human last about 13 to 14 turns (both teams counted). `tests/game/botLevels.test.ts` plays 200 seeded matches per level and pins each level inside a band around its target.
+Why the computer never walks out first: a helper that nobody bonks back stays out all match and bonks the base at the start of every turn, so walking out first is very strong. Even a 3% to 5% chance a turn lifts Hard to about 67% to 68% when the child never walks out, and it does not help when the child does. Calling a helper home also cost about 1 to 2 points in every test, so it stays rare.
 
-What the levels do not do yet (measured 2026-10-25, 600 matches, noted for later in BACKLOG.md):
-- The Computer player never walks its dasher out or calls him home. A child who walks the dasher out once a match beats it far more often: Hard drops from about 61% to 17%, Easy to 4%. When both sides walk their dashers out, the levels land near their targets again (34%, 49%, 58%).
+The earlier built-base check (600 matches, a typical built base on both sides, before the helper change) gave 22.7%, 46.2% and 62.3%: Easy is a little weaker there, because built-base matches run longer (about 22 to 24 turns), which leaves less to luck.
+
+Bot against bot (row wins, no helper walks out on either side): easy 28.6% vs medium, 18.8% vs hard; medium 71.2% vs easy, 35.5% vs hard; hard 81.5% vs easy, 62.5% vs medium. Matches against the decent human last about 13 to 14 turns (both teams counted). `tests/game/botLevels.test.ts` plays 200 seeded matches per level for each case: it pins each level inside a band around its target when the child never walks out, and above its floor when the child does.
+
+What the levels do not do yet (measured 2026-10-25, noted for later in BACKLOG.md):
 - The Computer player has no upgrades. A child with a one-level Force Field (it blocks the first damaging hit of the match) drops Hard from about 61% to 53%. Three levels drop it to about 32%.
 
 ## Character health (rules built, flag off)

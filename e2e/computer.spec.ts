@@ -9,6 +9,7 @@ import {
   clashFromCamp,
   fillTeam,
   PAST_SIDE,
+  snap,
   takeShot,
   tid,
   toSetup,
@@ -145,14 +146,83 @@ test('pick Computer player and Hard, play a whole match to Victory', async ({
   }
 
   expect(seen.coverOnComputer, 'a question card or cover showed on the computer turn').toBe(false);
-  const notes = await page.evaluate(() => (window as unknown as { __thinkSeen: string[] }).__thinkSeen);
+  const notes = await page.evaluate(
+    () => (window as unknown as { __thinkSeen: string[] }).__thinkSeen,
+  );
   seen.thinkingAim ||= notes.some((t) => t.includes('aiming'));
   seen.thinkingAsk ||= notes.some((t) => t.includes('thinking'));
-  for (const t of notes) expect(t, 'the note never shows a question or a number').not.toMatch(/\?|\d/);
+  for (const t of notes)
+    expect(t, 'the note never shows a question or a number').not.toMatch(/\?|\d/);
   expect(seen.thinkingAim, 'the aiming note showed').toBe(true);
   expect(humanTurns).toBeGreaterThan(0);
   await expect(tid(page, 'victory')).toContainText('Computer player');
   await saveShot(page, browserName, 'computer-player-victory');
+});
+
+test("Hard meets the child's walking helper with its own (seeded match)", async ({ page }) => {
+  test.slow();
+  await toSetup(page, '');
+  await fillTeam(page, 'PAST', PAST_SIDE);
+  await tid(page, 'play-with-computer').click();
+  await tid(page, 'computer-level-hard').click();
+  await page.evaluate((s) => window.__timeclash!.setSeed(s), SEED);
+  await tid(page, 'setup-next').click();
+  await expect(tid(page, 'camp-start')).toBeVisible({ timeout: 10_000 });
+  await clashFromCamp(page);
+  await page.waitForFunction(() => window.__timeclash!.match() !== null);
+
+  const futureDasher = () =>
+    page.evaluate(
+      () =>
+        window.__timeclash!.match()?.squads?.crew.helpers.find((h) => h.id === 'FUTURE-dasher')
+          ?.state ?? null,
+    );
+  let walkedOut = false;
+  for (let i = 0; i < 400 && !walkedOut; i++) {
+    if ((await futureDasher()) === 'out') walkedOut = true;
+    const m = await page.evaluate(() => window.__timeclash!.match());
+    if (walkedOut || !m || m.status === 'OVER') break;
+    if (
+      m.turn.team === 'PAST' &&
+      m.turn.phase === 'AIMING' &&
+      m.turn.shotsFired === 1 &&
+      (await tid(page, 'helper-back').isVisible())
+    ) {
+      // Go 2 after the walk-out: back to the launcher once the bar wakes up.
+      await expect(tid(page, 'helper-PAST-launcher')).toHaveAttribute('aria-disabled', 'false', {
+        timeout: 20_000,
+      });
+      await tid(page, 'helper-back').click();
+    } else if (
+      m.turn.team === 'PAST' &&
+      m.turn.phase === 'AIMING' &&
+      (await tid(page, 'fire').isEnabled())
+    ) {
+      // Go 1: the child walks the helper out when he is home. Otherwise a harmless shot.
+      const spots = page.locator('[data-testid^="dash-g"]');
+      if (m.turn.shotsFired === 0) {
+        await tid(page, 'helper-PAST-dasher').click();
+        if ((await spots.count()) > 0) {
+          await spots.first().click();
+          await expect.poll(async () => (await snap(page)).turn.shotsFired).toBe(1);
+          continue;
+        }
+        await tid(page, 'helper-back').click();
+      }
+      await takeShot(page, 'miss');
+    } else if (m.turn.phase === 'BONUS_AIMING' && (await tid(page, 'fire').isEnabled())) {
+      await takeShot(page, 'miss');
+    } else if (m.turn.phase === 'RELOAD' && (await tid(page, 'reload-modal').isVisible())) {
+      await answerReload(page, 'wrong');
+      await tid(page, 'reload-next')
+        .click({ timeout: 4_000 })
+        .catch(() => undefined);
+      await expect(tid(page, 'reload-modal')).toHaveCount(0, { timeout: 30_000 });
+    }
+    await page.waitForTimeout(150);
+  }
+  // The computer used the same walk-out a child has, on its own turn.
+  expect(walkedOut, 'the Computer player walked its helper out').toBe(true);
 });
 
 test('the last choice is remembered next time', async ({ page }) => {

@@ -529,6 +529,22 @@ export type BotProfile = {
   thinkScale: number;
 };
 
+/**
+ * How one side uses its walking helper (Squads S1). It decides once a turn, on go 1, with the
+ * same walk-out and Come back goes a child has. A walk or a call home uses up that go.
+ */
+export type BotHelperPlan = {
+  /** Chance to walk the helper out when he is home and ready and the enemy helper is not out. */
+  dashChance: number;
+  /**
+   * Chance to walk out once the other side has sent its helper: he is out (meet him before he
+   * reaches the base), or resting after a bonk-off or a call home (go while the way is clear).
+   */
+  replyChance: number;
+  /** Chance to call home a hurt helper who is losing a bonk-off with the enemy helper. */
+  recallChance: number;
+};
+
 export const PRACTICE_BOT = {
   /** On for everyone (owner decision, 2026-10-24). `?computer=0` hides it, `?computer=1` shows it. */
   enabled: true,
@@ -550,10 +566,10 @@ export const PRACTICE_BOT = {
       thinkScale: 1,
     },
     hard: {
-      angleSpreadDeg: 4.25,
+      angleSpreadDeg: 4.75,
       powerSpreadPct: 8.5,
       windSkill: 0.65,
-      reloadAccuracy: 0.85,
+      reloadAccuracy: 0.92,
       thinkScale: 0.8,
     },
   } as Readonly<Record<BotLevel, BotProfile>>,
@@ -565,6 +581,18 @@ export const PRACTICE_BOT = {
     reloadAccuracy: 0.75,
     thinkScale: 1,
   } as BotProfile,
+  /** The walking helper, per level. The scripted human in the simulation never uses it by default. */
+  helper: {
+    levels: {
+      easy: { dashChance: 0, replyChance: 0.75, recallChance: 0 },
+      medium: { dashChance: 0, replyChance: 1, recallChance: 0.1 },
+      hard: { dashChance: 0, replyChance: 1, recallChance: 0.1 },
+    } as Readonly<Record<BotLevel, BotHelperPlan>>,
+    /** A helper with this share of his full health or less is hurt (1 of 4 at Normal). */
+    hurtShare: 0.25,
+    /** The "thinking" note shows this long before a helper go, so a child sees it coming. */
+    thinkMs: 900,
+  },
   /** Aim search: coarse grid step, then a fine step around the best coarse cell. */
   search: { angleStepDeg: 5, powerStep: 5, fineRadius: 4, fineStep: 1 },
   reload: {
@@ -687,13 +715,61 @@ export const BASE_BUILDER = {
   /** Weapons that can be mounted on a spot. `scrap` null means owned from the start. */
   spotWeapons: [
     { id: 'cannon', team: 'PAST', name: 'Cannon', scrap: null, role: 'direct', damage: 20, hp: 30 },
-    { id: 'catapult', team: 'PAST', name: 'Catapult', scrap: null, role: 'lob', damage: 25, hp: 25 },
-    { id: 'archerPost', team: 'PAST', name: 'Archer post', scrap: null, role: 'volley', damage: 10, hp: 20 },
-    { id: 'ballista', team: 'PAST', name: 'Ballista', scrap: 35, role: 'direct', damage: 35, hp: 30 },
+    {
+      id: 'catapult',
+      team: 'PAST',
+      name: 'Catapult',
+      scrap: null,
+      role: 'lob',
+      damage: 25,
+      hp: 25,
+    },
+    {
+      id: 'archerPost',
+      team: 'PAST',
+      name: 'Archer post',
+      scrap: null,
+      role: 'volley',
+      damage: 10,
+      hp: 20,
+    },
+    {
+      id: 'ballista',
+      team: 'PAST',
+      name: 'Ballista',
+      scrap: 35,
+      role: 'direct',
+      damage: 35,
+      hp: 30,
+    },
     { id: 'laser', team: 'FUTURE', name: 'Laser', scrap: null, role: 'direct', damage: 20, hp: 30 },
-    { id: 'missilePod', team: 'FUTURE', name: 'Missile pod', scrap: null, role: 'lob', damage: 25, hp: 25 },
-    { id: 'turret', team: 'FUTURE', name: 'Turret', scrap: null, role: 'volley', damage: 10, hp: 20 },
-    { id: 'shieldGen', team: 'FUTURE', name: 'Shield generator', scrap: 35, role: 'guard', damage: 0, hp: 40 },
+    {
+      id: 'missilePod',
+      team: 'FUTURE',
+      name: 'Missile pod',
+      scrap: null,
+      role: 'lob',
+      damage: 25,
+      hp: 25,
+    },
+    {
+      id: 'turret',
+      team: 'FUTURE',
+      name: 'Turret',
+      scrap: null,
+      role: 'volley',
+      damage: 10,
+      hp: 20,
+    },
+    {
+      id: 'shieldGen',
+      team: 'FUTURE',
+      name: 'Shield generator',
+      scrap: 35,
+      role: 'guard',
+      damage: 0,
+      hp: 40,
+    },
   ],
 } as const;
 

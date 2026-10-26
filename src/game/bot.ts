@@ -7,9 +7,11 @@ import {
   PRACTICE_BOT,
   TEAM_FACING,
   PHASE1_LAYOUT,
+  type BotHelperPlan,
   type BotLevel,
   type BotProfile,
 } from './config';
+import { dashTargets, dasherOf, groundSpotIds, helperId, type GroundSpotId } from './crew';
 import { DEFAULT_EFFECTS, type MatchEffects } from './loadout';
 import { otherTeam } from './types';
 import type { AimInput, BattleLayout, Match, MountId, Rect, Rng, Team, Vec2 } from './types';
@@ -264,6 +266,58 @@ export const answerReloadWith = (
     r.maxDelayMs,
   );
   return { answer, correct: answer === question.answer, delayMs };
+};
+
+/** A helper go the Computer player chose: walk the helper out to `to`, or call him home. */
+export type HelperGo = { kind: 'dash'; to: GroundSpotId } | { kind: 'recall' };
+
+export const helperPlanOf = (level: BotLevel): BotHelperPlan => {
+  const plan = PRACTICE_BOT.helper.levels[level];
+  if (!plan) throw new RangeError(`Unknown level: ${String(level)}`);
+  return plan;
+};
+
+/** True with chance `p`. Draws a number only when the answer is not already sure, so a plan of 0 changes nothing. */
+const chance = (p: number, rng: Rng): boolean => p >= 1 || (p > 0 && rng.next() < p);
+
+/**
+ * The walking helper's go for `side`, or null to fire as usual. It decides only on go 1 of its
+ * own turn (never on go 2 or the Power Shot) and offers only what the match allows a child:
+ * a walk-out when the helper is home and has a stop, a Come back when he is out. It sees only
+ * what is on the field (both helpers, where they stand, and their health).
+ */
+export const chooseHelperGo = (
+  state: Match,
+  side: Team,
+  plan: BotHelperPlan,
+  rng: Rng,
+): HelperGo | null => {
+  const squads = state.squads;
+  if (!squads || state.status !== 'PLAYING') return null;
+  if (state.turn.team !== side || state.turn.phase !== 'AIMING' || state.turn.shotsFired !== 0)
+    return null;
+  const crew = squads.crew;
+  const me = dasherOf(crew, side);
+  const foe = dasherOf(crew, otherTeam(side));
+  const foeOut = foe.state === 'out' && foe.spot !== null;
+  if (me.state === 'home') {
+    const id = helperId(side, 'dasher');
+    const [to] = dashTargets(crew, side, id);
+    if (to === undefined) return null;
+    // Once the other side has sent its helper (he is out, or resting after a bonk-off or a
+    // call home), the Computer player answers in kind: it meets him, or goes while the way is clear.
+    const sent = foe.state !== 'home';
+    return chance(sent ? plan.replyChance : plan.dashChance, rng) ? { kind: 'dash', to } : null;
+  }
+  if (me.state !== 'out' || me.spot === null || !foeOut) return null;
+  // Call home only a hurt helper who is losing a bonk-off: the enemy helper is right next to
+  // him and has more health. Even health means both tumble together, so he stays.
+  const hurt = me.hp <= squads.maxHp * PRACTICE_BOT.helper.hurtShare;
+  const step = side === 'PAST' ? 1 : -1;
+  const spots = groundSpotIds();
+  const next = spots.indexOf(foe.spot as GroundSpotId) === spots.indexOf(me.spot) + step;
+  if (!hurt || !next || foe.hp <= me.hp) return null;
+  return chance(plan.recallChance, rng) ? { kind: 'recall' } : null;
 };
 
 export const answerReload = (question: BotQuestion, level: BotLevel, rng: Rng): BotAnswer =>

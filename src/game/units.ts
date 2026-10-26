@@ -32,13 +32,22 @@ export type UnitDef = {
   damageScale: number;
 };
 
-/** Balance numbers for the five roles. A mirror pair uses the same row. */
+/**
+ * Balance numbers for the five roles. A mirror pair uses the same row.
+ * Pace (owner, 2026-10-24): no fighter hits harder than the default. A perfect turn (two direct
+ * hits and a Power Shot) must stay at 25 + 25 + 38 = 88 so perfect aim needs five turns; any
+ * damageScale above 1 rounds a direct hit to 26 or more and breaks that (1.3 did 116, 1.1 did 98).
+ * So the fighters differ by range and where they stand: the Catapult and Missile Bunkers reach
+ * farthest, the Spearman and Saber Robot stand closest with a slow, easy-to-aim launch, and the
+ * Archer and Laser Gun Robot trade a softer hit for a little more reach.
+ * `tests/game/pace.test.ts` plays every fighter.
+ */
 const STATS = {
   balloon: { speedScale: 0.9, damageScale: 1.0 },
   archer: { speedScale: 1.05, damageScale: 0.8 },
   standard: { speedScale: 1.0, damageScale: 1.0 },
-  heavy: { speedScale: 1.15, damageScale: 1.1 },
-  short: { speedScale: 0.75, damageScale: 1.3 },
+  heavy: { speedScale: 1.15, damageScale: 1.0 },
+  short: { speedScale: 0.75, damageScale: 1.0 },
 } as const;
 
 export const UNITS: readonly UnitDef[] = [
