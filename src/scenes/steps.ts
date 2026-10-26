@@ -1,7 +1,6 @@
 // One async step per screen. Each shows its DOM screen, waits for a tap, saves what needs
 // saving, and returns where to go next. Phaser scenes just run a step and follow the route.
 import { LOADING } from '../data/copy';
-import { baseBuilderOn } from '../game/baseBuilder';
 import { TIMING } from '../game/config';
 import { creditMatch } from '../game/economy';
 import { TEAMS, type Players, type Team } from '../game/types';
@@ -93,8 +92,7 @@ export async function runCampStep(s: AppServices): Promise<SceneRoute> {
   // No saved players (it should not happen) goes back to Setup, never a dead end.
   if (!players) return { key: SCENE_KEYS.setup };
   const names = namesOf(players);
-  const builder = baseBuilderOn(globalThis.location?.search ?? '');
-  const choice = await s.overlay.showCamp({ builder });
+  const choice = await s.overlay.showCamp();
   if (choice === 'build') {
     // The builder has its own Past and Future picker, so it opens again for the side picked.
     let team: Team | null = 'PAST';
@@ -111,15 +109,13 @@ export async function runCampStep(s: AppServices): Promise<SceneRoute> {
     return { key: SCENE_KEYS.camp };
   }
   if (choice === 'players') return { key: SCENE_KEYS.setup };
-  if (choice === 'forge' || choice === 'upgrade') {
-    const options = {
+  if (choice === 'forge') {
+    await s.overlay.showForge({
       camp: loadCamp(s.storage),
       names,
       save: (next: CampState) => void s.storage.set('timeclash.camp', next),
-    };
-    if (choice === 'forge') await s.overlay.showForge(options);
-    else await s.overlay.showUpgrade(options);
-    // Back from the Forge or Build Base: the Camp again, which shows what the family now has.
+    });
+    // Back from the Forge: the Camp again, which shows what the family now has.
     return { key: SCENE_KEYS.camp };
   }
   // The Battle Plan: where to fight, where Team Future hides its base, and special ammo.

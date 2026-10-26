@@ -85,7 +85,7 @@ describe('Camp Change players', () => {
 describe('Camp side buttons', () => {
   it.each([
     [TEST_IDS.campForge, 'forge'],
-    [TEST_IDS.campUpgrade, 'upgrade'],
+    [TEST_IDS.campBuild, 'build'],
   ] as const)('%s is a working button that opens its own screen', async (id, choice) => {
     const p = s.overlay.showCamp();
     const button = q<HTMLButtonElement>(id)!;
@@ -102,37 +102,26 @@ describe('Camp side buttons', () => {
   });
 
   it('draws both side buttons team-neutral, since each opens a Past and Future picker', () => {
-    for (const builder of [true, false]) {
-      void s.overlay.showCamp({ builder });
-      const sides = qa('[data-screen="camp"] .tc-camp-side');
-      expect(sides).toHaveLength(2);
-      for (const b of sides) {
-        expect(b.classList.contains('tc-btn-neutral'), b.textContent).toBe(true);
-        expect(b.classList.contains('tc-btn-past'), b.textContent).toBe(false);
-        expect(b.classList.contains('tc-btn-future'), b.textContent).toBe(false);
-      }
-      // Time to Clash! stays the one filled button.
-      expect(qa('[data-screen="camp"] .tc-btn-primary')).toHaveLength(1);
-      s = setup();
+    void s.overlay.showCamp();
+    const sides = qa('[data-screen="camp"] .tc-camp-side');
+    expect(sides).toHaveLength(2);
+    for (const b of sides) {
+      expect(b.classList.contains('tc-btn-neutral'), b.textContent).toBe(true);
+      expect(b.classList.contains('tc-btn-past'), b.textContent).toBe(false);
+      expect(b.classList.contains('tc-btn-future'), b.textContent).toBe(false);
     }
+    // Time to Clash! stays the one filled button.
+    expect(qa('[data-screen="camp"] .tc-btn-primary')).toHaveLength(1);
   });
 
   it('puts Forge Weapon on the Past side and Build Base on the Future side', () => {
     void s.overlay.showCamp();
     expect(q(TEST_IDS.campForge)!.parentElement!.getAttribute('data-kind')).toBe('past');
-    expect(q(TEST_IDS.campUpgrade)!.parentElement!.getAttribute('data-kind')).toBe('future');
+    expect(q(TEST_IDS.campBuild)!.parentElement!.getAttribute('data-kind')).toBe('future');
   });
 
-  it('with the builder off, the old shop button says Build Base and never Upgrade', () => {
-    void s.overlay.showCamp({ builder: false });
-    expect(q(TEST_IDS.campUpgrade)!.textContent).toBe('Build Base');
-    expect(document.body.textContent).not.toMatch(/upgrade/i);
-    expect(q(TEST_IDS.campBuild)).toBeNull();
-  });
-
-  it('with the builder on, one Build Base button sits on the Future side, with no pictures of the bases', async () => {
-    const choice = s.overlay.showCamp({ builder: true });
-    expect(q(TEST_IDS.campUpgrade)).toBeNull();
+  it('one Build Base button sits on the Future side, with no pictures of the bases', async () => {
+    const choice = s.overlay.showCamp();
     const build = q(TEST_IDS.campBuild)!;
     expect(build.textContent).toBe('Build Base');
     expect(build.parentElement!.getAttribute('data-kind')).toBe('future');

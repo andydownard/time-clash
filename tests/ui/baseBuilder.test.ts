@@ -19,7 +19,6 @@ import { BUILDER_COPY } from '../../src/data/copy';
 import { walletOf, type CampState } from '../../src/game/loadout';
 import { plotPoint } from '../../src/ui/baseBuilderScreen';
 import type { Team } from '../../src/game/types';
-import { TEST_IDS } from '../../src/ui/types';
 import { NAMES, campWith } from '../helpers/camp';
 import { click, q, qa, setup } from './helpers';
 
@@ -649,15 +648,6 @@ describe('Scrap and locked pieces', () => {
     click(brick('laserBase'));
     expect(walletOf(o.camps[0]!, 'Sam').scrap).toBe(9 - (B.pieceScrap.laserBase as number));
     expect(walletOf(o.camps[0]!, 'Alex').scrap).toBe(0);
-  });
-});
-
-describe('Camp button', () => {
-  it('shows no Build Base button unless the builder is on', () => {
-    void s.overlay.showCamp();
-    expect(q(TEST_IDS.campBuild)).toBeNull();
-    void s.overlay.showCamp({ builder: false });
-    expect(q(TEST_IDS.campBuild)).toBeNull();
   });
 });
 

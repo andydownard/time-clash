@@ -17,7 +17,6 @@ import {
 import { walletOf, weaponFor, withWallet, walletKey, type CampState, type Wallet } from './loadout';
 import type { Team } from './types';
 import { TEAMS } from './types';
-import { upgradeById, upgradeCost, UPGRADE_MAX_LEVEL, type UpgradeId } from './upgrades';
 import { forgeCost, weaponById, type AnyWeaponId, type WeaponId } from './weapons';
 
 export type Refusal =
@@ -190,25 +189,6 @@ export function unlockSpotWeapon(camp: CampState, name: string, team: Team, id: 
       camp,
       withLoadout({ ...paid, name: name.trim() }, team, { mounts: [...have, id] }),
     ),
-  };
-}
-
-/** Buys the next level of an upgrade. */
-export function buyUpgrade(camp: CampState, name: string, team: Team, id: UpgradeId): Outcome {
-  const upgrade = upgradeById(id);
-  if (!hasName(name) || !isTeam(team) || !upgrade) return { ok: false, reason: 'unknown' };
-  if (upgrade.team !== team) return { ok: false, reason: 'wrong_team' };
-  const wallet = walletOf(camp, name);
-  const level = wallet.loadout[team].upgrades[id] ?? 0;
-  if (level >= UPGRADE_MAX_LEVEL) return { ok: false, reason: 'max_level' };
-  const cost = upgradeCost(upgrade, level);
-  if (cost === null) return { ok: false, reason: 'max_level' };
-  const paid = pay(wallet, cost);
-  if (!paid) return { ok: false, reason: 'not_enough_scrap' };
-  const upgrades = { ...paid.loadout[team].upgrades, [id]: level + 1 };
-  return {
-    ok: true,
-    camp: withWallet(camp, withLoadout({ ...paid, name: name.trim() }, team, { upgrades })),
   };
 }
 

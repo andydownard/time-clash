@@ -125,13 +125,10 @@ describe('controls follow one rule on every screen', () => {
     expect(qa('[role="radio"]').length).toBeGreaterThanOrEqual(6);
   });
 
-  it('Forge and the old Build Base shop: the team picker is a selector', () => {
+  it('Forge: the team picker is a selector', () => {
     void s.overlay.showForge({ camp: campWith(0), names: NAMES, save: () => {} });
     checkControls('forge');
     expect(q('forge-team-PAST')!.getAttribute('role')).toBe('radio');
-    s = setup();
-    void s.overlay.showUpgrade({ camp: campWith(0), names: NAMES, save: () => {} });
-    checkControls('upgrade');
   });
 
   it('Pass screen and reload card: Sound is a switch', () => {

@@ -33,17 +33,6 @@ test('Setup leads to the Camp, and Time to Clash! starts the match', async ({ pa
   ]);
 });
 
-test('Build Base (?builder=0) opens the old shop screen and Back returns to the Camp', async ({ page }) => {
-  await toCamp(page, '&builder=0');
-  await expect(tid(page, 'camp-upgrade')).toHaveText('Build Base');
-  await expect(tid(page, 'camp-build')).toHaveCount(0);
-  await tid(page, 'camp-upgrade').click();
-  await expect(page.locator('[data-screen="upgrade"] h1')).toHaveText('Build Base');
-  await tid(page, 'upgrade-back').click();
-  await expect(tid(page, 'camp-start')).toBeVisible();
-  await expect(tid(page, 'pass-screen')).toHaveCount(0);
-});
-
 test('Change players opens Setup with the saved players, then returns to the Camp', async ({
   page,
 }) => {

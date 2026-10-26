@@ -116,14 +116,10 @@ describe('the battle HUD shows a picture beside each readout', () => {
   });
 });
 
-describe('Forge and Upgrade show the same Scrap picture', () => {
+describe('Forge shows the Scrap picture', () => {
   const NAMES = { PAST: 'Alex', FUTURE: 'Sam' };
   it('Forge Weapon', () => {
     void s.overlay.showForge({ camp: freshCamp(), names: NAMES, save: () => {} });
     expect(q(TEST_IDS.forgeScrap)!.querySelector('svg[data-icon="scrap"]')).not.toBeNull();
-  });
-  it('Upgrade Base', () => {
-    void s.overlay.showUpgrade({ camp: freshCamp(), names: NAMES, save: () => {} });
-    expect(q(TEST_IDS.upgradeScrap)!.querySelector('svg[data-icon="scrap"]')).not.toBeNull();
   });
 });
