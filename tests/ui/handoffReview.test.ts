@@ -89,13 +89,14 @@ describe('HUD team cards', () => {
     expect(mark?.textContent).toBe('▶');
     expect(bodyOf(".tc-team-panel[data-active='true'] .tc-active-mark")).toContain('visible');
   });
-  it('labels health once and keeps the value beside the meter', () => {
+  it('labels health once: a meter with no number beside it (the base pill shows the number)', () => {
     s.overlay.showHud(handlers());
     s.overlay.updateHud(state());
     const hp = q(TEST_IDS.baseHp('FUTURE'))!;
     expect(hp.querySelector('.tc-hp-label')!.textContent).toBe(HUD.baseHealth);
     expect(hp.querySelector('.tc-hp-row .tc-hp-meter')).not.toBeNull();
-    expect(hp.querySelector('.tc-hp-row .tc-hp-text')!.textContent).toBe(HUD.hpValue(75));
+    expect(hp.querySelector('.tc-hp-text')).toBeNull();
+    expect(hp.querySelector('.tc-hp-meter')!.getAttribute('aria-valuetext')).toBe(HUD.hpValue(75));
   });
 });
 

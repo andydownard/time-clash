@@ -39,7 +39,6 @@ type Parts = {
   mute: HTMLButtonElement;
   panel: Record<Team, HTMLElement>;
   name: Record<Team, HTMLElement>;
-  hpText: Record<Team, HTMLElement>;
   hpMeter: Record<Team, HTMLElement>;
   hpFill: Record<Team, HTMLElement>;
   scrap: Record<Team, HTMLElement>;
@@ -344,7 +343,6 @@ export function createHud(ctx: UiCtx) {
     });
 
     const name = record((t) => h(doc, 'span', { class: 'tc-team-name', 'data-role': `name-${t}` }));
-    const hpText = record(() => h(doc, 'span', { class: 'tc-hp-text' }));
     const hpFill = record(() => h(doc, 'span', { class: 'tc-hp-fill' }));
     const hpMeter = record((t) =>
       h(
@@ -377,7 +375,9 @@ export function createHud(ctx: UiCtx) {
           'div',
           { 'data-testid': TEST_IDS.baseHp(t), class: 'tc-hp' },
           h(doc, 'span', { class: 'tc-hp-label tc-sr-only', text: HUD.baseHealth }),
-          h(doc, 'div', { class: 'tc-hp-row' }, hudIcon(doc, 'health'), hpMeter[t], hpText[t]),
+          // Health shows once as a number: on the pill by the base, where the hits land. The card
+          // keeps the meter, and a screen reader hears the number from the meter itself.
+          h(doc, 'div', { class: 'tc-hp-row' }, hudIcon(doc, 'health'), hpMeter[t]),
         ),
         h(
           doc,
@@ -489,7 +489,6 @@ export function createHud(ctx: UiCtx) {
       mute,
       panel,
       name,
-      hpText,
       hpMeter,
       hpFill,
       scrap,
@@ -587,8 +586,8 @@ export function createHud(ctx: UiCtx) {
         const max = Math.max(1, Math.round(state.maxBaseHp?.[t] ?? DAMAGE.startingBaseHp));
         const hp = clamp(Math.round(state.baseHp[t]), 0, max);
         parts.name[t].textContent = state.names[t];
-        parts.hpText[t].textContent = HUD.hpValue(hp, max);
         parts.hpMeter[t].setAttribute('aria-valuenow', String(hp));
+        parts.hpMeter[t].setAttribute('aria-valuetext', HUD.hpValue(hp, max));
         parts.hpMeter[t].setAttribute('aria-valuemax', String(max));
         parts.hpFill[t].style.width = `${(hp / max) * 100}%`;
         parts.scrap[t].textContent = String(state.scrap[t]);

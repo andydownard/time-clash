@@ -78,8 +78,15 @@ test('Upgrade the Tower gives more base health in the next match, shown in the H
   expect(m.maxBaseHp).toEqual({ PAST: tower, FUTURE: full });
   expect(m.baseHp.PAST).toBe(tower);
   await tid(page, 'pass-ready').click();
-  await expect(tid(page, 'base-hp-PAST')).toContainText(`${tower} / ${tower}`);
-  await expect(tid(page, 'base-hp-FUTURE')).toContainText(`${full} / ${full}`);
+  // The team card's meter carries the number for screen readers (the pill by the base shows it).
+  await expect(tid(page, 'base-hp-PAST').getByRole('meter')).toHaveAttribute(
+    'aria-valuetext',
+    `${tower} / ${tower}`,
+  );
+  await expect(tid(page, 'base-hp-FUTURE').getByRole('meter')).toHaveAttribute(
+    'aria-valuetext',
+    `${full} / ${full}`,
+  );
 });
 
 test('the keyboard can use Build Base', async ({ page }) => {
