@@ -78,6 +78,8 @@ import { FALL_DX, FALL_MS, REDUCED_FADE_MS, TEAM_COLOR } from './battle/visual';
 import { drawUnits, type UnitArt } from './battle/unitArt';
 import { DasherLayer, type DasherDebug } from './battle/dasherLayer';
 import { builtLayerFor, type BaseLayer, type BaseLayerDebug } from './battle/baseLayer';
+import { RiderLayer } from './battle/riderArt';
+import type { RiderFall } from './battle/riderFalls';
 import type { SquadField } from './battle/types';
 import { UNITS, type UnitId } from '../game/units';
 import { ridesBase } from '../game/battlefield';
@@ -128,7 +130,7 @@ export class BattleScene extends Phaser.Scene implements BattleView {
     this.labels = createLabelScaler(() => this.scale.displaySize.width, WORLD.width);
     this.scale.on(Phaser.Scale.Events.RESIZE, this.refreshLabels, this);
     this.statusArt = createStatusArt(this, layout, this.labels);
-    this.aimArt = createAimArt(this, layout, this.labels);
+    this.aimArt = createAimArt(this, layout, this.labels, () => this.riders?.drops() ?? {});
     this.disturb = createDisturbanceLayer(this, {
       reduced: () => this.reduced(),
       fontPx: this.fontPx,
@@ -169,6 +171,8 @@ export class BattleScene extends Phaser.Scene implements BattleView {
       const shift = layout.baseShift?.[u.team];
       if (shift && ridesBase(u)) this.fighters[u.id].container.setPosition(shift.x, shift.y);
     }
+    // On a built base the fighters who stood on the castle stand on its top brick.
+    this.riders = new RiderLayer(this, this.fighters, layout, start, () => this.reduced());
     const chosen = this.data0.match.snapshot().selected;
     for (const t of TEAMS) this.setSelectedUnit(t, chosen[t]);
     this.dashers = new DasherLayer(this, this.fontPx, () => this.reduced());
@@ -595,6 +599,12 @@ export class BattleScene extends Phaser.Scene implements BattleView {
     return this.builtLayers[team]?.update(bricks, fell) ?? Promise.resolve();
   }
 
+  playRiderFalls(team: Team, falls: readonly RiderFall[]): Promise<void> {
+    return this.riders?.fall(team, falls) ?? Promise.resolve();
+  }
+
+  private riders: RiderLayer | null = null;
+
   setSelectedMount(team: Team, id: MountId | null): void {
     const pad = id && this.data0.match.snapshot().mounts?.[team].find((m) => m.id === id);
     this.builtLayers[team]?.markPad(pad ? pad.spot : null);
@@ -608,7 +618,8 @@ export class BattleScene extends Phaser.Scene implements BattleView {
   builtState = (): BaseLayerDebug[] =>
     TEAMS.flatMap((t) => {
       const l = this.builtLayers[t];
-      return l ? [l.state()] : [];
+      if (!l) return [];
+      return [{ ...l.state(), riders: this.riders?.state().filter((r) => r.team === t) ?? [] }];
     });
 
   private builtLayers: Partial<Record<Team, BaseLayer>> = {};
@@ -726,6 +737,8 @@ export class BattleScene extends Phaser.Scene implements BattleView {
     this.dashers?.destroy();
     this.dashers = null;
     for (const t of TEAMS) this.builtLayers[t]?.destroy();
+    this.riders?.destroy();
+    this.riders = null;
     this.builtLayers = {};
     this.disturb?.destroy();
     this.disturb = null;

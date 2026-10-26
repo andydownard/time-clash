@@ -5,6 +5,7 @@ import Phaser from 'phaser';
 import { HUD } from '../../data/copy';
 import { AIM, TEAM_FACING } from '../../game/config';
 import type { AimInput, BattleLayout, Team, Vec2 } from '../../game/types';
+import type { UnitId } from '../../game/units';
 import { angleLabelBox, fighterKeepOut } from './angleLabel';
 import { angleArc, angleFromDrag, guideTip } from './geometry';
 import type { PreviewDot } from './types';
@@ -44,6 +45,8 @@ export function createAimArt(
   scene: Phaser.Scene,
   layout: BattleLayout,
   labels?: LabelScaler,
+  /** How far each fighter on a built base stands below its castle spot right now. */
+  drops?: () => Partial<Record<UnitId, number>>,
 ): AimArt {
   const dial = scene.add.graphics().setDepth(20);
   const preview = scene.add.graphics().setDepth(19);
@@ -61,8 +64,9 @@ export function createAimArt(
   let from: Vec2 | null = null;
 
   let dragging = false;
-  // The fighters never move during a match, so the boxes the number must stay off are fixed.
-  const keepOut = fighterKeepOut(layout);
+  // The boxes the number must stay off. A fighter on a built base can fall to a lower brick, so
+  // they are read again on every draw.
+  const keepOut = (): ReturnType<typeof fighterKeepOut> => fighterKeepOut(layout, drops?.() ?? {});
 
   const origin = (t: Team): Vec2 => from ?? layout.launchOrigins[t];
 
@@ -107,7 +111,7 @@ export function createAimArt(
     angleText.setText(HUD.angleValue(aim.angleDeg));
     // Past the tip, but never on a fighter, its letter tag or the guide (angleLabel.ts).
     const size = { w: angleText.width, h: angleText.height };
-    const box = angleLabelBox(o, aim.angleDeg, facing, size, keepOut, layout);
+    const box = angleLabelBox(o, aim.angleDeg, facing, size, keepOut(), layout);
     angleText.setPosition(box.x, box.y);
   };
 

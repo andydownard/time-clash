@@ -89,7 +89,8 @@ import { createShuffleBag } from './bag';
 import { createRng } from './rng';
 import { createTurn, transition } from './turn';
 import type { SpotRole } from './baseBuilder';
-import { DEFAULT_UNIT, firingOrigin, unitById, type UnitDef, type UnitId } from './units';
+import { DEFAULT_UNIT, unitById, type UnitDef, type UnitId } from './units';
+import { riderOrigin } from './riders';
 import { IllegalTransitionError, MatchOverError, otherTeam } from './types';
 import type {
   AimInput,
@@ -258,7 +259,10 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
     const unit = unitOf(team);
     const shotAim = mount ? mountAim(mount.role, aim[team]) : aim[team];
     const { angleDeg, power } = shotAim;
-    const origin = mount ? mount.origin : firingOrigin(team, unit.id, layout);
+    // A fighter on a built base stands on its top brick (riders.ts), so the shot leaves from there.
+    const origin = mount
+      ? mount.origin
+      : riderOrigin(team, unit.id, layout, built && brickTeam(team) ? built[team].bricks : null);
     // A mounted weapon fires its own shells. Fighters fire the loaded ammo.
     const ammo: AmmoId = mount ? 'standard' : loaded[team];
     const walls = wallsFor(evasion);

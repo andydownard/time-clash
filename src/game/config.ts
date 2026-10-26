@@ -211,6 +211,8 @@ export const RNG_SALT = {
   lines: 0x4c494e45,
   /** The Computer player's aim and answers. */
   computer: 0x434f4d50,
+  /** The funny line a fighter says when the brick under it falls. */
+  baseFalls: 0x46414c4c,
 } as const;
 
 // ---------- Layout (logical world, scaled to fit by Phaser) ----------
@@ -467,6 +469,34 @@ export const DEFAULT_SETTINGS: Readonly<Settings> = {
 
 /** How many tumble speech bubbles exist. Must equal TUMBLE_LINES.length in src/data/copy.ts (a test pins it). */
 export const TUMBLE_LINE_COUNT = 30;
+
+/**
+ * How many base fall lines each team can say (the shared ones plus its own). Must equal
+ * baseFallPool(team).length in src/data/copy.ts for both teams (a test pins it).
+ */
+export const BASE_FALL_LINE_COUNT = 14;
+
+/**
+ * Fighters who stood on the old castle or secret base (`ridesBase`) stand on the top brick of a
+ * built base (owner, 2026-10-25: "Lower them onto the top brick"). When that brick falls, they
+ * fall with it, flop, and stand up on whatever is below. Nobody is hurt. Pure rules in
+ * src/game/riders.ts.
+ */
+export const BASE_RIDERS = {
+  /**
+   * Where a rider's feet are, from its muzzle, facing right: the drawing's left and right reach
+   * and its bottom edge. The same numbers as UNIT_BOXES in src/scenes/battle/unitSpots.ts (a test
+   * pins it). Only roles that can stand on a base are listed.
+   */
+  foot: {
+    archer: { l: -72, r: 8, b: 48 },
+    cannon: { l: -78, r: 6, b: 40 },
+    tank: { l: -74, r: 4, b: 24 },
+    laserGun: { l: -49, r: 4, b: 52 },
+  } as Partial<Record<UnitRole, { l: number; r: number; b: number }>>,
+  /** Share of the drawing's width, in the middle, that the feet stand on. */
+  footShare: 0.5,
+} as const;
 
 // ---------- Hit effects (drawing numbers; the burst, the pip, the funny fall) ----------
 export const HIT_FX = {

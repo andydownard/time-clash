@@ -548,6 +548,51 @@ export function tumblePool(team: Team): readonly string[] {
   return [...TUMBLE_LINES, ...(team === 'PAST' ? TUMBLE_LINES_PAST : TUMBLE_LINES_FUTURE)];
 }
 
+/**
+ * Said by a fighter whose brick fell out from under it on a built base (owner, 2026-10-25: "they
+ * fall awkwardly and say something funny"). Picked with a seeded shuffle bag per team, so no line
+ * shows twice in a row. No recorded clip yet: they use the browser voice, always with a caption.
+ */
+export const BASE_FALL_LINES = [
+  'Whoa! The floor left without me!',
+  'I live on the ground floor now.',
+  'Going down! Next stop, the grass!',
+  'I meant to take the stairs.',
+] as const;
+
+/** Extra base fall lines only Team Past says. */
+export const BASE_FALL_LINES_PAST = [
+  'Nobody tell the castle.',
+  'My tower took a little nap.',
+  'Who built this wall? Oh. Me.',
+  'Brick, brick, brick, and then plop!',
+  'My armor clanged all the way down.',
+  'Squire! My wall ran away!',
+  'That wall owes me a ladder.',
+  'Even my helmet is giggling.',
+  'A knight always lands. Sort of.',
+  'My bricks went for a walk.',
+] as const;
+
+/** Extra base fall lines only Team Future says. */
+export const BASE_FALL_LINES_FUTURE = [
+  'Beep! Floor not found!',
+  'Gravity update installed. Oops.',
+  'My hover boots forgot to hover.',
+  'Starting over from the ground floor.',
+  'My base did a robot dance.',
+  'Landing mode: extra wobbly.',
+  'Nobody tell my robot friends.',
+  'New plan: stand down here.',
+  'My circuits say that was fun!',
+  'Who unplugged the floor?',
+] as const;
+
+/** The base fall lines one team can say: the shared ones, then its own (BASE_FALL_LINE_COUNT). */
+export function baseFallPool(team: Team): readonly string[] {
+  return [...BASE_FALL_LINES, ...(team === 'PAST' ? BASE_FALL_LINES_PAST : BASE_FALL_LINES_FUTURE)];
+}
+
 // ---------- Victory ----------
 export const VICTORY = {
   heading: (name: string): string => `${name} wins!`,

@@ -6,7 +6,7 @@
 // above the ground line. At Hill Fort this keeps it off Balloon A. When a spot close by is also
 // clear of the solid shapes (the drawbridge deck, a tower), that spot wins, so the number does not
 // hide the art. Fighters are a hard rule; solid shapes are only a preference.
-import { UNITS, ridesBase } from '../../game/units';
+import { UNITS, ridesBase, type UnitId } from '../../game/units';
 import type { BattleLayout, Rect, Vec2 } from '../../game/types';
 import { aimVector, guideTip } from './geometry';
 import { ARROW_RISE, unitSpot } from './unitSpots';
@@ -41,12 +41,18 @@ const shifted = (r: Rect, d: Vec2 | undefined): Rect =>
 
 /**
  * Every box the angle number must stay off: each fighter's body, and its letter tag with the
- * "picked" arrow over it. A fighter standing on its base moves with it, as the scene draws it.
+ * "picked" arrow over it. A fighter standing on its base moves with it, as the scene draws it, and
+ * on a built base it stands `drops[id]` lower (on its top brick, riders.ts).
  */
-export function fighterKeepOut(layout: Pick<BattleLayout, 'baseShift'>): Rect[] {
+export function fighterKeepOut(
+  layout: Pick<BattleLayout, 'baseShift'>,
+  drops: Partial<Record<UnitId, number>> = {},
+): Rect[] {
   return UNITS.flatMap((def) => {
     const s = unitSpot(def);
-    const d = ridesBase(def) ? layout.baseShift?.[def.team] : undefined;
+    const shift = ridesBase(def) ? layout.baseShift?.[def.team] : undefined;
+    const drop = drops[def.id] ?? 0;
+    const d = shift || drop ? { x: shift?.x ?? 0, y: (shift?.y ?? 0) + drop } : undefined;
     const r = s.token.r;
     const tag: Rect = {
       x: s.token.x - r,
