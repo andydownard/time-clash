@@ -14,8 +14,10 @@ import {
   type BasesState,
   type Placed,
   type Rect as StepRect,
+  type ResolvedSpot,
   type Rotation,
   type SpotRole,
+  type SpotWeaponDef,
 } from './baseBuilder';
 import type {
   AimInput,
@@ -209,7 +211,35 @@ type BrickRec = BrickView & {
   anchored: boolean;
 };
 
-type MountRec = MountView & { damage: number };
+type MountRec = MountView & {
+  damage: number;
+  /** Base health mode: how hard it hits next to a fighter's standard shot (`mountScale`). */
+  scale: number;
+};
+
+/**
+ * The weapon on a resolved spot: a weapon of your own from the pad's copy (`custom`), or a
+ * catalog weapon. Only this side's weapons count. Undefined for an empty pad.
+ */
+function defOf(team: Team, s: ResolvedSpot): SpotWeaponDef | undefined {
+  const def = s.custom ?? (s.weapon === null ? undefined : spotWeaponById(s.weapon));
+  return def && def.team === team ? def : undefined;
+}
+
+/** A pad as drawn in battle: 10 steps across at the base's scale, never under 8 px. */
+const padBoxPx = (scale: number): number => Math.max(8, 2 * padHalf * scale);
+
+/**
+ * Base health mode: how hard a weapon on a pad hits, next to a fighter's standard shot (1).
+ * Its damage x its role multiplier x its shells, over BASE_IN_BATTLE.baseHealthMount.refDamage,
+ * never above maxScale. The Shield generator does not fire, so it is 0.
+ */
+export function mountScale(def: Pick<SpotWeaponDef, 'damage' | 'role'>): number {
+  const { refDamage, maxScale } = BIB.baseHealthMount;
+  const shells = def.role === 'volley' ? BIB.volley.shots : 1;
+  const raw = (def.damage * BIB.brickDamage.roleMultiplier[def.role] * shells) / refDamage;
+  return Math.min(maxScale, Math.max(0, raw));
+}
 
 export type BuiltTeam = {
   team: Team;
@@ -224,7 +254,7 @@ const emptyTeam = (team: Team): BuiltTeam => ({ team, bricks: [], mounts: [], sp
 /** True when a team brought a base (bricks or spots). */
 export const hasBuilt = (bt: BuiltTeam): boolean => bt.bricks.length > 0 || bt.spots.length > 0;
 
-type BuildOptions = { frame?: PlotFrame; mounts?: boolean; flatHp?: number };
+type BuildOptions = { frame?: PlotFrame; flatHp?: number };
 
 function buildTeam(team: Team, base: ChosenBase | undefined, opts: BuildOptions = {}): BuiltTeam {
   if (!base) return emptyTeam(team);
@@ -281,13 +311,25 @@ function buildTeam(team: Team, base: ChosenBase | undefined, opts: BuildOptions 
   };
   const spots: SpotView[] = base.spots.map((s) => {
     const w = pointToWorld(team, s.x, s.y, frame);
-    return { index: s.index, x: w.x, y: w.y, weapon: s.weapon, brick: under(s.x, s.y)?.id ?? null };
+    const def = defOf(team, s);
+    return {
+      index: s.index,
+      x: w.x,
+      y: w.y,
+      weapon: s.weapon,
+      brick: under(s.x, s.y)?.id ?? null,
+      ...(def ? { art: def.art ?? def.id } : {}),
+    };
   });
   const mounts: MountRec[] = [];
-  if (opts.mounts === false) return { team, bricks, mounts, spots };
+  // Base health mode: a pad's hit box is the pad as drawn. Character health keeps mountBox.
+  const box =
+    opts.flatHp === undefined
+      ? BIB.mountBox
+      : { w: padBoxPx(frame.scale), h: padBoxPx(frame.scale) };
   base.spots.forEach((s) => {
-    const def = s.weapon === null ? undefined : spotWeaponById(s.weapon);
-    if (!def || def.team !== team) return;
+    const def = defOf(team, s);
+    if (!def) return;
     const c = pointToWorld(team, s.x, s.y, frame);
     const below = under(s.x, s.y);
     mounts.push({
@@ -299,16 +341,14 @@ function buildTeam(team: Team, base: ChosenBase | undefined, opts: BuildOptions 
       hp: def.hp,
       maxHp: def.hp,
       origin: c,
-      box: {
-        x: c.x - BIB.mountBox.w / 2,
-        y: c.y - BIB.mountBox.h / 2,
-        w: BIB.mountBox.w,
-        h: BIB.mountBox.h,
-      },
+      box: { x: c.x - box.w / 2, y: c.y - box.h / 2, w: box.w, h: box.h },
       alive: true,
       brick: below ? below.id : null,
       canFire: def.role !== 'guard',
       damage: def.damage,
+      name: def.name,
+      art: def.art ?? def.id,
+      scale: mountScale(def),
     });
   });
   return { team, bricks, mounts, spots };
@@ -316,8 +356,8 @@ function buildTeam(team: Team, base: ChosenBase | undefined, opts: BuildOptions 
 
 /**
  * Base health mode (character health off): each base is fitted into its old footprint in
- * `layout`, and its bricks get base health around `flatHp`. The weapon pads are drawn only:
- * mounted weapons in this mode are a later task (BACKLOG.md).
+ * `layout`, and its bricks get base health around `flatHp`. The weapons on the pads fire (see
+ * docs/GAME_SPEC.md "Weapons on the pads"); a pad has no health of its own and falls with its brick.
  */
 export type BaseHealthBuild = { layout: BattleLayout; flatHp: Record<Team, number> };
 
@@ -331,7 +371,6 @@ export function createBuilt(
     if (!baseHealth || !base) return buildTeam(team, base);
     return buildTeam(team, base, {
       frame: fitFrame(team, base, baseHealth.layout.bases[team]),
-      mounts: false,
       flatHp: baseHealth.flatHp[team],
     });
   };
@@ -460,6 +499,8 @@ export function viewMounts(built: Built): Record<Team, MountView[]> {
       alive: m.alive,
       brick: m.brick,
       canFire: m.canFire,
+      name: m.name,
+      art: m.art,
     }));
   return { PAST: copy(built.PAST), FUTURE: copy(built.FUTURE) };
 }

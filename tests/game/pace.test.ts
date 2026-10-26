@@ -4,9 +4,20 @@
 // `turns` counts the turns of both teams, so the first mover winning on its fifth turn is 9.
 import { describe, expect, it } from 'vitest';
 import { playBotMatch, type SimResult } from '../../src/game/botPlay';
-import { createBuilt } from '../../src/game/builtBase';
-import { BONUS, DAMAGE, PHASE1_LAYOUT, PRACTICE_BOT, type BotProfile } from '../../src/game/config';
-import { SIZES } from '../helpers/builtBases';
+import { SPOT_WEAPONS } from '../../src/game/baseBuilder';
+import { createBuilt, mountScale } from '../../src/game/builtBase';
+import {
+  BASE_IN_BATTLE,
+  BONUS,
+  DAMAGE,
+  PHASE1_LAYOUT,
+  PRACTICE_BOT,
+  WORKSHOP,
+  type BotProfile,
+} from '../../src/game/config';
+import { customMountDef } from '../../src/game/customMounts';
+import { createMatch } from '../../src/game/match';
+import { SIZES, STRONGEST, TINY, TYPICAL, armed } from '../helpers/builtBases';
 import type { Team } from '../../src/game/types';
 
 /** No aim error, reads the wind fully, and always answers right (the reload ceiling still applies). */
@@ -81,6 +92,84 @@ describe.each(Object.entries(SIZES))('pace with a %s built base on both sides', 
         .reduce((a, b) => a + b.maxHp, 0);
       const perfectTurn = 2 * DAMAGE.direct + Math.round(DAMAGE.direct * BONUS.damageMultiplier);
       expect(foundation).toBeGreaterThan((OWN_TURNS_TO_WIN - 1) * perfectTurn);
+    }
+  });
+});
+
+// Weapons on the pads (2026-10-25): the strongest legal four weapons on both bases. A go from a
+// weapon is capped at a fighter's standard shot, so perfect aim still needs five turns.
+describe.each([
+  ['tiny', TINY],
+  ['typical', TYPICAL],
+] as const)('pace with four strong weapons on a %s base on both sides', (_n, size) => {
+  const bases = {
+    PAST: armed(size('PAST'), STRONGEST.PAST),
+    FUTURE: armed(size('FUTURE'), STRONGEST.FUTURE),
+  };
+
+  it('perfect aim never wins before its fifth turn, and every match ends', () => {
+    const results = Array.from({ length: SEEDS }, (_, i) =>
+      playBotMatch({
+        seed: i + 1,
+        firstTeam: (i + 1) % 2 ? 'PAST' : 'FUTURE',
+        grade: GRADE,
+        characterHealth: false,
+        baseInBattle: true,
+        bases,
+        profiles: { PAST: PERFECT, FUTURE: PERFECT },
+      }),
+    );
+    for (const [i, r] of results.entries()) {
+      expect(r.ended, `seed ${i + 1}`).toBe(true);
+      expect(r.winner, `seed ${i + 1}`).not.toBeNull();
+    }
+    expect(Math.min(...results.map((r) => r.turns))).toBeGreaterThanOrEqual(MIN_TOTAL_TURNS);
+  }, 300_000);
+
+  it('the weapons really fire in these matches', () => {
+    const s = createMatch({
+      players: [
+        { name: 'A', team: 'PAST', grade: 3, subject: 'math' },
+        { name: 'B', team: 'FUTURE', grade: 3, subject: 'math' },
+      ],
+      seed: 1,
+      characterHealth: false,
+      baseInBattle: true,
+      bases,
+    }).snapshot();
+    expect(s.mounts?.PAST.filter((m) => m.canFire)).toHaveLength(4);
+    expect(s.mounts?.FUTURE.filter((m) => m.canFire)).toHaveLength(4);
+  });
+});
+
+describe('the worst case with weapons', () => {
+  it('no weapon on a pad, catalog or your own, does more than 88 in a perfect turn', () => {
+    const perfectTurn = 2 * DAMAGE.direct + Math.round(DAMAGE.direct * BONUS.damageMultiplier);
+    expect(perfectTurn).toBe(88);
+    const weapons = [
+      ...SPOT_WEAPONS,
+      ...(
+        [
+          'royalSword',
+          'elderLongbow',
+          'ironCannon',
+          'plasmaBlade',
+          'laserRifle',
+          'railCannon',
+        ] as const
+      ).map((base) =>
+        customMountDef(
+          { id: 'custom:P:1', base, name: 'Max', power: WORKSHOP.maxPoints, reach: 3, splash: 2 },
+          'PAST',
+        ),
+      ),
+    ];
+    for (const w of weapons) {
+      const shells = w.role === 'volley' ? BASE_IN_BATTLE.volley.shots : 1;
+      const s = mountScale(w) / shells;
+      const go = shells * Math.round(DAMAGE.direct * s);
+      const power = shells * Math.round(Math.round(DAMAGE.direct * s) * BONUS.damageMultiplier);
+      expect(2 * go + power, w.id).toBeLessThanOrEqual(perfectTurn);
     }
   });
 });

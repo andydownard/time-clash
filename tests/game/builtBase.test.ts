@@ -654,14 +654,15 @@ describe('flags', () => {
     expect(a.out[0]!.built).toBeUndefined();
   });
 
-  it('without character health a built base is the base health, with no mounted weapons yet', () => {
+  it('without character health a built base is the base health, and its weapons can be picked', () => {
     const c = mk({ PAST: PAST_BASE }, 5, { characterHealth: false });
     const s = c.snapshot();
     expect(s.baseInBattle).toBe(true);
     expect(s.builtBase).toEqual({ PAST: true, FUTURE: false });
-    expect(s.mounts?.PAST).toEqual([]);
+    expect(s.mounts?.PAST.map((m) => m.id)).toEqual(['mount:0', 'mount:1', 'mount:2']);
     c.ready();
-    expect(() => c.selectUnit('mount:0')).toThrow(RangeError);
+    c.selectUnit('mount:0');
+    expect(() => c.selectUnit('mount:3')).toThrow(RangeError);
   });
 
   it('the constant default is on (owner, 2026-10-25)', () => {

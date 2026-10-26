@@ -4774,6 +4774,60 @@ button.tc-forge-row[aria-disabled='true'],
   opacity: 0.6;
   cursor: default;
 }
+/* With weapons on the base pads the selector has six token places (five fighters and the swap
+   token, or up to four weapons and the fighter token). The name of what is picked runs under all
+   six, and the "Pick one" words are kept for screen readers only (the group's label says them),
+   so the selector is narrower than the five-fighter one and the bar keeps one row at 1024px.
+   The width never changes between the two views. */
+.tc-units[data-swap] {
+  grid-template-columns: repeat(6, 56px);
+}
+.tc-units[data-swap] .tc-units-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.tc-units[data-swap] .tc-unit-name {
+  grid-column: 1 / -1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Weapons on the base pads (built bases). The swap token (Base weapons, or the fighter's letter
+   in the weapons view) has a dashed ring, so it reads as "switch" and never by color alone. A
+   weapon token shows the weapon's picture and its spot number. */
+.tc-unit-mount,
+.tc-unit-swap {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 0;
+}
+.tc-unit-swap {
+  border-style: dashed;
+}
+.tc-unit-mount svg,
+.tc-unit-swap svg {
+  display: block;
+  pointer-events: none;
+}
+.tc-unit-spot {
+  position: absolute;
+  right: -6px;
+  bottom: -6px;
+  min-width: 24px;
+  height: 24px;
+  border-radius: 12px;
+  background: var(--tc-ember);
+  color: var(--tc-ink-deep);
+  border: 2px solid var(--tc-ink-deep);
+  font-size: 20px;
+  line-height: 20px;
+  text-align: center;
+}
 
 /* ---------- Phase 2: Battle Plan (place, base spot, special ammo) ---------- */
 .tc-plan {

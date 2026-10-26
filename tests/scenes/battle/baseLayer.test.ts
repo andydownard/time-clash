@@ -10,10 +10,12 @@ import {
   crackLines,
   crumblePlan,
   dustPuffs,
+  padFlash,
+  padRing,
   padSprites,
   stepPxOf,
 } from '../../../src/scenes/battle/basePlan';
-import { ART, NO_TINT } from '../../../src/scenes/battle/visual';
+import { ART, NO_TINT, TEAM_COLOR } from '../../../src/scenes/battle/visual';
 import { brickSvg, weaponPadSvg } from '../../../src/ui/baseBuilderArt';
 import { HUGE, TINY, TYPICAL, brick } from '../../helpers/builtBases';
 
@@ -88,6 +90,33 @@ describe('brick pictures come from the builder', () => {
     );
     expect(pads).toHaveLength(1);
     expect(pads[0]).toMatchObject({ index: 0, size: 20, brick: 'PAST:0' });
+  });
+
+  it('a weapon of your own is drawn with the picture of its style', () => {
+    const [pad] = padSprites(
+      [{ index: 2, x: 100, y: 500, weapon: 'custom:P:1', brick: null, art: 'catapult' }],
+      2,
+    );
+    expect(pad!.svg).toBe(weaponPadSvg('catapult', pad!.size * 2));
+    expect(pad!.key).toContain('catapult');
+  });
+});
+
+describe('weapon pads in battle', () => {
+  it('the pick ring sits round the pad, a little bigger, in the team color', () => {
+    const ring = padRing({ x: 100, y: 500, size: 20 }, 'FUTURE');
+    expect(ring).toMatchObject({ x: 100, y: 500, color: TEAM_COLOR.FUTURE });
+    expect(ring.r).toBeGreaterThan(10);
+    expect(ring.width).toBeGreaterThanOrEqual(3);
+  });
+
+  it('the fire flash grows and fades; with reduced motion it only blinks in place', () => {
+    const full = padFlash(20, false);
+    expect(full.toScale).toBeGreaterThan(1);
+    expect(full.ms).toBeGreaterThan(0);
+    const calm = padFlash(20, true);
+    expect(calm.toScale).toBe(1);
+    expect(calm.ms).toBeLessThanOrEqual(full.ms);
   });
 });
 
