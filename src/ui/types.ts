@@ -264,6 +264,8 @@ export type VictoryOptions = {
   winner: Team;
   names: Record<Team, string>;
   stats: Record<Team, TeamStats>;
+  /** Sides whose built base lost bricks this match. Each gets a "your saved base is safe" line. */
+  crumbled?: readonly Team[];
 };
 
 /** The Camp starts the match, or sends the family back to Setup to change the players. */

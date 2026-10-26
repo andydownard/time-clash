@@ -12,7 +12,8 @@ import {
   SPOT_IDS,
   TEAM_FACING,
 } from '../../../src/game/config';
-import { UNITS, firingOrigin } from '../../../src/game/units';
+import { UNITS, firingOrigin, unitById } from '../../../src/game/units';
+import { RIDER_IDS, riderDrop, riderOrigin } from '../../../src/game/riders';
 import type { FortIdValue, Rect, SpotIdValue, Vec2 } from '../../../src/game/types';
 import {
   ANGLE_LABEL_MAX,
@@ -145,4 +146,57 @@ describe('angleLabelBox', () => {
         expect(cases).toBe(SPOTS.length * UNITS.length * SIZES.length * 91);
         expect(misses).toEqual([]);
       });
+});
+
+describe('the angle number with fighters standing low on a built base', () => {
+  it('fighterKeepOut moves a rider down by its drop, and nobody else', () => {
+    const l = buildLayout({ biome: 'aspen', spot: null, fort: null });
+    const plain = fighterKeepOut(l);
+    const low = fighterKeepOut(l, { B: 50 });
+    const i = UNITS.findIndex((u) => u.id === 'B');
+    expect(low[i * 2]).toEqual({ ...plain[i * 2]!, y: plain[i * 2]!.y + 50 });
+    expect(low[i * 2 + 1]).toEqual({ ...plain[i * 2 + 1]!, y: plain[i * 2 + 1]!.y + 50 });
+    for (let k = 0; k < plain.length; k++)
+      if (k !== i * 2 && k !== i * 2 + 1) expect(low[k]).toEqual(plain[k]);
+  });
+
+  for (const biome of BIOME_IDS)
+    it(`${biome}: every rider down on the ground, every field and angle, the number is off every fighter`, () => {
+      const misses: string[] = [];
+      for (const spot of SPOTS)
+        for (const fort of FORTS) {
+          const l = buildLayout({ biome, spot, fort });
+          for (const share of [0.5, 1]) {
+            const drops = Object.fromEntries(
+              RIDER_IDS.map((id) => [id, share * riderDrop(unitById(id)!.team, id, l, [])]),
+            );
+            const keep = fighterKeepOut(l, drops);
+            const ground = l.terrain.ground[0]!.y;
+            for (const id of RIDER_IDS) {
+              const team = unitById(id)!.team;
+              const o = firingOrigin(team, id, l);
+              const from = { x: o.x, y: o.y + (drops[id] ?? 0) };
+              for (const size of SIZES)
+                for (let angle = AIM.angleMinDeg; angle <= AIM.angleMaxDeg; angle += 1) {
+                  const box = angleLabelBox(from, angle, TEAM_FACING[team], size, keep, l);
+                  const where = `${spot} ${fort} ${id} ${share} ${angle}°`;
+                  if (keep.some((k) => overlaps(box, k))) misses.push(`${where}: covers a fighter`);
+                  if (box.x < 0 || box.x + box.w > l.width || box.y < 0 || box.y + box.h > ground)
+                    misses.push(`${where}: outside the world or below the ground`);
+                }
+            }
+          }
+        }
+      expect(misses).toEqual([]);
+    });
+
+  it('riderOrigin and the keep-out drop agree', () => {
+    const l = buildLayout({ biome: 'aspen', spot: 'bridge', fort: 'drawbridge' });
+    for (const id of RIDER_IDS) {
+      const team = unitById(id)!.team;
+      expect(riderOrigin(team, id, l, []).y - firingOrigin(team, id, l).y).toBe(
+        riderDrop(team, id, l, []),
+      );
+    }
+  });
 });

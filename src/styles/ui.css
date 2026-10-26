@@ -93,7 +93,8 @@ body {
      pressed. One filled primary per screen. Secondary is the outlined neutral. Destructive is
      never the primary.
    - Selector picks a value. Flat, never raised, never pressed down: options in one connected
-     strip (.tc-chips of .tc-chip, role radio), the picked one Ember with a check mark. An on/off
+     strip (.tc-chips of .tc-chip, role radio), the picked one a solid Ember fill. No check mark,
+     and a pick never changes any option's size (Regression 24). An on/off
      setting is one .tc-chip.tc-toggle (role switch). More than about five values: a dropdown
      (.tc-select).
    - Link (.tc-link) is a quiet, rare action: underlined text, no box. */
@@ -322,9 +323,12 @@ body {
 .tc-link:hover {
   text-decoration-thickness: 3px;
 }
-/* Selector option. Flat: see-through with an outline, no edge, no press. The picked option is
-   filled Ember with Ink words and a check mark, so the pick is never color alone. The outline
-   color (--tc-sel-edge) follows the surface, so a strip stays one unbroken shape. */
+/* Selector option. Flat: see-through with an outline, no edge, no press. The picked option is a
+   solid Ember fill with Ink words, against outlined see-through neighbours, so the pick is a
+   filled shape, never color alone. No check mark: the fill already says it (owner, 2026-10-25).
+   A pick changes only colors, never the border width, padding, weight or words, so no option
+   grows and the strip never shifts (Regression 24). The outline color (--tc-sel-edge) follows
+   the surface, so a strip stays one unbroken shape. */
 .tc-panel,
 .tc-reload-card,
 .tc-intro-card {
@@ -361,11 +365,6 @@ body {
   z-index: 1;
   background: var(--tc-chip-picked-bg);
   color: var(--tc-chip-picked-text);
-  font-weight: var(--tc-fw-new-heavy);
-}
-.tc-chip[aria-checked='true']::before {
-  content: '\2713';
-  margin-right: var(--tc-s-1);
 }
 /* One connected strip: neighbours share an edge and only the ends are rounded. */
 .tc-chips,
@@ -374,8 +373,10 @@ body {
   gap: 0;
 }
 .tc-chips {
-  display: flex;
-  flex-wrap: nowrap;
+  /* Equal columns, each as wide as the widest option, so every option keeps one size. */
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
 }
 :is(.tc-chips, .tc-forge-picker, .tc-plan-cards) > .tc-chip + .tc-chip {
   margin-left: -3px;
@@ -1086,31 +1087,31 @@ body:has(.tc-hud):not([data-cover]):not(:has([data-layer='screen'] > *)) .tc-cap
   margin-block: var(--tc-s-3);
 }
 
-/* ---------- Setup ---------- */
+/* ---------- Setup ----------
+   Room to breathe (owner, 2026-10-25): padded cards, clear gaps between label, field and rows,
+   and the VS badge in its own lane between the cards. The spacing tokens are in tokens.css. */
 .tc-setup {
   padding-top: var(--tc-s-3);
   padding-bottom: var(--tc-s-3);
   gap: var(--tc-s-2);
 }
-/* iPad mini landscape is 744 tall: tighten Setup so Clear my data keeps a margin above the
-   bottom edge and the home bar (iPad audit defect 2). */
+/* iPad mini landscape is 744 tall: the gaps step down a little so Clear my data keeps a margin
+   above the bottom edge and the home bar (iPad audit defect 2). The title band is trimmed first. */
 @media (max-height: 760px) {
-  .tc-setup {
+  [data-tc-root] .tc-setup {
+    --tc-field-gap: var(--tc-s-3);
+    --tc-row-gap: 20px;
     gap: var(--tc-s-1);
-    padding-bottom: max(var(--tc-s-3), var(--tc-safe-bottom));
-  }
-  .tc-setup-form {
-    gap: var(--tc-s-1);
-  }
-  .tc-team-card {
-    padding-block: var(--tc-s-2);
+    padding-top: var(--tc-s-2);
+    padding-bottom: max(var(--tc-s-2), var(--tc-safe-bottom));
   }
 }
 [data-tc-root] .tc-setup-title {
   display: flex;
   align-items: center;
   margin: 0;
-  min-height: var(--tc-tap);
+  /* The title is not a tap target: it only needs to clear the ? and gear row beside it. */
+  min-height: 44px;
   font-size: var(--tc-fs-heading);
   text-align: center;
   text-shadow: 0 3px 0 var(--tc-ink-deep);
@@ -1120,22 +1121,23 @@ body:has(.tc-hud):not([data-cover]):not(:has([data-layer='screen'] > *)) .tc-cap
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--tc-s-2);
+  gap: var(--tc-row-gap);
   margin-bottom: auto;
 }
+/* The VS badge sits in its own lane between the two cards, so it covers no card, edge or word. */
 .tc-team-cards {
   position: relative;
   width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--tc-s-4);
+  gap: var(--tc-vs-lane);
 }
 .tc-vs {
   position: absolute;
   z-index: 1;
   left: 50%;
-  top: var(--tc-s-1);
-  transform: translateX(-50%);
+  top: 50%;
+  transform: translate(-50%, -50%);
   width: 56px;
   height: 56px;
   display: flex;
@@ -1155,8 +1157,8 @@ body:has(.tc-hud):not([data-cover]):not(:has([data-layer='screen'] > *)) .tc-cap
 .tc-team-card {
   display: flex;
   flex-direction: column;
-  gap: var(--tc-s-1);
-  padding: var(--tc-s-3) var(--tc-s-4);
+  gap: 0;
+  padding: var(--tc-card-pad);
   border: 4px solid var(--tc-border);
   border-radius: calc(var(--tc-r-card) + 4px);
   color: var(--tc-on-dark);
@@ -1204,13 +1206,32 @@ body:has(.tc-hud):not([data-cover]):not(:has([data-layer='screen'] > *)) .tc-cap
   letter-spacing: var(--tc-ls-caps);
   text-transform: uppercase;
 }
+/* Inside a Setup card: a field gap above each label, a label gap between a label and its field,
+   and a label gap above the grown-up note and a shown error. */
+[data-tc-root] .tc-team-card > * {
+  margin: 0;
+}
+[data-tc-root] .tc-team-card > .tc-label {
+  margin: var(--tc-field-gap) 0 var(--tc-label-gap);
+}
+[data-tc-root] .tc-team-card > .tc-muted,
+[data-tc-root] .tc-team-card > .tc-error:not(:empty) {
+  margin-top: var(--tc-label-gap);
+}
 .tc-setup-form .tc-row .tc-btn-primary {
   min-height: 72px;
   min-width: 280px;
   font-size: var(--tc-fs-button-lg);
 }
+/* Back rides the top row beside the ? and gear, out of the flow, so it costs no height. */
+.tc-setup > .tc-setup-back {
+  position: absolute;
+  top: var(--tc-s-3);
+  left: var(--tc-chrome-clear);
+}
 .tc-setup-form .tc-row-start {
   align-items: center;
+  column-gap: var(--tc-s-5);
 }
 /* Match length shares the button row, so it costs no extra height. */
 .tc-length {
@@ -1932,6 +1953,21 @@ body:has(.tc-hud):not([data-cover]):not(:has([data-layer='screen'] > *)) .tc-cap
 .tc-award-card li {
   list-style: none;
 }
+/* Chrono's second row: "your saved base is safe", for a side whose built base lost bricks. */
+.tc-saved-base {
+  display: block;
+}
+/* That row needs room, so the "Awards" heading is then for screen readers only (the cards
+   show plainly what they are). Victory stays on one screen with six medals a card. */
+.tc-victory[data-saved-base] .tc-awards h2 {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
 /* A medal: a round picture on the left, the award's name on the right. The name is always written,
    so the picture and its color are never the only clue. */
 .tc-badge {
@@ -2590,9 +2626,11 @@ button.tc-forge-row[aria-disabled='true'],
   height: 32px;
 }
 .tc-ws-style[aria-checked='true'] {
-  border: 4px solid var(--tc-ink-deep);
+  border-color: var(--tc-ink-deep);
   background: var(--tc-ember);
-  box-shadow: 0 0 0 4px var(--tc-purple-500);
+  box-shadow:
+    inset 0 0 0 1px var(--tc-ink-deep),
+    0 0 0 4px var(--tc-purple-500);
 }
 .tc-workshop[data-team='FUTURE'] .tc-ws-style {
   border-color: var(--tc-blue-700);
@@ -2689,6 +2727,16 @@ button.tc-forge-row[aria-disabled='true'],
   font-family: var(--tc-font-voice-new);
   font-weight: var(--tc-fw-new-heavy);
   font-size: var(--tc-text-min);
+}
+/* Safari keeps a native dropdown 34px tall, so drop the native look (the wrapper draws the arrow). */
+.tc-ws-select {
+  appearance: none;
+  padding-right: calc(var(--tc-s-6) + var(--tc-s-3));
+  cursor: pointer;
+  touch-action: manipulation;
+}
+.tc-workshop .tc-select-wrap::after {
+  color: var(--tc-ink-deep);
 }
 .tc-workshop[data-team='FUTURE'] .tc-ws-select,
 .tc-workshop[data-team='FUTURE'] .tc-ws-typed {
@@ -4581,11 +4629,13 @@ button.tc-forge-row[aria-disabled='true'],
   .tc-setup {
     padding-top: var(--tc-s-3);
   }
-  .tc-team-cards {
-    gap: var(--tc-s-3);
-  }
   .tc-team-card {
-    padding: var(--tc-s-3);
+    padding: var(--tc-card-pad);
+  }
+  /* Narrow: the title needs the top row, so Back goes back into the flow above it. */
+  .tc-setup > .tc-setup-back {
+    position: static;
+    align-self: flex-start;
   }
   /* Portrait: a fixed grid. Row 0 clears the ? and gear, row 1 holds both team cards, row 2 the
      shots. Sound lives low and left, so nothing floats over the picture. */
@@ -4756,8 +4806,8 @@ button.tc-forge-row[aria-disabled='true'],
   cursor: pointer;
 }
 .tc-unit[aria-checked='true'] {
-  border-width: 7px;
   border-color: var(--tc-ember);
+  box-shadow: inset 0 0 0 4px var(--tc-ember);
   background: var(--tc-ember);
   color: var(--tc-ink-deep);
   position: relative;
@@ -4957,7 +5007,7 @@ button.tc-forge-row[aria-disabled='true'],
   grid-template-columns: 1fr auto;
   align-items: center;
   gap: var(--tc-s-1) var(--tc-s-2);
-  padding: var(--tc-s-2);
+  padding: var(--tc-s-2) var(--tc-s-3);
   border: 3px solid var(--tc-purple-300);
   border-radius: var(--tc-r-card);
   background: var(--tc-ink-deep);
@@ -5046,7 +5096,8 @@ button.tc-forge-row[aria-disabled='true'],
 .tc-gear[data-compact='true'] .tc-gear-long {
   display: none;
 }
-/* Armed shows a check mark and a bright ring, not color alone. */
+/* Armed shows a bright ring (a shape), not color alone. The words stay the same, so the
+   button keeps its size (Regression 24). */
 .tc-gear-btn[aria-pressed='true'] {
   border-color: var(--tc-ember);
   box-shadow: 0 0 0 3px var(--tc-ember);
@@ -5243,8 +5294,8 @@ button.tc-forge-row[aria-disabled='true'],
   letter-spacing: 0.03em;
 }
 .tc-helper[aria-checked='true'] {
-  border-width: 7px;
   border-color: var(--tc-ember);
+  box-shadow: inset 0 0 0 4px var(--tc-ember);
   position: relative;
 }
 .tc-helper[aria-checked='true']::after {

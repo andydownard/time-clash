@@ -6,8 +6,9 @@ const manifest = buildManifest(ALL_BARKS);
 
 describe('voice manifest (Chrono wipeout lines only)', () => {
   it('has stable counts and only wipeout lines', () => {
-    expect(manifest.filter((e) => e.kind === 'bark')).toHaveLength(42);
-    expect(manifest).toHaveLength(42);
+    // 42 wipeout lines and 24 base fall lines.
+    expect(manifest.filter((e) => e.kind === 'bark')).toHaveLength(66);
+    expect(manifest).toHaveLength(66);
     expect(new Set(manifest.map((e) => e.id)).size).toBe(manifest.length);
   });
   it('has no empty text, and every id matches its text', () => {

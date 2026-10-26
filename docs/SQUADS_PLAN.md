@@ -20,7 +20,7 @@ S1 is on for everyone (`SQUADS.enabled = true`, owner decision 2026-10-24). Rule
 - **Character health and built bases.** Squads stays off with either flag, as before.
 
 Choices made where the owner's words left room (the simplest option each time). Andy can overrule any of them.
-1. **Launcher is today's shot.** The launcher helper is the existing fighter and aim. Past calls it Cannon Crew, Future calls it Rocket Button, for now only as a name. The five-fighter selector is unchanged.
+1. **Launcher is today's shot.** The launcher helper is the existing fighter and aim. Past calls it Cannon Crew, Future calls it Laser Crew (owner, 2026-10-25; it was Rocket Button), for now only as a name. The code id stays `FUTURE-launcher`. The five-fighter selector is unchanged.
 2. **A dash and a recall are one call each.** `dash(spot)` and `recall()` do the work of `fire()` and `shotLanded()`, so the turn machine and its tests do not change. `ready()` returns the start-of-turn bonks.
 3. **Five ground spots g0 to g4.** g0 is Team Past's doorstep and g4 is Team Future's. Only a side's own dasher may stand on its doorstep (to guard it). The attack spot is the one just before the enemy doorstep (g3 for Past, g1 for Future). The doorstep and attack spot sit `spotInset` px from each base's inner edge, on the ground line, whatever the place or base spot.
 4. **Where he stops.** The last free spot before the first enemy dasher, or the attack spot when the way is clear. So a dasher who walks out against an attacker guards his own doorstep, and the two bonk each other. If the very first spot holds an enemy (play never makes this board), the walk is refused (`no_free_spot`). There is always exactly one target, so the spot list shows one Walk out! button.
@@ -124,7 +124,7 @@ Andy named three Past helpers. The fourth is the one invented helper, needed so 
 
 | Code `UnitKind` | Name kids see | Looks like | Shape | What it does | Kid-safe |
 |---|---|---|---|---|---|
-| `rocketButton` | Rocket Button | An operator slaps a giant red button. A foam rocket leaves a pad. | Fire, aimed | Arcs a foam rocket at the base (same rules as the cannon). | Rocket bursts into confetti. UI never says "missile." |
+| `rocketButton` | Laser Crew | Two crew members and a chunky toy laser cannon (today's launcher). The code id is kept. | Fire, aimed | Arcs a glowing foam ball at the base (same rules as the cannon). | The ball bursts into confetti. UI never says "missile." |
 | `laserZapper` | Laser Zapper | A helper with a chunky glowing toy blaster. | Fire, straight | A sparkly bolt flies flat along the ground. | Pops toy blocks, makes helpers sneeze. Aims at walls and gadgets. |
 | `tankButton` | Tank Button | An operator presses a button. A bumper-car tank rolls out with a glow-sword rider on top. | Dash | Rolls up to 2 spots. The rider bonks what is next to it with a glow-noodle sword. The operator stays put. | "Fwoosh-bonk" and a clown horn. |
 | `spacePlane` | Space Plane | A chubby prop plane with rocket fins and a fishbowl-helmet pilot. | Fly | Zooms up to 2 sky spots, then drops a wobbly goo bubble. | Goo pops into glitter. |
@@ -295,7 +295,7 @@ Each ships behind `SQUADS.enabled`, starts after the Look and Feel phase, and pa
 - **Done when:** both flyers work by mouse, touch, and keyboard, and screenshots at 1280x800 and 1024x768 show no overlap with 3 helpers per side.
 
 ### S3: Full crew of 4
-- Add straight Fire: Slingshot Squire and Laser Zapper (if Andy approves question 3). Reskin the Future launcher as Rocket Button.
+- Add straight Fire: Slingshot Squire and Laser Zapper (if Andy approves question 3). Give the Future launcher (Laser Crew) its own crew picture.
 - Crew of 4 enforced in rules.
 - **RED tests first:** straight Fire bonks every enemy in its path and still reaches the base; a 5th unit in `squads` throws at `createMatch`; mirrored Past and Future crews give identical outcomes for mirrored commands; "base never fully shielded" and "no stalemate" walk every reachable board; a seeded 4v4 replay is bit-for-bit repeatable.
 - **Done when:** the panel (all five lenses) GOes a 4v4 playtest; a 6-year-old playtester finishes a turn without help; no path in the playtest skips or shortens the reload question; no screen at 1024x768 has a tap target under 56 px.

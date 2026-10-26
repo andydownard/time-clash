@@ -18,7 +18,7 @@ export const SHAPE_COPY = {
   materials: {
     stone: 'Stone',
     wood: 'Wood',
-    panel: 'Panel',
+    panel: 'Space Tile',
     metal: 'Metal',
     glass: 'Glass',
     jelly: 'Jelly',
@@ -37,7 +37,7 @@ export const SHAPE_COPY = {
     long: 'That name is too long.',
     letters: 'Use only letters, numbers and spaces.',
     blocked: "Let's pick a friendlier name.",
-    private: 'Keep your own name a secret.',
+    private: 'Use a made-up name, not a real one.',
     digits: 'Use fewer numbers in a row.',
   } as Record<NameProblem, string>,
   willUse: (name: string): string => `We will use ${name}.`,

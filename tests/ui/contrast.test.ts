@@ -80,6 +80,8 @@ const BODY: Array<[string, string, string]> = [
   ['muted helper text on card', '--tc-muted-text', '--tc-card'],
   ['banner text on past banner', '--tc-banner-text', '--tc-past-banner-bg'],
   ['banner text on future banner', '--tc-banner-text', '--tc-future-banner-bg'],
+  // A picked selector option: Ink words on the solid Ember fill (no check mark, Regression 24).
+  ['picked chip text on picked chip', '--tc-chip-picked-text', '--tc-chip-picked-bg'],
 ];
 
 const LARGE_UI: Array<[string, string, string]> = [
@@ -90,6 +92,9 @@ const LARGE_UI: Array<[string, string, string]> = [
   ['input border on card', '--tc-border', '--tc-card'],
   ['past accent on page', '--tc-past-accent', '--tc-page'],
   ['future accent on cover', '--tc-future-accent', '--tc-cover-bg'],
+  // The solid fill stands out from both team cards, so the pick is a shape, not only a hue.
+  ['picked chip fill on Team Past card', '--tc-chip-picked-bg', '--tc-card-past-bg'],
+  ['picked chip fill on Team Future card', '--tc-chip-picked-bg', '--tc-card-future-bg'],
 ];
 
 describe('contrast: body text is at least 4.5:1', () => {

@@ -4,7 +4,8 @@
 //   pass screen -> ready() -> banner -> setAim -> wind-up -> fire() -> animate path -> shotLanded()
 //   -> (tumble, bubble) -> ... -> pickQuestion -> showReloadModal -> reloadDone() -> pass()
 import type { AudioManager } from '../../audio/types';
-import { firingOrigin, unitById, unitsOf } from '../../game/units';
+import { unitById, unitsOf, type UnitId } from '../../game/units';
+import { riderDrops, shooterOrigin } from '../../game/riders';
 import { answerReload, chooseHelperGo, chooseShot, helperPlanOf } from '../../game/bot';
 import { COMPUTER } from '../../data/computerCopy';
 import {
@@ -17,7 +18,15 @@ import {
 } from '../../game/practice';
 import type { MatchEffects } from '../../game/loadout';
 import { kindForRole } from './projectileKinds';
-import { BALLISTICS, DISTURBANCE, EVASION, PRACTICE_BOT, RNG_SALT, TURN } from '../../game/config';
+import {
+  BALLISTICS,
+  DISTURBANCE,
+  EVASION,
+  PRACTICE_BOT,
+  RNG_SALT,
+  TIMING,
+  TURN,
+} from '../../game/config';
 import type { AmmoId } from '../../game/ammo';
 import { createShuffleBag } from '../../game/bag';
 import { createRng } from '../../game/rng';
@@ -35,6 +44,7 @@ import type {
   Vec2,
 } from '../../game/types';
 import {
+  DISTURBANCE_COPY,
   GEAR_COPY,
   HIT_LINES,
   RELOAD as RELOAD_COPY,
@@ -42,6 +52,7 @@ import {
   SQUAD_COPY,
   tumblePool,
 } from '../../data/copy';
+import { crumbledTeams } from '../../game/crumbled';
 import {
   dasherHomePoint,
   dasherOf,
@@ -67,6 +78,7 @@ import { bubbleAnchor, bubbleTailTarget } from './geometry';
 import { describeImpact } from './impact';
 import { previewDots, traceDots } from './trajectory';
 import { bubbleText, tumblingTeam } from './tumble';
+import { createBaseFallLines, riderFallsFor, riderTail, type Drops } from './riderFalls';
 import type { BattleResult, BattleView, SquadField, ViewStatus } from './types';
 import { IMPACT_BEAT_MS, SCRAP_POPUP_MS, WIN_BEAT_MS } from './visual';
 
@@ -131,15 +143,33 @@ export class BattleFlow {
   private readonly hintDone = new Set<Team>();
   /** A reload card was shown in this match, so the card's "Answer to reload" line is not needed again. */
   private reloadCardShown = false;
+  /**
+   * Recoil's "Kick!" line has shown in this match. Kept on the flow only (never saved), so a
+   * rematch, which builds a new flow, shows it once again.
+   */
+  private kickShown = false;
+  /** Recoil moved the dials on this shot for the first time. The line shows once it lands. */
+  private kickPending = false;
+  /** The "Kick!" line is in the lane now. It comes down at the next shot or the reload. */
+  private kickUp = false;
   /** The Computer player's own random stream and the time it has spent thinking this turn. */
   private readonly botRng: Rng;
   private thinkingSpentMs = 0;
+  /** Built bases: how far each rider stands below its castle spot, as last drawn. */
+  private riderDy: Drops;
+  private readonly fallLines: { next(team: Team): string };
+  /** A rider said a fall line on this shot, so Chrono's tumble line waits for another time. */
+  private riderSpoke = false;
+  /** The fall line in the caption bar, so only it is taken away when its time is up. */
+  private fallCaption: string | null = null;
 
   constructor(private readonly deps: FlowDeps) {
     this.history = deps.history;
     this.levels = deps.levels ?? {};
     this.questionRng = createRng(deps.match.snapshot().seed ^ RNG_SALT.questions);
     this.botRng = createRng((deps.match.snapshot().seed ^ RNG_SALT.computer) >>> 0);
+    this.riderDy = riderDrops(deps.match.snapshot(), deps.match.layout);
+    this.fallLines = createBaseFallLines(deps.match.snapshot().seed);
     // Jokes come from seeded shuffle bags, so a match repeats and no line shows twice in a row.
     const lineRng = createRng((deps.match.snapshot().seed ^ RNG_SALT.lines) >>> 0);
     this.hitBags = {
@@ -195,6 +225,7 @@ export class BattleFlow {
     view.showTrace(team, null);
     // One child alone has nobody to hide the screen from, so there is no cover in this mode.
     if (needsPassScreen(this.deps.practice ?? null)) {
+      this.endFallCaption();
       await overlay.showPassScreen({ nextName: names[team], nextTeam: team });
       this.live();
     }
@@ -547,9 +578,11 @@ export class BattleFlow {
   /** Fire the shot already aimed in the rules layer, fly it, and apply it. */
   private async launch(team: Team): Promise<void> {
     const { match, view, audio } = this.deps;
+    this.clearKick();
     view.setAimDragHandler(null);
     view.showPreview(team, null);
     this.pushStatus(false);
+    this.riderSpoke = false;
     await this.gate();
     // The wind-up: Fire is already off, and the shot is not taken until the glow is done.
     await view.playCharge(team, this.originFor(team));
@@ -600,7 +633,8 @@ export class BattleFlow {
       audio?.playSfx('boing');
       await view.playTumble(tumbler);
       this.live();
-      const text = bubbleText(outcome);
+      // A fighter whose brick fell already said its line: one bubble at a time.
+      const text = this.riderSpoke ? null : bubbleText(outcome);
       if (text) {
         // The funny line is also spoken when the voice service is set up. The bubble is its
         // caption. A new fall stops the old line (one voice at a time). Muted stays silent.
@@ -616,6 +650,33 @@ export class BattleFlow {
         });
       }
     }
+    await this.sayKick();
+  }
+
+  /**
+   * The first kick of the match says why the dials moved, in the message lane (a caption, so it
+   * never covers the controls). It waits until the shot has landed, so it never hides the shell
+   * or the "Gust!" word. While the player aims again it stays up until the next shot. When a
+   * reload or the end comes next, it shows for a short beat and comes down first.
+   */
+  private async sayKick(): Promise<void> {
+    if (!this.kickPending) return;
+    this.kickPending = false;
+    this.kickUp = true;
+    this.deps.overlay.setCaption(DISTURBANCE_COPY.kick);
+    const s = this.deps.match.snapshot();
+    const aimsAgain =
+      s.status === 'PLAYING' && (s.turn.phase === 'AIMING' || s.turn.phase === 'BONUS_AIMING');
+    if (aimsAgain) return;
+    await this.deps.wait(DISTURBANCE.kickCueMs);
+    this.live();
+    this.clearKick();
+  }
+
+  private clearKick(): void {
+    if (!this.kickUp) return;
+    this.kickUp = false;
+    this.deps.overlay.setCaption(null);
   }
 
   /**
@@ -658,6 +719,12 @@ export class BattleFlow {
   /** Recoil: the Angle and Power dials slide to the kicked aim. Reduced motion: they jump. */
   private async slideRecoil(from: AimInput, to: AimInput): Promise<void> {
     if (from.angleDeg === to.angleDeg && from.power === to.power) return;
+    // The first kick of the match gets its "Kick!" line once the shot lands (sayKick). It shows
+    // with reduced motion too.
+    if (!this.kickShown) {
+      this.kickShown = true;
+      this.kickPending = true;
+    }
     const reduced = this.deps.reducedMotion?.() === true;
     const steps = reduced ? 1 : DISTURBANCE.recoilSlideSteps;
     for (let i = 1; i <= steps; i++) {
@@ -684,6 +751,7 @@ export class BattleFlow {
         names: this.names(),
         stats: snap.stats,
         rematch: match.rematchOptions(),
+        crumbled: crumbledTeams(snap),
       });
     }
   }
@@ -693,6 +761,7 @@ export class BattleFlow {
   private async reload(team: Team): Promise<boolean> {
     // The question cover goes up next: nothing about the last shot stays on the board.
     this.deps.view.showTrace(team, null);
+    this.clearKick();
     if (this.isComputer(team)) return this.computerReload(team);
     const { match, overlay, view, audio, bank } = this.deps;
     const player = match.snapshot().players[team === 'PAST' ? 0 : 1];
@@ -721,6 +790,7 @@ export class BattleFlow {
       await this.gate();
       const firstReload = !this.reloadCardShown;
       this.reloadCardShown = true;
+      this.endFallCaption();
       answer = await overlay.showReloadModal({
         question: pick.question,
         team,
@@ -924,6 +994,7 @@ export class BattleFlow {
 
   private speakCaptioned(id: string, text: string): void {
     const { overlay, audio } = this.deps;
+    this.fallCaption = null;
     overlay.setCaption(text);
     try {
       audio?.speak?.(
@@ -1091,7 +1162,7 @@ export class BattleFlow {
     const { match } = this.deps;
     const pad = this.pickedMount(team);
     if (pad) return { ...pad.origin };
-    return firingOrigin(team, match.snapshot().selected[team], match.layout);
+    return shooterOrigin(match.snapshot(), team, match.snapshot().selected[team], match.layout);
   }
 
   /** Built bases: the hit bricks show their wear, and fallen ones crumble. Nothing if no bricks changed. */
@@ -1099,10 +1170,57 @@ export class BattleFlow {
     if (!built || (built.brickHits.length === 0 && built.bricksFell.length === 0)) return;
     const bricks = this.deps.match.snapshot().bricks;
     if (!bricks) return;
-    await this.deps.view.playBricks?.(team, built.bricksFell, bricks);
+    // A fighter standing on a brick that fell drops with it, at the same time as the crumble.
+    const { match, view } = this.deps;
+    const after = riderDrops(match.snapshot(), match.layout);
+    const falls = riderFallsFor(team, this.riderDy, after);
+    this.riderDy = after;
+    await Promise.all([
+      view.playBricks?.(team, built.bricksFell, bricks),
+      falls.length > 0 ? view.playRiderFalls?.(team, falls) : undefined,
+    ]);
     this.live();
+    if (falls[0]) this.sayBaseFall(team, falls[0].id, falls[0].toDy);
     // A picked weapon whose pad fell is put back by the rules: the view follows.
     if (built.mountDown.length > 0) this.showPick(team);
+  }
+
+  /**
+   * The fallen fighter says a funny line: a speech bubble pointing at it, the same words in the
+   * caption bar, and the voice when the voice service is set up (a line with no clip yet falls back
+   * to the browser voice). Muted stays silent; the words always show.
+   */
+  private sayBaseFall(team: Team, id: UnitId, dy: number): void {
+    const { match, overlay, audio } = this.deps;
+    const text = this.fallLines.next(team);
+    this.riderSpoke = true;
+    audio?.playSfx('boing');
+    overlay.setCaption(text);
+    this.fallCaption = text;
+    if (audio?.clipsEnabled) {
+      const durationMs = Math.max(1500, text.split(/\s+/).length * 450);
+      audio.speak(
+        { id: 'base-fall-line', text, captions: [{ text, startMs: 0 }], durationMs },
+        { onCaption: (t) => this.fallCaption === text && overlay.setCaption(t) },
+      );
+    }
+    // The caption leaves after the bubble's hold, or when a cover comes up, so it never sits stale.
+    void this.deps.wait(TIMING.bubbleHoldMs).then(() => {
+      if (this.fallCaption === text && !this.stopped) this.endFallCaption();
+    });
+    overlay.showSpeechBubble({
+      text,
+      team,
+      anchor: bubbleAnchor(team, match.layout),
+      tailTarget: riderTail(id, match.layout, dy),
+    });
+  }
+
+  /** Takes the fall line out of the caption bar, if it is still there. */
+  private endFallCaption(): void {
+    if (this.fallCaption === null) return;
+    this.fallCaption = null;
+    this.deps.overlay.setCaption(null);
   }
 
   // ---------- helpers ----------

@@ -47,6 +47,7 @@ if (import.meta.env.MODE !== 'production') {
     storage: services.storage,
     session: services.session,
     activeScenes: () => game.scene.getScenes(true) as unknown as ActiveScene[],
+    overlay: services.overlay,
   });
 }
 

@@ -28,6 +28,7 @@ import type {
   ViewStatus,
 } from '../../../src/scenes/battle/types';
 import type { UnitId } from '../../../src/game/units';
+import type { RiderFall } from '../../../src/scenes/battle/riderFalls';
 import type { SfxName, VoiceLine } from '../../../src/audio/types';
 import type { HudHandlers, HudState, ReloadAnswer } from '../../../src/ui/types';
 
@@ -68,6 +69,8 @@ export function makeWorld(
     onCharge?: () => void;
     /** The voice service is set up, so funny lines are spoken. */
     clips?: boolean;
+    /** Reduced motion on. */
+    reduced?: boolean;
   } = {},
 ) {
   const log: Log = [];
@@ -80,6 +83,8 @@ export function makeWorld(
   const impactLabels: string[] = [];
   const modalOptions: Array<Record<string, unknown>> = [];
   const captions: Array<string | null> = [];
+  /** The caption bar's words each time a cover came up (pass screen or reload card). */
+  const captionAtCover: Array<string | null> = [];
   const hudStates: HudState[] = [];
   const statuses: ViewStatus[] = [];
   const selections: Array<{ team: Team; id: UnitId }> = [];
@@ -101,6 +106,8 @@ export function makeWorld(
   const fields: Array<SquadField | null> = [];
   /** Built bases: every time the flow asked the view to redraw a side's bricks. */
   const brickPlays: Array<{ team: Team; fell: string[]; standing: number }> = [];
+  /** Built bases: every fighter fall the flow asked the view to play. */
+  const riderFalls: Array<{ team: Team; falls: RiderFall[] }> = [];
   /** Built bases: the weapon each side shows as picked, and every pad that flashed when it fired. */
   const mountSelections: Array<{ team: Team; id: MountId | null }> = [];
   const padFlashes: Array<{ team: Team; spot: number }> = [];
@@ -198,6 +205,11 @@ export function makeWorld(
       });
       log.push(`bricks:${team}:${fell.length}`);
     },
+    playRiderFalls: async (team, falls) => {
+      guard('playRiderFalls');
+      riderFalls.push({ team, falls: falls.map((f) => ({ ...f })) });
+      log.push(`riderFall:${team}:${falls.map((f) => f.id).join(',')}`);
+    },
   };
 
   let lastAutoKey = '';
@@ -232,12 +244,14 @@ export function makeWorld(
       log.push(`banner:${o.name}:${o.shot}`);
     },
     showPassScreen: async (o: { nextName: string; nextTeam: Team }) => {
+      captionAtCover.push(captions.at(-1) ?? null);
       cover = 'pass';
       log.push(`pass:${o.nextTeam}`);
       await Promise.resolve();
       cover = null;
     },
     showReloadModal: async (o: { question: Question; team: Team }): Promise<ReloadAnswer> => {
+      captionAtCover.push(captions.at(-1) ?? null);
       cover = 'reload';
       modalQuestions.push(o.question);
       modalOptions.push(o as unknown as Record<string, unknown>);
@@ -283,6 +297,7 @@ export function makeWorld(
     },
     wait: async () => {},
     waitIfPaused: opts.waitIfPaused,
+    ...(opts.reduced ? { reducedMotion: () => true } : {}),
   };
 
   const flow = new BattleFlow(deps);
@@ -300,6 +315,7 @@ export function makeWorld(
     modalOptions,
     impactLabels,
     captions,
+    captionAtCover,
     hudStates,
     statuses,
     previews,
@@ -312,6 +328,7 @@ export function makeWorld(
     results,
     fields,
     brickPlays,
+    riderFalls,
     mountSelections,
     padFlashes,
     coverViolations,

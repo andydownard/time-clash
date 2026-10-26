@@ -15,7 +15,7 @@ const ESTIMATE_TOLERANCE_MS = 1500;
 const md = readFileSync(new URL('../../docs/NARRATION.md', import.meta.url), 'utf8');
 
 /** duration_ms of the intro rows in db/voice.sqlite (table voice_clips), in card order. */
-const DB_DURATIONS_MS = [6443, 7381, 6400, 11307, 10624];
+const DB_DURATIONS_MS = [6443, 7381, 9600, 11328, 9600];
 
 /** Reads the length of an MP4/M4A file from its moov > mvhd box. */
 function mp4DurationMs(buf: Buffer): number {

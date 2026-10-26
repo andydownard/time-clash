@@ -64,6 +64,11 @@ function checkControls(where: string): void {
   }
   // One filled primary per screen or panel at most.
   expect(qa('.tc-screen .tc-btn-primary').length, `${where}: primaries`).toBeLessThanOrEqual(1);
+  // No check mark in any selector's words: the solid fill already says "picked" (owner,
+  // 2026-10-25), and a mark that comes and goes makes the strip change size (Regression 24).
+  for (const el of qa('[role="radio"], [role="switch"], [aria-pressed]')) {
+    expect(el.textContent ?? '', `${where}: check in ${el.outerHTML}`).not.toMatch(/[✓✔]/);
+  }
 }
 
 describe('controls follow one rule on every screen', () => {
@@ -173,12 +178,42 @@ describe('the stylesheet keeps the three looks apart', () => {
     expect(bodyOf('.tc-chip')).toMatch(/background:\s*transparent/);
     expect(css).not.toMatch(/\.tc-chip:active/);
     expect(css).not.toMatch(/\.tc-chip:hover/);
-    // The pick shows a check mark (or a switch knob), never color alone.
-    expect(bodyOf(".tc-chip[aria-checked='true']::before")).toContain("'\\2713'");
+    // The pick is a solid Ember fill against an outline. A switch also moves its drawn knob.
+    expect(bodyOf(".tc-chip[aria-checked='true']")).toMatch(
+      /background:\s*var\(--tc-chip-picked-bg\)/,
+    );
     expect(bodyOf(".tc-toggle[aria-checked='true']::after")).toContain('calc(100% - 11px)');
   });
+  it('a picked selector option has no check mark and keeps its size (Regression 24)', () => {
+    const plain = css.replace(/\/\*[\s\S]*?\*\//g, '');
+    // No check glyph anywhere on a selector: not as content, not in a pseudo-element.
+    expect(bodyOf(".tc-chip[aria-checked='true']::before")).toBe('');
+    for (const m of plain.matchAll(/([^{}@]+)\{([^{}]*)\}/g)) {
+      const sel = m[1] as string;
+      if (!/aria-checked|aria-pressed|tc-chip|tc-unit|tc-helper|tc-ws-style/.test(sel)) continue;
+      expect(m[2], sel).not.toMatch(/\\2713|\\2714|✓|✔/);
+    }
+    // Picked and not picked draw the same box: no change of border width, padding, font weight,
+    // font size or letter spacing.
+    const sizeKeys =
+      /(^|;)\s*(border(-width)?|padding[\w-]*|font-weight|font-size|letter-spacing|min-width|width)\s*:/;
+    for (const sel of [
+      ".tc-chip[aria-checked='true']",
+      ".tc-unit[aria-checked='true']",
+      ".tc-helper[aria-checked='true']",
+      ".tc-ws-style[aria-checked='true']",
+      ".tc-workshop[data-team='FUTURE'] .tc-ws-style[aria-checked='true']",
+    ]) {
+      expect(bodyOf(sel), sel).not.toMatch(sizeKeys);
+    }
+    // A strip gives every option the same width, so the strip never shifts.
+    expect(bodyOf('.tc-chips')).toMatch(
+      /grid-auto-columns:\s*minmax\(0,\s*1fr\)|grid-auto-columns:\s*1fr/,
+    );
+  });
   it('options in a strip share one edge', () => {
-    expect(bodyOf('.tc-chips')).toMatch(/flex-wrap:\s*nowrap/);
+    // One row: the options sit side by side in columns and never wrap.
+    expect(bodyOf('.tc-chips')).toMatch(/grid-auto-flow:\s*column/);
     expect(css).toMatch(/> \.tc-chip \+ \.tc-chip \{\s*margin-left: -3px;/);
   });
   it('a link is underlined text with no box, and still a 56px tap', () => {

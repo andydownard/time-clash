@@ -3,7 +3,7 @@
 `voice.sqlite` holds Chrono's five "How to Play" cards and 24 funny knock-down lines as audio (AAC in an MP4 container, `audio/mp4`), one row per clip in `voice_clips`. The app server does not read this database (it ignores the name `voice.sqlite`). The five intro clips are extracted to static files (see below).
 
 - Schema: `migrations/0001_voice_clips.sql`. Migrations are additive and numbered.
-- Rebuild: `python scripts/build-voice-db.py <kokoro_model_dir> [voice]` (see the script header). The build is not deterministic byte for byte, so rebuild only when the text or voice changes.
+- Rebuild: `python scripts/build-voice-db.py <kokoro_model_dir> [voice]` (see the script header). It is resumable: it records only rows whose text or voice changed (or are new) and keeps the rest, so unchanged clips stay byte for byte the same. It deletes nothing. Intro clips are 64 kbps AAC.
 - Captions come from the same `text` column. Every spoken line must keep its caption.
 - Extract: `python3 scripts/extract-voice-clips.py` writes the intro clips (`id` starting with `intro-`) to `public/audio/voice/<id>.m4a`. It uses only the Python standard library and is safe to run again (files that already match are left alone). Run it after every rebuild of the database and commit the changed `.m4a` files.
 - `src/data/introScript.ts` points at those files. Each card's `durationMs` is the clip's `duration_ms` rounded to the nearest 100 ms. `tests/data/introScript.test.ts` checks the files exist and the durations agree.
@@ -19,7 +19,7 @@
 - The voice does not read that text raw. `toSpoken()` (`src/audio/toSpoken.ts`) rewrites symbols for the ear: `x` becomes "times", `+` "plus", `-` between numbers "minus", `=` "equals", `%` "percent", `^` "to the power of", `___` "blank", and so on. `text_sha256` is the sha256 of that spoken form, so changing `toSpoken` rebuilds the affected clips.
 - Audio: mono AAC in MP4, 48 kbps, mime `audio/mp4`. Voice: Kokoro `am_michael`, speed 0.95, `en-us`. `kind` is `bark`, `question`, `passage` or `intro` (reading passages are spoken inside the question, so there are no `passage` rows today).
 
-**Manifest.** `npx tsx scripts/voice-manifest.ts --grades 0-4` prints `[{id, kind, text, spoken}]`. It fails if two different texts share an id. Wipeout lines are the shared tumble lines plus both teams' own lines: 42 today. The volumes hold the 30 recorded before 2026-10-25 (27 still used: three near twins were dropped). The 15 lines added on 2026-10-25 have no clip yet; the app server answers 404 and the game falls back to the browser voice with the caption (`tests/audio/tumbleVoice.test.ts` lists them). Rebuild the volumes to record them.
+**Manifest.** `npx tsx scripts/voice-manifest.ts --grades 0-4` prints `[{id, kind, text, spoken}]`. It fails if two different texts share an id. Wipeout lines are the shared tumble lines plus both teams' own lines: 42 today, all recorded in all three volumes (the 15 newest on 2026-10-25). Each volume also keeps 3 older wipeout rows no longer used (near twins that were dropped) and its question rows; nothing is deleted. A line with no clip gets a 404 from the app server, and the game falls back to the browser voice with the caption. `tests/audio/tumbleVoice.test.ts` fails while any wipeout line has no clip in `voice-k4.sqlite`.
 
 **Rebuild** (Python venv with `kokoro-onnx` and `soundfile`, Kokoro v1.0 model files, macOS `afconvert`):
 
@@ -29,3 +29,33 @@
 The build is resumable: it keeps rows whose spoken text is unchanged and rebuilds the rest (3 worker processes by default). The check confirms every manifest id has audio, 0.5 s to 40 s long, and prints totals. Defaults are 0.5 s to 40 s; K to 4 has one 0.43 s sight word ("as") and 11 long reading passages up to 47.6 s, so run it with `--min-ms 300 --max-ms 60000`. The build stops if the file passes 80 MB (GitHub rejects 100 MB); delete it and rerun with `--bitrate 32000`.
 
 **Phases.** Phase 1 is grades K to 4 (`db/voice-k4.sqlite`, wipeout lines included). Phase 2 is two volumes so no file nears GitHub's 100 MB limit: `--grades 5-8 --out db/voice-5-8.sqlite` (586 clips, 64.6 MB) and `--grades 9-12 --out db/voice-9-12.sqlite` (350 clips, 25.4 MB). Check them with `--min-ms 300 --max-ms 90000`. Each volume repeats the 30 wipeout lines (same text, same id); the app server uses the first copy it finds. `--grades` also takes one grade (`7`) or `all`.
+
+## Record only what is missing (run again after anyone adds a line)
+
+Tools used on 2026-10-25 (build time only, kept outside the repo, nothing ships): Python 3.14, `kokoro-onnx==0.4.7` (MIT), `onnxruntime==1.31.0`, `soundfile==0.14.0`, macOS `afconvert`, and the Kokoro v1.0 model files from the kokoro-onnx GitHub release `model-files-v1.0` (Kokoro-82M, Apache-2.0):
+
+    python3 -m venv ~/kokoro-venv
+    ~/kokoro-venv/bin/pip install kokoro-onnx==0.4.7 soundfile==0.14.0
+    mkdir -p ~/kokoro-model
+    curl -fL -o ~/kokoro-model/kokoro-v1.0.onnx https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/kokoro-v1.0.onnx
+    curl -fL -o ~/kokoro-model/voices-v1.0.bin https://github.com/thewh1teagle/kokoro-onnx/releases/download/model-files-v1.0/voices-v1.0.bin
+
+espeak-ng (inside `espeakng_loader`) fails with "Error processing file .../phontab" when its data folder sits on a long path. Copy that folder to a short path and point `ESPEAK_DATA_PATH` at it (both build scripts read it):
+
+    cp -R ~/kokoro-venv/lib/python3.*/site-packages/espeakng_loader/espeak-ng-data ~/esd
+    export ESPEAK_DATA_PATH=~/esd
+
+Then, from the repo root:
+
+    ~/kokoro-venv/bin/python scripts/build-voice-index.py ~/kokoro-model --grades 0-4 --out db/voice-k4.sqlite
+    ~/kokoro-venv/bin/python scripts/build-voice-index.py ~/kokoro-model --grades 5-8 --out db/voice-5-8.sqlite
+    ~/kokoro-venv/bin/python scripts/build-voice-index.py ~/kokoro-model --grades 9-12 --out db/voice-9-12.sqlite
+    python3 scripts/check-voice-index.py db/voice-k4.sqlite --grades 0-4
+
+Each build prints how many clips it kept and how many it recorded; only lines with no clip (or new spoken words) are recorded. For an intro card, edit `docs/NARRATION.md` and `src/data/introScript.ts`, then:
+
+    ~/kokoro-venv/bin/python scripts/build-voice-db.py ~/kokoro-model
+    python3 scripts/extract-voice-clips.py
+    python3 scripts/measure-intro-timings.py
+
+and set each changed card's `durationMs` (and `DB_DURATIONS_MS` in `tests/data/introScript.test.ts`) from the printed lengths. Sizes after the 2026-10-25 run: `voice.sqlite` 0.9 MB, `voice-k4.sqlite` 43.2 MB, `voice-5-8.sqlite` 64.9 MB, `voice-9-12.sqlite` 25.6 MB (GitHub rejects files over 100 MB).

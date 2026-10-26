@@ -21,27 +21,30 @@ Caption cue text: "Welcome to Time Clash!"
 
 Card title: "Aim"
 
-**Card 3: Shoot twice (about 6 seconds)**
-> You get two shots each turn. Hit the other base to lower its health. Empty the bar and you win!
+**Card 3: Shoot twice (about 10 seconds)**
+> You get two goes each turn. Fire your launcher, or send your helper walking. Hit the other base to lower its health. Empty the bar and you win!
 
-Card title: "Two Shots"
+Card title: "Two Goes"
+
+The heading keeps the old name "Shoot twice" on purpose: `build-voice-db.py` makes the clip file name from it (`intro-03-shoot-twice.m4a`). Only the card title and the words changed.
 
 **Card 4: Reload (about 11 seconds)**
-> After shot two, answer a question to reload. Answer fast to earn bonus scrap. Mistake? Even Chrono trips. You still reload! Get it right for a Power Shot!
+> After two goes, answer a question to reload. Answer fast to earn bonus scrap. Mistake? Even Chrono trips. You still reload! Get it right for a Power Shot!
 
 Card title: "Reload"
 
 **Card 5: Wipeouts and passing the screen (about 10 seconds)**
-> A blast can bump you. Then you do a silly wipeout! You just lose a little dignity! Pass the screen between turns. No peeking! Let's clash across time!
+> A blast can bump you. Then you do a silly wipeout! You just lose a little dignity! Pass the screen between turns. Let's clash across time!
 
 Card title: "Wipeouts and Turns"
 
-**Total:** about 40 seconds (the five recorded clips add up to 42.2 s). Card 4 has 4 captions. Jokes: the wind rascal, Chrono tripping, and the lost dignity.
+**Total:** about 40 seconds (the five recorded clips add up to 44.4 s). Card 4 has 4 captions. Jokes: the wind rascal, Chrono tripping, and the lost dignity.
 
-## Squads: the 2-goes wording (re-record needed)
-Squads is on, so a turn is 2 goes, not 2 shots. The recorded clips for cards 3 and 4 still say "two shots" and "After shot two". The words below replace them when the clips are re-recorded with the same Kokoro settings. Until then the cards play the old clips with matching captions, so voice and captions never disagree.
-- Card 3, "Two Goes": "You get two goes each turn. Fire your launcher, or send your helper walking. Hit the other base to lower its health. Empty the bar and you win!"
-- Card 4, first sentence: "After go two, answer a question to reload." The rest of the card stays.
+## Squads: the 2-goes wording (recorded 2026-10-25)
+Squads is on, so a turn is 2 goes, not 2 shots. Cards 3, 4 and 5 were re-recorded on 2026-10-25 with the same Kokoro settings:
+- Card 3 is now "Two Goes" and adds the helper: "Fire your launcher, or send your helper walking."
+- Card 4 starts "After two goes, answer a question to reload." (an earlier draft said "After go two", which is harder to follow).
+- Card 5 drops "No peeking!", because the pass screen no longer says it (owner, 2026-10-24: the cover already hides the board).
 
 ## Squads lines (built)
 Every line is said by the device voice only after a tap (`noClip`, no network request), and shows the same words as a caption. No line holds a child's name or any question text.
@@ -63,7 +66,7 @@ Each time the pass screen (the cover between turns) opens, Chrono says its own w
 ## How the audio is made
 The clips are generated with the Kokoro text-to-speech model (voice `am_michael`) and stored in `db/voice.sqlite` (see `db/README.md` and `public/audio/CREDITS.md`). The site is static, so `python3 scripts/extract-voice-clips.py` copies the five intro clips into `public/audio/voice/` as `.m4a` files (AAC in an MP4 container). Chromium, WebKit and iPad Safari all play that format. A real family recording can replace any clip later: rebuild the database, run the extract script, and commit the files.
 
-To change only the intro words without touching the 24 wipeout clips, update the five `UPDATE voice_clips` rows (text, audio, duration_ms, bytes, sha256) with the same Kokoro settings (`am_michael`, speed 0.95, `en-us`, 64 kbps AAC), then run the extract script. Keep each card header as `**Card N: Title (about X seconds)**` followed by one `> ` line, because `build-voice-db.py` reads that shape. The app server does not serve intro clips: they ship as static files, so no hash or manifest changes.
+To change only the intro words, edit the card here and in `src/data/introScript.ts`, then run `python scripts/build-voice-db.py <model_dir>` (see `db/README.md`). It is resumable: it records only the cards whose words changed (same Kokoro settings: `am_michael`, speed 0.95, `en-us`, 64 kbps AAC) and keeps every other row. Then run the extract script, `python3 scripts/measure-intro-timings.py`, and set each changed card's `durationMs`. Keep each card header as `**Card N: Title (about X seconds)**` followed by one `> ` line, because `build-voice-db.py` reads that shape. The app server does not serve intro clips: they ship as static files, so no hash or manifest changes.
 
 If an audio file fails to load, the game falls back to the browser `speechSynthesis` API and still shows captions.
 

@@ -7,6 +7,7 @@ import { simulateShot } from '../src/game/ballistics';
 import { chooseSlot, freshBases, saveSlot, type BasesState } from '../src/game/baseBuilder';
 import { cutAtWalls, flightLayout, type Wall } from '../src/game/builtBase';
 import { AIM, TEAM_FACING, WORLD } from '../src/game/config';
+import { riderBricks, riderOrigin } from '../src/game/riders';
 import type { AimInput, BattleLayout, BrickId, BrickView, Match, Team } from '../src/game/types';
 import { HUGE, TINY, TYPICAL } from '../tests/helpers/builtBases';
 import { pressesFor } from './support/aim';
@@ -80,7 +81,7 @@ async function expectBricksClear(page: Page, where: string): Promise<void> {
   }
 }
 
-/** A Team Past aim (default launcher) whose shell stops on a Future brick picked by `pick`. */
+/** A Team Past aim (default launcher, where it stands) whose shell stops on a Future brick picked by `pick`. */
 function aimAtBrick(m: Match, layout: BattleLayout, pick: (id: BrickId) => boolean): AimInput {
   const fly = flightLayout(layout, m.builtBase!);
   const walls: Wall[] = (Object.entries(m.bricks!) as Array<[BrickId, BrickView]>)
@@ -93,7 +94,8 @@ function aimAtBrick(m: Match, layout: BattleLayout, pick: (id: BrickId) => boole
         simulateShot({
           angleDeg,
           power,
-          origin: layout.launchOrigins.PAST,
+          // The Cannon Knight stands on the top brick under it (riders.ts).
+          origin: riderOrigin('PAST', 'C', layout, riderBricks(m, 'PAST')),
           facing: TEAM_FACING.PAST,
           wind: m.wind,
           layout: fly,

@@ -167,7 +167,11 @@ export async function expectMessageClear(
     height: r.h * k,
   });
   const field: Array<[string, Box]> = [
-    ...fighterKeepOut(layout!).map((r, i): [string, Box] => [`fighter part ${i}`, onScreen(r)]),
+    // A fighter on a built base stands on its top brick, lower than on the old castle.
+    ...fighterKeepOut(
+      layout!,
+      Object.fromEntries(bricks.flatMap((l) => l.riders ?? []).map((r) => [r.id, r.dy])),
+    ).map((r, i): [string, Box] => [`fighter part ${i}`, onScreen(r)]),
     ['Past base', onScreen(layout!.bases.PAST)],
     ['Future base', onScreen(layout!.bases.FUTURE)],
     ...bricks.flatMap((l) => l.boxes.map((b): [string, Box] => [`${l.team} brick`, onScreen(b)])),

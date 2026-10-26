@@ -19,7 +19,8 @@ import { flightLayout, mountAim, roleAngles } from './builtBase';
 import { withWalls } from './battlefield';
 import { aliveUnitIds, pathGap } from './damage';
 import { wallsInView } from './evasion';
-import { DEFAULT_UNIT, firingOrigin, unitBox, unitById, type UnitId } from './units';
+import { DEFAULT_UNIT, unitBox, unitById, type UnitId } from './units';
+import { shooterOrigin } from './riders';
 
 /** `mount` is set when the bot picked a mounted weapon (BASE_IN_BATTLE on); `unit` is then the fighter that stays picked. */
 export type BotShot = AimInput & { unit: UnitId; mount?: MountId };
@@ -195,7 +196,10 @@ export const chooseShotWith = (
   const firing = (state.mounts?.[side] ?? []).filter((m) => m.alive && m.canFire);
   const mount =
     firing.length > 0 && rng.next() < BASE_IN_BATTLE.botMountChance ? rng.pick(firing) : null;
-  const origin = mount ? mount.origin : firingOrigin(side, unit.id, layout);
+  // The rider's spot is read on the real field (the flight copy moves the base boxes away).
+  const origin = mount
+    ? mount.origin
+    : shooterOrigin(state, side, unit.id, ctx.layout ?? PHASE1_LAYOUT);
   const speedScale = mount
     ? BASE_IN_BATTLE.mountSpeedScale
     : effects[side].speedScale * unit.speedScale;

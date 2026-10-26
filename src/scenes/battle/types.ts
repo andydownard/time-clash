@@ -18,6 +18,7 @@ import type {
   TeamStats,
   Vec2,
 } from '../../game/types';
+import type { RiderFall } from './riderFalls';
 import type { UnitId } from '../../game/units';
 import type { Levels } from '../../questions/calibration';
 import type { PickHistory, QuestionBank } from '../../questions/types';
@@ -130,7 +131,7 @@ export interface BattleView {
   birdClockMs?(): number;
   /** A shell bumped a bird: feathers, a spin and the "Squawk!" word. */
   playBirdBump?(bump: BirdBump): void;
-  /** The turn's gust blew on the shell: streaks, an arrow and the "Whoosh!" word. */
+  /** The turn's gust blew on the shell: streaks, an arrow and the "Gust!" word. */
   playGust?(gust: GustHit): void;
   /**
    * Built bases: redraw `team`'s bricks as the rules have them now. The bricks in `fell` (the
@@ -141,6 +142,11 @@ export interface BattleView {
     fell: readonly BrickId[],
     bricks: Readonly<Record<BrickId, BrickView>>,
   ): Promise<void>;
+  /**
+   * Built bases: fighters whose brick fell drop with it, flop over, puff dust and stand up on the
+   * lower spot (riderFall.ts). Plays alongside the crumble. Resolves when they stand again.
+   */
+  playRiderFalls?(team: Team, falls: readonly RiderFall[]): Promise<void>;
 }
 
 /** What Victory needs. */
@@ -150,6 +156,8 @@ export type BattleResult = {
   stats: Record<Team, TeamStats>;
   /** Same players, seed + 1, the other team starts. */
   rematch: MatchOptions;
+  /** Sides whose built base lost bricks this match (Victory says the saved base is safe). */
+  crumbled?: Team[];
 };
 
 /** Data handed to the scene when it starts. main.ts builds it. */

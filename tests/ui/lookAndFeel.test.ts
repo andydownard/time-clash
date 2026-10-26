@@ -222,8 +222,13 @@ describe('focus', () => {
 });
 
 describe('no color-only meaning', () => {
-  it('the chosen chip shows a check, the right tile a check and a thick border, the near miss a dashed border', () => {
-    expect(ui).toMatch(/\.tc-chip\[aria-checked='true'\]::before\s*\{\s*content:\s*'\\2713'/);
+  it('the chosen chip is a solid fill, the right tile a check and a thick border, the near miss a dashed border', () => {
+    // A picked chip is filled against outlined neighbours, with no check mark (Regression 24).
+    expect(bodyOf(".tc-chip[aria-checked='true']")).toMatch(
+      /background:\s*var\(--tc-chip-picked-bg\)/,
+    );
+    expect(bodyOf('.tc-chip')).toMatch(/background:\s*transparent/);
+    expect(ui).not.toMatch(/\.tc-chip\[aria-checked='true'\]::before/);
     expect(bodyOf(".tc-choice[data-state='right']")).toMatch(/border:\s*6px solid/);
     expect(ui).toMatch(/\.tc-choice\[data-state='right'\]::after\s*\{\s*content:\s*'\\2713'/);
     expect(bodyOf(".tc-choice[data-state='tried']")).toMatch(/border:\s*4px dashed/);
