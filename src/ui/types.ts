@@ -140,8 +140,6 @@ export type ReloadModalOptions = {
   question: Question;
   team: Team;
   playerName: string;
-  /** The other side, shown as a "Waiting" tag. Optional. Their name is not secret. */
-  waiting?: { team: Team; name: string };
   /**
    * The first reload of this match. Only then does the card say "Answer to reload your
    * launcher." (Andy, 2026-10-25). Kept per match, never stored. Default false.

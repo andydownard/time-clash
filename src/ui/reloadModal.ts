@@ -125,39 +125,20 @@ export function showReloadModal(ctx: UiCtx, options: ReloadModalOptions): Promis
           doc,
           'div',
           { class: 'tc-turn-chips' },
-        // Whose turn it is, in words and a shape, so it is never color alone.
-        h(
-          doc,
-          'div',
-          { class: 'tc-turn-chip', 'data-team': options.team, 'data-state': 'turn' },
-          h(doc, 'span', {
-            class: 'tc-turn-icon',
-            'aria-hidden': 'true',
-            text: PASS_SCREEN.icon[options.team],
-          }),
-          h(doc, 'span', { class: 'tc-turn-team', text: TEAM_NAMES[options.team] }),
-          h(doc, 'span', { class: 'tc-reload-who', text: options.playerName }),
-          h(doc, 'span', { class: 'tc-turn-tag', text: COPY.yourTurn }),
-        ),
-        // The other side waits. Words and a shape again, never color alone.
-        options.waiting
-          ? h(
-              doc,
-              'div',
-              {
-                class: 'tc-turn-chip',
-                'data-team': options.waiting.team,
-                'data-state': 'waiting',
-              },
-              h(doc, 'span', {
-                class: 'tc-turn-icon',
-                'aria-hidden': 'true',
-                text: PASS_SCREEN.icon[options.waiting.team],
-              }),
-              h(doc, 'span', { class: 'tc-reload-who', text: options.waiting.name }),
-              h(doc, 'span', { class: 'tc-turn-tag', text: COPY.waiting }),
-            )
-          : null,
+          // Whose turn it is, in words and a shape, so it is never color alone.
+          h(
+            doc,
+            'div',
+            { class: 'tc-turn-chip', 'data-team': options.team, 'data-state': 'turn' },
+            h(doc, 'span', {
+              class: 'tc-turn-icon',
+              'aria-hidden': 'true',
+              text: PASS_SCREEN.icon[options.team],
+            }),
+            h(doc, 'span', { class: 'tc-turn-team', text: TEAM_NAMES[options.team] }),
+            h(doc, 'span', { class: 'tc-reload-who', text: options.playerName }),
+            h(doc, 'span', { class: 'tc-turn-tag', text: COPY.yourTurn }),
+          ),
         ),
       ),
       h(
@@ -175,7 +156,9 @@ export function showReloadModal(ctx: UiCtx, options: ReloadModalOptions): Promis
           timerBlock,
         ),
         question.passage
-          ? h(doc, 'p', { id: 'tc-reload-passage', class: 'tc-passage',
+          ? h(doc, 'p', {
+              id: 'tc-reload-passage',
+              class: 'tc-passage',
               'data-label': COPY.readStory,
               text: question.passage,
             })
@@ -285,7 +268,11 @@ export function showReloadModal(ctx: UiCtx, options: ReloadModalOptions): Promis
               { class: 'tc-bonus-burst', 'data-role': 'bonus-burst' },
               h(doc, 'span', { class: 'tc-bonus-coin', 'aria-hidden': 'true' }),
               h(doc, 'span', { class: 'tc-bonus-pop', text: COPY.bonusPop }),
-              h(doc, 'span', { class: 'tc-bonus-sound', 'aria-hidden': 'true', text: COPY.bonusSound }),
+              h(doc, 'span', {
+                class: 'tc-bonus-sound',
+                'aria-hidden': 'true',
+                text: COPY.bonusSound,
+              }),
             ),
           );
           ctx.sfx('bonus');

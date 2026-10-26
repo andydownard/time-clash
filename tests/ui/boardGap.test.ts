@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-// Pins the gap-check fixes from docs/DESIGN_GUIDANCE.md: the Setup title and line, the turn-order
-// tags on the reload card, the story label, and Orbitron for reading words only (never digits).
+// Pins the gap-check fixes from docs/DESIGN_GUIDANCE.md: the Setup title and line, the turn tag
+// on the reload card (the Waiting tag was cut on 2026-10-25), the story label, and Orbitron for reading words only (never digits).
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { beforeEach, describe, expect, it } from 'vitest';
@@ -30,24 +30,17 @@ describe('Reload board gap', () => {
       question,
       team: 'PAST',
       playerName: 'Alex',
-      waiting: { team: 'FUTURE', name: 'Sam' },
     });
 
-  it('shows who is waiting, in words and a shape, beside whose turn it is', () => {
+  it('shows one chip, whose turn it is, in words and a shape: no Waiting chip', () => {
     void open();
     const chips = [...q(TEST_IDS.reloadModal)!.querySelectorAll('.tc-reload-head .tc-turn-chip')];
-    expect(chips).toHaveLength(2);
+    expect(chips).toHaveLength(1);
     expect(chips[0]!.getAttribute('data-state')).toBe('turn');
-    const wait = chips[1]!;
-    expect(wait.getAttribute('data-state')).toBe('waiting');
-    expect(wait.getAttribute('data-team')).toBe('FUTURE');
-    expect(wait.textContent).toContain('Sam');
-    expect(wait.textContent).toContain(RELOAD.waiting);
-  });
-
-  it('with no waiting player there is one chip, as before', () => {
-    void s.overlay.showReloadModal({ question: mathQ, team: 'PAST', playerName: 'Alex' });
-    expect(q(TEST_IDS.reloadModal)!.querySelectorAll('.tc-turn-chip')).toHaveLength(1);
+    expect(chips[0]!.textContent).toContain('Alex');
+    expect(chips[0]!.querySelector('.tc-turn-icon')).not.toBeNull();
+    expect(q(TEST_IDS.reloadModal)!.querySelector('[data-state="waiting"]')).toBeNull();
+    expect(q(TEST_IDS.reloadModal)!.textContent).not.toContain('Waiting');
   });
 
   it('says "Answer to reload your launcher." only when told it is the first reload', () => {

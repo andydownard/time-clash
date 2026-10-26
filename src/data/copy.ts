@@ -410,7 +410,6 @@ export const RELOAD = {
   hint: 'Hint',
   hintIcon: '💡',
   yourTurn: 'Your turn!',
-  waiting: 'Waiting',
   readStory: 'Read the story',
   gotIt: 'Got it',
   why: (hint: string): string => `Clue: ${hint}`,

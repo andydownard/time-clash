@@ -726,10 +726,6 @@ export class BattleFlow {
         team,
         playerName: player.name,
         firstReload,
-        waiting: {
-          team: team === 'PAST' ? 'FUTURE' : 'PAST',
-          name: match.snapshot().players[team === 'PAST' ? 1 : 0].name,
-        },
         quip: (kind) => RELOAD_QUIPS[kind][this.quipBags[kind].next()] ?? null,
       });
       this.live();

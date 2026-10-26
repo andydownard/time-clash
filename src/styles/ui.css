@@ -1468,18 +1468,6 @@ body:has(.tc-hud):not([data-cover]):not(:has([data-layer='screen'] > *)) .tc-cap
   align-items: flex-end;
   gap: var(--tc-s-1);
 }
-/* On a narrow screen the second tag has no room, and the card must fit without scrolling. */
-@media (max-width: 900px) {
-  .tc-turn-chip[data-state='waiting'] {
-    display: none;
-  }
-}
-.tc-turn-chip[data-state='waiting'] {
-  border-color: var(--tc-strip-text);
-  background: transparent;
-  color: var(--tc-strip-text);
-  box-shadow: none;
-}
 .tc-reload-who::before,
 .tc-turn-tag::before {
   content: '\00B7';
