@@ -4975,8 +4975,8 @@ button.tc-forge-row[aria-disabled='true'],
 }
 .tc-plan-card {
   justify-content: flex-start;
-  gap: var(--tc-s-3);
-  padding: var(--tc-s-1) var(--tc-s-4);
+  gap: var(--tc-s-2);
+  padding: var(--tc-s-1) var(--tc-s-3);
   text-align: left;
   letter-spacing: 0.01em;
 }
@@ -5033,7 +5033,7 @@ button.tc-forge-row[aria-disabled='true'],
   grid-column: 1 / -1;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--tc-s-2);
+  gap: var(--tc-s-1);
 }
 .tc-plan-ammo {
   justify-content: flex-start;
