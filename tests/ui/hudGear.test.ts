@@ -114,6 +114,10 @@ describe('evasion button', () => {
     );
     expect(evasionBtn().getAttribute('aria-pressed')).toBe('true');
     expect(evasionBtn().getAttribute('aria-label')).toBe(GEAR_COPY.armed('Stone Wall'));
+    // Armed keeps the same words as ready (no check mark), so the button does not change size.
+    // The Ember ring and aria-pressed carry the state (Regression 24).
+    expect(evasionBtn().textContent).not.toMatch(/[✓✔]/);
+    expect(evasionBtn().textContent).toContain(GEAR_COPY.abilities.barricade.short);
   });
 
   it('is off while recharging or used up, and says why', () => {

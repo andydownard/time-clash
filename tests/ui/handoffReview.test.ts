@@ -194,7 +194,7 @@ describe('plain numerals for young readers', () => {
 });
 
 describe('Setup', () => {
-  it('picked chips are Ember with Ink text and a check, see-through chips take the team edge', () => {
+  it('picked chips are a solid Ember fill with Ink text and no check, see-through chips take the team edge', () => {
     expect(vars['--tc-chip-picked-bg']).toBe(vars['--tc-ember']);
     expect(vars['--tc-chip-picked-text']).toBe(vars['--tc-ink-deep']);
     expect(vars['--tc-chip-past-edge']).toBe(vars['--tc-purple-300']);
@@ -206,7 +206,7 @@ describe('Setup', () => {
     expect(bodyOf(".tc-team-card[data-team='FUTURE']")).toContain(
       '--tc-sel-edge: var(--tc-chip-future-edge)',
     );
-    expect(bodyOf(".tc-chip[aria-checked='true']::before")).toContain('margin-right');
+    expect(bodyOf(".tc-chip[aria-checked='true']::before")).toBe('');
   });
   it('the grade is a dropdown in plain letters, at least 56px tall and 20px text', () => {
     expect(bodyOf('.tc-select')).toMatch(/min-height:\s*var\(--tc-tap\)/);

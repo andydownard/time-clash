@@ -189,3 +189,66 @@ test('Match length: Normal at first, big enough to tap, and it stays on screen',
   });
   expect(fits).toBe(true);
 });
+
+// Owner, 2026-10-25: "selectors stay same size when toggled. no check needed when selected."
+// A pick only changes colors. No option grows, and the strip never shifts (Regression 24).
+test('picking a selector option never changes the size or place of any option', async ({
+  page,
+}) => {
+  await toSetup(page);
+  await page.evaluate(() => document.fonts.ready);
+  const groups: Record<string, string[]> = {
+    'Play with': ['play-with-person', 'play-with-computer'],
+    'Team Past subject': ['reading', 'math', 'both'].map((s) => `setup-subject-PAST-${s}`),
+    'Team Future subject': ['reading', 'math', 'both'].map((s) => `setup-subject-FUTURE-${s}`),
+    'Match length': ['short', 'normal', 'long'].map((l) => `setup-length-${l}`),
+  };
+  const boxes = (ids: string[]) =>
+    page.evaluate(
+      (list) =>
+        list.map((id) => {
+          const el = document.querySelector<HTMLElement>(`[data-testid="${id}"]`)!;
+          const r = el.getBoundingClientRect();
+          // The words sit in the same place too.
+          const range = document.createRange();
+          range.selectNodeContents(el);
+          const t = range.getBoundingClientRect();
+          return { id, x: r.x, y: r.y, w: r.width, h: r.height, tx: t.x, tw: t.width };
+        }),
+      ids,
+    );
+  for (const [name, ids] of Object.entries(groups)) {
+    const before = await boxes(ids);
+    // Each option in turn, then back to the first, so every option is seen picked and not.
+    // (Play with "Computer player" swaps a card, so only the strip itself is compared.)
+    for (const id of [...ids.slice(1), ...ids.slice(0, 1)]) {
+      await tid(page, id).click();
+      await expect(tid(page, id)).toHaveAttribute('aria-checked', 'true');
+      const after = await boxes(ids);
+      for (const [i, b] of before.entries()) {
+        const a = after[i]!;
+        for (const k of ['x', 'y', 'w', 'h', 'tx', 'tw'] as const) {
+          expect
+            .soft(Math.abs(a[k] - b[k]), `${name}: ${b.id} ${k} after picking ${id}`)
+            .toBeLessThanOrEqual(0.5);
+        }
+      }
+    }
+    // Options in one strip share one width (neighbours overlap their 3px edge).
+    const widths = before.map((b) => b.w);
+    expect
+      .soft(Math.max(...widths) - Math.min(...widths), `${name}: equal widths`)
+      .toBeLessThanOrEqual(3.5);
+    // No check mark is drawn on any option, picked or not.
+    const marks = await page.evaluate(
+      (list) =>
+        list.filter((id) => {
+          const el = document.querySelector<HTMLElement>(`[data-testid="${id}"]`)!;
+          const mark = getComputedStyle(el, '::before').content;
+          return /[✓✔]/.test(`${el.textContent} ${mark}`);
+        }),
+      ids,
+    );
+    expect.soft(marks, `${name}: options with a check mark`).toEqual([]);
+  }
+});

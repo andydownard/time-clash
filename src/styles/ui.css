@@ -93,7 +93,8 @@ body {
      pressed. One filled primary per screen. Secondary is the outlined neutral. Destructive is
      never the primary.
    - Selector picks a value. Flat, never raised, never pressed down: options in one connected
-     strip (.tc-chips of .tc-chip, role radio), the picked one Ember with a check mark. An on/off
+     strip (.tc-chips of .tc-chip, role radio), the picked one a solid Ember fill. No check mark,
+     and a pick never changes any option's size (Regression 24). An on/off
      setting is one .tc-chip.tc-toggle (role switch). More than about five values: a dropdown
      (.tc-select).
    - Link (.tc-link) is a quiet, rare action: underlined text, no box. */
@@ -322,9 +323,12 @@ body {
 .tc-link:hover {
   text-decoration-thickness: 3px;
 }
-/* Selector option. Flat: see-through with an outline, no edge, no press. The picked option is
-   filled Ember with Ink words and a check mark, so the pick is never color alone. The outline
-   color (--tc-sel-edge) follows the surface, so a strip stays one unbroken shape. */
+/* Selector option. Flat: see-through with an outline, no edge, no press. The picked option is a
+   solid Ember fill with Ink words, against outlined see-through neighbours, so the pick is a
+   filled shape, never color alone. No check mark: the fill already says it (owner, 2026-10-25).
+   A pick changes only colors, never the border width, padding, weight or words, so no option
+   grows and the strip never shifts (Regression 24). The outline color (--tc-sel-edge) follows
+   the surface, so a strip stays one unbroken shape. */
 .tc-panel,
 .tc-reload-card,
 .tc-intro-card {
@@ -361,11 +365,6 @@ body {
   z-index: 1;
   background: var(--tc-chip-picked-bg);
   color: var(--tc-chip-picked-text);
-  font-weight: var(--tc-fw-new-heavy);
-}
-.tc-chip[aria-checked='true']::before {
-  content: '\2713';
-  margin-right: var(--tc-s-1);
 }
 /* One connected strip: neighbours share an edge and only the ends are rounded. */
 .tc-chips,
@@ -374,8 +373,10 @@ body {
   gap: 0;
 }
 .tc-chips {
-  display: flex;
-  flex-wrap: nowrap;
+  /* Equal columns, each as wide as the widest option, so every option keeps one size. */
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
 }
 :is(.tc-chips, .tc-forge-picker, .tc-plan-cards) > .tc-chip + .tc-chip {
   margin-left: -3px;
@@ -2632,9 +2633,11 @@ button.tc-forge-row[aria-disabled='true'],
   height: 32px;
 }
 .tc-ws-style[aria-checked='true'] {
-  border: 4px solid var(--tc-ink-deep);
+  border-color: var(--tc-ink-deep);
   background: var(--tc-ember);
-  box-shadow: 0 0 0 4px var(--tc-purple-500);
+  box-shadow:
+    inset 0 0 0 1px var(--tc-ink-deep),
+    0 0 0 4px var(--tc-purple-500);
 }
 .tc-workshop[data-team='FUTURE'] .tc-ws-style {
   border-color: var(--tc-blue-700);
@@ -4798,8 +4801,8 @@ button.tc-forge-row[aria-disabled='true'],
   cursor: pointer;
 }
 .tc-unit[aria-checked='true'] {
-  border-width: 7px;
   border-color: var(--tc-ember);
+  box-shadow: inset 0 0 0 4px var(--tc-ember);
   background: var(--tc-ember);
   color: var(--tc-ink-deep);
   position: relative;
@@ -5062,7 +5065,8 @@ button.tc-forge-row[aria-disabled='true'],
 .tc-gear[data-compact='true'] .tc-gear-long {
   display: none;
 }
-/* Armed shows a check mark and a bright ring, not color alone. */
+/* Armed shows a bright ring (a shape), not color alone. The words stay the same, so the
+   button keeps its size (Regression 24). */
 .tc-gear-btn[aria-pressed='true'] {
   border-color: var(--tc-ember);
   box-shadow: 0 0 0 3px var(--tc-ember);
@@ -5259,8 +5263,8 @@ button.tc-forge-row[aria-disabled='true'],
   letter-spacing: 0.03em;
 }
 .tc-helper[aria-checked='true'] {
-  border-width: 7px;
   border-color: var(--tc-ember);
+  box-shadow: inset 0 0 0 4px var(--tc-ember);
   position: relative;
 }
 .tc-helper[aria-checked='true']::after {
