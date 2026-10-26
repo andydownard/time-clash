@@ -78,6 +78,26 @@ export function createHud(ctx: UiCtx) {
 
   const sendAim = (): void => handlers?.onAim({ ...aim });
 
+  // Escape is Back and H is Hear it for the walking helper. This runs first (capture), and a press
+  // it uses goes no further, so Escape never also pauses the game (Regression 4).
+  const onHelperKey = (e: KeyboardEvent): void => {
+    if (!parts || !handlers) return;
+    if (e.ctrlKey || e.metaKey || e.altKey || e.defaultPrevented) return;
+    if (ctx.coverKind() !== null || doc.body.dataset.cover || doc.body.dataset.paused) return;
+    if (e.key !== 'Escape' && e.key.toLowerCase() !== 'h') return;
+    if (doc.querySelector('[data-testid="settings-panel"]')) return;
+    const target = e.target as Element | null;
+    const typing =
+      target &&
+      'closest' in target &&
+      target.closest('textarea, select, [contenteditable], input:not([type="range"])');
+    if (typing) return;
+    const used = e.key === 'Escape' ? parts.squadBar.pressBack() : parts.squadBar.pressHear();
+    if (!used) return;
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
   const onKey = (e: KeyboardEvent): void => {
     if (!parts || !handlers) return;
     if (e.ctrlKey || e.metaKey || e.altKey) return;
@@ -523,7 +543,7 @@ export function createHud(ctx: UiCtx) {
       handlers = next;
       parts = build(next);
       ctx.layer.hud.append(parts.root);
-      parts.root.style.pointerEvents = 'auto';
+      doc.addEventListener('keydown', onHelperKey, true);
       doc.addEventListener('keydown', onKey);
       doc.defaultView?.addEventListener('resize', onResize);
       placeLane(doc);
@@ -622,6 +642,7 @@ export function createHud(ctx: UiCtx) {
       });
     },
     hide(): void {
+      doc.removeEventListener('keydown', onHelperKey, true);
       doc.removeEventListener('keydown', onKey);
       doc.defaultView?.removeEventListener('resize', onResize);
       doc.defaultView?.cancelAnimationFrame?.(laneFrame);

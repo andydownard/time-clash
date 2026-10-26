@@ -1,8 +1,10 @@
 // Phase 2 end to end: the Battle Plan (place and base spot), special ammo unlocked with Scrap and
 // fired in battle, and the evasion abilities. The turn is still two shots, then a reload.
 import type { Page } from '@playwright/test';
+import { WORLD } from '../src/game/config';
 import type { BattleLayout } from '../src/game/types';
 import { ANGLE_LABEL_MAX, fighterKeepOut } from '../src/scenes/battle/angleLabel';
+import { unitSpots } from '../src/scenes/battle/unitSpots';
 import { expect, test } from './fixtures';
 import { giveScrap, savedCamp } from './support/camp';
 import { saveShot } from './support/shots';
@@ -240,4 +242,25 @@ test('the gear sits by Fire, inside the window, and covers no other control', as
   // It sits right by Fire (centered over or under it).
   const center = (b: NonNullable<typeof gear>) => b.x + b.width / 2;
   expect(Math.abs(center(gear!) - center(fire!))).toBeLessThan(4);
+});
+
+test('tapping a fighter in the picture picks it, and Escape is Back on the Battle Plan', async ({
+  page,
+  browserName,
+}) => {
+  await toCamp(page);
+  await tid(page, 'camp-start').click();
+  await expect(tid(page, 'plan-back')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(tid(page, 'camp-start')).toBeVisible();
+  await tid(page, 'camp-start').click();
+  await tid(page, 'plan-go').click();
+  await readyUp(page);
+  const canvas = (await page.locator('canvas').first().boundingBox())!;
+  const k = canvas.width / WORLD.width;
+  const tag = unitSpots().find((s) => s.id === 'B')!.token;
+  expect((await snap(page)).selected.PAST).not.toBe('B');
+  await page.mouse.click(canvas.x + tag.x * k, canvas.y + tag.y * k);
+  await expect.poll(async () => (await snap(page)).selected.PAST).toBe('B');
+  await saveShot(page, browserName, 'tap-fighter');
 });

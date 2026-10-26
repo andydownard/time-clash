@@ -8,8 +8,11 @@ import {
   chronoBox,
   overlapShare,
   rectsOverlap,
+  unitAt,
+  unitHitZone,
   unitSpot,
   unitSpots,
+  TAP_MIN,
 } from '../../../src/scenes/battle/unitSpots';
 
 const spots = unitSpots();
@@ -126,5 +129,51 @@ describe('unit spots', () => {
     expect(feet).toBeLessThanOrEqual(BASES.PAST.y + 30);
     expect(c.x).toBe(220);
     expect(c.y).toBe(450);
+  });
+});
+
+describe('tapping a fighter in the picture', () => {
+  it('picks the fighter when the tap lands on its drawing or its tag', () => {
+    for (const s of spots) {
+      const mid = { x: s.box.x + s.box.w / 2, y: s.box.y + s.box.h / 2 };
+      expect(unitAt(mid, s.team)).toBe(s.id);
+      expect(unitAt({ x: s.token.x, y: s.token.y }, s.team)).toBe(s.id);
+    }
+  });
+
+  it('only picks from the team asked (the other side never answers)', () => {
+    const f = sideOf('FUTURE')[0]!;
+    expect(unitAt({ x: f.token.x, y: f.token.y }, 'PAST')).toBeNull();
+  });
+
+  it('a tap on empty sky picks nothing', () => {
+    expect(unitAt({ x: 640, y: 20 }, 'PAST')).toBeNull();
+    expect(unitAt({ x: -50, y: -50 }, 'FUTURE')).toBeNull();
+  });
+
+  it('every hit zone is at least the tap minimum on both sides, and holds box and tag', () => {
+    for (const s of spots) {
+      const z = unitHitZone(s);
+      expect(z.w).toBeGreaterThanOrEqual(TAP_MIN);
+      expect(z.h).toBeGreaterThanOrEqual(TAP_MIN);
+      expect(z.x).toBeLessThanOrEqual(s.box.x);
+      expect(z.x + z.w).toBeGreaterThanOrEqual(s.box.x + s.box.w);
+      expect(z.y).toBeLessThanOrEqual(s.token.y - s.token.r);
+      expect(z.y + z.h).toBeGreaterThanOrEqual(s.box.y + s.box.h);
+    }
+  });
+
+  it('where two zones overlap, the nearest fighter centre wins, and the answer is stable', () => {
+    for (const team of ['PAST', 'FUTURE'] as const) {
+      for (const s of sideOf(team)) {
+        const p = { x: s.box.x + s.box.w / 2, y: s.box.y + s.box.h / 2 };
+        expect(unitAt(p, team)).toBe(s.id);
+        expect(unitAt(p, team)).toBe(unitAt(p, team));
+      }
+    }
+  });
+
+  it('the TAP_MIN is 56px at the narrowest supported width (768 of 1280)', () => {
+    expect(TAP_MIN * (768 / WORLD.width)).toBeGreaterThanOrEqual(56);
   });
 });

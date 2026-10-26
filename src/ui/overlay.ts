@@ -34,6 +34,9 @@ export type OverlayDeps = {
   win?: Pick<Window, 'matchMedia'> | null;
 };
 
+/** The Back buttons of Setup, the Battle Plan, the Forge, the Workshop, Upgrade and Build Base. */
+const BACK_BUTTONS = '.tc-setup-back, .tc-plan-back, .tc-forge-back, .tc-bb-back';
+
 const LAYERS: ReadonlyArray<[LayerName, number]> = [
   ['hud', Z.hud],
   ['bubble', Z.bubble],
@@ -184,9 +187,25 @@ export const createOverlay: CreateOverlayWithDeps = (
       screensOpen++;
       raiseCaptions();
       let closed = false;
+      // Escape is Back on a screen that has a Back button. It leaves the other jobs for Escape
+      // alone: a press something else used, the Settings panel, a cover, and typing in a box.
+      const onEscape = (e: KeyboardEvent): void => {
+        if (e.key !== 'Escape' || e.defaultPrevented) return;
+        if (doc.body.dataset.cover || doc.body.dataset.paused) return;
+        if (doc.querySelector('[data-testid="settings-panel"]')) return;
+        if (layer.screen.lastElementChild !== el) return;
+        const t = e.target as Element | null;
+        if (t && t.closest?.('input, textarea, select, [contenteditable]')) return;
+        const back = el.querySelector<HTMLButtonElement>(BACK_BUTTONS);
+        if (!back || back.hidden || back.disabled) return;
+        e.preventDefault();
+        back.click();
+      };
+      doc.addEventListener('keydown', onEscape);
       return () => {
         if (closed) return;
         closed = true;
+        doc.removeEventListener('keydown', onEscape);
         el.remove();
         screensOpen--;
         raiseCaptions();

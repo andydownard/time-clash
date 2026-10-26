@@ -103,6 +103,12 @@ export interface BattleView {
   playImpact(info: ImpactInfo): Promise<void>;
   /** Awkward Tumble for that team's character. Resolves when it springs back up. */
   playTumble(team: Team): Promise<void>;
+  /**
+   * A tap on a fighter in the picture calls `handler` with its id (null stops that). The flow
+   * only acts while its player is choosing, so a tap at any other time does nothing. Optional so
+   * older fakes still work.
+   */
+  setUnitPickHandler?(handler: ((id: UnitId) => void) | null): void;
   /** Show which fighter is up for that team. */
   setSelectedUnit(team: Team, id: UnitId): void;
   /**

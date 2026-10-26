@@ -115,6 +115,7 @@ export function makeWorld(
   const coverViolations: string[] = [];
   let handlers: HudHandlers | null = null;
   let dragHandler: ((aim: AimInput) => void) | null = null;
+  let pickHandler: ((id: UnitId) => void) | null = null;
   const script = [...(opts.script ?? [])];
   const answers = [...(opts.answers ?? [])];
 
@@ -143,6 +144,9 @@ export function makeWorld(
     },
     setAimDragHandler: (h) => {
       dragHandler = h;
+    },
+    setUnitPickHandler: (h) => {
+      pickHandler = h;
     },
     setSelectedUnit: (team, id) => void selections.push({ team, id }),
     setSelectedMount: (team, id) => void mountSelections.push({ team, id }),
@@ -335,6 +339,8 @@ export function makeWorld(
     handlers: () => handlers,
     drag: (aim: AimInput) => dragHandler?.(aim),
     hasDragHandler: () => dragHandler !== null,
+    tapFighter: (id: UnitId) => pickHandler?.(id),
+    hasPickHandler: () => pickHandler !== null,
     deps,
   };
 }

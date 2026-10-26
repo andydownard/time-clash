@@ -33,6 +33,25 @@ describe('BattleFlow: fighter selection', () => {
     w.flow.destroy();
   });
 
+  it('a tap on a fighter in the picture picks it, like its HUD token', async () => {
+    const w = await aiming();
+    expect(w.hasPickHandler()).toBe(true);
+    w.tapFighter('D');
+    expect(w.match.snapshot().selected.PAST).toBe('D');
+    expect(w.selections.at(-1)).toEqual({ team: 'PAST', id: 'D' });
+    expect(w.hudStates.at(-1)!.selected).toBe('D');
+    w.flow.destroy();
+  });
+
+  it("a tap on the other team's fighter does nothing, and none works after destroy", async () => {
+    const w = await aiming();
+    w.tapFighter('2');
+    expect(w.match.snapshot().selected.PAST).toBe('C');
+    expect(w.match.snapshot().selected.FUTURE).not.toBe('2');
+    w.flow.destroy();
+    expect(w.hasPickHandler()).toBe(false);
+  });
+
   it('the preview starts from the selected fighter, not the default launcher', async () => {
     const w = await aiming();
     const first = w.previews.at(-1)!.dots![0]!;
