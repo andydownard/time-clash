@@ -664,13 +664,10 @@ export const PRACTICE_BOT = {
 // ---------- Base builder ----------
 /**
  * Before a battle a player builds a castle (Team Past) or a base (Team Future) from bricks on a
- * grid. On for everyone (owner decision, 2026-10-23). With `enabled` false, `?builder=1` in the
- * address still turns it on for a try-out (see `baseBuilderOn` in baseBuilder.ts).
+ * grid. It is the only Build Base screen (the old Scrap
+ * shop for upgrades was removed 2026-10-25).
  */
 export const BASE_BUILDER = {
-  enabled: true,
-  /** The query-string switch that turns it on without changing this file. */
-  queryParam: 'builder',
   /** The build plot in grid cells. The bottom `groundRows` rows are the foundation (not buildable). */
   cols: 24,
   rows: 12,

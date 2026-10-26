@@ -1,5 +1,6 @@
-// The Build Base (old shop) choices. Pure data and arithmetic, no Phaser. Each team has three, and each
-// goes from level 1 to 3. The effects are small on purpose: one purchase never wins the game.
+// Upgrade levels. Pure data and arithmetic, no Phaser. They can no longer be bought (the old Build Base
+// shop was removed 2026-10-25), but a level saved on a device still loads and counts in battle.
+// Each team has three, and each goes from level 1 to 3.
 import type { Team } from './types';
 
 export type UpgradeId = 'tower' | 'wall' | 'gate' | 'forceField' | 'missiles' | 'squad';
@@ -26,8 +27,6 @@ export type Upgrade = {
   effect: UpgradeEffect;
   /** Added to the effect for each level. */
   perLevel: number;
-  /** Scrap for level 1, 2 and 3. */
-  cost: readonly [number, number, number];
 };
 
 export const UPGRADE_MAX_LEVEL = 3;
@@ -39,7 +38,6 @@ export const UPGRADES: readonly Upgrade[] = [
     name: 'Upgrade the Tower',
     effect: 'maxHp',
     perLevel: 48,
-    cost: [6, 10, 14],
   },
   {
     id: 'wall',
@@ -47,7 +45,6 @@ export const UPGRADES: readonly Upgrade[] = [
     name: 'Reinforce the Wall',
     effect: 'directCut',
     perLevel: 3,
-    cost: [6, 10, 14],
   },
   {
     id: 'gate',
@@ -55,7 +52,6 @@ export const UPGRADES: readonly Upgrade[] = [
     name: 'New Castle Gate',
     effect: 'nearCut',
     perLevel: 2,
-    cost: [4, 8, 12],
   },
   {
     id: 'forceField',
@@ -63,7 +59,6 @@ export const UPGRADES: readonly Upgrade[] = [
     name: 'Force Field',
     effect: 'shieldHits',
     perLevel: 1,
-    cost: [8, 14, 20],
   },
   {
     id: 'missiles',
@@ -71,7 +66,6 @@ export const UPGRADES: readonly Upgrade[] = [
     name: 'Missile Launcher',
     effect: 'directBonus',
     perLevel: 2,
-    cost: [6, 10, 14],
   },
   {
     id: 'squad',
@@ -79,11 +73,8 @@ export const UPGRADES: readonly Upgrade[] = [
     name: 'Laser Squad',
     effect: 'repair',
     perLevel: 8,
-    cost: [6, 10, 14],
   },
 ];
-
-export const upgradesOf = (team: Team): Upgrade[] => UPGRADES.filter((u) => u.team === team);
 
 export const upgradeById = (id: string): Upgrade | null =>
   UPGRADES.find((u) => u.id === id) ?? null;
@@ -95,11 +86,4 @@ export function upgradeValue(upgrade: Upgrade, level: number): number {
     Math.max(0, Math.floor(Number.isFinite(level) ? level : 0)),
   );
   return at * upgrade.perLevel;
-}
-
-/** Scrap for the next level, or null at the top level. */
-export function upgradeCost(upgrade: Upgrade, level: number): number | null {
-  const at = Math.floor(Number.isFinite(level) ? level : 0);
-  if (at < 0 || at >= UPGRADE_MAX_LEVEL) return null;
-  return upgrade.cost[at] ?? null;
 }

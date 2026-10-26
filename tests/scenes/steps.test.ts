@@ -281,31 +281,16 @@ describe('camp step', () => {
     expect(route).toEqual({ key: SCENE_KEYS.setup });
     expect(t.services.session.match).toBeNull();
   });
-  it('with the builder off, opens the old Build Base shop, saves what the family does there, and returns to the Camp', async () => {
-    window.history.replaceState(null, '', '/?builder=0');
-    t.storage.set('timeclash.players', players);
-    t.storage.set('timeclash.camp', campWith(30, 0));
-    const p = runCampStep(t.services);
-    click(q(TEST_IDS.campUpgrade));
-    await flush();
-    expect(q(TEST_IDS.upgradeBack)).not.toBeNull();
-    expect(q(TEST_IDS.campStart)).toBeNull();
-    click(q(TEST_IDS.upgradeRow('tower')));
-    expect(who('PAST').loadout.PAST.upgrades.tower).toBe(1);
-    click(q(TEST_IDS.upgradeBack));
-    expect(await p).toEqual({ key: SCENE_KEYS.camp });
-  });
-  it('an upgrade bought there is in the next match (more base health)', async () => {
-    window.history.replaceState(null, '', '/?builder=0');
+  it('an upgrade level saved on the device (an old save) is in the next match (more base health)', async () => {
     t.services.session.bank = tinyBank;
     t.storage.set('timeclash.players', players);
-    t.storage.set('timeclash.camp', campWith(40, 0));
-    const upgrade = runCampStep(t.services);
-    click(q(TEST_IDS.campUpgrade));
-    await flush();
-    click(q(TEST_IDS.upgradeRow('tower')));
-    click(q(TEST_IDS.upgradeBack));
-    await upgrade;
+    const alex = freshWallet('Alex');
+    const saved = withWallet(campWith(40, 0), {
+      ...alex,
+      scrap: 40,
+      loadout: { ...alex.loadout, PAST: { ...alex.loadout.PAST, upgrades: { tower: 1 } } },
+    });
+    t.storage.set('timeclash.camp', saved);
     const match = runCampStep(t.services);
     await clash();
     const data = (await match).data as BattleSceneData;
@@ -380,32 +365,15 @@ describe('camp step: Battle Plan', () => {
   });
 });
 
-describe('camp step: Build Base and the builder flag', () => {
-  afterEach(() => window.history.replaceState(null, '', '/'));
-  it('?builder=0: no builder button, and Build Base opens the old shop screen', async () => {
-    window.history.replaceState(null, '', '/?builder=0');
-    t.storage.set('timeclash.players', players);
-    t.storage.set('timeclash.camp', campWith(30, 0));
-    const p = runCampStep(t.services);
-    expect(q(TEST_IDS.campBuild)).toBeNull();
-    expect(q(TEST_IDS.campUpgrade)!.textContent).toBe('Build Base');
-    click(q(TEST_IDS.campUpgrade));
-    await flush();
-    expect(document.querySelector('[data-screen="upgrade"] h1')!.textContent).toBe('Build Base');
-    expect(document.querySelector('[data-screen="builder"]')).toBeNull();
-    click(q(TEST_IDS.upgradeBack));
-    await p;
-  });
-  it('by default Build Base opens the builder on Team Past, not the old shop', async () => {
+describe('camp step: Build Base', () => {
+  it('Build Base opens the builder on Team Past', async () => {
     t.storage.set('timeclash.players', players);
     const p = runCampStep(t.services);
-    expect(q(TEST_IDS.campUpgrade)).toBeNull();
     click(q(TEST_IDS.campBuild));
     await flush();
     expect(document.querySelector('[data-screen="builder"]')!.getAttribute('data-team')).toBe(
       'PAST',
     );
-    expect(document.querySelector('[data-screen="upgrade"]')).toBeNull();
     click(q('bb-back'));
     expect(await p).toEqual({ key: SCENE_KEYS.camp });
   });

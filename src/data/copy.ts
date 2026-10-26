@@ -5,7 +5,6 @@ import { DAMAGE, TURN } from '../game/config';
 import type { AwardId } from '../game/awards';
 import { windLevel } from '../game/wind';
 import type { Subject, Team } from '../game/types';
-import type { UpgradeEffect } from '../game/upgrades';
 
 export const GAME_TITLE = 'Time Clash';
 export const GAME_SUBTITLE = 'Past vs. Future';
@@ -127,41 +126,6 @@ export const WORKSHOP_COPY = {
   forge: (cost: number): string => `Forge it! · ${cost} Scrap`,
   forged: (name: string): string => `You made ${name}! It is equipped.`,
   needMore: (n: number): string => `Not yet. You need ${n} more Scrap.`,
-} as const;
-
-// ---------- Build Base (the old shop screen, shown when the base builder is off) ----------
-/** What an upgrade does, in words a child can read. `n` is the total at the level shown. */
-export const upgradeEffect = (effect: UpgradeEffect, n: number): string => {
-  switch (effect) {
-    case 'maxHp':
-      return `Base health +${n}`;
-    case 'directCut':
-      return `Direct hits hurt ${n} less`;
-    case 'nearCut':
-      return `Near misses count ${n} less`;
-    case 'shieldHits':
-      return n === 1 ? 'Blocks 1 hit each match' : `Blocks ${n} hits each match`;
-    case 'directBonus':
-      return `Your direct hits +${n}`;
-    case 'repair':
-      return `Heals ${n} health each turn`;
-  }
-};
-
-export const UPGRADE_COPY = {
-  title: 'Build Base',
-  back: 'Back',
-  scrap: 'Scrap',
-  pickTeam: 'Choose a team',
-  level: (n: number, max: number): string => `Level ${n} of ${max}`,
-  cost: (cost: number): string => `${cost} Scrap`,
-  topLevel: 'Top level',
-  /** Who owns it: the name of the player on that side. */
-  ownedBy: (name: string): string => `Owned by ${name}`,
-  /** Status lines, read out politely. A short purse is just "not yet". */
-  upgraded: (name: string, level: number): string => `${name} is now level ${level}!`,
-  needMore: (n: number): string => `Not yet. You need ${n} more Scrap.`,
-  atTop: 'This one is at the top level.',
 } as const;
 
 // ---------- Camp ----------

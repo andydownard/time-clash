@@ -57,7 +57,7 @@ The central staging area between matches where players upgrade gear and craft in
   ⚬ Center: Stone-ringed campfire surrounded by heavy wooden and holographic workbenches.
 ⚬ Interactive Workbenches & Upgrade Buttons:
   ⚬ [Forge Weapon]: Mix past and future materials to build new launchers (e.g., Nanotech Trebuchet, Wrought-Iron Railgun).
-  ⚬ [Reinforce Base]: Spend scrap materials to add armor plates, forcefield generators, or thick stone buttresses.
+  ⚬ [Build Base]: Place bricks and weapons on a build plot (the old Reinforce/Upgrade shop was removed 2026-10-25, so upgrade levels cannot be bought; a level saved on a device still applies in battle).
   ⚬ [Tweak Gear]: Adjust projectile types (confetti explosives, bouncy plasma spheres, heavy iron bowling balls).
 
 Weapon Workshop (added 2026-10-24, owner request: "in forge weapons, you can create your own weapon to forge"):
@@ -281,7 +281,7 @@ The earlier built-base check (600 matches, a typical built base on both sides, b
 Bot against bot (row wins, no helper walks out on either side): easy 28.6% vs medium, 18.8% vs hard; medium 71.2% vs easy, 35.5% vs hard; hard 81.5% vs easy, 62.5% vs medium. Matches against the decent human last about 13 to 14 turns (both teams counted). `tests/game/botLevels.test.ts` plays 200 seeded matches per level for each case: it pins each level inside a band around its target when the child never walks out, and above its floor when the child does.
 
 What the levels do not do yet (measured 2026-10-25, noted for later in BACKLOG.md):
-- The Computer player has no upgrades. A child with a one-level Force Field (it blocks the first damaging hit of the match) drops Hard from about 61% to 53%. Three levels drop it to about 32%.
+- The Computer player has no upgrades. Upgrades can no longer be bought (2026-10-25), so only an old save can have them. A child with a one-level Force Field (it blocks the first damaging hit of the match) drops Hard from about 61% to 53%. Three levels drop it to about 32%.
 
 ## Character health (rules built, flag off)
 

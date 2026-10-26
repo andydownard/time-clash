@@ -1,16 +1,15 @@
 // The Camp hub: the home base between Setup and Battle. A sunset field with both camps and four
 // buttons. Time to Clash! starts the match. Forge Weapon and Build Base open their own screens.
-// Build Base opens the builder, which has its own Past and Future picker like the Forge. With the
-// builder off (?builder=0) it opens the old Build Base shop instead (code name: upgrade).
+// Build Base opens the builder, which has its own Past and Future picker like the Forge.
 // Change players goes back to Setup.
 import { CAMP, GAME_TITLE } from '../data/copy';
 import { campScene, hawkFrontLayer } from './campArt';
 import { campScheduler, flyOverCamp } from './campFlights';
 import type { UiCtx } from './ctx';
 import { h } from './dom';
-import { TEST_IDS, type CampChoice, type CampOptions } from './types';
+import { TEST_IDS, type CampChoice } from './types';
 
-export function showCamp(ctx: UiCtx, options?: CampOptions): Promise<CampChoice> {
+export function showCamp(ctx: UiCtx): Promise<CampChoice> {
   const { doc } = ctx;
   return new Promise<CampChoice>((resolve) => {
     /**
@@ -25,9 +24,8 @@ export function showCamp(ctx: UiCtx, options?: CampOptions): Promise<CampChoice>
         text: label,
       });
     const forge = side(TEST_IDS.campForge, CAMP.forge);
-    // One Build Base button on the right opens the builder or, with it off, the old shop.
-    const builder = options?.builder === true;
-    const upgrade = side(builder ? TEST_IDS.campBuild : TEST_IDS.campUpgrade, CAMP.upgrade);
+    // One Build Base button on the right opens the builder.
+    const upgrade = side(TEST_IDS.campBuild, CAMP.upgrade);
 
     const start = h(doc, 'button', {
       type: 'button',
@@ -101,7 +99,7 @@ export function showCamp(ctx: UiCtx, options?: CampOptions): Promise<CampChoice>
     });
     upgrade.addEventListener('click', () => {
       close();
-      resolve(builder ? 'build' : 'upgrade');
+      resolve('build');
     });
     players.addEventListener('click', () => {
       close();

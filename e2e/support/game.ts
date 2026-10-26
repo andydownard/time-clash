@@ -13,7 +13,7 @@ export const tid = (page: Page, id: string): Locator => page.getByTestId(id);
 /** Seed used by every full-game test, so a run repeats. */
 export const SEED = 4242;
 
-/** `query` adds to the address, such as "&builder=0" for the old Build Base shop. */
+/** `query` adds to the address, such as "&computer=0". */
 export async function openGame(page: Page, query = ''): Promise<void> {
   await page.goto(`/?e2e=1${query}`);
   await page.waitForFunction(() => Boolean(window.__timeclash));

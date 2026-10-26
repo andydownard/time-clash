@@ -126,7 +126,7 @@ test('ipad audit: every screen', async ({ page }, info) => {
   await shot('08-how-to-play-reopened');
   await tid(page, 'intro-skip').click();
 
-  // Fresh run for a clean path through Setup, Camp, Forge, Upgrade, Battle
+  // Fresh run for a clean path through Setup, Camp, Forge, Build Base, Battle
   await page.evaluate(() => localStorage.clear());
   await toSetup(page);
   await startMatch(page, undefined, undefined, undefined, async () => {
@@ -135,10 +135,10 @@ test('ipad audit: every screen', async ({ page }, info) => {
     await expect(tid(page, 'forge-back')).toBeVisible();
     await shot('10-forge');
     await tid(page, 'forge-back').click();
-    await tid(page, 'camp-upgrade').click();
-    await expect(tid(page, 'upgrade-back')).toBeVisible();
-    await shot('11-upgrade-base');
-    await tid(page, 'upgrade-back').click();
+    await tid(page, 'camp-build').click();
+    await expect(tid(page, 'bb-back')).toBeVisible();
+    await shot('11-build-base');
+    await tid(page, 'bb-back').click();
     await expect(tid(page, 'camp-start')).toBeVisible();
   });
   await shot('12-pass-screen');
