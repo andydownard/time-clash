@@ -33,12 +33,7 @@ export function showPassScreen(ctx: UiCtx, options: PassScreenOptions): Promise<
         doc,
         'div',
         { class: 'tc-cover-card tc-pass-card' },
-        h(doc, 'p', {
-          class: 'tc-team-icon',
-          'data-role': 'team-icon',
-          'aria-hidden': 'true',
-          text: PASS_SCREEN.icon[options.nextTeam],
-        }),
+        // The team tag names the side in words; the wood or neon button is the side's own.
         passArt(doc),
         h(doc, 'p', { class: 'tc-team-tag', text: TEAM_NAMES[options.nextTeam] }),
         h(doc, 'h2', { id: 'tc-pass-heading', text: PASS_SCREEN.heading }),

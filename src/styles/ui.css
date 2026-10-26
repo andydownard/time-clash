@@ -567,26 +567,6 @@ body {
 .tc-pass-card > * {
   margin: 0;
 }
-.tc-team-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  border: 6px solid var(--tc-parchment-warm);
-  background: var(--tc-ink-deep);
-  font-size: var(--tc-fs-hero);
-  line-height: 1;
-}
-.tc-pass[data-team='PAST'] .tc-team-icon {
-  box-shadow: 0 0 0 6px var(--tc-purple-500);
-}
-.tc-pass[data-team='FUTURE'] .tc-team-icon {
-  box-shadow:
-    0 0 0 6px var(--tc-blue-500),
-    var(--tc-glow-neon);
-}
 .tc-pass-art {
   width: 240px;
   height: 90px;

@@ -2,7 +2,15 @@
 // The markup behind the restyled screens: what the CSS hooks onto, and the rules that must
 // hold on every look (no color-only meaning, no question on the pass cover, real buttons).
 import { beforeEach, describe, expect, it } from 'vitest';
-import { INTRO, LOADING, PASS_SCREEN, RELOAD, SETUP, TEAM_NAMES, VICTORY_CHRONO } from '../../src/data/copy';
+import {
+  INTRO,
+  LOADING,
+  PASS_SCREEN,
+  RELOAD,
+  SETUP,
+  TEAM_NAMES,
+  VICTORY_CHRONO,
+} from '../../src/data/copy';
 import { INTRO_SCRIPT } from '../../src/data/introScript';
 import { TEST_IDS } from '../../src/ui/types';
 import {
@@ -162,13 +170,16 @@ describe('Pass the mouse look', () => {
   it.each([
     ['PAST', 'tc-btn-past'],
     ['FUTURE', 'tc-btn-future'],
-  ] as const)('%s shows its name, its shape, and its own button recipe', (team, cls) => {
-    void s.overlay.showPassScreen({ nextName: 'Alex', nextTeam: team });
-    const el = q(TEST_IDS.passScreen)!;
-    expect(el.querySelector('.tc-team-tag')!.textContent).toBe(TEAM_NAMES[team]);
-    expect(el.querySelector('[data-role="team-icon"]')!.textContent).toBe(PASS_SCREEN.icon[team]);
-    expect(q(TEST_IDS.passReady)!.classList.contains(cls)).toBe(true);
-  });
+  ] as const)(
+    '%s shows its name and its own button recipe, with no round team icon',
+    (team, cls) => {
+      void s.overlay.showPassScreen({ nextName: 'Alex', nextTeam: team });
+      const el = q(TEST_IDS.passScreen)!;
+      expect(el.querySelector('.tc-team-tag')!.textContent).toBe(TEAM_NAMES[team]);
+      expect(el.querySelector('[data-role="team-icon"]')).toBeNull();
+      expect(q(TEST_IDS.passReady)!.classList.contains(cls)).toBe(true);
+    },
+  );
 
   it('holds no question text and no answer buttons', () => {
     void s.overlay.showPassScreen({ nextName: 'Alex', nextTeam: 'PAST' });
