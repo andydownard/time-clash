@@ -97,11 +97,9 @@ describe('copy: content', () => {
     expect(COPY.SETUP.nameBlocked.startsWith("Let's")).toBe(true);
   });
 
-  it('says near misses "count", never "hurt", in the Workshop and the Build Base list', () => {
+  it('says near misses "count", never "hurt", in the Workshop', () => {
     // A gentler word for a kids' game (owner, 2026-10-25).
     expect(COPY.WORKSHOP_COPY.stats.splash.help).toBe('Near misses count');
-    expect(COPY.upgradeEffect('nearCut', 2)).toBe('Near misses count 2 less');
-    expect(COPY.upgradeEffect('nearCut', 2)).not.toMatch(/hurt/);
   });
 
   it('asks for a made-up name in the Workshop and My shape, the same words in both', () => {

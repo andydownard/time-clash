@@ -11,7 +11,7 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 - Caption times now start at measured pauses in the real clips (`scripts/measure-intro-timings.py`). Exact word timing needs Kokoro timing output. Re-run the script after every voice re-render.
 
 ## P2
-- P2: The Computer player has no upgrades. A child's one-level Force Field blocks the first damaging hit of the match and drops Hard from about 61% to 53%; three levels drop it to about 32%. Owner to decide: give the Computer player matching upgrades, or leave it as a reward for building up.
+- P2: The Computer player has no upgrades. Upgrades can no longer be bought (the shop was removed 2026-10-25), so this only matters for an old save. A child's one-level Force Field blocks the first damaging hit of the match and drops Hard from about 61% to 53%; three levels drop it to about 32%. Owner to decide: give the Computer player matching upgrades, or leave it as a reward for building up.
 - Victory awards: the winner can still hold five awards. Consider a cap if it stings.
 - Wood plank and neon pod card skins, bigger castle and rocket pictures on Setup cards, brighter Tap to Play silhouettes with a visual gag, and bouncing victory blocks are new art (Victory confetti and the fast-answer scrap burst are built; the blocks stay hidden under 820px tall).
 - Decided 2026-10-21, now built: one evasion ability per team. Food Trucks is the default spot (it adds a low wall that Phase 1 did not have). Ammo unlock lives on the Battle Plan, not the Forge.

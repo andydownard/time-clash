@@ -12,10 +12,8 @@ import {
 } from '../../src/game/loadout';
 import {
   UPGRADES,
-  upgradeCost,
   upgradeValue,
   upgradeById,
-  upgradesOf,
 } from '../../src/game/upgrades';
 import {
   FORGE,
@@ -76,13 +74,9 @@ describe('weapons', () => {
 });
 
 describe('upgrades', () => {
-  it('gives each team three, with rising prices', () => {
+  it('gives each team three', () => {
     for (const team of ['PAST', 'FUTURE'] as const) {
-      expect(upgradesOf(team)).toHaveLength(3);
-    }
-    for (const u of UPGRADES) {
-      expect(u.cost[0]).toBeLessThan(u.cost[1]);
-      expect(u.cost[1]).toBeLessThan(u.cost[2]);
+      expect(UPGRADES.filter((u) => u.team === team)).toHaveLength(3);
     }
   });
   it('scales an effect by level and clamps a bad level', () => {
@@ -92,13 +86,6 @@ describe('upgrades', () => {
     expect(upgradeValue(tower, 99)).toBe(3 * tower.perLevel);
     expect(upgradeValue(tower, -1)).toBe(0);
     expect(upgradeValue(tower, Number.NaN)).toBe(0);
-  });
-  it('charges for the next level and stops at 3', () => {
-    const gate = upgradeById('gate')!;
-    expect(upgradeCost(gate, 0)).toBe(gate.cost[0]);
-    expect(upgradeCost(gate, 2)).toBe(gate.cost[2]);
-    expect(upgradeCost(gate, 3)).toBeNull();
-    expect(upgradeCost(gate, -1)).toBeNull();
   });
 });
 
