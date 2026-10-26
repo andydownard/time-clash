@@ -12,6 +12,7 @@ import type {
   BrickId,
   BrickView,
   GustHit,
+  MountId,
   Rect,
   ShotResult,
   Team,
@@ -592,6 +593,15 @@ export class BattleScene extends Phaser.Scene implements BattleView {
     bricks: Readonly<Record<BrickId, BrickView>>,
   ): Promise<void> {
     return this.builtLayers[team]?.update(bricks, fell) ?? Promise.resolve();
+  }
+
+  setSelectedMount(team: Team, id: MountId | null): void {
+    const pad = id && this.data0.match.snapshot().mounts?.[team].find((m) => m.id === id);
+    this.builtLayers[team]?.markPad(pad ? pad.spot : null);
+  }
+
+  flashPad(team: Team, spot: number): void {
+    this.builtLayers[team]?.flashPad(spot);
   }
 
   /** Read by the e2e hook (never in production). */

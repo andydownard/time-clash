@@ -58,6 +58,7 @@ import {
   volleyAngles,
   wallDamage,
   wallsOf,
+  type BuiltTeam,
 } from './builtBase';
 import {
   IllegalCommandError,
@@ -94,6 +95,8 @@ import type {
   AimInput,
   BlastOutcome,
   BlastResult,
+  BrickId,
+  BuiltEvents,
   ChosenBase,
   CreateMatch,
   DashResult,
@@ -126,7 +129,7 @@ const freshStats = (): TeamStats => ({
 
 type ShellSource =
   | { kind: 'fighter'; damageScale: number; volley: false }
-  | { kind: 'mount'; damage: number; role: SpotRole; volley: boolean };
+  | { kind: 'mount'; damage: number; role: SpotRole; volley: boolean; scale: number };
 
 const perTeam = <T>(make: () => T): Record<Team, T> => ({ PAST: make(), FUTURE: make() });
 
@@ -287,7 +290,7 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
         ? { ...(shells[0] as ShotResult), volley: shells }
         : (shells[0] as ShotResult);
       nextSource = mount
-        ? { kind: 'mount', damage: mount.damage, role: mount.role, volley }
+        ? { kind: 'mount', damage: mount.damage, role: mount.role, volley, scale: mount.scale }
         : { kind: 'fighter', damageScale: unit.damageScale, volley: false };
     } else {
       result = fly(angleDeg);
@@ -324,6 +327,55 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
   const aimingOnly = (event: string): void => {
     if (turn.phase !== 'AIMING' && turn.phase !== 'BONUS_AIMING')
       throw new IllegalTransitionError(turn.phase, event);
+  };
+
+  /** True while this brick of a built base still stands. */
+  const brickStands = (bt: BuiltTeam, id: BrickId): boolean =>
+    bt.bricks.some((b) => b.id === id && b.alive);
+
+  /**
+   * Base health: how well one shell hit, and the brick it is scored on. A shell stopped by a
+   * brick is a direct hit on it. One stopped by a pad is a direct hit on the brick the pad stands
+   * on (the closest standing brick for a pad on the foundation). Any other shell is scored on the
+   * closest standing brick, or on the drawn base when the target has no built base.
+   */
+  const scoreShell = (
+    shell: ShotResult,
+    target: Team,
+    bt: BuiltTeam | null,
+  ): { result: BlastResult; brick: BrickId | null } => {
+    const away =
+      !shell.stoppedBy && (shell.hit.kind === 'out_of_bounds' || shell.hit.kind === 'timeout');
+    if (away) return { result: 'miss', brick: null };
+    if (!bt) {
+      const r = classifyBlast(shell.landing, layout.bases[target], radiusScale(inFlightAmmo));
+      return { result: r, brick: null };
+    }
+    const stop = shell.stoppedBy;
+    if (stop?.kind === 'brick') return { result: 'direct', brick: stop.id as BrickId };
+    if (stop?.kind === 'mount') {
+      const pad = mountOf(bt, stop.id);
+      const on =
+        pad?.brick && brickStands(bt, pad.brick)
+          ? pad.brick
+          : (nearestBrick(bt, shell.landing)?.id ?? null);
+      return { result: on ? 'direct' : 'miss', brick: on };
+    }
+    const near = nearestBrick(bt, shell.landing);
+    if (!near) return { result: 'miss', brick: null };
+    return {
+      result: classifyBlast(shell.landing, near.box, radiusScale(inFlightAmmo)),
+      brick: near.id,
+    };
+  };
+
+  /** A picked weapon whose pad fell (with its brick) is put back: the fighter is picked again. */
+  const dropFallenPicks = (): void => {
+    if (!built) return;
+    for (const t of ['PAST', 'FUTURE'] as const) {
+      const picked = selectedMount[t];
+      if (picked && !mountOf(built[t], picked)?.alive) selectedMount[t] = null;
+    }
   };
 
   /** Character health: score a landed shot against the target's standing fighters. */
@@ -546,6 +598,7 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
         } else {
           baseHp = { ...baseHp, [target]: Math.max(0, baseHp[target] - damage) };
         }
+        dropFallenPicks();
         const won = winnerOf(baseHp);
         if (won) {
           status = 'OVER';
@@ -589,6 +642,8 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
         if (!m.alive) throw new RangeError(`Weapon ${id} is down`);
         if (!m.canFire) throw new RangeError(`Weapon ${id} does not fire`);
         selectedMount[turn.team] = id;
+        // The dials move inside what the weapon can do, so the sliders show the real aim.
+        aim[turn.team] = mountAim(m.role, aim[turn.team]);
         return;
       }
       const unit = unitById(id);
@@ -729,67 +784,94 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       inFlight = null;
       if (built && characterHealth) return landBuilt(team, target, flight, isBonus);
       if (characterHealth) return landOnFighters(team, target, flight, isBonus);
-      // A shell stopped by a brick landed there, whatever its flight would have done after.
+      // A shell stopped by a brick or a pad landed there, whatever its flight would have done after.
       const flewAway =
         !flight.stoppedBy && (flight.hit.kind === 'out_of_bounds' || flight.hit.kind === 'timeout');
       const bricks = brickTeam(target) ? (built as NonNullable<typeof built>)[target] : null;
-      // Base health mode: a shell is scored on the brick it stopped at, or the closest brick.
-      const scoredOn = bricks
-        ? flight.stoppedBy?.kind === 'brick'
-          ? { id: flight.stoppedBy.id, box: null }
-          : nearestBrick(bricks, flight.landing)
-        : null;
-      const result: BlastResult = flewAway
-        ? 'miss'
-        : bricks
-          ? !scoredOn
-            ? 'miss'
-            : scoredOn.box
-              ? classifyBlast(flight.landing, scoredOn.box, radiusScale(inFlightAmmo))
-              : 'direct'
-          : classifyBlast(flight.landing, layout.bases[target], radiusScale(inFlightAmmo));
-      const tumble = result === 'near';
+      // A go from a weapon on a pad hits like a fighter, scaled (mountScale). A volley's shells
+      // share it, and each is scored on its own.
+      // `source` is set on every fire() while a built base takes part.
+      const fromPad = source?.kind === 'mount' ? source : null;
+      const shellList = flight.volley ?? [flight];
       const shooter = effects[team];
       const defender = effects[target];
       // The fighter and the ammo both scale the weapon. Standard ammo scales by exactly 1.
-      const scale = unitOf(team).damageScale * resolveAmmo(inFlightAmmo).damageScale;
+      const scale = fromPad
+        ? fromPad.scale / shellList.length
+        : unitOf(team).damageScale * resolveAmmo(inFlightAmmo).damageScale;
       // A hit's damage: the shooter's weapon, less the defender's walls, never below 1.
       // The Power Shot multiplies the weapon's damage first, then the walls cut it.
       const boost = (n: number): number => (isBonus ? Math.round(n * BONUS.damageMultiplier) : n);
-      let damage = 0;
-      if (result === 'direct') {
-        damage = Math.max(
-          1,
-          boost(Math.round((shooter.direct + shooter.directBonus) * scale)) - defender.directCut,
+      const hitDamage = (r: BlastResult): number =>
+        r === 'direct'
+          ? Math.max(
+              1,
+              boost(Math.round((shooter.direct + shooter.directBonus) * scale)) -
+                defender.directCut,
+            )
+          : r === 'near'
+            ? Math.max(1, boost(Math.round(shooter.near * scale)) - defender.nearCut)
+            : 0;
+      const scored = shellList.map((shell) => {
+        const at = scoreShell(shell, target, bricks);
+        return { ...at, shell, damage: hitDamage(at.result) };
+      });
+      const rank: Record<BlastResult, number> = { direct: 2, near: 1, miss: 0 };
+      const result = scored.reduce<BlastResult>(
+        (best, x) => (rank[x.result] > rank[best] ? x.result : best),
+        'miss',
+      );
+      const tumble = result === 'near';
+      const hurts = (): boolean => scored.some((x) => x.damage > 0);
+      const blank = (): void => {
+        for (const x of scored) x.damage = 0;
+      };
+      const ev: ReturnType<typeof freshEvents> | null = bricks ? freshEvents() : null;
+      // A Shield generator blocks the first go a turn that would hurt its base near its pad. One
+      // go is one hit, so it takes a whole volley. It goes first, so the dodge is not used up.
+      if (bricks && ev && hurts()) {
+        const near = scored.find(
+          (x) => x.damage > 0 && guardFor(bricks, x.shell.landing, guardUsed),
         );
-      } else if (result === 'near') {
-        damage = Math.max(1, boost(Math.round(shooter.near * scale)) - defender.nearCut);
+        const g = near ? guardFor(bricks, near.shell.landing, guardUsed) : null;
+        if (g) {
+          guardUsed.add(g.mount);
+          ev.guardBlocked.push(g);
+          blank();
+        }
       }
       // A Hoverboard Dodge makes the first damaging hit miss. It goes before the force field.
       let dodged = false;
-      if (damage > 0 && dodgesNow(evasion[target])) {
+      if (hurts() && dodgesNow(evasion[target])) {
         evasion = { ...evasion, [target]: spend(evasion[target]) };
-        damage = 0;
+        blank();
         dodged = true;
       }
       // A force field blocks the first hits that would have done damage.
       let blocked = false;
-      if (damage > 0 && shield[target] > 0) {
+      if (hurts() && shield[target] > 0) {
         shield[target] -= 1;
-        damage = 0;
+        blank();
         blocked = true;
       }
-      let ev: ReturnType<typeof freshEvents> | null = null;
+      let damage = scored.reduce((a, x) => a + x.damage, 0);
       if (bricks) {
         // The brick takes the hit and falls at 0 with what it held up. The HUD shows what is left.
-        ev = freshEvents();
-        if (damage > 0 && scoredOn) hitWall(bricks, { kind: 'brick', id: scoredOn.id }, damage, ev);
+        for (const x of scored) {
+          if (x.damage <= 0 || !x.brick) continue;
+          // A brick an earlier shell of the volley knocked down: the shell finds the closest one.
+          const id = brickStands(bricks, x.brick)
+            ? x.brick
+            : nearestBrick(bricks, x.shell.landing)?.id;
+          if (id) hitWall(bricks, { kind: 'brick', id }, x.damage, ev as BuiltEvents);
+        }
         const left = builtHealth(bricks);
         damage = baseHp[target] - left;
         baseHp = { ...baseHp, [target]: left };
       } else {
         baseHp = { ...baseHp, [target]: Math.max(0, baseHp[target] - damage) };
       }
+      dropFallenPicks();
       if (result === 'direct') stats[team].directHits += 1;
       if (result === 'near') stats[team].nearHits += 1;
       const won = winnerOf(baseHp);

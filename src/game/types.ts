@@ -320,6 +320,10 @@ export type MountView = {
   brick: BrickId | null;
   /** True for every role except `guard`. */
   canFire: boolean;
+  /** The weapon's name, for the selector and a screen reader ("Cannon", or a Workshop name). */
+  name: string;
+  /** The catalog weapon whose picture it uses (its own id, or a Workshop weapon's style). */
+  art: string;
 };
 
 export type SpotView = {
@@ -329,6 +333,8 @@ export type SpotView = {
   weapon: string | null;
   /** The brick the pad sits on (the highest one under it), or null on the foundation. */
   brick?: BrickId | null;
+  /** The catalog picture to draw on the pad (a Workshop weapon uses its style's). Unset when empty. */
+  art?: string;
 };
 
 export type BrickHit = { id: BrickId; damage: number; hp: number; fell: boolean };
