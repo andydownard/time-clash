@@ -160,6 +160,8 @@ Phases 1 to 3 are built and live on Railway. Phase 4 (two iPads) and signed-in p
 
 **Computer player (on).** One child can play alone against the Computer player (`PRACTICE_BOT.enabled`, on since 2026-10-24; `?computer=0` hides it). Setup has "Play with: Another player / Computer player", with Another player picked first. The child keeps the screen (no pass-the-mouse cover) and still answers every own reload question. Once the child walks a helper out, the Computer player walks its own out too (meets him, or goes while the way is clear), with the same goes and walk a child has; it never walks out first (docs/GAME_SPEC.md "Practice opponent").
 
+**Birds, gusts and recoil (on).** Each turn draws a strength level, low, medium or high, a third of the time each, from a seeded stream of its own (owner, 2026-10-25: the first setting was too mild). Medium is the average. A level scales the gust push, the bird turn and count (1 to 3), and the recoil (`DISTURBANCE.levels`). The gust cue grows with the level; no words were added, and the preview stays plain wind. Measured loss of perfect direct hits: about 10%, 25% and 40% (docs/GAME_SPEC.md "Disturbances").
+
 **Behind flags (all off in production).** `CHARACTER_HEALTH.enabled`: 4 health per fighter in place of base health. Each flag has tests and a section in [docs/GAME_SPEC.md](./docs/GAME_SPEC.md). Open polish and content items are in `BACKLOG.md`.
 
 ## Pre-merge checklist

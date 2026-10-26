@@ -13,7 +13,7 @@ import type {
   StandBeat,
 } from './crew';
 import type { BIOME_IDS, FORT_IDS, SPOT_IDS } from './config';
-import type { BirdPath, FlightDisturbance } from './disturbance';
+import type { BirdPath, DisturbanceLevel, FlightDisturbance } from './disturbance';
 import type { EvasionId, EvasionPhase } from './evasion';
 import type { Placed, ResolvedSpot, Rotation, SpotRole } from './baseBuilder';
 import type { MatchEffects } from './loadout';
@@ -143,7 +143,14 @@ export type ShotInput = AimInput & {
 export type BirdBump = { bird: number; step: number; at: Vec2; birdAt: Vec2 };
 
 /** The turn's gust as it blew during this flight: path steps it pushed on, and its push. */
-export type GustHit = { push: number; fromStep: number; toStep: number; at: Vec2 };
+export type GustHit = {
+  push: number;
+  fromStep: number;
+  toStep: number;
+  at: Vec2;
+  /** The turn's level (low, medium or high), so the gust cue can be drawn to match. */
+  level?: DisturbanceLevel;
+};
 
 export type CollisionHit =
   | { kind: 'base'; team: Team }
