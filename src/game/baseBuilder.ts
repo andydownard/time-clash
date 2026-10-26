@@ -177,21 +177,6 @@ export function ownedSpotWeaponIds(
   return owned;
 }
 
-/**
- * True when the builder should show. `search` is the address query: `?builder=1` forces it on and
- * `?builder=0` forces it off (the old Build Base shop). Anything else uses `BASE_BUILDER.enabled`.
- */
-export function baseBuilderOn(search: string): boolean {
-  try {
-    const asked = new URLSearchParams(search).get(B.queryParam);
-    if (asked === '1') return true;
-    if (asked === '0') return false;
-  } catch {
-    // An unreadable address falls back to the setting.
-  }
-  return B.enabled;
-}
-
 // ---------- Placing ----------
 
 /** One brick on the plot. x and y are whole cells. ox and oy are free steps inside the cell. */
