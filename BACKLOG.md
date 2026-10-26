@@ -13,7 +13,6 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 - Caption times now start at measured pauses in the real clips (`scripts/measure-intro-timings.py`). Exact word timing needs Kokoro timing output. Re-run the script after every voice re-render.
 
 ## P2
-- P2: The Computer player never walks its dasher out or calls him home, so a child who walks the dasher out once a match wins far more often (Hard drops from about 61% to 17% in a 600-match test). When both sides walk out, the levels land near their targets again. Teach it to walk out and call home, then re-run `scripts/simulate-bot.ts` and the bands in `tests/game/botLevels.test.ts`. Numbers: docs/GAME_SPEC.md "Practice opponent". (The level retune itself was done on 2026-10-25.)
 - P2: The Computer player has no upgrades. A child's one-level Force Field blocks the first damaging hit of the match and drops Hard from about 61% to 53%; three levels drop it to about 32%. Owner to decide: give the Computer player matching upgrades, or leave it as a reward for building up.
 - Victory awards: the winner can still hold five awards. Consider a cap if it stings.
 - Wood plank and neon pod card skins, bigger castle and rocket pictures on Setup cards, brighter Tap to Play silhouettes with a visual gag, and bouncing victory blocks are new art (Victory confetti and the fast-answer scrap burst are built; the blocks stay hidden under 820px tall).

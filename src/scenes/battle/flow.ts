@@ -5,7 +5,7 @@
 //   -> (tumble, bubble) -> ... -> pickQuestion -> showReloadModal -> reloadDone() -> pass()
 import type { AudioManager } from '../../audio/types';
 import { firingOrigin, unitById, unitsOf, type UnitId } from '../../game/units';
-import { answerReload, chooseShot } from '../../game/bot';
+import { answerReload, chooseHelperGo, chooseShot, helperPlanOf } from '../../game/bot';
 import { COMPUTER } from '../../data/computerCopy';
 import {
   aimDurationMs,
@@ -46,6 +46,7 @@ import {
   doorstepOf,
   groundSpotIds,
   groundSpotPoint,
+  helperId,
   type HelperId,
 } from '../../game/crew';
 import { timeCaptions } from '../../data/introScript';
@@ -238,6 +239,8 @@ export class BattleFlow {
   private async aimAndFire(team: Team): Promise<void> {
     const { view } = this.deps;
     if (this.isComputer(team)) {
+      // A helper go uses the very same walk as the child's buttons, and it is the whole go.
+      if (await this.computerHelperGo(team)) return;
       await this.computerAims(team);
     } else {
       const fired = new Promise<void>((resolve) => {
@@ -278,6 +281,11 @@ export class BattleFlow {
   private async computerAims(team: Team): Promise<void> {
     const { match, view, overlay, practice } = this.deps;
     if (!practice) return;
+    // After a walk-out the helper is still picked. Fire needs the launcher, as for a child.
+    const launcher = helperId(team, 'launcher');
+    const before = match.snapshot();
+    if (before.squads && before.turn.phase === 'AIMING' && before.squads.picked[team] !== launcher)
+      match.selectHelper(launcher);
     const snap = match.snapshot();
     const shot = chooseShot(snap, team, practice.level, this.botRng, {
       layout: match.layout,
@@ -309,6 +317,37 @@ export class BattleFlow {
     } finally {
       overlay.showThinking?.(null);
     }
+  }
+
+  /**
+   * Squads S1: the Computer player may spend go 1 on its helper (walk him out, or call him home).
+   * It picks the helper, a short "thinking" note shows, then the same walk as a child's button
+   * plays. Returns false when it fires as usual.
+   */
+  private async computerHelperGo(team: Team): Promise<boolean> {
+    const { match, overlay, practice } = this.deps;
+    if (!practice) return false;
+    const go = chooseHelperGo(match.snapshot(), team, helperPlanOf(practice.level), this.botRng);
+    if (!go) return false;
+    match.selectHelper(helperId(team, 'dasher'));
+    this.deps.view.showPreview(team, null);
+    this.pushStatus(false);
+    overlay.showThinking?.({ text: COMPUTER.thinking, team });
+    const { thinkMs } = PRACTICE_BOT.helper;
+    const ms =
+      this.deps.reducedMotion?.() === true
+        ? Math.min(thinkMs, PRACTICE_BOT.pace.reducedBeatMs)
+        : thinkMs;
+    try {
+      await this.deps.wait(ms);
+      await this.gate();
+      this.thinkingSpentMs += ms;
+    } finally {
+      overlay.showThinking?.(null);
+    }
+    if (go.kind === 'dash') await this.dashGo(team, go.to);
+    else await this.recallGo(team);
+    return true;
   }
 
   /** Squads S1: one dash go. The rules apply it now; the dasher walks out over anything in the way. */

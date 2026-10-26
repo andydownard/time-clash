@@ -1,6 +1,7 @@
 // Plays whole matches with computer shooters. Used by tests and the simulation script. Pure.
-import { answerReloadWith, chooseShotWith, type BotQuestion } from './bot';
-import { PRACTICE_BOT, type BotProfile } from './config';
+import { answerReloadWith, chooseHelperGo, chooseShotWith, type BotQuestion } from './bot';
+import { PRACTICE_BOT, type BotHelperPlan, type BotProfile } from './config';
+import { helperId } from './crew';
 import { createMatch } from './match';
 import { createRng } from './rng';
 import type { BattleLayout, Grade, MatchOptions, Players, Team } from './types';
@@ -12,6 +13,9 @@ export type SimResult = {
   ended: boolean;
   /** True when a Stone Wall was raised at least once. */
   wallRaised?: boolean;
+  /** Helper walk-outs and calls home per team. */
+  dashes?: Record<Team, number>;
+  recalls?: Record<Team, number>;
 };
 
 const player = (team: Team, grade: Grade): Players[number] => ({
@@ -48,6 +52,8 @@ export type SimOptions = {
   raiseWall?: boolean;
   /** Birds, gusts and recoil on or off. Default: the game's own setting (DISTURBANCE). */
   disturbances?: boolean;
+  /** How each side uses its walking helper (Squads). A side with no plan never walks him out. */
+  helpers?: Partial<Record<Team, BotHelperPlan>>;
 };
 
 /** Plays one match to the end (or to the safety cap). */
@@ -64,8 +70,14 @@ export const playBotMatch = (opts: SimOptions): SimResult => {
     ...(opts.disturbances === undefined ? {} : { disturbances: opts.disturbances }),
   });
   const rng = createRng((opts.seed ^ 0x626f74) >>> 0);
+  const dashes: Record<Team, number> = { PAST: 0, FUTURE: 0 };
+  const recalls: Record<Team, number> = { PAST: 0, FUTURE: 0 };
+  const over = (): boolean => match.snapshot().status === 'OVER';
   const shoot = (team: Team): boolean => {
     const state = match.snapshot();
+    // A walk-out leaves the helper picked. Firing needs the launcher, as for a child.
+    const launcher = helperId(team, 'launcher');
+    if (state.squads && state.squads.picked[team] !== launcher) match.selectHelper(launcher);
     const shot = chooseShotWith(state, team, opts.profiles[team], rng, {
       ...(opts.layout ? { layout: opts.layout } : {}),
     });
@@ -73,13 +85,34 @@ export const playBotMatch = (opts: SimOptions): SimResult => {
     match.setAim(shot);
     match.fire();
     match.shotLanded();
-    return match.snapshot().status === 'OVER';
+    return over();
+  };
+  /** One go: a helper go when the side's plan picks one, otherwise a shot. */
+  const go = (team: Team): boolean => {
+    const plan = opts.helpers?.[team];
+    const helperGo = plan ? chooseHelperGo(match.snapshot(), team, plan, rng) : null;
+    if (!helperGo) return shoot(team);
+    match.selectHelper(helperId(team, 'dasher'));
+    if (helperGo.kind === 'dash') {
+      match.dash(helperGo.to);
+      dashes[team] += 1;
+    } else {
+      match.recall();
+      recalls[team] += 1;
+    }
+    return over();
+  };
+  const finish = (turns: number): SimResult => {
+    const m = match.snapshot();
+    return { winner: m.winner, turns, ended: true, wallRaised, dashes, recalls };
   };
   let wallRaised = false;
   const cap = opts.maxTurns ?? PRACTICE_BOT.maxSimTurns;
   for (let turns = 0; turns < cap; turns++) {
     const team = match.snapshot().turn.team;
     match.ready();
+    // A helper's bonk at the start of the turn can end the match.
+    if (over()) return finish(turns + 1);
     if (opts.raiseWall && match.snapshot().evasion[team].id === 'barricade') {
       const view = match.snapshot().evasion[team];
       if (view.phase === 'ready' && view.usesLeft > 0 && rng.next() < 0.5) {
@@ -87,20 +120,13 @@ export const playBotMatch = (opts: SimOptions): SimResult => {
         wallRaised = true;
       }
     }
-    if (shoot(team) || shoot(team)) return finish(match.snapshot(), turns + 1, wallRaised);
+    if (go(team) || go(team)) return finish(turns + 1);
     const answer = answerReloadWith(stubQuestion(grade), opts.profiles[team], rng);
     match.reloadDone({ correct: answer.correct, elapsedMs: answer.delayMs, kind: 'choice', grade });
-    if (answer.correct && shoot(team)) return finish(match.snapshot(), turns + 1, wallRaised);
+    if (answer.correct && shoot(team)) return finish(turns + 1);
     match.pass();
   }
-  return { winner: null, turns: cap, ended: false, wallRaised };
+  return { winner: null, turns: cap, ended: false, wallRaised, dashes, recalls };
 };
-
-const finish = (m: { winner: Team | null }, turns: number, wallRaised: boolean): SimResult => ({
-  winner: m.winner,
-  turns,
-  ended: true,
-  wallRaised,
-});
 
 export { TEAMS };
