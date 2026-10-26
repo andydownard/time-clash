@@ -48,7 +48,7 @@ Fallbacks are system fonts (Palatino, Georgia, Arial Black), so a slow or blocke
 
 ## Spacing, radii, shadows
 
-Spacing is a 4px scale: `--tc-s-1` 4, `-2` 8, `-3` 12, `-4` 16, `-5` 24, `-6` 32, `-7` 48, `-8` 64. Radii: chip 14, button 16, large button 20, card 18, bubble 26, pill 999. Shadows and glows: `--tc-shadow-wood`, `--tc-shadow-card`, `--tc-shadow-banner`, `--tc-glow-neon`, `--tc-glow-ready`. Under `prefers-reduced-motion`, keep glows static (no pulsing) and drop the banner tilt animation.
+Spacing is a 4px scale: `--tc-s-1` 4, `-2` 8, `-3` 12, `-4` 16, `-5` 24, `-6` 32, `-7` 48, `-8` 64. Card screens use four spacing tokens so they breathe the same way (owner, 2026-10-25: "more padding"): `--tc-card-pad` 24 (inside a card), `--tc-label-gap` 8 (a label to its field), `--tc-field-gap` 16 (above each label, and above a card's helper line), `--tc-row-gap` 24 (between Setup rows), plus `--tc-vs-lane` 96 (the gap between the Setup cards, where the VS badge sits so it covers no card, edge or word). On a window 760px tall or less (iPad mini landscape) only the field gap (12) and row gap (20) step down; card padding and the label gap never shrink. Radii: chip 14, button 16, large button 20, card 18, bubble 26, pill 999. Shadows and glows: `--tc-shadow-wood`, `--tc-shadow-card`, `--tc-shadow-banner`, `--tc-glow-neon`, `--tc-glow-ready`. Under `prefers-reduced-motion`, keep glows static (no pulsing) and drop the banner tilt animation.
 
 ## Controls: Button, Selector, Link
 
@@ -114,6 +114,10 @@ All interactive parts are at least 56px tall and wide (`--tc-tap`).
 ### Match length (Setup)
 
 A selector strip of three options (Short, Normal, Long) with the label "Match length", on the same row as Let's clash! so Setup keeps fitting 1024x768 and 1133x744 with no scroll. Options are 56px tall, 20px type, a cream outline. The chosen one is a solid Ember fill (no check mark), the same size as the others. One Tab stop; arrow keys move. Styles: `.tc-length` in `src/styles/ui.css`.
+
+### Setup layout
+
+Title, then the Play with row, then the two cards with the VS badge centered in the lane between them, then Match length and Let's clash! on one row, then the privacy line and Clear my data. Rows are `--tc-row-gap` apart and cards are padded with `--tc-card-pad`. The Computer player card uses the same padding, with `--tc-field-gap` above its helper line. When Setup is opened from the Camp, Back sits top left beside the ? and gear (as on the Battle Plan), so the bottom row keeps one line at 1024x768. To pay for the room, the title band was trimmed from 56px to 44px (it is not a tap target). Checked by `e2e/setup.spec.ts` (padding, VS clear of both cards, row gaps, words inside chips, Back fits) and `e2e/look.spec.ts` (fits every iPad landscape size).
 
 ## Battle layout
 

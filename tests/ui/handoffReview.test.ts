@@ -208,13 +208,29 @@ describe('Setup', () => {
     );
     expect(bodyOf(".tc-chip[aria-checked='true']::before")).toBe('');
   });
+  it('cards breathe: spacing tokens, and the VS badge in its own lane (owner, 2026-10-25)', () => {
+    expect(vars['--tc-card-pad']).toBe(vars['--tc-s-5']);
+    expect(vars['--tc-label-gap']).toBe(vars['--tc-s-2']);
+    expect(vars['--tc-field-gap']).toBe(vars['--tc-s-4']);
+    expect(vars['--tc-row-gap']).toBe(vars['--tc-s-5']);
+    expect(parseInt(vars['--tc-vs-lane'] ?? '0', 10)).toBeGreaterThanOrEqual(80);
+    expect(bodyOf('.tc-team-card')).toMatch(/padding:\s*var\(--tc-card-pad\)/);
+    expect(bodyOf('.tc-team-cards')).toMatch(/gap:\s*var\(--tc-vs-lane\)/);
+    expect(bodyOf('.tc-setup-form')).toMatch(/gap:\s*var\(--tc-row-gap\)/);
+    expect(bodyOf('.tc-vs')).toMatch(/top:\s*50%/);
+    expect(bodyOf('[data-tc-root] .tc-team-card > .tc-label')).toMatch(
+      /margin:\s*var\(--tc-field-gap\) 0 var\(--tc-label-gap\)/,
+    );
+  });
   it('the grade is a dropdown in plain letters, at least 56px tall and 20px text', () => {
     expect(bodyOf('.tc-select')).toMatch(/min-height:\s*var\(--tc-tap\)/);
     expect(bodyOf('.tc-select')).toMatch(/font-family:\s*var\(--tc-font\)/);
     expect(bodyOf('.tc-select')).toMatch(/font-size:\s*var\(--tc-fs-button\)/);
   });
   it('the heading shares the ? and gear row, so the Clear button fits on screen', () => {
-    expect(bodyOf('[data-tc-root] .tc-setup-title')).toMatch(/min-height:\s*var\(--tc-tap\)/);
+    // Trimmed from 56px to 44px on 2026-10-25 to pay for the roomier cards (it is not a tap
+    // target). It still sits in the row beside the ? and gear.
+    expect(bodyOf('[data-tc-root] .tc-setup-title')).toMatch(/min-height:\s*44px/);
   });
   it('says the picks in words and keeps them current', () => {
     void s.overlay.showSetup(null);

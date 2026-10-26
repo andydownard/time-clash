@@ -32,11 +32,19 @@
 .tc-computer-card .tc-label {
   text-align: center;
 }
+/* Room between the picture, the name, How hard?, the chips and the note (owner, 2026-10-25). */
+[data-tc-root] .tc-computer-card > .tc-computer-name {
+  margin-top: var(--tc-label-gap);
+}
+[data-tc-root] .tc-computer-card > .tc-computer-note {
+  margin-top: var(--tc-field-gap);
+}
 .tc-computer-card .tc-chips {
   justify-content: center;
 }
 .tc-computer-card .tc-chip {
-  min-width: 112px;
+  min-width: 128px;
+  padding-inline: var(--tc-s-4);
   min-height: var(--tc-tap);
   font-family: var(--tc-font-voice-new);
   font-weight: var(--tc-fw-new);
@@ -178,21 +186,4 @@
   .tc-thinking-dots i {
     animation: none;
   }
-}
-
-/* With the Play with row on Setup there is one more row to fit. Setup must not scroll at 1024x768
-   (regression 13), so this screen packs its spacing a little tighter. Only on the flagged screen. */
-.tc-setup-choice .tc-setup-form {
-  gap: var(--tc-s-1);
-}
-.tc-setup-choice .tc-team-card {
-  gap: 2px;
-  padding-block: var(--tc-s-2);
-}
-.tc-setup-choice .tc-team-card .tc-label {
-  margin-top: 2px;
-}
-.tc-setup.tc-setup-choice {
-  gap: var(--tc-s-1);
-  padding-bottom: var(--tc-s-1);
 }

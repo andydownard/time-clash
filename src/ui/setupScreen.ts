@@ -301,11 +301,12 @@ export function showSetup(
     'data-testid': TEST_IDS.setupNext,
     text: SETUP.start,
   });
-  // Back leaves without saving. It is only there when there is somewhere to go back to.
+  // Back leaves without saving. It is only there when there is somewhere to go back to. It sits
+  // top left beside the ? and gear (as on the Battle Plan), so the bottom row keeps one line.
   const backBtn = options?.back
     ? h(doc, 'button', {
         type: 'button',
-        class: 'tc-btn tc-btn-neutral',
+        class: 'tc-btn tc-btn-neutral tc-setup-back',
         'data-testid': TEST_IDS.setupBack,
         text: `← ${BUTTONS.back}`,
       })
@@ -329,7 +330,6 @@ export function showSetup(
       doc,
       'div',
       { class: 'tc-row tc-row-start' },
-      ...(backBtn ? [backBtn] : []),
       lengthRow,
       nextBtn,
     ),
@@ -352,6 +352,7 @@ export function showSetup(
       'data-motion': ctx.motion(),
     },
     skyline(doc),
+    ...(backBtn ? [backBtn] : []),
     h(doc, 'h1', { class: 'tc-setup-title', text: SETUP.heading }),
     form,
   );
