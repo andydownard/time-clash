@@ -889,11 +889,30 @@ export const BASE_IN_BATTLE = {
 export const DISTURBANCE = {
   enabled: true,
   /** Salts mixed into the match seed so each stream is separate but repeatable. */
-  salt: { birds: 0x42495244, gust: 0x47555354, recoil: 0x4b49434b },
+  salt: { birds: 0x42495244, gust: 0x47555354, recoil: 0x4b49434b, level: 0x4c45564c },
+  /**
+   * How strong a turn's birds, gust and recoil are (owner, 2026-10-25: "medium on average, and low,
+   * medium or high with equal probability"). Each turn draws one level from its own seeded stream,
+   * a third of the time each, and keeps it for the turn's birds, gust and recoil. A level
+   * multiplies the base numbers below (the old, mild setting, about the low level). `birdCount` is
+   * how many birds fly that turn (inclusive). Tuned so the turn's nudges spoil about 10%, 25% and
+   * 40% of perfect direct hits: see docs/GAME_SPEC.md "Disturbances".
+   */
+  levelOrder: ['low', 'medium', 'high'] as const,
+  levels: {
+    low: { push: 1.1, nudge: 1, recoil: 1, birdCount: [1, 2] },
+    medium: { push: 1.9, nudge: 1.7, recoil: 1.7, birdCount: [1, 2] },
+    high: { push: 2.6, nudge: 2.5, recoil: 2.5, birdCount: [2, 3] },
+  } as Readonly<
+    Record<
+      'low' | 'medium' | 'high',
+      { push: number; nudge: number; recoil: number; birdCount: readonly [number, number] }
+    >
+  >,
   birds: {
-    /** Birds per turn, picked between these (inclusive). */
+    /** Birds per turn, picked between these (inclusive) by the turn's level (`levels.birdCount`). */
     minCount: 1,
-    maxCount: 2,
+    maxCount: 3,
     /** A shell whose center comes this close to a bird's center bumps it (world px). */
     hitRadius: 26,
     /** Flying speed range, px/s. Slow enough to track while aiming (about 20 s to cross). */

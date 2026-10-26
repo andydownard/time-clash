@@ -8,7 +8,11 @@ import {
   gustPushAt,
   gustStartMs,
   kickAim,
+  levelForTurn,
+  levelScale,
   recoilFor,
+  recoilLimit,
+  type DisturbanceLevel,
 } from '../../src/game/disturbance';
 import { UNITS } from '../../src/game/units';
 
@@ -26,14 +30,15 @@ describe('birdsForTurn', () => {
     expect(new Set(turns).size).toBeGreaterThan(4);
   });
 
-  it('has one or two birds, flying in the sky band at a gentle speed', () => {
+  it('has one to three birds (as many as the level allows), in the sky band at a gentle speed', () => {
     const counts = new Set<number>();
     for (const seed of SEEDS) {
       for (let turn = 0; turn < 6; turn++) {
         const birds = birdsForTurn(seed, turn);
+        const [lo, hi] = DISTURBANCE.levels[levelForTurn(seed, turn)].birdCount;
         counts.add(birds.length);
-        expect(birds.length).toBeGreaterThanOrEqual(B.minCount);
-        expect(birds.length).toBeLessThanOrEqual(B.maxCount);
+        expect(birds.length).toBeGreaterThanOrEqual(Math.max(B.minCount, lo));
+        expect(birds.length).toBeLessThanOrEqual(Math.min(B.maxCount, hi));
         for (const b of birds) {
           expect(b.y0).toBeGreaterThanOrEqual(B.minY);
           expect(b.y0).toBeLessThanOrEqual(B.maxY);
@@ -42,7 +47,7 @@ describe('birdsForTurn', () => {
         }
       }
     }
-    expect([...counts].sort()).toEqual([1, 2]);
+    expect([...counts].sort()).toEqual([1, 2, 3]);
   });
 
   it('flies both ways, about as often (fair to both teams)', () => {
@@ -58,12 +63,20 @@ describe('birdsForTurn', () => {
     expect(right / all).toBeLessThan(0.6);
   });
 
-  it('two birds in one turn start apart', () => {
+  it('birds in one turn all start apart, even three of them', () => {
+    let threes = 0;
     for (const seed of SEEDS)
       for (let turn = 0; turn < 6; turn++) {
-        const [a, b] = birdsForTurn(seed, turn);
-        if (a && b) expect(Math.abs(a.x0 - b.x0)).toBeGreaterThanOrEqual(B.minGapPx);
+        const birds = birdsForTurn(seed, turn, 'high');
+        if (birds.length === 3) threes += 1;
+        for (const a of birds) {
+          expect(a.x0).toBeGreaterThanOrEqual(-B.edgeMarginPx);
+          expect(a.x0).toBeLessThanOrEqual(WORLD.width + B.edgeMarginPx);
+          for (const b of birds)
+            if (a !== b) expect(Math.abs(a.x0 - b.x0)).toBeGreaterThanOrEqual(B.minGapPx);
+        }
       }
+    expect(threes).toBeGreaterThan(0);
   });
 
   it('bad seeds or turns still give birds', () => {
@@ -113,11 +126,13 @@ describe('gustForTurn', () => {
     for (const seed of SEEDS)
       for (let turn = 0; turn < 6; turn++) {
         const g = gustForTurn(seed, turn);
+        const k = DISTURBANCE.levels[levelForTurn(seed, turn)].push;
+        expect(g.level).toBe(levelForTurn(seed, turn));
         expect(g.startShare).toBeGreaterThanOrEqual(G.earliestShare);
         expect(g.startShare).toBeLessThanOrEqual(G.latestShare);
         expect(g.durationMs).toBe(G.durationMs);
-        expect(Math.abs(g.push)).toBeGreaterThanOrEqual(G.minPush);
-        expect(Math.abs(g.push)).toBeLessThanOrEqual(G.maxPush);
+        expect(Math.abs(g.push)).toBeGreaterThanOrEqual(G.minPush * k - 1e-9);
+        expect(Math.abs(g.push)).toBeLessThanOrEqual(G.maxPush * k + 1e-9);
       }
   });
 
@@ -166,7 +181,7 @@ describe('recoil', () => {
     for (const [a, b] of pairs) expect(DISTURBANCE.recoil[a]).toEqual(DISTURBANCE.recoil[b]);
   });
 
-  it('heavy weapons kick more than the archer, about 3 degrees and 5 power at most', () => {
+  it('heavy weapons kick more than the archer, about 3 degrees and 5 power at most (low level)', () => {
     const r = DISTURBANCE.recoil;
     expect(r.catapult.angleDeg).toBeGreaterThan(r.archer.angleDeg);
     expect(r.catapult.power).toBeGreaterThan(r.archer.power);
@@ -185,10 +200,11 @@ describe('recoil', () => {
     for (const seed of SEEDS)
       for (let shot = 0; shot < 3; shot++) {
         const k = recoilFor(seed, 2, shot, 'catapult');
+        const limit = recoilLimit('catapult', levelForTurn(seed, 2))!;
         expect(Number.isInteger(k.angleDeg)).toBe(true);
         expect(Number.isInteger(k.power)).toBe(true);
-        expect(Math.abs(k.angleDeg)).toBeLessThanOrEqual(DISTURBANCE.recoil.catapult.angleDeg);
-        expect(Math.abs(k.power)).toBeLessThanOrEqual(DISTURBANCE.recoil.catapult.power);
+        expect(Math.abs(k.angleDeg)).toBeLessThanOrEqual(limit.angleDeg);
+        expect(Math.abs(k.power)).toBeLessThanOrEqual(limit.power);
         seen.add(Math.sign(k.power));
       }
     expect(seen.has(1) && seen.has(-1)).toBe(true);
@@ -220,5 +236,111 @@ describe('recoil', () => {
       angleDeg: 47,
       power: 57,
     });
+  });
+});
+
+describe('the turn level (low, medium or high)', () => {
+  const LEVELS = DISTURBANCE.levelOrder;
+
+  it('is the same for the same seed and turn', () => {
+    for (const seed of SEEDS)
+      for (let turn = 0; turn < 6; turn++)
+        expect(levelForTurn(seed, turn)).toBe(levelForTurn(seed, turn));
+  });
+
+  it('is low, medium or high a third of the time each (3,000 seeds, within 5%)', () => {
+    const counts: Record<DisturbanceLevel, number> = { low: 0, medium: 0, high: 0 };
+    for (let seed = 1; seed <= 3000; seed++) counts[levelForTurn(seed, 0)] += 1;
+    for (const lv of LEVELS) {
+      expect(counts[lv], lv).toBeGreaterThanOrEqual(1000 * 0.95);
+      expect(counts[lv], lv).toBeLessThanOrEqual(1000 * 1.05);
+    }
+    // And over the turns of one match too.
+    const byTurn: Record<DisturbanceLevel, number> = { low: 0, medium: 0, high: 0 };
+    for (let turn = 0; turn < 3000; turn++) byTurn[levelForTurn(777, turn)] += 1;
+    for (const lv of LEVELS) {
+      expect(byTurn[lv], lv).toBeGreaterThanOrEqual(1000 * 0.95);
+      expect(byTurn[lv], lv).toBeLessThanOrEqual(1000 * 1.05);
+    }
+  });
+
+  it('changes from turn to turn', () => {
+    const seen = new Set(Array.from({ length: 12 }, (_, t) => levelForTurn(42, t)));
+    expect(seen.size).toBe(3);
+  });
+
+  it('bad seeds or turns still give a level', () => {
+    expect(LEVELS).toContain(levelForTurn(Number.NaN, 0));
+    expect(LEVELS).toContain(levelForTurn(1, -5));
+  });
+
+  it('low is the old mild setting, medium clearly stronger, high strongest', () => {
+    const L = DISTURBANCE.levels;
+    expect(L.low.nudge).toBe(1);
+    expect(L.low.recoil).toBe(1);
+    expect(L.low.push).toBeLessThanOrEqual(1.2);
+    for (const key of ['push', 'nudge', 'recoil'] as const) {
+      expect(L.medium[key], key).toBeGreaterThanOrEqual(L.low[key] * 1.5);
+      expect(L.high[key], key).toBeGreaterThan(L.medium[key]);
+    }
+    expect(L.high.birdCount[1]).toBeGreaterThan(L.low.birdCount[0]);
+    expect(levelScale(undefined)).toEqual(L.low);
+  });
+
+  it('the gust push grows with the level, same start and way', () => {
+    for (const seed of SEEDS.slice(0, 10)) {
+      const g = Object.fromEntries(LEVELS.map((lv) => [lv, gustForTurn(seed, 3, lv)]));
+      for (const lv of LEVELS) {
+        expect(g[lv]!.level).toBe(lv);
+        expect(g[lv]!.startShare).toBe(g.low!.startShare);
+        expect(Math.sign(g[lv]!.push)).toBe(Math.sign(g.low!.push));
+        expect(Math.abs(g[lv]!.push)).toBeCloseTo(
+          (Math.abs(g.low!.push) / DISTURBANCE.levels.low.push) * DISTURBANCE.levels[lv].push,
+          6,
+        );
+      }
+    }
+  });
+
+  it('the bird nudge grows with the level, and the count stays inside the level range', () => {
+    for (const lv of LEVELS) {
+      const [lo, hi] = DISTURBANCE.levels[lv].birdCount;
+      for (const seed of SEEDS) {
+        const birds = birdsForTurn(seed, 1, lv);
+        expect(birds.length).toBeGreaterThanOrEqual(lo);
+        expect(birds.length).toBeLessThanOrEqual(hi);
+        for (const b of birds)
+          expect(b.nudgeDeg).toBeCloseTo(B.nudgeDeg * DISTURBANCE.levels[lv].nudge, 9);
+      }
+    }
+  });
+
+  it('the recoil limits grow with the level, whole numbers, and the kick stays inside them', () => {
+    for (const u of UNITS) {
+      const low = recoilLimit(u.role, 'low')!;
+      const high = recoilLimit(u.role, 'high')!;
+      expect(low).toEqual(DISTURBANCE.recoil[u.role]);
+      expect(high.angleDeg).toBeGreaterThan(low.angleDeg);
+      expect(high.power).toBeGreaterThan(low.power);
+      for (const lv of LEVELS) {
+        const lim = recoilLimit(u.role, lv)!;
+        expect(Number.isInteger(lim.angleDeg) && Number.isInteger(lim.power)).toBe(true);
+        for (const seed of SEEDS.slice(0, 15)) {
+          const k = recoilFor(seed, 0, 1, u.role, lv);
+          expect(Math.abs(k.angleDeg)).toBeLessThanOrEqual(lim.angleDeg);
+          expect(Math.abs(k.power)).toBeLessThanOrEqual(lim.power);
+        }
+      }
+    }
+    expect(recoilLimit('nope' as never, 'high')).toBeNull();
+  });
+
+  it('the default level is the turn level, for birds, gust and recoil alike', () => {
+    for (const seed of SEEDS.slice(0, 10)) {
+      const lv = levelForTurn(seed, 4);
+      expect(birdsForTurn(seed, 4)).toEqual(birdsForTurn(seed, 4, lv));
+      expect(gustForTurn(seed, 4)).toEqual(gustForTurn(seed, 4, lv));
+      expect(recoilFor(seed, 4, 1, 'cannon')).toEqual(recoilFor(seed, 4, 1, 'cannon', lv));
+    }
   });
 });

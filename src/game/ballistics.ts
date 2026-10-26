@@ -134,7 +134,13 @@ export const simulateShot = (input: AmmoShotInput): AmmoShotResult => {
       // Path point `step` is where this step starts; the push shows from the next point on.
       gust = gust
         ? { ...gust, toStep: step + 1 }
-        : { push: gustPush, fromStep: step + 1, toStep: step + 1, at: pos };
+        : {
+            push: gustPush,
+            fromStep: step + 1,
+            toStep: step + 1,
+            at: pos,
+            ...(disturbance?.gust?.level ? { level: disturbance.gust.level } : {}),
+          };
     }
     vx += (windPush + gustPush * ammo.windScale) * dt;
     vy += BALLISTICS.gravity * dt;
@@ -178,7 +184,7 @@ export const simulateShot = (input: AmmoShotInput): AmmoShotResult => {
           if (segmentGap(at, pos, next) > DISTURBANCE.birds.hitRadius) continue;
           bumped.add(bird.id);
           bumps.push({ bird: bird.id, step: path.length - 1, at: next, birdAt: at });
-          ({ vx, vy } = bumpVelocity({ vx, vy }, next, at));
+          ({ vx, vy } = bumpVelocity({ vx, vy }, next, at, bird.nudgeDeg));
         }
       }
     }
