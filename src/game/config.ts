@@ -466,7 +466,7 @@ export const DEFAULT_SETTINGS: Readonly<Settings> = {
 };
 
 /** How many tumble speech bubbles exist. Must equal TUMBLE_LINES.length in src/data/copy.ts (a test pins it). */
-export const TUMBLE_LINE_COUNT = 21;
+export const TUMBLE_LINE_COUNT = 30;
 
 // ---------- Hit effects (drawing numbers; the burst, the pip, the funny fall) ----------
 export const HIT_FX = {

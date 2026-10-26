@@ -2,7 +2,7 @@
 // The Battle Plan screen: pick a place, Team Future hides its base, and special ammo is unlocked
 // with Scrap. Lock it in! starts the match. Back saves nothing about the plan.
 import { beforeEach, describe, expect, it } from 'vitest';
-import { PLAN_COPY } from '../../src/data/copy';
+import { GEAR_COPY, PLAN_COPY } from '../../src/data/copy';
 import { ammoCost } from '../../src/game/ammo';
 import type { BattlePlan } from '../../src/game/battlefield';
 import { DEFAULT_PLAN } from '../../src/game/config';
@@ -101,7 +101,21 @@ describe('Team Past places its castle', () => {
       );
   });
 
-  it('a new family sees Village Wall picked, and exactly one castle card checked', () => {
+  it('names the middle place "Village", so it never sounds like the Stone Wall ability', () => {
+    open(campWith(0));
+    expect(PLAN_COPY.forts.villageWall.name).toBe('Village');
+    const card = q(TEST_IDS.planFort('villageWall'))!;
+    expect(card.textContent).toContain('Village');
+    expect(card.textContent).not.toMatch(/Village Wall/);
+    // No castle place shares a word with the Team Past ability name or its short button label.
+    const ability = GEAR_COPY.abilities.barricade;
+    const abilityWords = new Set(`${ability.name} ${ability.short}`.toLowerCase().split(/\s+/));
+    for (const f of Object.values(PLAN_COPY.forts))
+      for (const w of f.name.toLowerCase().split(/\s+/))
+        expect(abilityWords.has(w), f.name).toBe(false);
+  });
+
+  it('a new family sees the Village picked, and exactly one castle card checked', () => {
     open(campWith(0));
     expect(checked(TEST_IDS.planFort('villageWall'))).toBe('true');
     const on = qa('[data-screen="plan"] [data-testid^="plan-fort-"]').filter(
@@ -110,7 +124,7 @@ describe('Team Past places its castle', () => {
     expect(on.length).toBe(1);
   });
 
-  it('an old plan with no castle place picks Village Wall, and Lock it in! returns it', async () => {
+  it('an old plan with no castle place picks the Village, and Lock it in! returns it', async () => {
     const old = { biome: 'aspen', spot: 'bridge' } as unknown as BattlePlan;
     const o = open(campWith(0), old);
     expect(checked(TEST_IDS.planFort('villageWall'))).toBe('true');
@@ -121,7 +135,7 @@ describe('Team Past places its castle', () => {
     expect(o.result()).toEqual({ biome: 'aspen', spot: 'bridge', fort: 'villageWall' });
   });
 
-  it('a family can go back to Village Wall after picking another place', async () => {
+  it('a family can go back to the Village after picking another place', async () => {
     const o = open(campWith(0));
     click(q(TEST_IDS.planFort('drawbridge')));
     expect(checked(TEST_IDS.planFort('villageWall'))).toBe('false');

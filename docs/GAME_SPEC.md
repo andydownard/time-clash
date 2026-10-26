@@ -83,9 +83,9 @@ Instead of a fixed spawn point, the Future player can choose where to plant thei
 Team Past gets the same kind of choice for its castle (added 2026-10-23, owner request: "the past needs a way to have things that block too"):
 
 ⚬ Hill Fort: high on a solid rock. The best view. Low shots thud into the rock.
-⚬ Village Wall: on the ground, behind a low stone wall out in front.
+⚬ Village (code id `villageWall`): on the ground, behind a low stone wall out in front. It was called Village Wall until 2026-10-25, when the panel found it sounded like the Stone Wall ability.
 ⚬ Drawbridge: low, behind a raised wooden drawbridge that stops flat shots, so players lob.
-⚬ Village Wall is the default (owner decision, 2026-10-24), the way Food Trucks is for Team Future. A new family, and every plan saved before castle places, starts at Village Wall. One castle card is always picked.
+⚬ The Village is the default (owner decision, 2026-10-24), the way Food Trucks is for Team Future. A new family, and every plan saved before castle places, starts at the Village. One castle card is always picked.
 
 Every blocking shape is drawn as the thing it is (stone courses, moss and grass, cherry petals, temple vines, tower windows with neon trim, a steel truss, a taco truck, oak planks with iron bands), never a plain dark box. The picture and the solid shape are the same outline, so a shell hits exactly what a child sees.
 
