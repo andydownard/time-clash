@@ -366,7 +366,7 @@ export function spotsMarkup(
       const attrs = interactive
         ? `tabindex="0" role="button" aria-pressed="${on}" aria-label="${label(sp, on)}"`
         : 'aria-hidden="true"';
-      return `<g class="tc-bb-spot" data-spot="${sp.index}" data-weapon="${sp.weapon ?? ''}"${on ? ' data-selected="true"' : ''} data-live="${interactive}" ${attrs}>${hit}${ring}${body}${badge}</g>`;
+      return `<g class="tc-bb-spot" data-testid="bb-spot-${sp.index + 1}" data-spot="${sp.index}" data-weapon="${sp.weapon ?? ''}"${on ? ' data-selected="true"' : ''} data-live="${interactive}" ${attrs}>${hit}${ring}${body}${badge}</g>`;
     })
     .join('');
 }

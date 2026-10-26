@@ -1,5 +1,5 @@
 // "My weapons" in Build Base: weapons made in the Forge Workshop sit at the top of the Weapons-mode
-// list, mount on a pad for no Scrap, stay after a reload, and fit beside the plot with no scrolling.
+// list, mount on a pad for no Scrap, stay after a reload, and fit with no scrolling.
 // With none made, one quiet link opens the Forge Workshop right from the builder.
 import type { Page, TestInfo } from '@playwright/test';
 import { expect, test } from './fixtures';
@@ -102,7 +102,7 @@ async function listFits(page: Page, where: string, fits = false): Promise<void> 
   expect.soft(r.tiny, `${where}: text under 20px`).toBe(0);
 }
 
-/** Choose a pad by keyboard (an open list may sit over a far pad, as it always could). */
+/** Choose a pad by keyboard. (base-builder-list-clear.spec.ts checks the list covers no pad.) */
 async function pickPad(page: Page, n: number): Promise<void> {
   await spotPad(page, n).focus();
   await page.keyboard.press('Enter');

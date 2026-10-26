@@ -91,6 +91,7 @@ import { isBlockedName } from './nameBlocklist';
 import { radioGroup } from './selector';
 import { svgFromString } from './svg';
 import { TEST_IDS, type BuilderOptions } from './types';
+import { weaponListPlace } from './weaponListPlace';
 import { showWorkshop } from './workshopScreen';
 
 /** How far a pointer moves before a press becomes a drag. Smaller is a tap. */
@@ -100,13 +101,6 @@ const DRAG_START_PX = 6;
  * inside, at the nearest legal place. Farther out, the drag is put back.
  */
 const EDGE_GRACE_PX = 28;
-/** The weapon list's usual width (the CSS min(264px, 34%)) and the most it grows with My weapons. */
-const LIST_USUAL_PX = 264;
-const LIST_USUAL_SHARE = 0.34;
-const LIST_MAX_PX = 440;
-/** Air between the list and the plot's edge or the chosen pad (the CSS --tc-s-3). */
-const LIST_GAP_PX = 12;
-
 type Box = { left: number; top: number; width: number; height: number };
 
 /** The words for why a brick cannot go where it was let go. */
@@ -395,7 +389,6 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
       { class: 'tc-bb-weapons', 'data-testid': 'bb-weapon-panel', hidden: true },
       panelTitle,
       panelList,
-      clearSpotBtn,
     );
     const plotWrap = h(doc, 'div', { class: 'tc-bb-plot' }, plotArt, weaponPanel, confirm);
 
@@ -585,6 +578,16 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
     const keys = h(doc, 'p', { class: 'tc-sr-only', text: BUILDER_COPY.keys });
     const spotKeys = h(doc, 'p', { class: 'tc-sr-only', text: BUILDER_COPY.spotKeys });
     const padKeys = h(doc, 'p', { class: 'tc-sr-only', text: SHAPE_COPY.keys });
+    /** The plot row, the status line and the bar. A bottom-sheet weapon list goes in here too. */
+    const body = h(
+      doc,
+      'div',
+      { class: 'tc-bb-body' },
+      h(doc, 'div', { class: 'tc-bb-main' }, rail, plotWrap, tools),
+      status,
+      tray,
+      pad,
+    );
 
     const screen = h(
       doc,
@@ -597,15 +600,7 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
       },
       h(doc, 'h1', { class: 'tc-sr-only', text: BUILDER_COPY.title[team] }),
       h(doc, 'header', { class: 'tc-bb-top' }, back, slotNav, scrapBox),
-      h(
-        doc,
-        'div',
-        { class: 'tc-bb-body' },
-        h(doc, 'div', { class: 'tc-bb-main' }, rail, plotWrap, tools),
-        status,
-        tray,
-        pad,
-      ),
+      body,
       keys,
       spotKeys,
       padKeys,
@@ -940,21 +935,21 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
     function renderPanel(): void {
       const open = mode === 'weapons' && selSpot !== null;
       weaponPanel.hidden = !open;
-      if (!open || selSpot === null) return;
+      if (!open || selSpot === null) {
+        // The bar comes back where the sheet was.
+        screen.removeAttribute('data-list');
+        return;
+      }
       const n = selSpot + 1;
       const here = build.spots[selSpot]?.weapon;
       const have = ownedWeapons();
       const scrap = walletOf(camp, name).scrap;
       scrapValue.textContent = String(scrap);
-      // The list sits on the side away from the chosen spot, so it never covers it.
-      const pad = resolveSpots(build.pieces, build.spots)[selSpot];
-      weaponPanel.setAttribute('data-side', pad && pad.x * STEP < PLOT_W / 2 ? 'right' : 'left');
       weaponPanel.setAttribute('aria-label', BUILDER_COPY.spotPanel(n));
       panelTitle.textContent = BUILDER_COPY.spotTitle(n);
-      // "My weapons": the player's own Workshop weapons for this side, first, two to a row.
+      // "My weapons": the player's own Workshop weapons for this side, first.
       const mine = customMountWeapons(camp, name, team);
       weaponPanel.setAttribute('data-mine', mine.length ? 'some' : 'none');
-      sizeList(pad ? pad.x * STEP : PLOT_W / 2, mine.length > 0);
       const mineGroup = mine.length
         ? h(
             doc,
@@ -966,7 +961,7 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
               'data-testid': 'bb-mine',
             },
             h(doc, 'h3', { class: 'tc-bb-group-title', text: BUILDER_COPY.myWeapons }),
-            h(doc, 'div', { class: 'tc-bb-myw-grid' }, ...mine.map((def) => myTile(def, here))),
+            ...mine.map((def) => myTile(def, here)),
           )
         : makeLink;
       // A thin line, then the base weapons. The words are for a screen reader only.
@@ -1011,32 +1006,45 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
           b.addEventListener('click', () => pickWeapon(def));
           return b;
         }),
+        clearSpotBtn,
       );
       clearSpotBtn.setAttribute('aria-label', BUILDER_COPY.clearSpotLabel(n));
       clearSpotBtn.setAttribute('aria-disabled', String(here === undefined));
+      placeList();
     }
 
     /**
-     * With My weapons showing, the list takes the room on the far side of the chosen pad (never
-     * over the pad), from its usual width up to LIST_MAX_PX. `padX` is in picture units.
+     * Puts the open list where it covers no pad (see weaponListPlace.ts): beside the plot, on the
+     * side away from the chosen pad, when that side has room for two columns. Otherwise it is a
+     * bottom sheet under the plot, in the place of the bar (bricks wait in Weapons mode anyway).
      */
-    function sizeList(padX: number, wide: boolean): void {
-      weaponPanel.style.removeProperty('--bb-list-w');
-      const wrap = plotWrap.getBoundingClientRect();
-      const art = plotBox();
-      if (!wide || wrap.width === 0 || art.width === 0) return;
-      const { scale } = plotPoint(art, 0, 0);
-      const offX = (art.width - PLOT_W * scale) / 2;
-      const middle = art.left + offX + padX * scale;
-      // The ring around a chosen pad, and a little air.
-      const reach = (B.spots.padSteps * STEP + 9) * scale + LIST_GAP_PX;
-      const room =
-        weaponPanel.getAttribute('data-side') === 'right'
-          ? wrap.right - LIST_GAP_PX - (middle + reach)
-          : middle - reach - (wrap.left + LIST_GAP_PX);
-      const usual = Math.min(LIST_USUAL_PX, wrap.width * LIST_USUAL_SHARE);
-      const width = Math.floor(Math.max(usual, Math.min(LIST_MAX_PX, room)));
-      weaponPanel.style.setProperty('--bb-list-w', `${width}px`);
+    function placeList(): void {
+      if (weaponPanel.hidden || selSpot === null) {
+        screen.removeAttribute('data-list');
+        return;
+      }
+      // Measure the screen as it is with no list: the bar in place, the pads where they rest.
+      weaponPanel.hidden = true;
+      screen.removeAttribute('data-list');
+      const before = plotBox();
+      const barH = tray.offsetHeight;
+      const pads = [...spotsLayer.querySelectorAll('.tc-bb-spot')].map((g) =>
+        g.getBoundingClientRect(),
+      );
+      const place = weaponListPlace(plotWrap.getBoundingClientRect(), pads, selSpot);
+      weaponPanel.hidden = false;
+      // The sheet is exactly as tall as the bar it stands in for, so the plot, the rails and Done
+      // keep their size. With the bar already out of the way (a narrow window), it fits its tiles.
+      if (barH > 0) weaponPanel.style.setProperty('--bb-sheet-h', `${barH}px`);
+      else weaponPanel.style.removeProperty('--bb-sheet-h');
+      weaponPanel.setAttribute('data-side', place);
+      screen.setAttribute('data-list', place === 'sheet' ? 'sheet' : 'side');
+      if (place === 'sheet') {
+        if (weaponPanel.parentElement !== body) body.insertBefore(weaponPanel, status);
+      } else if (weaponPanel.parentElement !== plotWrap) plotWrap.insertBefore(weaponPanel, confirm);
+      // The sheet takes the bar's room. If that changed the plot's size, the pads move with it.
+      const after = plotBox();
+      if (after.width !== before.width || after.height !== before.height) renderSpots();
     }
 
     /** One weapon of your own: its picture with a star, its name and its damage. No Scrap. */
@@ -1646,7 +1654,10 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
     buildModeBtn.addEventListener('click', () => setMode('build'));
     weaponsModeBtn.addEventListener('click', () => setMode('weapons'));
     clearSpotBtn.addEventListener('click', doClearSpot);
-    const onResize = (): void => renderSpots();
+    const onResize = (): void => {
+      renderSpots();
+      placeList();
+    };
     doc.defaultView?.addEventListener('resize', onResize);
 
     // ---------- Tools ----------
