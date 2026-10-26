@@ -15,6 +15,24 @@ const mix = (seed: number, salt: number, a: number, b = 0): number => {
   return (s ^ salt ^ Math.imul(n + 1, MIX) ^ Math.imul(b + 7, 0x85ebca6b)) >>> 0;
 };
 
+// ---------- Level ----------
+
+/** How strong a turn's birds, gust and recoil are. */
+export type DisturbanceLevel = (typeof DISTURBANCE.levelOrder)[number];
+
+/**
+ * This turn's level: low, medium or high, a third of the time each. Its own seeded stream, so
+ * drawing it moves no other random number. Same seed and turn, same level.
+ */
+export const levelForTurn = (seed: number, turnNumber: number): DisturbanceLevel => {
+  const rng = createRng(mix(seed, DISTURBANCE.salt.level, turnNumber));
+  return rng.pick(DISTURBANCE.levelOrder);
+};
+
+/** The multipliers for a level (an unknown level counts as low, the old mild setting). */
+export const levelScale = (level: DisturbanceLevel | undefined) =>
+  DISTURBANCE.levels[level ?? 'low'] ?? DISTURBANCE.levels.low;
+
 // ---------- Birds ----------
 
 /** One bird's flight for a turn. Its place at any time comes from birdAt(). */
@@ -27,30 +45,57 @@ export type BirdPath = {
   vx: number;
   /** Where in its bob it starts, 0 to 1. */
   bobPhase: number;
+  /** How far a bump turns the shell, degrees (the turn's level). Missing: the low setting. */
+  nudgeDeg?: number;
 };
 
 const B = DISTURBANCE.birds;
 const SPAN_MIN = -B.edgeMarginPx;
 const SPAN = WORLD.width + 2 * B.edgeMarginPx;
 
-/** One or two birds for this turn, on seeded paths. Same seed and turn, same birds. */
-export const birdsForTurn = (seed: number, turnNumber: number): BirdPath[] => {
+/**
+ * A start spot at least `minGapPx` from every earlier bird, as close to the drawn spot as can be.
+ * Tries the drawn spot, a gap either side of each earlier bird, and the midpoints between them.
+ */
+const spreadOut = (x: number, earlier: readonly number[]): number => {
+  if (earlier.length === 0) return x;
+  const sorted = [...earlier].sort((a, b) => a - b);
+  const candidates = [x, ...sorted.flatMap((e) => [e - B.minGapPx, e + B.minGapPx])];
+  for (let i = 1; i < sorted.length; i++)
+    candidates.push(((sorted[i - 1] as number) + (sorted[i] as number)) / 2);
+  const fits = (c: number) =>
+    c >= SPAN_MIN && c <= SPAN_MIN + SPAN && earlier.every((e) => Math.abs(c - e) >= B.minGapPx);
+  let best: number | null = null;
+  for (const c of candidates)
+    if (fits(c) && (best === null || Math.abs(c - x) < Math.abs(best - x))) best = c;
+  return best ?? x;
+};
+
+/**
+ * One to three birds for this turn, on seeded paths (the level sets how many and how hard they
+ * nudge). Same seed and turn, same birds.
+ */
+export const birdsForTurn = (
+  seed: number,
+  turnNumber: number,
+  level: DisturbanceLevel = levelForTurn(seed, turnNumber),
+): BirdPath[] => {
   const rng = createRng(mix(seed, DISTURBANCE.salt.birds, turnNumber));
-  const count = rng.int(B.minCount, B.maxCount);
+  const scale = levelScale(level);
+  const [lo, hi] = scale.birdCount;
+  const count = rng.int(Math.max(B.minCount, lo), Math.min(B.maxCount, hi));
+  const nudgeDeg = B.nudgeDeg * scale.nudge;
   const birds: BirdPath[] = [];
   for (let id = 0; id < count; id++) {
-    let x0 = SPAN_MIN + rng.next() * SPAN;
-    const prev = birds[id - 1];
-    // A second bird starts well away from the first, so the two never sit on top of each other.
-    if (prev && Math.abs(x0 - prev.x0) < B.minGapPx) {
-      x0 = prev.x0 + (x0 >= prev.x0 ? 1 : -1) * B.minGapPx;
-      if (x0 > SPAN_MIN + SPAN) x0 = prev.x0 - B.minGapPx;
-      if (x0 < SPAN_MIN) x0 = prev.x0 + B.minGapPx;
-    }
+    // Every bird starts well away from the others, so two never sit on top of each other.
+    const x0 = spreadOut(
+      SPAN_MIN + rng.next() * SPAN,
+      birds.map((b) => b.x0),
+    );
     const y0 = B.minY + rng.next() * (B.maxY - B.minY);
     const speed = B.minSpeed + rng.next() * (B.maxSpeed - B.minSpeed);
     const vx = rng.next() < 0.5 ? -speed : speed;
-    birds.push({ id, x0, y0, vx, bobPhase: rng.next() });
+    birds.push({ id, x0, y0, vx, bobPhase: rng.next(), nudgeDeg });
   }
   return birds;
 };
@@ -81,10 +126,11 @@ export const bumpVelocity = (
   v: { vx: number; vy: number },
   shell: Vec2,
   bird: Vec2,
+  nudgeDeg: number = B.nudgeDeg,
 ): { vx: number; vy: number } => {
   const speed = Math.hypot(v.vx, v.vy) * B.speedKeep;
   const heading = Math.atan2(v.vy, v.vx);
-  const turn = (B.nudgeDeg * Math.PI) / 180;
+  const turn = ((Number.isFinite(nudgeDeg) ? nudgeDeg : B.nudgeDeg) * Math.PI) / 180;
   const over = shell.y <= bird.y;
   const side = v.vx >= 0 ? 1 : -1;
   // y grows down, so "up" is a smaller heading for a shell flying right and a larger one flying left.
@@ -98,17 +144,27 @@ export const bumpVelocity = (
  * The one gust of a turn. It starts `startShare` of the way through the shell's plain flight
  * (so a fast flat shot meets it as surely as a lob) and blows for `durationMs`.
  */
-export type Gust = { startShare: number; durationMs: number; push: number };
+export type Gust = {
+  startShare: number;
+  durationMs: number;
+  push: number;
+  /** The turn's level (the scene sizes the gust cue by it). Missing: low. */
+  level?: DisturbanceLevel;
+};
 
 const G = DISTURBANCE.gust;
 
-/** This turn's gust. Same seed and turn, same gust. Either way, about as often. */
-export const gustForTurn = (seed: number, turnNumber: number): Gust => {
+/** This turn's gust, as strong as the turn's level. Same seed and turn, same gust. Either way, about as often. */
+export const gustForTurn = (
+  seed: number,
+  turnNumber: number,
+  level: DisturbanceLevel = levelForTurn(seed, turnNumber),
+): Gust => {
   const rng = createRng(mix(seed, DISTURBANCE.salt.gust, turnNumber));
   const startShare = G.earliestShare + rng.next() * (G.latestShare - G.earliestShare);
-  const strength = G.minPush + rng.next() * (G.maxPush - G.minPush);
+  const strength = (G.minPush + rng.next() * (G.maxPush - G.minPush)) * levelScale(level).push;
   const push = rng.next() < 0.5 ? -strength : strength;
-  return { startShare, durationMs: G.durationMs, push };
+  return { startShare, durationMs: G.durationMs, push, level };
 };
 
 /** When the gust starts (ms after launch) for a shell whose plain flight lasts `flightMs`. */
@@ -124,17 +180,27 @@ export const gustPushAt = (gust: Gust | null, ms: number, flightMs: number): num
 
 // ---------- Recoil ----------
 
+/** A role's recoil limits at a level: the low limits times the level's multiplier, rounded. */
+export const recoilLimit = (role: UnitRole, level?: DisturbanceLevel): AimInput | null => {
+  const limit = (DISTURBANCE.recoil as Partial<Record<string, AimInput>>)[role];
+  if (!limit) return null;
+  const k = levelScale(level).recoil;
+  return { angleDeg: Math.round(limit.angleDeg * k), power: Math.round(limit.power * k) };
+};
+
 /**
  * How far the dials slide after shot `shotInTurn` (0, 1, 2) of a turn, for this fighter role.
- * Whole numbers between minus and plus the role's limits. Seeded, so tests repeat.
+ * Whole numbers between minus and plus the role's limits at the turn's level (one level for the
+ * whole turn, so every shot of a turn kicks alike). Seeded, so tests repeat.
  */
 export const recoilFor = (
   seed: number,
   turnNumber: number,
   shotInTurn: number,
   role: UnitRole,
+  level: DisturbanceLevel = levelForTurn(seed, turnNumber),
 ): AimInput => {
-  const limit = (DISTURBANCE.recoil as Partial<Record<string, AimInput>>)[role];
+  const limit = recoilLimit(role, level);
   if (!limit) return { angleDeg: 0, power: 0 };
   const rng = createRng(mix(seed, DISTURBANCE.salt.recoil, turnNumber, shotInTurn));
   return {

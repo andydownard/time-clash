@@ -14,6 +14,7 @@ import {
   birdsForTurn,
   gustForTurn,
   kickAim,
+  levelForTurn,
   recoilFor,
   type FlightDisturbance,
 } from '../../src/game/disturbance';
@@ -156,6 +157,38 @@ describe('disturbances in a match', () => {
     );
   });
 
+  it('each turn draws its level once: the birds, gust and recoil of a turn all match it', () => {
+    const m = make();
+    const level = levelForTurn(777, 0);
+    expect(m.snapshot().birds).toEqual(birdsForTurn(777, 0, level));
+    m.ready();
+    m.selectUnit('D');
+    m.setAim({ angleDeg: 50, power: 60 });
+    const r = m.fire();
+    if (r.gust) expect(r.gust.level).toBe(level);
+    expect(m.snapshot().aim.PAST).toEqual(
+      kickAim({ angleDeg: 50, power: 60 }, recoilFor(777, 0, 0, 'catapult', level)),
+    );
+  });
+
+  it('turned off, the level draw changes no flight', () => {
+    // A match with disturbances off flies exactly the plain physics, whatever the turn level.
+    const m = make({ disturbances: false });
+    m.ready();
+    m.setAim({ angleDeg: 52, power: 66 });
+    const r = m.fire();
+    const plain = simulateShot({
+      angleDeg: 52,
+      power: 66,
+      origin: firingOrigin('PAST', 'C', PHASE1_LAYOUT),
+      facing: TEAM_FACING.PAST,
+      wind: windForTurn(777, 0),
+      layout: PHASE1_LAYOUT,
+      speedScale: unitById('C')!.speedScale,
+    });
+    expect(r).toEqual(plain);
+  });
+
   it('a rematch keeps the switch', () => {
     expect(make({ disturbances: false }).rematchOptions().disturbances).toBe(false);
     expect(make().rematchOptions()).not.toHaveProperty('disturbances');
@@ -170,36 +203,40 @@ describe('disturbances in a match', () => {
 });
 
 describe('fairness', () => {
-  it('a direct hit is still reachable by retrying aim, for every seed, turn and bird clock', () => {
-    for (let seed = 1; seed <= 10; seed++) {
-      for (let turn = 0; turn < 2; turn++) {
-        for (const birdMs of [0, 6000]) {
-          const disturbance: FlightDisturbance = {
-            birds: birdsForTurn(seed, turn),
-            birdMs,
-            gust: gustForTurn(seed, turn),
-          };
-          const wind = windForTurn(seed, turn);
-          let found = false;
-          for (let a = 20; a <= 80 && !found; a += 3)
-            for (let p = 40; p <= 100 && !found; p += 2) {
-              const r = simulateShot({
-                angleDeg: a,
-                power: p,
-                origin: PHASE1_LAYOUT.launchOrigins.PAST,
-                facing: 1,
-                wind,
-                layout: PHASE1_LAYOUT,
-                disturbance,
-              });
-              if (r.hit.kind === 'out_of_bounds' || r.hit.kind === 'timeout') continue;
-              if (classifyBlast(r.landing, PHASE1_LAYOUT.bases.FUTURE) === 'direct') found = true;
-            }
-          expect(found, `seed ${seed} turn ${turn} birdMs ${birdMs}`).toBe(true);
+  it.each(['turn', ...DISTURBANCE.levelOrder] as const)(
+    'a direct hit is still reachable by retrying aim, for every seed, turn and bird clock (%s level)',
+    (lv) => {
+      const level = lv === 'turn' ? undefined : lv;
+      for (let seed = 1; seed <= 10; seed++) {
+        for (let turn = 0; turn < 2; turn++) {
+          for (const birdMs of [0, 6000]) {
+            const disturbance: FlightDisturbance = {
+              birds: birdsForTurn(seed, turn, level),
+              birdMs,
+              gust: gustForTurn(seed, turn, level),
+            };
+            const wind = windForTurn(seed, turn);
+            let found = false;
+            for (let a = 20; a <= 80 && !found; a += 3)
+              for (let p = 40; p <= 100 && !found; p += 2) {
+                const r = simulateShot({
+                  angleDeg: a,
+                  power: p,
+                  origin: PHASE1_LAYOUT.launchOrigins.PAST,
+                  facing: 1,
+                  wind,
+                  layout: PHASE1_LAYOUT,
+                  disturbance,
+                });
+                if (r.hit.kind === 'out_of_bounds' || r.hit.kind === 'timeout') continue;
+                if (classifyBlast(r.landing, PHASE1_LAYOUT.bases.FUTURE) === 'direct') found = true;
+              }
+            expect(found, `seed ${seed} turn ${turn} birdMs ${birdMs}`).toBe(true);
+          }
         }
       }
-    }
-  });
+    },
+  );
 
   it('birds only ever nudge: most shells that pass through the sky are not bumped at all', () => {
     let shots = 0;
