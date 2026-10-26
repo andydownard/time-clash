@@ -174,7 +174,7 @@ export function createHud(ctx: UiCtx) {
     m.mine ? myWeaponIcon(doc, m.art, team, MOUNT_ICON_PX) : weaponIcon(doc, m.art, MOUNT_ICON_PX);
 
   // Rebuild the tokens only when what they show changes. Otherwise just move the selection.
-  // With weapons on the base pads, one more token switches between the fighters and the weapons,
+  // With weapons on the base pads, one more token (Base weapons, or Fighters) switches views,
   // so the tokens on show always hold what Fire will shoot.
   const paintUnits = (state: HudState): void => {
     if (!parts) return;
@@ -206,12 +206,17 @@ export function createHud(ctx: UiCtx) {
                 h(doc, 'span', { class: 'tc-unit-spot', 'aria-hidden': 'true', text: m.spot + 1 }),
               ),
             ),
-            token(state.selected, {
-              class: 'tc-unit tc-unit-swap',
-              'data-testid': TEST_IDS.unitFighters,
-              'aria-label': HUD.fightersLabel(fighter?.name ?? '', state.selected),
-              text: state.selected,
-            }),
+            // Back to the fighters: a person picture and the word, on a wide pill (two places).
+            token(
+              state.selected,
+              {
+                class: 'tc-unit tc-unit-swap tc-unit-back',
+                'data-testid': TEST_IDS.unitFighters,
+                'aria-label': HUD.fightersLabel(fighter?.name ?? '', state.selected),
+              },
+              hudIcon(doc, 'fighter'),
+              h(doc, 'span', { class: 'tc-unit-back-label', text: HUD.fighters }),
+            ),
           ]
         : [
             ...state.units.map((u) =>

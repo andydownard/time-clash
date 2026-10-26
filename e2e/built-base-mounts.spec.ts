@@ -100,12 +100,30 @@ async function expectBarFits(page: Page, where: string): Promise<void> {
     expect(overlaps(units, c!), `${where}: selector covers a card`).toBe(false);
   const px = await page.evaluate(() =>
     Math.min(
-      ...[...document.querySelectorAll('.tc-unit-name, .tc-units-label, .tc-unit-spot')].map((e) =>
-        parseFloat(getComputedStyle(e).fontSize),
-      ),
+      ...[
+        ...document.querySelectorAll(
+          '.tc-unit-name, .tc-units-label, .tc-unit-spot, .tc-unit-back-label',
+        ),
+      ].map((e) => parseFloat(getComputedStyle(e).fontSize)),
     ),
   );
   expect(px, `${where}: selector text size`).toBeGreaterThanOrEqual(20);
+  // In the weapons view the way back says "Fighters" in full, inside its pill.
+  const back = tid(page, 'unit-fighters');
+  if (await back.count()) {
+    await expect(back).toContainText('Fighters');
+    const fits = await back.evaluate((el) => {
+      const label = el.querySelector<HTMLElement>('.tc-unit-back-label')!;
+      const a = el.getBoundingClientRect();
+      const b = label.getBoundingClientRect();
+      return (
+        b.left >= a.left - 0.5 &&
+        b.right <= a.right + 0.5 &&
+        label.scrollWidth <= label.clientWidth + 0.5
+      );
+    });
+    expect(fits, `${where}: "Fighters" fits its pill`).toBe(true);
+  }
 }
 
 /** Every weapon pad picture is on the field. */
@@ -160,7 +178,7 @@ test('a weapon on a pad fires for both teams, and the bar still fits', async ({ 
   await waitAiming(page, 1);
   await expectBarFits(page, 'Past, weapons');
   await page.screenshot({ path: info.outputPath(`mounts-past-weapons-${info.project.name}.png`) });
-  // The second go: back to a fighter with the letter token, then a harmless shot.
+  // The second go: back to a fighter with the Fighters token, then a harmless shot.
   await tid(page, 'unit-fighters').click();
   await expect.poll(async () => (await snap(page)).selectedMount?.PAST).toBeNull();
   await enterAim(page, 'PAST', { angleDeg: 80, power: 25 });

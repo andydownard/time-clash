@@ -4799,8 +4799,8 @@ button.tc-forge-row[aria-disabled='true'],
   overflow: hidden;
   text-overflow: ellipsis;
 }
-/* Weapons on the base pads (built bases). The swap token (Base weapons, or the fighter's letter
-   in the weapons view) has a dashed ring, so it reads as "switch" and never by color alone. A
+/* Weapons on the base pads (built bases). The swap token (Base weapons, or Fighters in the
+   weapons view) has a dashed ring, so it reads as "switch" and never by color alone. A
    weapon token shows the weapon's picture and its spot number. */
 .tc-unit-mount,
 .tc-unit-swap {
@@ -4816,6 +4816,32 @@ button.tc-forge-row[aria-disabled='true'],
 .tc-unit-swap svg {
   display: block;
   pointer-events: none;
+}
+/* The Fighters token in the weapons view: a person picture over the word, on a wide pill. It
+   takes two of the six places (at most four weapons sit beside it), so the selector keeps its
+   width and the bar keeps one row. The word is 20px and not spread out, so it fits the pill. */
+.tc-unit-back {
+  grid-column: span 2;
+  width: auto;
+  border-radius: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 0 4px;
+  overflow: hidden;
+}
+.tc-unit-back .tc-hud-icon {
+  width: 24px;
+  height: 24px;
+}
+.tc-unit-back-label {
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: none;
+  white-space: nowrap;
 }
 .tc-unit-spot {
   position: absolute;

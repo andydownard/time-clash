@@ -304,7 +304,9 @@ export const HUD = {
   baseWeapons: 'Base weapons',
   /** A weapon token: its spot number (1 to 4) and its name. */
   mountLabel: (spot: number, name: string): string => `Spot ${spot}: ${name}`,
-  /** The token that switches back to the fighters, with the picked fighter on it. */
+  /** The words on the token that switches back to the fighters. */
+  fighters: 'Fighters',
+  /** The token that switches back to the fighters: what a screen reader hears. */
   fightersLabel: (name: string, id: string): string => `Fighters: ${name} ${id}`,
   /** The gold star pip and screen-reader text while the Power Shot is up. */
   powerShot: 'Power Shot!',
