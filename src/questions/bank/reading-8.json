@@ -1329,5 +1329,128 @@
     "hint": "Think about how long ago they were made.",
     "tags": ["inference"],
     "passage": "Roman engineers built aqueducts to carry water from distant mountains to growing cities. Instead of pumps, they relied on gravity. Each channel sloped downward by a tiny, carefully measured amount, so that the water flowed steadily without rushing or stalling. Some of these structures still stand today, which shows how precisely the builders planned."
+  },
+  {
+    "id": "reading-8-0091",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "vocab",
+    "prompt": "What does \"eloquent\" mean in this sentence? The eloquent speaker moved the crowd with clear, graceful words.",
+    "choices": ["expressive and persuasive", "quiet and shy", "confused", "rude and loud"],
+    "answer": "expressive and persuasive",
+    "hint": "Her words moved the crowd.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-8-0092",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "vocab",
+    "prompt": "What does \"pragmatic\" mean in this sentence? A pragmatic cook uses whatever ingredients are in the kitchen instead of waiting for perfect ones.",
+    "choices": ["dreamy", "practical", "wasteful", "picky"],
+    "answer": "practical",
+    "hint": "The cook uses what is on hand.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-8-0093",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "vocab",
+    "prompt": "What does \"ephemeral\" mean in this sentence? The ephemeral snowflake melted the moment it touched her hand.",
+    "choices": ["lasting forever", "very large", "lasting a very short time", "extremely rare"],
+    "answer": "lasting a very short time",
+    "hint": "It melted right away.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-8-0094",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "vocab",
+    "prompt": "What does \"meticulous\" mean in this sentence? The meticulous mapmaker checked every line twice.",
+    "choices": ["sloppy", "hurried", "easily bored", "extremely careful about details"],
+    "answer": "extremely careful about details",
+    "hint": "She checked every line twice.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-8-0095",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "vocab",
+    "prompt": "What does \"plausible\" mean in this sentence? Her excuse sounded plausible, so the teacher accepted it.",
+    "choices": ["believable", "impossible", "silly", "unfair"],
+    "answer": "believable",
+    "hint": "The teacher accepted it.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-8-0096",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "grammar",
+    "prompt": "Which sentence is written in the active voice?",
+    "choices": ["The final game was won by the team.", "The team won the final game.", "The final game had been won by the team.", "The final game is won by the team."],
+    "answer": "The team won the final game.",
+    "hint": "In active voice, the doer comes first.",
+    "tags": ["grammar", "voice"]
+  },
+  {
+    "id": "reading-8-0097",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "grammar",
+    "prompt": "Which word completes the sentence? \"Please give the tickets to Jo and ___.\"",
+    "choices": ["I", "myself", "me", "mine"],
+    "answer": "me",
+    "hint": "Try it without Jo: give the tickets to ___.",
+    "tags": ["grammar", "pronouns"]
+  },
+  {
+    "id": "reading-8-0098",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "grammar",
+    "prompt": "Which sentence uses a colon to start a list correctly?",
+    "choices": ["Bring: three things a hat, a coat, and boots.", "Bring three: things a hat, a coat, and boots.", "Bring three things a hat: a coat, and boots.", "Bring three things: a hat, a coat, and boots."],
+    "answer": "Bring three things: a hat, a coat, and boots.",
+    "hint": "A colon comes after a whole thought and starts a list.",
+    "tags": ["grammar", "punctuation"]
+  },
+  {
+    "id": "reading-8-0099",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "grammar",
+    "prompt": "Which sentence contains an appositive?",
+    "choices": ["My dog, a gentle collie, loves the snow.", "My dog loves the snow.", "My dog loved snow and rain.", "Loving the snow, my dog ran."],
+    "answer": "My dog, a gentle collie, loves the snow.",
+    "hint": "An appositive renames the noun next to it.",
+    "tags": ["grammar", "phrases"]
+  },
+  {
+    "id": "reading-8-0100",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "choices": ["Trees grow only in wet years.", "Tree rings tell a tree's age and past weather.", "Bark is thicker than wood.", "Scientists cut down most trees."],
+    "answer": "Tree rings tell a tree's age and past weather.",
+    "hint": "Think about what scientists learn from the rings.",
+    "tags": ["mainidea", "main-idea"],
+    "passage": "Every year a tree grows a new layer of wood just under its bark. In a wet year the layer is wide, and in a dry year it is thin. By counting the rings in a cut trunk, scientists can tell how old the tree is. They can also learn which years had plenty of rain."
+  },
+  {
+    "id": "reading-8-0101",
+    "subject": "reading",
+    "grade": 8,
+    "kind": "mainidea",
+    "prompt": "What does a thin ring most likely show?",
+    "choices": ["A wet year", "A very old tree", "A dry year", "A broken trunk"],
+    "answer": "A dry year",
+    "hint": "Read the second sentence.",
+    "tags": ["mainidea", "inference"],
+    "passage": "Every year a tree grows a new layer of wood just under its bark. In a wet year the layer is wide, and in a dry year it is thin. By counting the rings in a cut trunk, scientists can tell how old the tree is. They can also learn which years had plenty of rain."
   }
 ]

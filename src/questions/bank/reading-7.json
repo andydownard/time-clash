@@ -1334,5 +1334,128 @@
     "hint": "Think about what the fisherman did with her skin.",
     "tags": ["mainidea", "detail"],
     "passage": "Along the rocky coasts of Scotland and Ireland, storytellers speak of selkies, seals that shed their skins on moonlit beaches and walk as people. In many tales a fisherman hides a selkie's skin so she cannot return to the sea, and she grows lonely until she finds it and swims away. Folklorists note that the stories may have grown from the long bond between coastal families and the seals that shared their waters. The tales reflect both love for the sea and respect for its wildness."
+  },
+  {
+    "id": "reading-7-0091",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "vocab",
+    "prompt": "What does \"ambiguous\" mean in this sentence? The directions were ambiguous, so half the class went left and half went right.",
+    "choices": ["open to more than one meaning", "very easy to follow", "written in code", "far too long"],
+    "answer": "open to more than one meaning",
+    "hint": "The class split into two groups.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-7-0092",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "vocab",
+    "prompt": "What does \"benevolent\" mean in this sentence? The benevolent owner gave free meals to anyone who could not pay.",
+    "choices": ["strict and cold", "kind and generous", "careless", "secretive"],
+    "answer": "kind and generous",
+    "hint": "She gave meals away for free.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-7-0093",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "vocab",
+    "prompt": "What does \"tenacious\" mean in this sentence? The tenacious climber kept going after three failed tries.",
+    "choices": ["easily bored", "very fearful", "stubbornly determined", "quite forgetful"],
+    "answer": "stubbornly determined",
+    "hint": "He did not stop after failing.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-7-0094",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "vocab",
+    "prompt": "What does \"candid\" mean in this sentence? Please give me your candid opinion, even if it is not what I hope to hear.",
+    "choices": ["polite but untrue", "very short", "carefully hidden", "honest and direct"],
+    "answer": "honest and direct",
+    "hint": "The speaker wants the truth.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-7-0095",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "vocab",
+    "prompt": "What does \"scrutinize\" mean in this sentence? Detectives scrutinize every clue before they name a suspect.",
+    "choices": ["examine closely", "quickly ignore", "loudly announce", "carefully hide"],
+    "answer": "examine closely",
+    "hint": "They look at every clue before deciding.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-7-0096",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "grammar",
+    "prompt": "Which sentence uses a semicolon correctly?",
+    "choices": ["The storm; ended the sun came out.", "The storm ended; the sun came out.", "The storm ended the; sun came out.", "The; storm ended the sun came out."],
+    "answer": "The storm ended; the sun came out.",
+    "hint": "A semicolon joins two whole thoughts.",
+    "tags": ["grammar", "punctuation"]
+  },
+  {
+    "id": "reading-7-0097",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "grammar",
+    "prompt": "Which sentence is a complex sentence?",
+    "choices": ["We kept playing, and it was late.", "It was late.", "Although it was late, we kept playing.", "We kept playing."],
+    "answer": "Although it was late, we kept playing.",
+    "hint": "A complex sentence has a thought that cannot stand alone.",
+    "tags": ["grammar", "sentences"]
+  },
+  {
+    "id": "reading-7-0098",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "grammar",
+    "prompt": "Which sentence shows ownership with an apostrophe correctly?",
+    "choices": ["The dogs bowl is empty.", "The dog bowl's is empty.", "The dogs' bowl's is empty.", "The dog's bowl is empty."],
+    "answer": "The dog's bowl is empty.",
+    "hint": "One dog owns the bowl.",
+    "tags": ["grammar", "apostrophes"]
+  },
+  {
+    "id": "reading-7-0099",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "grammar",
+    "prompt": "Which sentence is NOT a run-on?",
+    "choices": ["We were tired, so we went home.", "We were tired we went home.", "We were tired, we went home.", "We were tired so, we went home."],
+    "answer": "We were tired, so we went home.",
+    "hint": "Join two thoughts with a comma and a joining word.",
+    "tags": ["grammar", "sentences"]
+  },
+  {
+    "id": "reading-7-0100",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "What is the main idea of this passage?",
+    "choices": ["Bees cannot find flowers alone.", "Honeybees use a dance to share where food is.", "Bees dance only at night.", "The sun moves around the hive."],
+    "answer": "Honeybees use a dance to share where food is.",
+    "hint": "Look at what the dance tells other bees.",
+    "tags": ["mainidea", "main-idea"],
+    "passage": "When a honeybee finds a field of flowers, she returns to the hive and dances. The angle of her dance shows the direction of the flowers compared with the sun. The length of her dance shows how far away they are. Other bees watch, then fly straight to the food."
+  },
+  {
+    "id": "reading-7-0101",
+    "subject": "reading",
+    "grade": 7,
+    "kind": "mainidea",
+    "prompt": "What does the length of the dance show?",
+    "choices": ["Which flowers smell best", "How many bees are watching", "How far away the flowers are", "What time of day it is"],
+    "answer": "How far away the flowers are",
+    "hint": "Read the third sentence.",
+    "tags": ["mainidea", "detail"],
+    "passage": "When a honeybee finds a field of flowers, she returns to the hive and dances. The angle of her dance shows the direction of the flowers compared with the sun. The length of her dance shows how far away they are. Other bees watch, then fly straight to the food."
   }
 ]

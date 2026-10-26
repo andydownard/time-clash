@@ -1255,5 +1255,128 @@
     "hint": "Look at how she crossed the line.",
     "tags": ["inference"],
     "passage": "Jada wanted to train for the school fun run. On Monday she could jog only to the corner. She did not quit. Each day she added one more house to her route. By Friday she could run around the whole block. On race day, Jada did not finish first, but she smiled all the way across the line."
+  },
+  {
+    "id": "reading-5-0090",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "vocab",
+    "prompt": "What does \"reluctant\" mean in this sentence? Ben was reluctant to jump into the cold lake, so he waited on the shore.",
+    "choices": ["not eager", "very excited", "fully ready", "too sleepy"],
+    "answer": "not eager",
+    "hint": "He waited on the shore instead of jumping.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-5-0091",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "vocab",
+    "prompt": "What does \"scarce\" mean in this sentence? Water was scarce in the desert, so the travelers saved every drop.",
+    "choices": ["easy to find", "hard to find", "too hot", "very clean"],
+    "answer": "hard to find",
+    "hint": "They saved every drop.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-5-0092",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "vocab",
+    "prompt": "What does \"vivid\" mean in this sentence? The artist used vivid colors that seemed to glow on the canvas.",
+    "choices": ["dull and gray", "soft and quiet", "bright and clear", "old and worn"],
+    "answer": "bright and clear",
+    "hint": "The colors seemed to glow.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-5-0093",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "vocab",
+    "prompt": "What does \"cautious\" mean in this sentence? The cautious hiker tested each rock before stepping on it.",
+    "choices": ["careless", "angry", "lonely", "careful"],
+    "answer": "careful",
+    "hint": "She tested each rock first.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-5-0094",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "vocab",
+    "prompt": "What does \"abundant\" mean in this sentence? Apples were abundant this year, and every tree was full.",
+    "choices": ["plentiful", "rotten", "rare", "sour"],
+    "answer": "plentiful",
+    "hint": "Every tree was full.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-5-0095",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "grammar",
+    "prompt": "Which word is an adverb? \"The turtle moved slowly across the road.\"",
+    "choices": ["turtle", "slowly", "moved", "road"],
+    "answer": "slowly",
+    "hint": "An adverb tells how something is done.",
+    "tags": ["grammar", "adverb"]
+  },
+  {
+    "id": "reading-5-0096",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "grammar",
+    "prompt": "Which sentence is punctuated correctly?",
+    "choices": ["After lunch we, played outside.", "After, lunch we played outside.", "After lunch, we played outside.", "After lunch we played, outside."],
+    "answer": "After lunch, we played outside.",
+    "hint": "A comma goes after the opening phrase.",
+    "tags": ["grammar", "commas"]
+  },
+  {
+    "id": "reading-5-0097",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "grammar",
+    "prompt": "Which sentence is in the past tense?",
+    "choices": ["We walk to the lake.", "We will walk to the lake.", "We are walking to the lake.", "We walked to the lake."],
+    "answer": "We walked to the lake.",
+    "hint": "Past tense tells what already happened.",
+    "tags": ["grammar", "verb-tense"]
+  },
+  {
+    "id": "reading-5-0098",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "grammar",
+    "prompt": "Which word is a proper noun? \"My cousin lives in Texas.\"",
+    "choices": ["Texas", "cousin", "lives", "My"],
+    "answer": "Texas",
+    "hint": "A proper noun names a special place or person and starts with a capital letter.",
+    "tags": ["grammar", "noun"]
+  },
+  {
+    "id": "reading-5-0099",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "What is this passage mostly about?",
+    "choices": ["How to catch crabs", "Tide pools and the animals that live in them", "Why the sun is hot", "How boats stay afloat"],
+    "answer": "Tide pools and the animals that live in them",
+    "hint": "Check the first two sentences.",
+    "tags": ["mainidea", "main-idea"],
+    "passage": "At low tide, the sea pulls back and leaves small pools of water among the rocks. These tide pools are home to crabs, sea stars, and snails. The animals must handle hot sun and crashing waves each day. When the tide comes back, the pools fill up again."
+  },
+  {
+    "id": "reading-5-0100",
+    "subject": "reading",
+    "grade": 5,
+    "kind": "mainidea",
+    "prompt": "What happens to the pools when the tide comes back?",
+    "choices": ["They turn to sand.", "They move far away.", "They fill up again.", "They freeze solid."],
+    "answer": "They fill up again.",
+    "hint": "Read the last sentence.",
+    "tags": ["mainidea", "detail"],
+    "passage": "At low tide, the sea pulls back and leaves small pools of water among the rocks. These tide pools are home to crabs, sea stars, and snails. The animals must handle hot sun and crashing waves each day. When the tide comes back, the pools fill up again."
   }
 ]

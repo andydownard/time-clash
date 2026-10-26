@@ -1234,5 +1234,128 @@
     "hint": "Read the sentence that mentions food.",
     "tags": ["detail"],
     "passage": "Earthworms may look simple, but they do an important job. They dig tunnels in the soil. The tunnels let air and water reach plant roots. Worm waste also adds food to the soil. That is why gardeners are glad to see worms."
+  },
+  {
+    "id": "reading-4-0090",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "vocab",
+    "prompt": "What does \"fragile\" mean in this sentence? The fragile glass cup broke when it fell.",
+    "choices": ["easy to break", "very heavy", "bright blue", "hard to see"],
+    "answer": "easy to break",
+    "hint": "Think about what happened when the cup fell.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-4-0091",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "vocab",
+    "prompt": "What does \"enormous\" mean in this sentence? An enormous elephant walked slowly through the gate.",
+    "choices": ["very small", "very large", "very noisy", "very hungry"],
+    "answer": "very large",
+    "hint": "The sentence says it was an elephant.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-4-0092",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "vocab",
+    "prompt": "What does \"ancient\" mean in this sentence? The ancient castle was built over a thousand years ago.",
+    "choices": ["brand new", "very tall", "very old", "well lit"],
+    "answer": "very old",
+    "hint": "A thousand years is a long time.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-4-0093",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "vocab",
+    "prompt": "What does \"gentle\" mean in this sentence? The gentle nurse spoke softly to the scared puppy.",
+    "choices": ["loud and rough", "quick and busy", "tired and slow", "kind and soft"],
+    "answer": "kind and soft",
+    "hint": "She spoke softly to a scared puppy.",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-4-0094",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "vocab",
+    "prompt": "What does \"frigid\" mean in this sentence? The frigid wind made everyone put on thick coats.",
+    "choices": ["very chilly", "very wet", "very loud", "very warm"],
+    "answer": "very chilly",
+    "hint": "Why would people need thick coats?",
+    "tags": ["vocab", "context"]
+  },
+  {
+    "id": "reading-4-0095",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "grammar",
+    "prompt": "Which of these is a complete sentence?",
+    "choices": ["Ran down the hill.", "The dog ran down the hill.", "Down the big hill.", "The dog down the hill."],
+    "answer": "The dog ran down the hill.",
+    "hint": "A complete sentence has a who and a what happened.",
+    "tags": ["grammar", "sentences"]
+  },
+  {
+    "id": "reading-4-0096",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "grammar",
+    "prompt": "Which word is an adjective? \"The tall tree shook in the wind.\"",
+    "choices": ["tree", "shook", "tall", "in"],
+    "answer": "tall",
+    "hint": "An adjective tells more about a noun.",
+    "tags": ["grammar", "adjective"]
+  },
+  {
+    "id": "reading-4-0097",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "grammar",
+    "prompt": "Which sentence names two people the right way?",
+    "choices": ["Me and Mia went to the park.", "Mia and me went to the park.", "I and Mia went to the park.", "Mia and I went to the park."],
+    "answer": "Mia and I went to the park.",
+    "hint": "Take away Mia. Would you say \"I went\" or \"me went\"?",
+    "tags": ["grammar", "pronouns"]
+  },
+  {
+    "id": "reading-4-0098",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "grammar",
+    "prompt": "What is the plural of \"box\"?",
+    "choices": ["boxes", "boxs", "boxies", "boxen"],
+    "answer": "boxes",
+    "hint": "Words that end in x add es.",
+    "tags": ["grammar", "plurals"]
+  },
+  {
+    "id": "reading-4-0099",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "What is this passage mostly about?",
+    "choices": ["Why fish live in rocks", "How an octopus hides and hunts", "How to build a shell", "Which animals have bones"],
+    "answer": "How an octopus hides and hunts",
+    "hint": "Look at what the octopus does with its skin.",
+    "tags": ["mainidea", "main-idea"],
+    "passage": "An octopus has no shell and no bones, so it can squeeze through tiny cracks. It can also change the color of its skin in a blink. When a fish swims near, the octopus turns the color of the rocks and hides. Then it grabs a snack."
+  },
+  {
+    "id": "reading-4-0100",
+    "subject": "reading",
+    "grade": 4,
+    "kind": "mainidea",
+    "prompt": "Why can an octopus squeeze through tiny cracks?",
+    "choices": ["It has a hard shell.", "It is very small.", "It has no bones.", "It swims very fast."],
+    "answer": "It has no bones.",
+    "hint": "Read the first sentence.",
+    "tags": ["mainidea", "detail"],
+    "passage": "An octopus has no shell and no bones, so it can squeeze through tiny cracks. It can also change the color of its skin in a blink. When a fish swims near, the octopus turns the color of the rocks and hides. Then it grabs a snack."
   }
 ]
