@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
   addScrap,
-  buyUpgrade,
   buyWeapon,
   creditMatch,
   equipWeapon,
@@ -10,7 +9,6 @@ import {
 } from '../../src/game/economy';
 import { freshCamp, walletKey, walletOf, type CampState } from '../../src/game/loadout';
 import { FORGE, weaponById } from '../../src/game/weapons';
-import { upgradeById } from '../../src/game/upgrades';
 import { campWith } from '../helpers/camp';
 
 const camp = (o: Outcome): CampState => {
@@ -200,52 +198,5 @@ describe('forgeWeapon', () => {
   it('only changes the player who paid', () => {
     const c = camp(forgeWeapon(campWith(100, 100), 'Alex', 'PAST'));
     expect(walletOf(c, 'Sam')).toEqual(walletOf(campWith(100, 100), 'Sam'));
-  });
-});
-
-describe('buyUpgrade', () => {
-  it('buys level 1, then level 2, then level 3, each at its own price', () => {
-    const u = upgradeById('tower')!;
-    let c = campWith(100);
-    for (let level = 1; level <= 3; level++) {
-      const before = alex(c).scrap;
-      c = camp(buyUpgrade(c, 'Alex', 'PAST', 'tower'));
-      expect(alex(c).loadout.PAST.upgrades.tower).toBe(level);
-      expect(before - alex(c).scrap).toBe(u.cost[level - 1]);
-    }
-  });
-  it('stops at level 3', () => {
-    let c = campWith(0, 100);
-    for (let i = 0; i < 3; i++) c = camp(buyUpgrade(c, 'Sam', 'FUTURE', 'forceField'));
-    expect(buyUpgrade(c, 'Sam', 'FUTURE', 'forceField')).toEqual({
-      ok: false,
-      reason: 'max_level',
-    });
-  });
-  it('refuses when poor, for the other side, an unknown id, a bad team, or an empty name', () => {
-    expect(buyUpgrade(freshCamp(), 'Alex', 'PAST', 'tower')).toEqual({
-      ok: false,
-      reason: 'not_enough_scrap',
-    });
-    expect(buyUpgrade(campWith(100), 'Alex', 'PAST', 'forceField')).toEqual({
-      ok: false,
-      reason: 'wrong_team',
-    });
-    expect(buyUpgrade(campWith(100), 'Alex', 'PAST', 'mystery' as never)).toEqual({
-      ok: false,
-      reason: 'unknown',
-    });
-    expect(buyUpgrade(campWith(100), 'Alex', 'NOPE' as never, 'tower')).toEqual({
-      ok: false,
-      reason: 'unknown',
-    });
-    expect(buyUpgrade(campWith(100), ' ', 'PAST', 'tower')).toEqual({
-      ok: false,
-      reason: 'unknown',
-    });
-  });
-  it('never drops Scrap below zero', () => {
-    const exact = campWith(upgradeById('tower')!.cost[0]);
-    expect(alex(camp(buyUpgrade(exact, 'Alex', 'PAST', 'tower'))).scrap).toBe(0);
   });
 });

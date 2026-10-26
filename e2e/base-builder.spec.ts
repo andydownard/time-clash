@@ -22,12 +22,10 @@ test('there is one Build Base button, no pictures of the bases, and a Past and F
   page,
 }) => {
   await toBuilderCamp(page);
-  await expect(tid(page, 'camp-upgrade')).toHaveCount(0);
   await expect(tid(page, 'camp-build')).toHaveText('Build Base');
   await expect(page.locator('.tc-camp-base')).toHaveCount(0);
   await tid(page, 'camp-build').click();
   await expect(page.locator('[data-screen="builder"][data-team="PAST"]')).toBeVisible();
-  await expect(page.locator('[data-screen="upgrade"]')).toHaveCount(0);
   await tid(page, 'bb-team-FUTURE').click();
   await expect(page.locator('[data-screen="builder"][data-team="FUTURE"]')).toBeVisible();
   await expect(tid(page, 'bb-team-FUTURE')).toHaveAttribute('aria-checked', 'true');

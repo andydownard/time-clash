@@ -56,13 +56,7 @@ export const TEST_IDS = {
   setupNext: 'setup-next',
   setupBack: 'setup-back',
   campForge: 'camp-forge',
-  campUpgrade: 'camp-upgrade',
   campStart: 'camp-start',
-  upgradeBack: 'upgrade-back',
-  upgradeScrap: 'upgrade-scrap',
-  upgradeStatus: 'upgrade-status',
-  upgradeTeam: (team: Team) => `upgrade-team-${team}`,
-  upgradeRow: (id: string) => `upgrade-row-${id}`,
   forgeBack: 'forge-back',
   forgeScrap: 'forge-scrap',
   forgeUpgrade: 'forge-upgrade',
@@ -269,13 +263,7 @@ export type VictoryOptions = {
 };
 
 /** The Camp starts the match, or sends the family back to Setup to change the players. */
-export type CampChoice = 'battle' | 'players' | 'forge' | 'upgrade' | 'build';
-
-/** What the Camp needs to know about Build Base. */
-export type CampOptions = {
-  /** True when the base builder is on. Build Base then opens it, not the old shop. */
-  builder: boolean;
-};
+export type CampChoice = 'battle' | 'players' | 'forge' | 'build';
 
 export type BuilderOptions = {
   /** The side being built. */
@@ -342,11 +330,10 @@ export interface Overlay {
   /** Offers the Computer player choice. Only used when the flag is on. */
   showSetup(initial: Players | null, options: { computer: boolean }): Promise<Players>;
   /** The Camp hub. Resolves when the big "Time to Clash!" button is tapped. */
-  showCamp(options?: CampOptions): Promise<CampChoice>;
+  showCamp(): Promise<CampChoice>;
   /** Forge Weapon. Changes go through `save`. Resolves when Back is tapped. */
   showForge(options: ForgeOptions): Promise<void>;
   /** Build Base (old shop). Same options as the Forge. Resolves when Back is tapped. */
-  showUpgrade(options: ForgeOptions): Promise<void>;
   /** Battle Plan: place, base spot and ammo. Resolves with the plan, or null on Back. */
   showPlan(options: PlanOptions): Promise<BattlePlan | null>;
   /**
