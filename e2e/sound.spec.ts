@@ -74,7 +74,9 @@ test('Replay restarts the voice and Mute silences it', async ({ page }) => {
 
 test('a muted visit never starts speech or audio, even after the tap', async ({ page }) => {
   await page.goto('/');
-  await tid(page, 'mute-toggle').click();
+  await tid(page, 'settings-button').click();
+  await tid(page, 'settings-mute').click();
+  await tid(page, 'settings-close').click();
   await tid(page, 'tap-to-play').click();
   await expect(tid(page, 'intro-card')).toBeVisible();
   await expect(tid(page, 'caption-bar')).toBeVisible();

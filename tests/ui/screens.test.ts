@@ -1,7 +1,6 @@
 // @vitest-environment jsdom
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
-  BUTTONS,
   INTRO,
   LOADING,
   SETUP,
@@ -24,17 +23,8 @@ beforeEach(() => {
 });
 
 describe('tap to start', () => {
-  const handlers = () => {
-    const calls: string[] = [];
-    return {
-      calls,
-      onMuteToggle: () => calls.push('mute'),
-      onCaptionsToggle: () => calls.push('captions'),
-    };
-  };
-
   it('shows a big TAP TO PLAY button and the helper line, at screen level', () => {
-    void s.overlay.showTapToStart(handlers());
+    void s.overlay.showTapToStart();
     const b = q(TEST_IDS.tapToPlay)!;
     expect(b.tagName).toBe('BUTTON');
     expect(b.textContent).toBe(TAP_TO_START.button);
@@ -45,7 +35,7 @@ describe('tap to start', () => {
   it('makes no sound and calls no audio before the tap', () => {
     const unlock = vi.spyOn(s.audio, 'unlock');
     const speak = vi.spyOn(s.audio, 'speak');
-    void s.overlay.showTapToStart(handlers());
+    void s.overlay.showTapToStart();
     expect(unlock).not.toHaveBeenCalled();
     expect(speak).not.toHaveBeenCalled();
     expect(s.audio.unlocked).toBe(false);
@@ -54,40 +44,31 @@ describe('tap to start', () => {
   });
 
   it('unlocks sound inside the tap handler, then resolves and goes away', async () => {
-    const p = s.overlay.showTapToStart(handlers());
+    const p = s.overlay.showTapToStart();
     click(q(TEST_IDS.tapToPlay));
     expect(s.audio.unlocked).toBe(true);
     await p;
     expect(q(TEST_IDS.tapToPlay)).toBeNull();
   });
 
-  it('has a mute toggle and a captions toggle that call their handlers', () => {
-    const h = handlers();
-    void s.overlay.showTapToStart(h);
-    click(q(TEST_IDS.muteToggle));
-    click(q(TEST_IDS.captionsToggle));
-    expect(h.calls).toEqual(['mute', 'captions']);
-  });
-
-  it('toggle labels flip with the state', () => {
-    void s.overlay.showTapToStart(handlers());
-    expect(q(TEST_IDS.muteToggle)!.textContent).toBe(BUTTONS.soundOn);
-    click(q(TEST_IDS.muteToggle));
-    expect(q(TEST_IDS.muteToggle)!.textContent).toBe(BUTTONS.soundOff);
-    expect(q(TEST_IDS.captionsToggle)!.textContent).toBe(BUTTONS.captionsOn);
-    click(q(TEST_IDS.captionsToggle));
-    expect(q(TEST_IDS.captionsToggle)!.textContent).toBe(BUTTONS.captionsOff);
+  it('has no Sound or Captions switch: they live in Settings, and the sound promise stays', () => {
+    void s.overlay.showTapToStart();
+    expect(q('mute-toggle')).toBeNull();
+    expect(q('captions-toggle')).toBeNull();
+    expect(document.querySelector('[data-screen="tap"] [role="switch"]')).toBeNull();
+    expect(TAP_TO_START.helper).toContain('Sound starts after you tap.');
+    expect(document.body.textContent).toContain(TAP_TO_START.helper);
   });
 
   it('works with no audio manager at all', async () => {
     const t = setup({ withAudio: false });
-    const p = t.overlay.showTapToStart(handlers());
+    const p = t.overlay.showTapToStart();
     click(q(TEST_IDS.tapToPlay));
     await expect(p).resolves.toBeUndefined();
   });
 
   it('focuses the play button', () => {
-    void s.overlay.showTapToStart(handlers());
+    void s.overlay.showTapToStart();
     expect(document.activeElement).toBe(q(TEST_IDS.tapToPlay));
   });
 });

@@ -45,7 +45,7 @@ Stylized semi-realism. 2.5D painterly game art. Rich textures and atmospheric li
 Deliver each screen with its states: default, hover or focus, pressed, disabled, empty, loading, error.
 
 ### 0. Tap-to-Start (sound gate)
-A big friendly "TAP TO PLAY" button over a sunrise-to-sunset time-warp backdrop. Browsers block sound until a tap, so this screen also unlocks the intro voice. Small mute icon and a "Captions on" toggle in the corner.
+A big friendly "TAP TO PLAY" button over a sunrise-to-sunset time-warp backdrop. Browsers block sound until a tap, so this screen also unlocks the intro voice. Sound and Captions are not on this screen: the gear opens Settings, which has both (Andy, 2026-10-25). The line "Sound starts after you tap." stays under the button.
 
 ### 1. Intro: How to Play (spoken)
 A narrator character, a goofy time-traveling announcer named **Chrono**, speaks the how-to-play lesson for about 40 seconds. Design:

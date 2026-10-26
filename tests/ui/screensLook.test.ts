@@ -89,10 +89,7 @@ describe('Setup look', () => {
 
 describe('Tap to Start look', () => {
   it('shows the title, the subtitle, and one primary button in a hero block', () => {
-    void s.overlay.showTapToStart({
-      onMuteToggle: () => undefined,
-      onCaptionsToggle: () => undefined,
-    });
+    void s.overlay.showTapToStart();
     const hero = qa('.tc-hero')[0]!;
     expect(hero.querySelector('h1')!.textContent).toBe('Time Clash');
     expect(hero.querySelector('.tc-subtitle')!.textContent).toBe('Past vs. Future');

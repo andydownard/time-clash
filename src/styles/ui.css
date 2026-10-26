@@ -621,9 +621,6 @@ body {
   justify-content: center;
   align-items: center;
 }
-.tc-corner {
-  align-self: flex-end;
-}
 .tc-error {
   min-height: 0;
   color: var(--tc-ember);

@@ -41,8 +41,6 @@ export type CoverKind = 'pass' | 'reload';
 /** Stable hooks for Playwright. Use as data-testid values. */
 export const TEST_IDS = {
   tapToPlay: 'tap-to-play',
-  muteToggle: 'mute-toggle',
-  captionsToggle: 'captions-toggle',
   howToPlay: 'how-to-play',
   introSkip: 'intro-skip',
   introReplay: 'intro-replay',
@@ -326,10 +324,7 @@ export interface Overlay {
 
   // Screens (full viewport at Z.screen)
   /** Resolves inside the tap handler, so the caller can call AudioManager.unlock() synchronously. */
-  showTapToStart(handlers: {
-    onMuteToggle: () => void;
-    onCaptionsToggle: () => void;
-  }): Promise<void>;
+  showTapToStart(): Promise<void>;
   showIntro(script: IntroScript, play: (cardIndex: number) => Promise<void>): Promise<IntroResult>;
   showLoading(messages: readonly string[]): LoadingHandle;
   /** Resolves with validated players (index 0 PAST, 1 FUTURE). */

@@ -1,6 +1,5 @@
 // Tap-to-start, loading, and victory screens.
 import {
-  BUTTONS,
   LOADING,
   TAP_TO_START,
   TEAM_HOMES,
@@ -21,13 +20,11 @@ import { awardIcon } from './awardIcons';
 import { countRow } from './countPictures';
 import { victoryMood } from './victoryMood';
 import { h } from './dom';
-import { setSwitch, switchChip } from './selector';
 import { TEST_IDS, type LoadingHandle, type VictoryChoice, type VictoryOptions } from './types';
 
-export function showTapToStart(
-  ctx: UiCtx,
-  handlers: { onMuteToggle: () => void; onCaptionsToggle: () => void },
-): Promise<void> {
+// Sound and Captions are not here: the gear opens Settings, which has both. Sound cannot start
+// before the tap anyway, and captions are on by default.
+export function showTapToStart(ctx: UiCtx): Promise<void> {
   const { doc } = ctx;
   return new Promise<void>((resolve) => {
     const play = h(doc, 'button', {
@@ -36,31 +33,11 @@ export function showTapToStart(
       'data-testid': TEST_IDS.tapToPlay,
       text: TAP_TO_START.button,
     });
-    // On/off settings are switches, not buttons: the words say the state.
-    const mute = switchChip(doc, { testId: TEST_IDS.muteToggle });
-    const captions = switchChip(doc, { testId: TEST_IDS.captionsToggle });
-    const paint = (): void => {
-      const s = ctx.settings();
-      setSwitch(mute, !s.muted, s.muted ? BUTTONS.soundOff : BUTTONS.soundOn);
-      setSwitch(captions, s.captions, s.captions ? BUTTONS.captionsOn : BUTTONS.captionsOff);
-    };
-    paint();
-    mute.addEventListener('click', () => {
-      handlers.onMuteToggle();
-      ctx.patchSettings({ muted: !ctx.settings().muted });
-      paint();
-    });
-    captions.addEventListener('click', () => {
-      handlers.onCaptionsToggle();
-      ctx.patchSettings({ captions: !ctx.settings().captions });
-      paint();
-    });
     const screen = h(
       doc,
       'section',
       { class: 'tc-screen tc-tap tc-split', 'data-screen': 'tap', 'data-motion': ctx.motion() },
       skyline(doc),
-      h(doc, 'div', { class: 'tc-row tc-corner' }, mute, captions),
       h(
         doc,
         'div',

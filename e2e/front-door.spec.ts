@@ -4,11 +4,16 @@
 import { expect, test } from './fixtures';
 import { tid as id, toSetup } from './support/game';
 
-test('shows the tap screen with Sound and Captions buttons', async ({ page }) => {
+test('shows the tap screen with one big button: Sound and Captions are in Settings', async ({
+  page,
+}) => {
   await page.goto('/');
   await expect(id(page, 'tap-to-play')).toBeVisible();
-  await expect(id(page, 'mute-toggle')).toBeVisible();
-  await expect(id(page, 'captions-toggle')).toBeVisible();
+  await expect(page.getByText('Sound starts after you tap.')).toBeVisible();
+  await expect(page.locator('[data-screen="tap"] [role="switch"]')).toHaveCount(0);
+  await id(page, 'settings-button').click();
+  await expect(id(page, 'settings-mute')).toBeVisible();
+  await expect(id(page, 'settings-captions')).toBeVisible();
 });
 
 test('the tap button works with the keyboard', async ({ page }) => {
@@ -76,18 +81,18 @@ test('Settings: Bonus ring button is big, saves, and Clear my data resets it', a
 
 test('the mute choice sticks across a reload', async ({ page }) => {
   await page.goto('/');
-  await id(page, 'mute-toggle').click();
-  await expect(id(page, 'mute-toggle')).toHaveText('Sound off');
+  await id(page, 'settings-button').click();
+  await id(page, 'settings-mute').click();
+  await expect(id(page, 'settings-mute')).toHaveText('Sound off');
   await page.reload();
-  await expect(id(page, 'mute-toggle')).toHaveText('Sound off');
+  await id(page, 'settings-button').click();
+  await expect(id(page, 'settings-mute')).toHaveText('Sound off');
 });
 
 test('buttons are at least 56px tall', async ({ page }) => {
   await page.goto('/');
   for (const t of [
     'tap-to-play',
-    'mute-toggle',
-    'captions-toggle',
     'how-to-play',
     'settings-button',
   ]) {
