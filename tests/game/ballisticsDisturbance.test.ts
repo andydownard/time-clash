@@ -143,4 +143,40 @@ describe('simulateShot with disturbances', () => {
     expect(r.bumps!.length).toBeGreaterThanOrEqual(1);
     expect(new Set(r.bumps!.map((b) => b.bird)).size).toBe(r.bumps!.length);
   });
+
+  it('a stronger level nudges harder: a bigger bird turn sends the shell farther off', () => {
+    const bird = birdOnPath(700);
+    const mild = simulateShot({ ...base, disturbance: { ...calm, birds: [bird] } });
+    const hard = simulateShot({
+      ...base,
+      disturbance: { ...calm, birds: [{ ...bird, nudgeDeg: DISTURBANCE.birds.nudgeDeg * 2.5 }] },
+    });
+    expect(mild.bumps).toHaveLength(1);
+    expect(hard.bumps).toHaveLength(1);
+    expect(Math.abs(hard.landing.x - plain.landing.x)).toBeGreaterThan(
+      Math.abs(mild.landing.x - plain.landing.x),
+    );
+    // A bird with no nudgeDeg uses the low setting.
+    const low = simulateShot({
+      ...base,
+      disturbance: { ...calm, birds: [{ ...bird, nudgeDeg: DISTURBANCE.birds.nudgeDeg }] },
+    });
+    expect(low).toEqual(mild);
+  });
+
+  it('the gust it reports carries the turn level, so the cue can match it', () => {
+    const r = simulateShot({
+      ...base,
+      disturbance: {
+        ...calm,
+        gust: { startShare: 0.25, durationMs: 400, push: 400, level: 'high' },
+      },
+    });
+    expect(r.gust!.level).toBe('high');
+    const old = simulateShot({
+      ...base,
+      disturbance: { ...calm, gust: { startShare: 0.25, durationMs: 400, push: 400 } },
+    });
+    expect(old.gust).not.toHaveProperty('level');
+  });
 });

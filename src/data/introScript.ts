@@ -94,21 +94,22 @@ export const INTRO_SCRIPT: IntroScript = [
   ),
   card(
     'two-shots',
-    'Two Shots',
+    'Two Goes',
     '/audio/voice/intro-03-shoot-twice.m4a',
     [
-      'You get two shots each turn.',
+      'You get two goes each turn.',
+      'Fire your launcher, or send your helper walking.',
       'Hit the other base to lower its health.',
       'Empty the bar and you win!',
     ],
-    6400,
+    9600,
   ),
   card(
     'reload',
     'Reload',
     '/audio/voice/intro-04-reload.m4a',
     [
-      'After shot two, answer a question to reload.',
+      'After two goes, answer a question to reload.',
       'Answer fast to earn bonus scrap.',
       'Mistake? Even Chrono trips. You still reload!',
       'Get it right for a Power Shot!',
@@ -124,9 +125,8 @@ export const INTRO_SCRIPT: IntroScript = [
       'Then you do a silly wipeout!',
       'You just lose a little dignity!',
       'Pass the screen between turns.',
-      'No peeking!',
       "Let's clash across time!",
     ],
-    10600,
+    9600,
   ),
 ];

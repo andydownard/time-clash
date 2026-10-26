@@ -1,6 +1,7 @@
 // Every wipeout line is spoken in production (clips on). A line with a recorded clip plays it. A
-// line with no clip yet (the lines added on 2026-10-25) asks the app server, gets a 404, and falls
-// back to the browser voice at once, with its caption. It is never silent and never uncaptioned.
+// line with no clip yet (one added after the last recording run) asks the app server, gets a 404,
+// and falls back to the browser voice at once, with its caption. It is never silent and never
+// uncaptioned. All 42 lines were recorded on 2026-10-25 (db/README.md has the rerun command).
 import { fileURLToPath } from 'node:url';
 import { DatabaseSync } from 'node:sqlite';
 import { describe, expect, it } from 'vitest';
@@ -31,14 +32,15 @@ describe('wipeout lines with and without a recorded clip', () => {
   const recorded = recordedIds();
   const unrecorded = allLines.filter((l) => !recorded.has(clipId(l)));
 
-  it('knows which lines still need a recording (the 15 added on 2026-10-25)', () => {
-    expect(recorded.size).toBeGreaterThanOrEqual(27);
-    expect(unrecorded).toHaveLength(15);
-    expect(unrecorded).toContain('Wobble, wobble, flop!');
-    expect(unrecorded).not.toContain('Ouch! My dignity!');
+  it('every wipeout line has a recorded clip (rerun scripts/build-voice-index.py after adding one)', () => {
+    expect(recorded.size).toBeGreaterThanOrEqual(42);
+    expect(unrecorded).toEqual([]);
+    expect(recorded.has(clipId('Wobble, wobble, flop!'))).toBe(true);
+    expect(recorded.has(clipId('Ouch! My dignity!'))).toBe(true);
   });
 
-  it.each(unrecorded)(
+  // A line with no clip (here a made-up one) still speaks and shows its caption.
+  it.each([...unrecorded, 'A brand new line with no clip yet!'])(
     '"%s": a missing clip falls back to the browser voice with a caption',
     async (text) => {
       const h = createHarness({ clips: createClipPlayer(true) });

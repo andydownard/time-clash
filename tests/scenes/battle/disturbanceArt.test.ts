@@ -124,6 +124,58 @@ describe('gustCue', () => {
   it('floats its word above the shell', () => {
     expect(gustCue(AT, 1).label.y).toBeLessThan(AT.y);
   });
+
+  it('grows with the turn level: more and longer streaks, a bigger arrow, no words added', () => {
+    const size = (lv: 'low' | 'medium' | 'high') => {
+      const cue = gustCue(AT, 1, WORLD.width, lv);
+      const xs = cue.arrow.map((p) => p.x);
+      const ys = cue.arrow.map((p) => p.y);
+      return {
+        streaks: cue.streaks.length,
+        longest: Math.max(...cue.streaks.map((s) => Math.abs(s.x2 - s.x1))),
+        arrowW: Math.max(...xs) - Math.min(...xs),
+        arrowH: Math.max(...ys) - Math.min(...ys),
+        width: cue.width,
+      };
+    };
+    const low = size('low');
+    const medium = size('medium');
+    const high = size('high');
+    // Low is the old cue exactly.
+    expect(gustCue(AT, 1, WORLD.width, 'low')).toEqual(gustCue(AT, 1));
+    expect(low.streaks).toBe(3);
+    for (const [a, b] of [
+      [low, medium],
+      [medium, high],
+    ] as const) {
+      expect(b.streaks).toBeGreaterThan(a.streaks);
+      expect(b.longest).toBeGreaterThan(a.longest);
+      expect(b.arrowW).toBeGreaterThan(a.arrowW);
+      expect(b.arrowH).toBeGreaterThan(a.arrowH);
+      expect(b.width).toBeGreaterThan(a.width);
+    }
+  });
+
+  it('the layer draws the cue at the gust level it was told', () => {
+    const src = readFileSync(join(process.cwd(), 'src/scenes/battle/disturbanceLayer.ts'), 'utf8');
+    expect(src).toMatch(/gustCue\([^)]*hit\.level\)/);
+    expect(src).toMatch(/lineStyle\(cue\.width/);
+  });
+
+  it('a high gust still stays on screen near the edges, both ways', () => {
+    for (const x of [0, 30, WORLD.width - 10, WORLD.width + 50])
+      for (const dir of [1, -1] as const) {
+        const cue = gustCue({ x, y: 300 }, dir, WORLD.width, 'high');
+        for (const p of cue.arrow) {
+          expect(p.x).toBeGreaterThanOrEqual(0);
+          expect(p.x).toBeLessThanOrEqual(WORLD.width);
+        }
+        for (const s of cue.streaks) {
+          expect(Math.min(s.x1, s.x2)).toBeGreaterThanOrEqual(0);
+          expect(Math.max(s.x1, s.x2)).toBeLessThanOrEqual(WORLD.width);
+        }
+      }
+  });
 });
 
 describe('words and rules', () => {

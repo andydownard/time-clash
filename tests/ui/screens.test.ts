@@ -164,7 +164,7 @@ describe('intro screen', () => {
       await flush();
       titles.push(q(TEST_IDS.introCard)!.querySelector('[data-role="title"]')!.textContent!);
     }
-    expect(titles).toEqual(['Aim', 'Two Shots', 'Reload', 'Wipeouts and Turns']);
+    expect(titles).toEqual(['Aim', 'Two Goes', 'Reload', 'Wipeouts and Turns']);
     expect(q('intro-dots')!.querySelector('[aria-current="step"]')!.getAttribute('data-dot')).toBe(
       '5',
     );

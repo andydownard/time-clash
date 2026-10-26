@@ -29,7 +29,7 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 
 ## Phase 5: Squads
 Plan: docs/SQUADS_PLAN.md. S1 (the walking helper, Sir Bonk and Robo Bonk) is on for everyone (owner, 2026-10-24). S2 onward is not built.
-- P1: S1 follow-ups. A once-per-family first-match hint (needs a storage key, Andy's call), Escape and H keys for Back and Hear it, and re-recorded intro cards 3 and 4 (see INBOX). The panel pass on Sir Bonk, Robo Bonk and every new line is done (docs/panel/2026-10-24-batch.md, second batch); its risk 2 and 3 items wait on Andy.
+- P1: S1 follow-ups. A once-per-family first-match hint (needs a storage key, Andy's call), Escape and H keys for Back and Hear it, (intro cards 3 to 5 were re-recorded on 2026-10-25). The panel pass on Sir Bonk, Robo Bonk and every new line is done (docs/panel/2026-10-24-batch.md, second batch); its risk 2 and 3 items wait on Andy.
 - P2: S3 Full crew of 4. Slingshot Squire and Laser Zapper (the Future launcher is Laser Crew, named 2026-10-25), with fairness and no-stalemate tests.
 - P2: Unit tags. Team Past units wear letters A to D on a shield. Team Future units wear numbers 1 to 4. Pick a unit by tapping it or pressing its key.
 - P3: Easy crew option per side at Camp, set by a parent (just the launcher).

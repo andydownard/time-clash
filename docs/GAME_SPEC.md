@@ -198,7 +198,28 @@ Owner request, 2026-10-24: shots were too predictable. Three things now nudge a 
 - **Gust.** The wind is still set at the start of a turn. On top of it, one gust per turn shoves the shell sideways for a moment in mid-flight (streaks, an arrow, "Gust!" and a whoosh sound).
 - **Recoil.** After a shot, the Angle and Power dials slide a little: about 3 degrees and 5 power for the catapult and missile bunkers, almost nothing for the archer and laser gun. The sliders show it, so the player re-aims for the next shot. The first time recoil moves the dials in a match, "Kick! Your aim moved." shows in the message lane as a caption (`DISTURBANCE_COPY.kick`), clear of the controls. It comes up once the shot has landed, so it never hides the shell or the "Gust!" word. It stays while the player aims again and comes down at the next shot; when a reload comes next, it stays `DISTURBANCE.kickCueMs` (1.5 s) and comes down before the cover. Once per match: it is kept on the battle flow only, never saved, so a rematch shows it again. It shows with reduced motion too (owner, 2026-10-25).
 - **The preview stays honest.** The dotted preview and the angle guide show plain wind only. The full arc left after a shot shows what really happened.
-- **Fair and never stuck.** Both teams get the same chances. A direct hit can always be reached by trying again (`tests/game/matchDisturbance.test.ts`). Disturbances make matches a little longer on average, never endless.
+- **Fair and never stuck.** Both teams get the same chances. A direct hit can always be reached by trying again, at every level (`tests/game/matchDisturbance.test.ts`). Disturbances make matches a little longer on average, never endless.
+- **Strength levels (owner, 2026-10-25).** The first setting was too mild: it rarely turned a direct hit into a miss. The owner asked for "medium on average, and low, medium or high with equal probability". So each turn draws one level, a third of the time each, from its own seeded stream (`levelForTurn` in `src/game/disturbance.ts`; drawing it moves no other random number). The level holds for the whole turn: its birds, its gust and the recoil after every shot of that turn. The old numbers are about the low level; a level multiplies them (`DISTURBANCE.levels` in `src/game/config.ts`):
+
+| Level | Gust push | Bird turn | Recoil limits | Birds |
+|---|---|---|---|---|
+| low | 1.1x (165 to 275 px/s²) | 1x (16 deg) | 1x (catapult 3 deg, 5 power) | 1 or 2 |
+| medium | 1.9x (285 to 475) | 1.7x (27 deg) | 1.7x (catapult 5 deg, 9 power) | 1 or 2 |
+| high | 2.6x (390 to 650) | 2.5x (40 deg) | 2.5x (catapult 8 deg, 13 power) | 2 or 3 |
+
+  The player sees the level without any new words: the gust cue grows with it (3 streaks at low, 4 at medium, 5 at high, with longer streaks, thicker lines and a bigger arrow), and a high turn has more birds in the sky. The preview still shows plain wind only.
+
+  Measured (400 seeds, 8 turns each, both teams, the fighters in turn, a perfect aim that lands a direct hit on plain physics, 6,400 shots per level): the share of those aimed direct hits that the turn's birds and gust make non-direct, and the same aim fired again after the recoil kick.
+
+| Level | First shot | Same aim again after recoil | Average | Target |
+|---|---|---|---|---|
+| low | 5.1% | 13.9% | 9.5% | about 10% |
+| medium | 20.7% | 30.8% | 25.8% | about 25% |
+| high | 33.7% | 45.9% | 39.8% | about 40% |
+
+  The old single setting measured 4.0% on the first shot and 8.4% on average, so a match now loses about 25% of aimed direct hits on average (three times as many).
+
+  Pace with perfect aim on both sides (200 seeded matches, both teams counted): flat 400 health, 9 to 13 turns (median 10; 9 to 10 with disturbances off); a typical built base, 11 to 21 (median 15; 11 to 13 off). The shortest match is still 9 turns, so `tests/game/pace.test.ts` holds. The Computer player bands still hold with no retune (see "Practice opponent").
 
 ## Pace (owner decision, 2026-10-24)
 
@@ -248,6 +269,8 @@ Simulation (`npx tsx scripts/simulate-bot.ts 2000`: 2,000 seeded matches per pai
 | easy | 4.3% | 14.5% | 10% |
 | medium | 12.5% | 31.6% | 25% |
 | hard | 18.6% | 42.9% | 40% |
+
+After the disturbance levels (2026-10-25, same 2,000 matches, no change to the levels): never walks out 32.0%, 51.1% and 63.9%; walks out 17.9%, 35.6% and 45.5%. Stronger nudges hurt every aim alike, so the bands hold.
 
 A second seed set (seeds from 90,000, 2,000 matches) gives 29.9%, 50.1% and 63.0% (never walks out) and 12.2%, 30.9% and 41.0% (walks out). Easy and Medium did not change when the child never walks out, because the rule draws no random number until the other helper has left home.
 
