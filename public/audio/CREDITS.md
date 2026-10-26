@@ -57,4 +57,6 @@ Spoken lines for Chrono's intro and the funny knock-down lines are stored in `db
 | All voice clips | Kokoro-82M text-to-speech model, voice `am_michael`, run by `scripts/build-voice-db.py` | Apache-2.0 (model); the generated audio is original to this project |
 | Wipeout clips, and question clips that are no longer used (`db/voice-k4.sqlite`, `db/voice-5-8.sqlite` and `db/voice-9-12.sqlite`, table `voice_clip_index`) | Same Kokoro-82M model and voice, run by `scripts/build-voice-index.py` | Apache-2.0 (model); the generated audio is original to this project |
 
+Recording runs: the first clips were made on 2026-10-18 and 2026-10-21. On 2026-10-25 intro cards 3, 4 and 5 were re-recorded (new words) and the 15 newer wipeout lines were added to all three `voice-*.sqlite` files. That run used `kokoro-onnx` 0.4.7 (MIT) with `onnxruntime` 1.31.0 (MIT) and `soundfile` 0.14.0 (BSD-3-Clause), and the Kokoro v1.0 model files `kokoro-v1.0.onnx` and `voices-v1.0.bin` from the kokoro-onnx GitHub release `model-files-v1.0` (Kokoro-82M weights and voices, Apache-2.0). These are build-time tools only. None of them ships in the game.
+
 Why Kokoro: the first voice tried (Piper "ryan") was trained on RyanSpeech, licensed CC BY-NC-SA 4.0, which breaks the original-or-CC0 audio rule. It was dropped and none of its audio is in this repo.
