@@ -7,6 +7,8 @@ import { buildLayout } from '../../src/game/battlefield';
 import { BATTLE_BAND, BIOME_IDS, FORT_IDS, SPOT_IDS, TERRAIN, WORLD } from '../../src/game/config';
 import { dasherBox, dasherHomePoint } from '../../src/game/crew';
 import type { FortIdValue, Rect, SpotIdValue } from '../../src/game/types';
+import { RIDER_IDS, riderDrop } from '../../src/game/riders';
+import { unitById } from '../../src/game/units';
 import { fighterKeepOut } from '../../src/scenes/battle/angleLabel';
 import { characterSpot } from '../../src/scenes/battle/geometry';
 import { TEXT_ROLES } from '../../src/scenes/battle/textStyle';
@@ -48,6 +50,22 @@ describe('the message lane on the field', () => {
         expect(overlaps(MESSAGE_LANE, k), `${JSON.stringify(plan)} ${JSON.stringify(k)}`).toBe(
           false,
         );
+      }
+    }
+  });
+
+  it('clears every fighter standing anywhere on a built base, down to the ground under it', () => {
+    // A fighter on a built base stands on its top brick (riders.ts): anywhere from the old castle
+    // spot down to the ground. Sweep the whole way on every field.
+    for (const plan of FIELDS) {
+      const l = buildLayout(plan);
+      for (const share of [0.25, 0.5, 0.75, 1]) {
+        const drops = Object.fromEntries(
+          RIDER_IDS.map((id) => [id, share * riderDrop(unitById(id)!.team, id, l, [])]),
+        );
+        for (const k of fighterKeepOut(l, drops)) {
+          expect(overlaps(MESSAGE_LANE, k), `${JSON.stringify(plan)} ${share}`).toBe(false);
+        }
       }
     }
   });

@@ -1,12 +1,19 @@
 // Lists every line the voice database must hold: `tsx scripts/voice-manifest.ts [--grades 0-4|all]`.
 // Prints JSON [{id, kind, text, spoken}]. `text` is exactly what the game passes to speak() (it is hashed
 // into the id). `spoken` is the same text reworded for the voice (toSpoken). Offline tool, not in the web build.
-// Only Chrono's wipeout lines are listed. Question text is no longer spoken (the owner removed read-aloud
+// Only the wipeout lines and the base fall lines are listed. Question text is no longer spoken (the owner removed read-aloud
 // on 2026-10-23), so `--grades` is accepted for older scripts and no longer changes the list.
 import { pathToFileURL } from 'node:url';
 import { clipId } from '../src/audio/clipId';
 import { toSpoken } from '../src/audio/toSpoken';
-import { TUMBLE_LINES, TUMBLE_LINES_FUTURE, TUMBLE_LINES_PAST } from '../src/data/copy';
+import {
+  BASE_FALL_LINES,
+  BASE_FALL_LINES_FUTURE,
+  BASE_FALL_LINES_PAST,
+  TUMBLE_LINES,
+  TUMBLE_LINES_FUTURE,
+  TUMBLE_LINES_PAST,
+} from '../src/data/copy';
 
 export type ClipKind = 'bark';
 export interface ManifestEntry {
@@ -46,7 +53,15 @@ export function buildManifest(barks: readonly string[]): ManifestEntry[] {
 }
 
 export const ALL_BARKS: string[] = [
-  ...new Set([...TUMBLE_LINES, ...TUMBLE_LINES_PAST, ...TUMBLE_LINES_FUTURE]),
+  ...new Set([
+    ...TUMBLE_LINES,
+    ...TUMBLE_LINES_PAST,
+    ...TUMBLE_LINES_FUTURE,
+    // A fighter whose brick fell on a built base (2026-10-25).
+    ...BASE_FALL_LINES,
+    ...BASE_FALL_LINES_PAST,
+    ...BASE_FALL_LINES_FUTURE,
+  ]),
 ];
 
 function main(): void {

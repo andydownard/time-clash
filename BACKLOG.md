@@ -8,7 +8,6 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 - None open.
 
 ## P1
-- Built bases: a fighter that stood on the old castle (the archer, Team Future's riders) can now stand in the air above a small built base. Owner to decide: keep, lower them onto the top brick, or draw a small stand.
 - Caption times now start at measured pauses in the real clips (`scripts/measure-intro-timings.py`). Exact word timing needs Kokoro timing output. Re-run the script after every voice re-render.
 
 ## P2

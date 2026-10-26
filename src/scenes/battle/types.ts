@@ -18,6 +18,7 @@ import type {
   TeamStats,
   Vec2,
 } from '../../game/types';
+import type { RiderFall } from './riderFalls';
 import type { UnitId } from '../../game/units';
 import type { Levels } from '../../questions/calibration';
 import type { PickHistory, QuestionBank } from '../../questions/types';
@@ -141,6 +142,11 @@ export interface BattleView {
     fell: readonly BrickId[],
     bricks: Readonly<Record<BrickId, BrickView>>,
   ): Promise<void>;
+  /**
+   * Built bases: fighters whose brick fell drop with it, flop over, puff dust and stand up on the
+   * lower spot (riderFall.ts). Plays alongside the crumble. Resolves when they stand again.
+   */
+  playRiderFalls?(team: Team, falls: readonly RiderFall[]): Promise<void>;
 }
 
 /** What Victory needs. */
