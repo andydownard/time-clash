@@ -16,7 +16,9 @@ import {
   groundSpotPoint,
   planDash,
   planRecall,
-  planStand,
+  planBonk,
+  planWalkOn,
+  bonkTargets,
   startingCrew,
   wakeDashers,
   type Crew,
@@ -29,7 +31,6 @@ import type { MatchController, Players, Team } from '../../src/game/types';
 
 const HP = CHARACTER_HEALTH.hp;
 const TEAMS: readonly Team[] = ['PAST', 'FUTURE'];
-const REST = { PAST: 1, FUTURE: 1 } as const;
 const bubble = () => 0;
 const key = (c: Crew): string =>
   c.helpers
@@ -49,7 +50,8 @@ function nextBoards(c: Crew): Crew[] {
     const to = dashTargets(p, team)[0];
     if (to) out.push(planDash(p, team, to, HP).crew);
     if (dasherOf(c, team).state === 'out') out.push(planRecall(p, team, 1).crew);
-    out.push(planStand(c, team, REST, bubble).crew);
+    out.push(planWalkOn(c, team).crew);
+    for (const kind of bonkTargets(p, team)) out.push(planBonk(p, team, kind, 1, bubble).crew);
     out.push(wakeDashers(c, team, 1, HP));
     const d = dasherOf(c, team);
     if (d.state === 'out' && d.spot) {
@@ -101,16 +103,26 @@ describe('every board the dasher rules can reach', () => {
     }
   });
 
-  it('at every turn start, every dasher out bonks something, so nothing stands still forever', () => {
+  it('after the walk-on at a turn start, every dasher out has something to Bonk!, so nothing stands still forever', () => {
     for (const c of boards) {
       for (const active of TEAMS) {
-        const r = planStand(c, active, REST, bubble);
-        const outTeams = TEAMS.filter((t) => dasherOf(c, t).state === 'out');
-        expect(r.beats.map((b) => b.team).sort(), key(c)).toEqual([...outTeams].sort());
-        for (const b of r.beats) {
-          if (b.target.kind === 'base') expect(b.target.damage).toBe(SQUADS.standBonkDamage);
-          else
-            expect(b.target.hp).toBeLessThan(dasherOf(c, b.team === 'PAST' ? 'FUTURE' : 'PAST').hp);
+        const walked = planWalkOn(c, active).crew;
+        for (const team of TEAMS) {
+          if (dasherOf(walked, team).state !== 'out') continue;
+          expect(bonkTargets(picked(walked, team), team).length, key(c)).toBeGreaterThan(0);
+        }
+      }
+    }
+  });
+
+  it('a Bonk! on the helper always lowers his health, and a base Bonk! always does the config damage', () => {
+    for (const c of boards) {
+      for (const team of TEAMS) {
+        const p = picked(c, team);
+        for (const kind of bonkTargets(p, team)) {
+          const b = planBonk(p, team, kind, 1, bubble).beat.target;
+          if (b.kind === 'base') expect(b.damage).toBe(SQUADS.standBonkDamage);
+          else expect(b.hp).toBeLessThan(dasherOf(c, team === 'PAST' ? 'FUTURE' : 'PAST').hp);
         }
       }
     }
@@ -122,7 +134,7 @@ const PLAYERS: Players = [
   { name: 'Sam', team: 'FUTURE', grade: 3, subject: 'math' },
 ];
 /**
- * A safe bound on match length when nobody aims: at least one base bonk lands every few rounds
+ * A safe bound on match length when nobody aims: at least one base Bonk! lands every few rounds
  * of a duel (each dasher bonked to 0, a rest, then out again), so the cap grows with base health
  * and dasher health, both from config.
  */
@@ -133,7 +145,8 @@ type Style = 'dasherOnly' | 'aims';
 
 /**
  * Plays to the end. A 'dasherOnly' side never aims: it walks its dasher out whenever it can,
- * never calls him home, and spends any other go on a harmless shell. An 'aims' side never uses
+ * Bonk!s whenever something is next to him (the helper first), never calls him home, and spends
+ * any other go on a harmless shell. An 'aims' side never uses
  * its dasher and fires seeded random aims. Returns the turns played and the most base health
  * lost at any one turn start.
  */
@@ -151,7 +164,6 @@ function play(seed: number, styles: Record<Team, Style>): { turns: number; worst
     c.ready();
     const after = c.snapshot().baseHp;
     worstStart = Math.max(worstStart, before.PAST - after.PAST + before.FUTURE - after.FUTURE);
-    if (c.snapshot().status === 'OVER') return { turns, worstStart };
     const team = c.snapshot().turn.team;
     while (c.snapshot().turn.phase === 'AIMING') {
       if (
@@ -161,6 +173,15 @@ function play(seed: number, styles: Record<Team, Style>): { turns: number; worst
         c.selectHelper(`${team}-dasher`);
         c.dash(c.helperTargets()[0]!);
         continue;
+      }
+      if (styles[team] === 'dasherOnly') {
+        c.selectHelper(`${team}-dasher`);
+        const [kind] = c.bonkTargets();
+        if (kind) {
+          c.bonk(kind);
+          if (c.snapshot().status === 'OVER') return { turns, worstStart };
+          continue;
+        }
       }
       c.selectHelper(`${team}-launcher`);
       c.setAim(
@@ -186,12 +207,12 @@ describe('no stalemate in whole matches', () => {
     }
   });
 
-  it('when both sides only use their dashers the match still ends, and a turn start is bounded', () => {
+  it('when both sides only use their dashers the match still ends, and a turn start costs nothing', () => {
     for (const seed of [1, 2, 3]) {
       const r = play(seed, { PAST: 'dasherOnly', FUTURE: 'dasherOnly' });
       expect(r.turns).toBeLessThanOrEqual(CAP);
-      // At most both dashers bonk a base at one turn start.
-      expect(r.worstStart).toBeLessThanOrEqual(2 * SQUADS.standBonkDamage);
+      // Nothing bonks by itself: a turn start never costs a base any health.
+      expect(r.worstStart).toBe(0);
     }
   });
 

@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 // Squads S1 helper bar in the HUD: GO banner, helper pick, Walk out, Come back, Fire gating.
 import { readFileSync } from 'node:fs';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { SQUAD_COPY, goTurnBanner } from '../../src/data/copy';
 import { SQUADS } from '../../src/game/config';
 import type { HudHandlers, HudSquads, HudState } from '../../src/ui/types';
@@ -48,6 +48,7 @@ const show = (over: Partial<HudState>): string[] => {
     onHelper: (id) => calls.push(`helper:${id}`),
     onDash: (spot) => calls.push(`dash:${spot}`),
     onRecall: () => calls.push('recall'),
+    onBonk: (kind) => calls.push(`bonk:${kind}`),
     onHearHelper: () => calls.push('hear'),
   };
   s.overlay.showHud(h);
@@ -153,6 +154,101 @@ describe('flag on', () => {
     expect(block).toMatch(/min-width:\s*56px/);
     expect(block).toMatch(/min-height:\s*56px/);
     expect(block).toMatch(/font-size:\s*20px/);
+  });
+});
+
+describe('Bonk!', () => {
+  afterEach(() => s.overlay.hideHud());
+  const out = (bonks: ('base' | 'helper')[], over: Partial<HudSquads> = {}): HudSquads =>
+    squads({
+      picked: 'PAST-dasher',
+      dasher: { state: 'out', hp: 4, maxHp: 4 },
+      bonks,
+      ...over,
+    });
+  it('one thing next to him: one button that says Bonk! and bonks it', () => {
+    const calls = show({ squads: out(['base']) });
+    expect(qa('[data-testid^="helper-bonk-"]')).toHaveLength(1);
+    const b = q(TEST_IDS.helperBonk('base'))!;
+    expect(b.textContent).toContain(SQUAD_COPY.bonkButton);
+    click(b);
+    expect(calls).toEqual(['bonk:base']);
+  });
+  it('the helper and the base: two buttons that say which is which', () => {
+    const calls = show({ squads: out(['helper', 'base']) });
+    expect(q(TEST_IDS.helperBonk('helper'))!.textContent).toContain(SQUAD_COPY.bonkHelperButton);
+    expect(q(TEST_IDS.helperBonk('base'))!.textContent).toContain(SQUAD_COPY.bonkBaseButton);
+    click(q(TEST_IDS.helperBonk('helper')));
+    click(q(TEST_IDS.helperBonk('base')));
+    expect(calls).toEqual(['bonk:helper', 'bonk:base']);
+  });
+  it('Come back stays beside Bonk!', () => {
+    show({ squads: out(['base']) });
+    expect(q(TEST_IDS.helperRecall)).not.toBeNull();
+  });
+  it('nothing next to him: says so kindly, no Bonk! button', () => {
+    show({ squads: out([]) });
+    expect(q(TEST_IDS.bonkNone)!.textContent).toBe(SQUAD_COPY.nothingToBonk);
+    expect(qa('[data-testid^="helper-bonk-"]')).toHaveLength(0);
+  });
+  it('no Bonk! at home or while resting', () => {
+    show({ squads: squads({ picked: 'PAST-dasher', targets: ['g3'], bonks: [] }) });
+    expect(qa('[data-testid^="helper-bonk-"]')).toHaveLength(0);
+    show({
+      squads: squads({
+        picked: 'PAST-dasher',
+        dasher: { state: 'resting', hp: 0, maxHp: 4 },
+        bonks: ['base'],
+      }),
+    });
+    expect(qa('[data-testid^="helper-bonk-"]')).toHaveLength(0);
+  });
+  it('does nothing while a cover is up or a shot flies (canFire false)', () => {
+    const calls = show({ canFire: false, squads: out(['base']) });
+    click(q(TEST_IDS.helperBonk('base')));
+    expect(calls).toEqual([]);
+  });
+  it('the K key Bonk!s the helper if he is next to him, else the base', () => {
+    let calls = show({ squads: out(['helper', 'base']) });
+    key(document.body, 'k');
+    expect(calls).toEqual(['bonk:helper']);
+    calls = show({ squads: out(['base']) });
+    key(document.body, 'K');
+    expect(calls).toEqual(['bonk:base']);
+  });
+  it('the K key does nothing with the launcher picked, nothing to bonk, a cover up, or typing', () => {
+    let calls = show({ squads: squads({ bonks: ['base'] }) });
+    key(document.body, 'k');
+    expect(calls).toEqual([]);
+    calls = show({ squads: out([]) });
+    key(document.body, 'k');
+    expect(calls).toEqual([]);
+    calls = show({ canFire: false, squads: out(['base']) });
+    key(document.body, 'k');
+    expect(calls).toEqual([]);
+    calls = show({ squads: out(['base']) });
+    const input = document.createElement('input');
+    document.body.append(input);
+    key(input, 'k');
+    document.body.dataset.cover = 'reload';
+    key(document.body, 'k');
+    delete document.body.dataset.cover;
+    expect(calls).toEqual([]);
+  });
+  it('sets 56px targets and 20px text for the Bonk! buttons (they share the spot button rule)', () => {
+    show({ squads: out(['base']) });
+    expect(q(TEST_IDS.helperBonk('base'))!.classList.contains('tc-dash-spot')).toBe(true);
+  });
+  it('writes the Bonk! words plainly, with no banned words', () => {
+    const words = [
+      SQUAD_COPY.bonkButton,
+      SQUAD_COPY.bonkBaseButton,
+      SQUAD_COPY.bonkHelperButton,
+      SQUAD_COPY.nothingToBonk,
+      SQUAD_COPY.bonkAria('base'),
+      SQUAD_COPY.bonkAria('helper'),
+    ].join(' ');
+    expect(words).not.toMatch(/\b(kill|die|dead|blood|gore|defeat|buy|price|hurt)\b/i);
   });
 });
 

@@ -1,5 +1,6 @@
 // Squads S1 rules: a launcher and one walking dasher per side. The dasher walks out over any
-// obstacle, stops next to the first enemy thing in front, and bonks it at the start of every turn.
+// obstacle, stops next to the first enemy thing in front, and waits. Bonk! is a go the player
+// chooses (owner, 2026-10-28): nothing bonks by itself.
 import { describe, expect, it } from 'vitest';
 import {
   IllegalCommandError,
@@ -16,7 +17,9 @@ import {
   hitDasher,
   planDash,
   planRecall,
-  planStand,
+  planBonk,
+  planWalkOn,
+  bonkTargets,
   startingCrew,
   wakeDashers,
   type Crew,
@@ -227,43 +230,84 @@ describe('wakeDashers', () => {
   });
 });
 
-describe('planStand: the bonk at the start of every turn', () => {
-  it('a dasher at the enemy base bonks it for standBonkDamage', () => {
-    const r = planStand(crewAt('g3', null), 'FUTURE', REST, bubble);
-    expect(r.beats).toEqual([
-      {
-        helper: 'PAST-dasher',
-        team: 'PAST',
-        from: 'g3',
-        to: 'g3',
-        target: { kind: 'base', team: 'FUTURE', damage: SQUADS.standBonkDamage },
-      },
-    ]);
+describe('planWalkOn: the start of a turn walks and never bonks', () => {
+  it('a dasher at the enemy base stays put and nothing happens', () => {
+    const r = planWalkOn(crewAt('g3', null), 'FUTURE');
+    expect(r.walks).toEqual([]);
+    expect(r.crew).toEqual(crewAt('g3', null));
   });
-  it('bonks on both teams turns, the same each time', () => {
-    for (const active of ['PAST', 'FUTURE'] as const) {
-      const r = planStand(crewAt(null, 'g1'), active, REST, bubble);
-      expect(r.beats[0]!.target).toEqual({
-        kind: 'base',
-        team: 'PAST',
-        damage: SQUADS.standBonkDamage,
-      });
-    }
+  it('two dashers side by side do not bonk each other by themselves', () => {
+    const r = planWalkOn(crewAt('g3', 'g4'), 'PAST');
+    expect(r.walks).toEqual([]);
+    expect(dasher(r.crew, 'PAST').hp).toBe(HP);
+    expect(dasher(r.crew, 'FUTURE').hp).toBe(HP);
   });
-  it('two dashers side by side bonk each other at the same time, not the bases', () => {
-    const r = planStand(crewAt('g3', 'g4'), 'PAST', REST, bubble);
-    expect(r.beats.map((b) => [b.helper, b.target.kind])).toEqual([
-      ['PAST-dasher', 'helper'],
-      ['FUTURE-dasher', 'helper'],
-    ]);
-    expect(dasher(r.crew, 'PAST').hp).toBe(HP - SQUADS.duelBonkHp);
+  it('with nothing next to him he walks on to the next thing in front, and does not bonk it', () => {
+    // His foe tumbled home last turn, so he walks on from g1 to the attack spot.
+    const r = planWalkOn(crewAt('g1', null), 'PAST');
+    expect(r.walks).toEqual([{ helper: 'PAST-dasher', team: 'PAST', from: 'g1', to: 'g3' }]);
+    expect(dasher(r.crew, 'PAST').spot).toBe('g3');
+  });
+  it('the team whose turn starts walks first and stops in front of the other helper', () => {
+    const r = planWalkOn(crewAt('g1', 'g4'), 'FUTURE');
+    expect(r.walks).toEqual([{ helper: 'FUTURE-dasher', team: 'FUTURE', from: 'g4', to: 'g2' }]);
+  });
+  it('does nothing when no dasher is out', () => {
+    const r = planWalkOn(startingCrew(), 'PAST');
+    expect(r.walks).toEqual([]);
+  });
+});
+
+describe('bonkTargets: what a Bonk! may hit', () => {
+  it('the base from the attack spot, and nothing else when the foe is far', () => {
+    expect(bonkTargets(crewAt('g3', null), 'PAST')).toEqual(['base']);
+    expect(bonkTargets(crewAt(null, 'g1'), 'FUTURE')).toEqual(['base']);
+  });
+  it('the helper next to him, and the base too at the attack spot', () => {
+    expect(bonkTargets(crewAt('g2', 'g3'), 'PAST')).toEqual(['helper']);
+    expect(bonkTargets(crewAt('g3', 'g4'), 'PAST')).toEqual(['helper', 'base']);
+  });
+  it('nothing in the middle of the field, at home, resting, or for a launcher', () => {
+    expect(bonkTargets(crewAt('g1', null), 'PAST')).toEqual([]);
+    expect(bonkTargets(startingCrew(), 'PAST', 'PAST-dasher')).toEqual([]);
+    const resting = withDasher(crewAt('g3', null), 'PAST', {
+      state: 'resting',
+      spot: null,
+      hp: 0,
+      readyAt: 5,
+    });
+    expect(bonkTargets(resting, 'PAST')).toEqual([]);
+    expect(bonkTargets(crewAt('g3', null), 'PAST', 'PAST-launcher')).toEqual([]);
+  });
+});
+
+describe('planBonk: one Bonk! go', () => {
+  it('bonks the base for standBonkDamage and changes nobody on the field', () => {
+    const r = planBonk(crewAt('g3', null), 'PAST', 'base', REST.FUTURE, bubble);
+    expect(r.beat).toEqual({
+      helper: 'PAST-dasher',
+      team: 'PAST',
+      at: 'g3',
+      target: { kind: 'base', team: 'FUTURE', damage: SQUADS.standBonkDamage },
+    });
+    expect(r.crew).toEqual(crewAt('g3', null));
+  });
+  it('bonks the helper next to him for duelBonkHp and the bonker loses nothing', () => {
+    const r = planBonk(crewAt('g3', 'g4'), 'PAST', 'helper', REST.FUTURE, bubble);
+    expect(r.beat.target).toEqual({
+      kind: 'helper',
+      helper: 'FUTURE-dasher',
+      hp: HP - SQUADS.duelBonkHp,
+      tumbled: false,
+      bubbleIndex: null,
+    });
     expect(dasher(r.crew, 'FUTURE').hp).toBe(HP - SQUADS.duelBonkHp);
+    expect(dasher(r.crew, 'PAST').hp).toBe(HP);
   });
-  it('a dasher bonked to 0 tumbles, walks home and rests until his restAt turn', () => {
+  it('a helper bonked to 0 tumbles, walks home and rests until his restAt turn', () => {
     const c = withDasher(crewAt('g3', 'g4'), 'FUTURE', { hp: SQUADS.duelBonkHp });
-    const r = planStand(c, 'PAST', REST, bubble);
-    const hit = r.beats.find((b) => b.helper === 'PAST-dasher')!.target;
-    expect(hit).toEqual({
+    const r = planBonk(c, 'PAST', 'helper', REST.FUTURE, bubble);
+    expect(r.beat.target).toEqual({
       kind: 'helper',
       helper: 'FUTURE-dasher',
       hp: 0,
@@ -277,29 +321,40 @@ describe('planStand: the bonk at the start of every turn', () => {
       readyAt: REST.FUTURE,
     });
   });
-  it('with nothing next to him he walks on to the next thing in front, then bonks it', () => {
-    // His foe tumbled home last turn, so he walks on from g1 to the attack spot.
-    const r = planStand(crewAt('g1', null), 'PAST', REST, bubble);
-    expect(r.beats).toEqual([
-      {
-        helper: 'PAST-dasher',
-        team: 'PAST',
-        from: 'g1',
-        to: 'g3',
-        target: { kind: 'base', team: 'FUTURE', damage: SQUADS.standBonkDamage },
-      },
-    ]);
-    expect(dasher(r.crew, 'PAST').spot).toBe('g3');
-  });
-  it('lists the team whose turn starts first', () => {
-    const r = planStand(crewAt('g3', 'g4'), 'FUTURE', REST, bubble);
-    expect(r.beats.map((b) => b.team)).toEqual(['FUTURE', 'PAST']);
-  });
-  it('does nothing when no dasher is out', () => {
+  it('draws a funny line only when somebody tumbles', () => {
     let calls = 0;
-    const r = planStand(startingCrew(), 'PAST', REST, () => ++calls);
-    expect(r.beats).toEqual([]);
+    planBonk(crewAt('g3', 'g4'), 'PAST', 'helper', 9, () => ++calls);
+    planBonk(crewAt('g3', null), 'PAST', 'base', 9, () => ++calls);
     expect(calls).toBe(0);
+  });
+  it('refuses a Bonk! when nothing of that kind is next to him', () => {
+    expect(reason(() => planBonk(crewAt('g1', null), 'PAST', 'base', 9, bubble))).toBe(
+      'nothing_to_bonk',
+    );
+    expect(reason(() => planBonk(crewAt('g3', null), 'PAST', 'helper', 9, bubble))).toBe(
+      'nothing_to_bonk',
+    );
+    expect(reason(() => planBonk(crewAt('g1', 'g3'), 'FUTURE', 'base', 9, bubble))).toBe(
+      'nothing_to_bonk',
+    );
+  });
+  it('refuses a Bonk! from a dasher at home, a dizzy dasher, or a launcher', () => {
+    expect(reason(() => planBonk(startingCrew(), 'PAST', 'base', 9, bubble, 'PAST-dasher'))).toBe(
+      'not_out',
+    );
+    const dizzy = withDasher(crewAt('g3', null), 'PAST', {
+      state: 'resting',
+      spot: null,
+      hp: 0,
+      readyAt: 9,
+    });
+    expect(reason(() => planBonk(dizzy, 'PAST', 'base', 9, bubble))).toBe('resting');
+    expect(
+      reason(() => planBonk(crewAt('g3', null), 'PAST', 'base', 9, bubble, 'PAST-launcher')),
+    ).toBe('wrong_command');
+    expect(
+      reason(() => planBonk(crewAt('g3', 'g4'), 'PAST', 'base', 9, bubble, 'FUTURE-dasher')),
+    ).toBe('not_your_helper');
   });
 });
 

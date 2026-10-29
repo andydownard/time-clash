@@ -64,8 +64,8 @@ describe('default fighters reproduce the one-launcher game', () => {
 });
 
 /**
- * Both sides walk their dasher out whenever he is home, then fire the rest of their goes. Four
- * turns, with health written as health lost, so the trace holds when balance numbers change.
+ * Both sides walk their dasher out whenever he is home, Bonk! with him whenever something is next
+ * to him (the helper first), then fire the rest of their goes. Four turns, with health written as health lost, so the trace holds when balance numbers change.
  */
 function dasherTrace(seed: number): string[] {
   const c = createMatch({ disturbances: false, players: PLAYERS, seed, squads: true });
@@ -74,21 +74,23 @@ function dasherTrace(seed: number): string[] {
   const out: string[] = [];
   let i = 0;
   for (let t = 0; t < 4 && c.snapshot().status === 'PLAYING'; t++) {
-    const beats = c.ready();
-    for (const b of beats) {
-      const hit =
-        b.target.kind === 'base'
-          ? `base-${b.target.damage === SQUADS.standBonkDamage ? 'bonk' : b.target.damage}`
-          : `lost-${full - b.target.hp}`;
-      out.push(`stand|${b.team}|${b.from}>${b.to}|${hit}`);
-    }
+    for (const w of c.ready()) out.push(`walk|${w.team}|${w.from}>${w.to}`);
     const team = c.snapshot().turn.team;
     if (c.snapshot().status === 'OVER') break;
+    c.selectHelper(`${team}-dasher`);
+    const [kind] = c.bonkTargets();
     if (
       c.snapshot().squads!.crew.helpers.find((h) => h.id === `${team}-dasher`)!.state === 'home'
     ) {
-      c.selectHelper(`${team}-dasher`);
       out.push(`dash|${team}|${c.dash(c.helperTargets()[0]!).to}`);
+    } else if (kind) {
+      const b = c.bonk(kind);
+      out.push(
+        b.target.kind === 'base'
+          ? `bonk|${team}|base-${b.target.damage === SQUADS.standBonkDamage ? 'bonk' : b.target.damage}`
+          : `bonk|${team}|helper-lost-${full - b.target.hp}`,
+      );
+      if (c.snapshot().status === 'OVER') break;
     }
     c.selectHelper(`${team}-launcher`);
     while (c.snapshot().turn.phase === 'AIMING' && c.snapshot().status === 'PLAYING') {
@@ -110,7 +112,7 @@ function dasherTrace(seed: number): string[] {
 }
 
 describe('walking dashers replay exactly', () => {
-  it('matches the trace recorded when the walking dasher was added', () => {
+  it('matches the trace recorded when Bonk! became a go the player chooses', () => {
     expect(dasherTrace(7)).toEqual(DASHER_GOLDEN_7);
   });
 });
@@ -142,19 +144,14 @@ const GOLDEN_12345: string[] = [
   '138|1183.854,490.000|direct|25|25/100',
 ];
 
-/** Recorded from the code when the walking dasher was added (seed 7). */
+/** Recorded when Bonk! became a go the player chooses, 2026-10-28 (seed 7). */
 const DASHER_GOLDEN_7: string[] = [
   'dash|PAST|g3',
   'shot|PAST|direct|hit|some',
-  'stand|PAST|g3>g3|base-bonk',
   'dash|FUTURE|g4',
   'shot|FUTURE|miss|none|some',
-  'stand|PAST|g3>g3|lost-1',
-  'stand|FUTURE|g4>g4|lost-1',
+  'bonk|PAST|helper-lost-2',
   'shot|PAST|miss|none|some',
-  'shot|PAST|direct|hit|some',
-  'stand|FUTURE|g4>g4|lost-2',
-  'stand|PAST|g3>g3|lost-2',
+  'bonk|FUTURE|helper-lost-2',
   'shot|FUTURE|direct|hit|some',
-  'shot|FUTURE|miss|none|some',
 ];

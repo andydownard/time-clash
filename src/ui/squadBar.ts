@@ -28,6 +28,8 @@ export type SquadBar = {
   pressBack(): boolean;
   /** The H key: Hear it. Returns true when it used the press. */
   pressHear(): boolean;
+  /** The K key: Bonk! (the helper if he is next to him, else the base). Returns true when it used the press. */
+  pressBonk(): boolean;
 };
 
 const KIND_ICON: Record<string, string> = { launcher: '🎯', dasher: '🛡' };
@@ -79,6 +81,7 @@ export function createSquadBar(doc: Document, handlers: () => HudHandlers | null
   );
   let launcherId: string | null = null;
   let live = false;
+  let bonks: readonly ('base' | 'helper')[] = [];
   back.addEventListener('click', () => {
     if (live && launcherId) handlers()?.onHelper?.(launcherId);
   });
@@ -107,6 +110,12 @@ export function createSquadBar(doc: Document, handlers: () => HudHandlers | null
     pressHear(): boolean {
       if (!live || root.hidden) return false;
       handlers()?.onHearHelper?.();
+      return true;
+    },
+    pressBonk(): boolean {
+      const [first] = bonks;
+      if (!live || first === undefined) return false;
+      handlers()?.onBonk?.(first);
       return true;
     },
     update(squads, active): boolean {
@@ -158,11 +167,42 @@ export function createSquadBar(doc: Document, handlers: () => HudHandlers | null
       const picked = squads.helpers.find((x) => x.id === squads.picked);
       const dasherUp = picked?.kind === 'dasher';
       const state = squads.dasher?.state ?? 'home';
+      bonks = dasherUp ? (squads.bonks ?? []) : [];
       panel.hidden = !dasherUp;
       back.hidden = !dasherUp;
       spots.replaceChildren(...(dasherUp ? dasherMove(state) : []));
       function dasherMove(now: 'home' | 'out' | 'resting'): HTMLElement[] {
         if (now === 'out') {
+          const bonkButtons = bonks.map((kind) => {
+            const bb = h(doc, 'button', {
+              type: 'button',
+              class: 'tc-dash-spot tc-bonk',
+              'data-testid': TEST_IDS.helperBonk(kind),
+              'aria-label': SQUAD_COPY.bonkAria(kind),
+            });
+            bb.append(
+              h(doc, 'span', { 'aria-hidden': 'true', text: `${SQUAD_COPY.bonkIcon} ` }),
+              bonks.length === 1
+                ? SQUAD_COPY.bonkButton
+                : kind === 'helper'
+                  ? SQUAD_COPY.bonkHelperButton
+                  : SQUAD_COPY.bonkBaseButton,
+            );
+            bb.addEventListener('click', () => {
+              if (active) handlers()?.onBonk?.(kind);
+            });
+            return bb;
+          });
+          const none =
+            bonkButtons.length === 0
+              ? [
+                  h(doc, 'span', {
+                    class: 'tc-dash-none',
+                    'data-testid': TEST_IDS.bonkNone,
+                    text: SQUAD_COPY.nothingToBonk,
+                  }),
+                ]
+              : [];
           const b = h(doc, 'button', {
             type: 'button',
             class: 'tc-dash-spot',
@@ -175,7 +215,7 @@ export function createSquadBar(doc: Document, handlers: () => HudHandlers | null
           b.addEventListener('click', () => {
             if (active) handlers()?.onRecall?.();
           });
-          return [b];
+          return [...bonkButtons, ...none, b];
         }
         if (now === 'resting') {
           return [

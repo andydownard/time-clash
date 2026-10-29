@@ -158,13 +158,17 @@ export const SQUADS = {
    */
   groundSpots: 5,
   /**
-   * Base health one dasher bonk takes, at the start of every turn while he stands at the enemy
-   * base. About 12 percent of a perfect-aim turn, so a dasher left alone helps a lot but cannot
-   * win alone. Damage cuts, a Hoverboard Dodge and a force field stop it like a shot.
+   * Base health one Bonk! takes. It is a go the player spends (owner, 2026-10-28), from the
+   * attack spot. It never misses, but it is about half a direct hit (25), so a player with good
+   * aim still prefers the launcher and perfect aim never wins sooner. Damage cuts, a Hoverboard
+   * Dodge and a force field stop it like a shot.
    */
   standBonkDamage: 12,
-  /** Health a dasher loses to one bonk from the enemy dasher next to him. Same as a direct hit. */
-  duelBonkHp: CHARACTER_HEALTH.directHit,
+  /**
+   * Health a dasher loses to one Bonk! from the enemy dasher next to him. A Bonk! is a go the
+   * player spends, so it takes 2 (half his health): two Bonk!s tumble him, one turn's worth.
+   */
+  duelBonkHp: 2,
   /** Where the spots sit, in world px from a base's inner edge: the doorstep and the attack spot. */
   spotInset: { door: 34, attack: 96 },
   /** Where a dasher waits at home, in world px inside his own base's inner edge. */
@@ -560,8 +564,8 @@ export type BotProfile = {
 };
 
 /**
- * How one side uses its walking helper (Squads S1). It decides once a turn, on go 1, with the
- * same walk-out and Come back goes a child has. A walk or a call home uses up that go.
+ * How one side uses its walking helper (Squads S1). It walks out and calls him home only on go 1,
+ * and may Bonk! on either go, with the same goes a child has. Each one uses up that go.
  */
 export type BotHelperPlan = {
   /** Chance to walk the helper out when he is home and ready and the enemy helper is not out. */
@@ -573,6 +577,11 @@ export type BotHelperPlan = {
   replyChance: number;
   /** Chance to call home a hurt helper who is losing a bonk-off with the enemy helper. */
   recallChance: number;
+  /**
+   * Chance, on either go, to spend it on a Bonk! when the helper stands next to something to bonk.
+   * It bonks the enemy helper next to him first, otherwise the base.
+   */
+  bonkChance: number;
 };
 
 export const PRACTICE_BOT = {
@@ -614,9 +623,9 @@ export const PRACTICE_BOT = {
   /** The walking helper, per level. The scripted human in the simulation never uses it by default. */
   helper: {
     levels: {
-      easy: { dashChance: 0, replyChance: 0.75, recallChance: 0 },
-      medium: { dashChance: 0, replyChance: 1, recallChance: 0.1 },
-      hard: { dashChance: 0, replyChance: 1, recallChance: 0.1 },
+      easy: { dashChance: 0, replyChance: 0.75, recallChance: 0, bonkChance: 0.4 },
+      medium: { dashChance: 0, replyChance: 1, recallChance: 0.1, bonkChance: 0.6 },
+      hard: { dashChance: 0, replyChance: 1, recallChance: 0.1, bonkChance: 0.8 },
     } as Readonly<Record<BotLevel, BotHelperPlan>>,
     /** A helper with this share of his full health or less is hurt (1 of 4 at Normal). */
     hurtShare: 0.25,

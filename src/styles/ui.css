@@ -5109,9 +5109,24 @@ button.tc-forge-row[aria-disabled='true'],
   box-shadow: 0 3px 0 var(--tc-purple-900);
   padding: 4px 14px;
   flex: 1 1 340px;
-  max-width: 460px;
+  max-width: 760px;
   min-width: 340px;
   align-self: stretch;
+}
+/* Bonk!, Come back and Back share one row, so the panel needs the room "Pick one" uses. The
+   fighter selector steps aside while the walking helper is picked (a walk or a Bonk! needs no
+   fighter, as it needs no aim). Picking the launcher brings it back. */
+.tc-hud-bottom:has(> .tc-dasher-panel:not([hidden])) > .tc-units {
+  display: none;
+}
+/* The panel keeps the height "Pick one" gave the row, so the turn strip, the helper row and the
+   gear buttons stay exactly where they are when a player switches helper. */
+.tc-hud-bottom:has(> .tc-dasher-panel:not([hidden])) > .tc-dasher-panel {
+  min-height: 120px;
+}
+.tc-dasher-panel .tc-dash-spots {
+  flex-wrap: nowrap;
+  gap: 8px;
 }
 .tc-dasher-panel button {
   white-space: nowrap;

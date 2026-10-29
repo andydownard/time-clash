@@ -96,6 +96,8 @@ export const playBotMatch = (opts: SimOptions): SimResult => {
     if (helperGo.kind === 'dash') {
       match.dash(helperGo.to);
       dashes[team] += 1;
+    } else if (helperGo.kind === 'bonk') {
+      match.bonk(helperGo.target);
     } else {
       match.recall();
       recalls[team] += 1;
@@ -111,8 +113,6 @@ export const playBotMatch = (opts: SimOptions): SimResult => {
   for (let turns = 0; turns < cap; turns++) {
     const team = match.snapshot().turn.team;
     match.ready();
-    // A helper's bonk at the start of the turn can end the match.
-    if (over()) return finish(turns + 1);
     if (opts.raiseWall && match.snapshot().evasion[team].id === 'barricade') {
       const view = match.snapshot().evasion[team];
       if (view.phase === 'ready' && view.usesLeft > 0 && rng.next() < 0.5) {

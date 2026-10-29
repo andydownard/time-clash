@@ -1,5 +1,5 @@
-// Squads S1 inside a real match: picking a helper, walking out, the bonk at the start of every
-// turn (both teams' turns), Come back, shells near a dasher, go counting, and the flag.
+// Squads S1 inside a real match: picking a helper, walking out, Bonk! (a go the player chooses),
+// Come back, shells near a dasher, go counting, and the flag.
 import { describe, expect, it } from 'vitest';
 import { createMatch } from '../../src/game/match';
 import {
@@ -198,34 +198,64 @@ describe('walking out', () => {
   });
 });
 
-describe('the bonk at the start of every turn', () => {
-  it('hits the enemy base at the start of the enemy turn, and again at the start of his own', () => {
+/** The active team's picked dasher Bonk!s. */
+const bonk = (c: MatchController, kind: 'base' | 'helper') => {
+  const team = c.snapshot().turn.team;
+  c.selectHelper(`${team}-dasher`);
+  return c.bonk(kind);
+};
+
+describe('Bonk! is a go the player chooses', () => {
+  it('nothing bonks by itself: a dasher out for turns hurts nobody until the player says Bonk!', () => {
     const c = aiming(on());
     const full = c.snapshot().maxBaseHp.FUTURE;
     walkOut(c);
     endTurn(c);
-    const first = c.ready();
-    expect(first).toEqual([
-      {
-        helper: 'PAST-dasher',
-        team: 'PAST',
-        from: 'g3',
-        to: 'g3',
-        target: { kind: 'base', team: 'FUTURE', damage: BONK },
-      },
-    ]);
+    expect(c.ready()).toEqual([]);
+    expect(hp(c).FUTURE).toBe(full);
+    endTurn(c);
+    expect(c.ready()).toEqual([]);
+    expect(hp(c).FUTURE).toBe(full);
+  });
+  it('the base takes standBonkDamage, and the Bonk! is one whole go', () => {
+    const c = aiming(on());
+    const full = c.snapshot().maxBaseHp.FUTURE;
+    walkOut(c);
+    expect(c.bonkTargets()).toEqual(['base']);
+    const r = c.bonk('base');
+    expect(r).toEqual({
+      helper: 'PAST-dasher',
+      team: 'PAST',
+      at: 'g3',
+      target: { kind: 'base', team: 'FUTURE', damage: BONK },
+    });
     expect(hp(c).FUTURE).toBe(full - BONK);
+    expect(c.snapshot().turn.phase).toBe('RELOAD');
+    expect(c.snapshot().turn.shotsFired).toBe(2);
+  });
+  it('can bonk on go 1 of a later turn, then shoot on go 2', () => {
+    const c = aiming(on());
+    walkOut(c);
     endTurn(c);
     c.ready();
-    expect(hp(c).FUTURE).toBe(full - 2 * BONK);
+    endTurn(c);
+    c.ready();
+    const full = c.snapshot().maxBaseHp.FUTURE;
+    bonk(c, 'base');
+    expect(c.snapshot().turn.phase).toBe('AIMING');
+    expect(c.snapshot().squads?.go).toBe(2);
+    shootAway(c);
+    expect(c.snapshot().turn.phase).toBe('RELOAD');
+    expect(hp(c).FUTURE).toBe(full - BONK);
   });
   it('is seeded: the same plays give the same health', () => {
     const play = () => {
       const c = aiming(on(9));
       walkOut(c);
-      endTurn(c);
+      bonk(c, 'base');
+      c.reloadDone(WRONG);
+      c.pass();
       c.ready();
-      walkOut(c);
       endTurn(c);
       return [c.ready(), hp(c)];
     };
@@ -238,14 +268,12 @@ describe('the bonk at the start of every turn', () => {
     };
     const c = aiming(on(3, { effects }));
     walkOut(c);
-    endTurn(c);
-    expect(c.ready()[0]!.target).toMatchObject({ damage: BONK - 5 });
+    expect(bonk(c, 'base').target).toMatchObject({ damage: BONK - 5 });
     const big = aiming(
       on(3, { effects: { ...effects, FUTURE: { ...effects.FUTURE, nearCut: 99 } } }),
     );
     walkOut(big);
-    endTurn(big);
-    expect(big.ready()[0]!.target).toMatchObject({ damage: 1 });
+    expect(bonk(big, 'base').target).toMatchObject({ damage: 1 });
   });
   it('a force field blocks a bonk like a shot', () => {
     const effects: MatchEffects = {
@@ -254,41 +282,114 @@ describe('the bonk at the start of every turn', () => {
     };
     const c = aiming(on(3, { effects }));
     walkOut(c);
-    endTurn(c);
-    expect(c.ready()[0]!.target).toEqual({
+    expect(bonk(c, 'base').target).toEqual({
       kind: 'base',
       team: 'FUTURE',
       damage: 0,
       blocked: true,
     });
+    c.reloadDone(WRONG);
+    c.pass();
+    c.ready();
     endTurn(c);
-    expect(c.ready()[0]!.target).toMatchObject({ damage: BONK });
+    c.ready();
+    expect(bonk(c, 'base').target).toMatchObject({ damage: BONK });
   });
   it('a Hoverboard Dodge makes a bonk miss like a shot', () => {
     const c = aiming(on());
     walkOut(c);
     endTurn(c);
-    c.ready(); // Future's turn: the first bonk lands
+    c.ready(); // Future's turn
     c.armEvasion();
     endTurn(c);
+    c.ready(); // Past's turn: the dodge guards Future's base
     const before = hp(c).FUTURE;
-    expect(c.ready()[0]!.target).toEqual({ kind: 'base', team: 'FUTURE', damage: 0, dodged: true });
+    expect(bonk(c, 'base').target).toEqual({
+      kind: 'base',
+      team: 'FUTURE',
+      damage: 0,
+      dodged: true,
+    });
     expect(hp(c).FUTURE).toBe(before);
   });
-  it('two dashers who meet bonk each other, not the bases, until one tumbles', () => {
+  it('two dashers who meet: the player picks the helper or the base', () => {
     const c = aiming(on());
     walkOut(c); // Past to its attack spot
     endTurn(c);
-    c.ready(); // the first bonk on Future's base
+    c.ready();
     walkOut(c); // Future guards its doorstep, right next to him
     expect(dasher(c, 'FUTURE').spot).toBe('g4');
+    expect(c.bonkTargets()).toEqual(['helper']);
     endTurn(c);
     const baseBefore = hp(c);
-    const beats = c.ready();
-    expect(beats.map((b) => b.target.kind)).toEqual(['helper', 'helper']);
+    expect(c.ready()).toEqual([]);
+    expect(c.bonkTargets()).toEqual([]); // the launcher is picked
+    c.selectHelper('PAST-dasher');
+    expect(c.bonkTargets()).toEqual(['helper', 'base']);
+    const r = c.bonk('helper');
+    expect(r.target).toMatchObject({ kind: 'helper', helper: 'FUTURE-dasher', tumbled: false });
     expect(hp(c)).toEqual(baseBefore);
-    expect(dasher(c, 'PAST').hp).toBe(HP - SQUADS.duelBonkHp);
     expect(dasher(c, 'FUTURE').hp).toBe(HP - SQUADS.duelBonkHp);
+    expect(dasher(c, 'PAST').hp).toBe(HP);
+  });
+  it('a helper bonked to 0 tumbles home and rests; on his next own turn he cannot Bonk!', () => {
+    const c = aiming(on());
+    walkOut(c);
+    endTurn(c);
+    c.ready();
+    walkOut(c); // Future's dasher at g4, next to Past's at g3
+    expect(bonk(c, 'helper').target).toMatchObject({ tumbled: false, hp: HP - SQUADS.duelBonkHp });
+    c.reloadDone(WRONG);
+    c.pass();
+    c.ready(); // Past's turn: Past's helper has 2 left; one more Bonk! from Future tumbles him
+    endTurn(c);
+    c.ready(); // Future's turn
+    const r = bonk(c, 'helper');
+    expect(r.target).toMatchObject({ kind: 'helper', helper: 'PAST-dasher', tumbled: true, hp: 0 });
+    expect((r.target as { bubbleIndex: number | null }).bubbleIndex).not.toBeNull();
+    expect(dasher(c, 'PAST').state).toBe('resting');
+    endTurn(c);
+    c.ready(); // Past's turn: his helper is dizzy
+    c.selectHelper('PAST-dasher');
+    expect(c.bonkTargets()).toEqual([]);
+    expect(reason(() => c.bonk('base'))).toBe('resting');
+    expect(c.snapshot().turn.shotsFired).toBe(0);
+  });
+  it('is refused when nothing of that kind is next to him, and uses no go', () => {
+    const c = aiming(on());
+    walkOut(c);
+    endTurn(c);
+    c.ready();
+    walkOut(c); // Future's dasher stays on g4, blocked by Past's at g3
+    c.selectHelper('FUTURE-dasher');
+    expect(reason(() => c.bonk('base'))).toBe('nothing_to_bonk');
+    expect(c.snapshot().turn.shotsFired).toBe(1);
+    expect(dasher(c, 'PAST').hp).toBe(HP);
+  });
+  it('is refused with the launcher picked, or a dasher at home, and uses no go', () => {
+    const c = aiming(on());
+    expect(reason(() => c.bonk('base'))).toBe('wrong_command');
+    c.selectHelper('PAST-dasher');
+    expect(reason(() => c.bonk('base'))).toBe('not_out');
+    expect(reason(() => c.bonk('helper'))).toBe('not_out');
+    expect(c.snapshot().turn.shotsFired).toBe(0);
+  });
+  it('is refused before the turn starts, in the reload, and on the Power Shot (a third go)', () => {
+    const c = on();
+    expect(() => c.bonk('base')).toThrow(IllegalTransitionError);
+    c.ready();
+    walkOut(c);
+    bonk(c, 'base');
+    expect(c.snapshot().turn.phase).toBe('RELOAD');
+    expect(() => c.bonk('base')).toThrow(IllegalTransitionError);
+    c.reloadDone({ correct: true, elapsedMs: 1000 });
+    expect(c.snapshot().turn.phase).toBe('BONUS_AIMING');
+    expect(() => c.bonk('base')).toThrow(IllegalTransitionError);
+  });
+  it('is refused with the flag off', () => {
+    const c = aiming(createMatch({ players: PLAYERS, seed: 3, squads: false }));
+    expect(reason(() => c.bonk('base'))).toBe('flag_off');
+    expect(c.bonkTargets()).toEqual([]);
   });
 });
 
@@ -303,7 +404,7 @@ describe('Come back', () => {
     expect(dasher(c, 'PAST').state).toBe('resting');
     c.reloadDone(WRONG);
     c.pass();
-    expect(c.ready()).toEqual([]); // nobody out, nobody bonks
+    expect(c.ready()).toEqual([]); // nobody out, nobody walks on
     endTurn(c);
     c.ready();
     expect(dasher(c, 'PAST').state).toBe('home');
@@ -467,15 +568,14 @@ describe('shells near a dasher', () => {
 });
 
 describe('the end of the match', () => {
-  it('a bonk can win, and a dasher still out when it ends stays put and does nothing more', () => {
+  it('a Bonk! can win, and a dasher still out when it ends stays put and does nothing more', () => {
     const effects: MatchEffects = {
       ...DEFAULT_EFFECTS,
       FUTURE: { ...DEFAULT_EFFECTS.FUTURE, maxHp: BONK },
     };
     const c = aiming(on(3, { effects }));
     walkOut(c);
-    endTurn(c);
-    c.ready();
+    bonk(c, 'base');
     const s = c.snapshot();
     expect(s.status).toBe('OVER');
     expect(s.winner).toBe('PAST');
@@ -483,6 +583,7 @@ describe('the end of the match', () => {
     expect(() => c.ready()).toThrow(MatchOverError);
     expect(() => c.dash('g3')).toThrow(MatchOverError);
     expect(() => c.recall()).toThrow(MatchOverError);
+    expect(() => c.bonk('base')).toThrow(MatchOverError);
     expect(() => c.selectHelper('FUTURE-dasher')).toThrow(MatchOverError);
   });
 });

@@ -39,7 +39,6 @@ import type {
   Rng,
   ShooterId,
   ShotResult,
-  StandBonk,
   Team,
   Vec2,
 } from '../../game/types';
@@ -60,7 +59,9 @@ import {
   groundSpotIds,
   groundSpotPoint,
   helperId,
+  type BonkKind,
   type HelperId,
+  type StandWalk,
 } from '../../game/crew';
 import { timeCaptions } from '../../data/introScript';
 import {
@@ -137,6 +138,8 @@ export class BattleFlow {
   private pendingDash: string | null = null;
   /** Squads S1: the player pressed Come back. It ends the wait like Fire does. */
   private pendingRecall = false;
+  /** Squads: the player pressed Bonk! (what to bonk). It ends the wait like Fire does. */
+  private pendingBonk: BonkKind | null = null;
   /** While above 0 a dasher animation is playing, so status pushes leave the dashers alone. */
   private fieldHeld = 0;
   /** Squads S1: sides that already took a go in this match, so the first-go hint shows once each. */
@@ -239,12 +242,8 @@ export class BattleFlow {
     if (birds.length > 0) view.showBirds?.(birds);
     view.setActiveTeam(team);
     this.deps.audio?.setMusicTeam?.(team);
-    // Squads: every dasher out on the field bonks at the start of the turn, on both sides' turns.
-    await this.playStand(beats);
-    if (match.snapshot().status === 'OVER') {
-      await this.finish();
-      return true;
-    }
+    // Squads: a dasher with nothing next to him walks on at the start of the turn. Nobody bonks yet.
+    await this.playWalkOn(beats);
 
     for (const shot of [1, 2] as const) {
       await this.gate();
@@ -293,8 +292,14 @@ export class BattleFlow {
       this.hintDone.add(team);
       const spot = this.pendingDash;
       const recall = this.pendingRecall;
+      const bonk = this.pendingBonk;
       this.pendingDash = null;
       this.pendingRecall = false;
+      this.pendingBonk = null;
+      if (bonk) {
+        await this.bonkGo(team, bonk);
+        return;
+      }
       if (spot) {
         await this.dashGo(team, spot);
         return;
@@ -359,7 +364,8 @@ export class BattleFlow {
   }
 
   /**
-   * Squads S1: the Computer player may spend go 1 on its helper (walk him out, or call him home).
+   * Squads: the Computer player may spend a go on its helper (walk him out or call him home on
+   * go 1, or Bonk! on either go).
    * It picks the helper, a short "thinking" note shows, then the same walk as a child's button
    * plays. Returns false when it fires as usual.
    */
@@ -385,6 +391,7 @@ export class BattleFlow {
       overlay.showThinking?.(null);
     }
     if (go.kind === 'dash') await this.dashGo(team, go.to);
+    else if (go.kind === 'bonk') await this.bonkGo(team, go.target);
     else await this.recallGo(team);
     return true;
   }
@@ -429,58 +436,67 @@ export class BattleFlow {
     overlay.setCaption(null);
   }
 
-  /** The bonks at the start of a turn, one after another, each with a caption. */
-  private async playStand(beats: readonly StandBonk[]): Promise<void> {
-    if (beats.length === 0) return;
-    const { view, overlay, audio, match } = this.deps;
-    // A duel lists both dashers. Each one's spot is where the other bonks.
-    const spotOf = new Map(beats.map((b) => [b.team, b.to]));
+  /** The walks at the start of a turn: a dasher with nothing next to him walks on. */
+  private async playWalkOn(walks: readonly StandWalk[]): Promise<void> {
+    if (walks.length === 0) return;
+    const { view, audio } = this.deps;
     await this.holdField(async () => {
-      for (const b of beats) {
+      for (const w of walks) {
         await this.gate();
-        const name = SQUAD_COPY.helperName[b.helper] ?? '';
-        if (b.from !== b.to) {
-          audio?.playSfx('step');
-          await view.walkDasher?.(b.team, this.spotAt(b.from), this.spotAt(b.to), false);
-          this.live();
-        }
-        const t = b.target;
-        const foe: Team = b.team === 'PAST' ? 'FUTURE' : 'PAST';
-        const toward =
-          t.kind === 'base' ? this.baseFront(t.team) : this.spotAt(spotOf.get(foe) ?? b.to);
-        audio?.playSfx('bonk');
-        overlay.setCaption(
-          t.kind === 'helper'
-            ? SQUAD_COPY.bonkHelper(name)
-            : t.dodged
-              ? SQUAD_COPY.bonkDodged
-              : t.blocked
-                ? SQUAD_COPY.bonkBlocked
-                : SQUAD_COPY.bonkBase(name),
-        );
-        await view.playDasherBonk?.(b.team, toward, SQUAD_COPY.bonkWord);
+        audio?.playSfx('step');
+        await view.walkDasher?.(w.team, this.spotAt(w.from), this.spotAt(w.to), false);
         this.live();
-        if (t.kind === 'base') {
-          if (t.dodged) await view.playDodge?.(t.team);
-          // The base health tag and the HUD show the new number.
-          this.pushStatus(false);
-          if (t.damage > 0) {
-            await view.playImpact({
-              kind: 'puff',
-              position: toward,
-              target: t.team,
-              shooter: b.team,
-              result: match.snapshot().baseHp[t.team] <= 0 ? 'direct' : 'near',
-              damage: t.damage,
-              scale: 0.5,
-              label: '',
-            });
-          }
-          this.live();
-          await this.playBricks(t.team, t.built);
-        } else if (t.tumbled) {
-          await this.dasherTumbles(foe, spotOf.get(foe) ?? b.to, t.bubbleIndex);
+      }
+    });
+    this.live();
+    this.pushStatus(false);
+  }
+
+  /** Squads: one Bonk! go. The rules apply it now; then the swing, the word and the caption play. */
+  private async bonkGo(team: Team, kind: BonkKind): Promise<void> {
+    const { match, view, overlay, audio } = this.deps;
+    view.setAimDragHandler(null);
+    view.showPreview(team, null);
+    const foe: Team = team === 'PAST' ? 'FUTURE' : 'PAST';
+    const before = match.snapshot();
+    const foeSpot = before.squads ? dasherOf(before.squads.crew, foe).spot : null;
+    const b = match.bonk(kind);
+    const name = SQUAD_COPY.helperName[b.helper] ?? '';
+    const t = b.target;
+    const toward = t.kind === 'base' ? this.baseFront(t.team) : this.spotAt(foeSpot ?? b.at);
+    await this.holdField(async () => {
+      audio?.playSfx('bonk');
+      overlay.setCaption(
+        t.kind === 'helper'
+          ? SQUAD_COPY.bonkHelper(name)
+          : t.dodged
+            ? SQUAD_COPY.bonkDodged
+            : t.blocked
+              ? SQUAD_COPY.bonkBlocked
+              : SQUAD_COPY.bonkBase(name),
+      );
+      await view.playDasherBonk?.(b.team, toward, SQUAD_COPY.bonkWord);
+      this.live();
+      if (t.kind === 'base') {
+        if (t.dodged) await view.playDodge?.(t.team);
+        // The base health tag and the HUD show the new number.
+        this.pushStatus(false);
+        if (t.damage > 0) {
+          await view.playImpact({
+            kind: 'puff',
+            position: toward,
+            target: t.team,
+            shooter: b.team,
+            result: match.snapshot().baseHp[t.team] <= 0 ? 'direct' : 'near',
+            damage: t.damage,
+            scale: 0.5,
+            label: '',
+          });
         }
+        this.live();
+        await this.playBricks(t.team, t.built);
+      } else if (t.tumbled) {
+        await this.dasherTumbles(foe, foeSpot ?? b.at, t.bubbleIndex);
       }
     });
     this.live();
@@ -920,6 +936,13 @@ export class BattleFlow {
         this.awaitingFire = null;
         go();
       },
+      onBonk: (kind) => {
+        const go = this.awaitingFire;
+        if (!go || this.stopped) return;
+        this.pendingBonk = kind;
+        this.awaitingFire = null;
+        go();
+      },
       onRecall: () => {
         const go = this.awaitingFire;
         if (!go || this.stopped) return;
@@ -1121,6 +1144,7 @@ export class BattleFlow {
                 })),
               picked: s.squads.picked[team],
               targets: canFire ? match.helperTargets() : [],
+              bonks: canFire ? match.bonkTargets() : [],
               dasher: {
                 state: dasherOf(s.squads.crew, team).state,
                 hp: dasherOf(s.squads.crew, team).hp,

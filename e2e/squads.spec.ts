@@ -1,7 +1,7 @@
 // Squads S1 end to end. Squads is on for everyone: a turn is 2 goes, then the covered reload,
 // then the other side with its full crew. A wrong answer never skips the question or shrinks the
-// next turn. The walking dasher goes out over the middle obstacle, bonks the enemy base at the
-// start of every turn (the enemy's turn too), and tumbles home when shells knock him down.
+// next turn. The walking dasher goes out over the middle obstacle, then the player taps Bonk! (one
+// of the 2 goes, never automatic) to bonk the enemy base, and he tumbles home when shells knock him down.
 import type { Page } from '@playwright/test';
 import { expect, test } from './fixtures';
 import { simulateShot } from '../src/game/ballistics';
@@ -143,7 +143,7 @@ test('2 goes, then the covered reload, then the next side with its full crew', a
   await expect(tid(page, 'helper-PAST-launcher')).toBeHidden();
 });
 
-test('the dasher walks out past the middle, keeps bonking on the enemy turn, and tumbles home', async ({
+test('the dasher walks out past the middle, Bonk! is a go the player taps, and he tumbles home', async ({
   page,
   browserName,
 }) => {
@@ -171,27 +171,32 @@ test('the dasher walks out past the middle, keeps bonking on the enemy turn, and
   expect(out.x).toBeGreaterThan(middleRight);
   expect(out.y).toBe(attack.y);
 
-  // Go 2 and the reload, then Team Future's turn starts with his bonk.
-  await expect(tid(page, 'helper-PAST-launcher')).toHaveAttribute('aria-disabled', 'false', {
-    timeout: 20_000,
-  });
-  await tid(page, 'helper-PAST-launcher').click();
-  await waitAiming(page, 1);
-  await takeShot(page, 'miss');
-  await expect(tid(page, 'reload-modal')).toBeVisible({ timeout: 20_000 });
-  await answerReload(page, 'wrong');
-  await tapGotIt(page);
-  await waitPassScreen(page);
+  // Go 2: nothing bonks by itself. The player taps Bonk! (the one button, since only the base is next to him).
+  await expect(tid(page, 'helper-recall')).toBeVisible({ timeout: 20_000 });
+  expect((await snap(page)).baseHp.FUTURE).toBe((await snap(page)).maxBaseHp.FUTURE);
+  const bonkButton = tid(page, 'helper-bonk-base');
+  await expect(bonkButton).toContainText('Bonk!');
+  const bb = (await bonkButton.boundingBox())!;
+  expect(bb.width).toBeGreaterThanOrEqual(56);
+  expect(bb.height).toBeGreaterThanOrEqual(56);
   const before = (await snap(page)).baseHp.FUTURE;
-  await tid(page, 'pass-ready').click();
+  await saveShot(page, browserName, 'squads-bonk-button');
+  await bonkButton.click();
   await expect.poll(async () => (await dasherOn(page, 'PAST')).doing).toBe('bonk');
   await saveShot(page, browserName, 'squads-bonk');
   await expect
     .poll(async () => (await snap(page)).baseHp.FUTURE)
     .toBe(before - SQUADS.standBonkDamage);
   await expect.poll(async () => (await captionsSeen(page)).join('|')).toContain('Bonk!');
+  // The Bonk! was go 2, so the reload comes next, then Team Future's turn starts with no bonk.
+  await expect(tid(page, 'reload-modal')).toBeVisible({ timeout: 20_000 });
+  await answerReload(page, 'wrong');
+  await tapGotIt(page);
+  await waitPassScreen(page);
+  await tid(page, 'pass-ready').click();
   await waitAiming(page, 0);
   expect((await snap(page)).turn.team).toBe('FUTURE');
+  expect((await snap(page)).baseHp.FUTURE).toBe(before - SQUADS.standBonkDamage);
 
   // Team Future lands its shells right on him: 2 hits, then the Power Shot knocks him down.
   const wind = (await snap(page)).wind;
@@ -221,10 +226,13 @@ test('the dasher walks out past the middle, keeps bonking on the enemy turn, and
   });
   // He walks home and rests there.
   await expect
-    .poll(async () => {
-      const d = await dasherOn(page, 'PAST');
-      return `${d.state}:${d.doing}`;
-    }, { timeout: 20_000 })
+    .poll(
+      async () => {
+        const d = await dasherOn(page, 'PAST');
+        return `${d.state}:${d.doing}`;
+      },
+      { timeout: 20_000 },
+    )
     .toBe('resting:stand');
   const home = await dasherOn(page, 'PAST');
   expect(home.x).toBeLessThan(layout.bases.PAST.x + layout.bases.PAST.w);
@@ -269,4 +277,25 @@ test('the hint finger holds still under reduced motion', async ({ page }) => {
     .locator('.tc-go-finger')
     .evaluate((el) => getComputedStyle(el).animationName);
   expect(anim).toBe('none');
+});
+
+test('the K key Bonk!s, and a Bonk! with nothing next to him is not offered', async ({ page }) => {
+  await toSquadMatch(page, null);
+  await readyUp(page);
+  // At home there is nothing to bonk: no Bonk! button and the K key does nothing.
+  await tid(page, 'helper-PAST-dasher').click();
+  await expect(tid(page, 'helper-bonk-base')).toHaveCount(0);
+  await page.keyboard.press('k');
+  expect((await snap(page)).turn.shotsFired).toBe(0);
+  // Walk out (go 1), then K is Bonk! (go 2).
+  await tid(page, 'dash-g3').click();
+  await expect.poll(async () => (await snap(page)).turn.shotsFired).toBe(1);
+  await expect(tid(page, 'helper-bonk-base')).toBeVisible({ timeout: 20_000 });
+  const full = (await snap(page)).maxBaseHp.FUTURE;
+  await page.keyboard.press('k');
+  await expect.poll(async () => (await snap(page)).turn.shotsFired).toBe(2);
+  await expect
+    .poll(async () => (await snap(page)).baseHp.FUTURE)
+    .toBe(full - SQUADS.standBonkDamage);
+  await expect(tid(page, 'reload-modal')).toBeVisible({ timeout: 20_000 });
 });

@@ -77,7 +77,7 @@ describe('copy: content', () => {
 
   it('says the Hear it line for both kinds of helper in short sentences', () => {
     expect(COPY.SQUAD_COPY.hearLine('dasher', 'Sir Bonk')).toBe(
-      'Sir Bonk walks across. He bonks every turn. Tap Walk out!',
+      'Sir Bonk walks across. Tap Walk out! Then tap Bonk! to bonk.',
     );
     expect(COPY.SQUAD_COPY.hearLine('launcher', 'Cannon Crew')).toBe(
       'Cannon Crew fires a ball. Press Fire!',

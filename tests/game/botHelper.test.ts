@@ -33,8 +33,8 @@ const withDashers = (s: Match, patch: Partial<Record<Team, DasherPatch>>): Match
     },
   },
 });
-const ALWAYS: BotHelperPlan = { dashChance: 1, replyChance: 1, recallChance: 1 };
-const NEVER: BotHelperPlan = { dashChance: 0, replyChance: 0, recallChance: 0 };
+const ALWAYS: BotHelperPlan = { dashChance: 1, replyChance: 1, recallChance: 1, bonkChance: 0 };
+const NEVER: BotHelperPlan = { dashChance: 0, replyChance: 0, recallChance: 0, bonkChance: 0 };
 
 /** A squads match on Team Past's first go. */
 const start = (seed = 4): MatchController => {
@@ -215,6 +215,76 @@ describe('chooseHelperGo', () => {
       kind: 'dash',
       to: 'g3',
     });
+  });
+});
+
+describe('chooseHelperGo: Bonk!', () => {
+  const BONKS: BotHelperPlan = { ...NEVER, bonkChance: 1 };
+  /** Team Past's helper on its attack spot, Team Future's home. */
+  const atBase = (): Match =>
+    withDashers(start().snapshot(), { PAST: { state: 'out', spot: 'g3', hp: 4 } });
+
+  it('Bonk!s the base from the attack spot, and the match accepts it as a go', () => {
+    const m = start();
+    m.selectHelper(helperId('PAST', 'dasher'));
+    m.dash('g3');
+    const go = chooseHelperGo(m.snapshot(), 'PAST', BONKS, createRng(1));
+    expect(go).toEqual({ kind: 'bonk', target: 'base' });
+    m.bonk('base');
+    expect(m.snapshot().turn.shotsFired).toBe(2);
+  });
+
+  it('may Bonk! on go 2 as well as go 1, but never on the Power Shot', () => {
+    const m = start();
+    m.selectHelper(helperId('PAST', 'dasher'));
+    m.dash('g3');
+    expect(m.snapshot().turn.shotsFired).toBe(1);
+    expect(chooseHelperGo(m.snapshot(), 'PAST', BONKS, createRng(1))).not.toBeNull();
+    m.selectHelper(helperId('PAST', 'launcher'));
+    m.setAim({ angleDeg: 80, power: 20 });
+    m.fire();
+    m.shotLanded();
+    m.reloadDone({ correct: true, elapsedMs: 2000, kind: 'choice', grade: 3 });
+    expect(m.snapshot().turn.phase).toBe('BONUS_AIMING');
+    expect(chooseHelperGo(m.snapshot(), 'PAST', BONKS, createRng(1))).toBeNull();
+  });
+
+  it('Bonk!s the enemy helper next to him before the base', () => {
+    const s = withDashers(atBase(), { FUTURE: { state: 'out', spot: 'g4', hp: 4 } });
+    expect(chooseHelperGo(s, 'PAST', BONKS, createRng(1))).toEqual({
+      kind: 'bonk',
+      target: 'helper',
+    });
+  });
+
+  it('does not Bonk! with a plan of zero (and draws no random number), at home, resting, or in the middle of the field', () => {
+    const rng = createRng(1);
+    const before = createRng(1).next();
+    expect(chooseHelperGo(atBase(), 'PAST', NEVER, rng)).toBeNull();
+    expect(rng.next()).toBe(before);
+    expect(chooseHelperGo(start().snapshot(), 'PAST', BONKS, createRng(1))).toBeNull();
+    const dizzy = withDashers(atBase(), { PAST: { state: 'resting', spot: null, readyAt: 9 } });
+    expect(chooseHelperGo(dizzy, 'PAST', BONKS, createRng(1))).toBeNull();
+    const middle = withDashers(atBase(), { PAST: { spot: 'g1' } });
+    expect(chooseHelperGo(middle, 'PAST', BONKS, createRng(1))).toBeNull();
+  });
+
+  it('harder levels Bonk! at least as often as easier ones', () => {
+    for (let i = 1; i < BOT_LEVELS.length; i++) {
+      const easier = helperPlanOf(BOT_LEVELS[i - 1] as BotLevel);
+      const harder = helperPlanOf(BOT_LEVELS[i] as BotLevel);
+      expect(harder.bonkChance).toBeGreaterThanOrEqual(easier.bonkChance);
+    }
+  });
+
+  it('a whole match: the Computer player Bonk!s as a go and the match ends with a winner', () => {
+    const r = playBotMatch({
+      seed: 11,
+      profiles: { PAST: profileOf('hard'), FUTURE: PRACTICE_BOT.scriptedHuman },
+      helpers: { PAST: { ...helperPlanOf('hard'), dashChance: 1 } },
+    });
+    expect(r.ended).toBe(true);
+    expect(r.winner).not.toBeNull();
   });
 });
 

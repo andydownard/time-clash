@@ -10,7 +10,9 @@ import type {
   GroundSpotId,
   HelperId,
   RecallOutcome,
-  StandBeat,
+  BonkBeat,
+  BonkKind,
+  StandWalk,
 } from './crew';
 import type { BIOME_IDS, FORT_IDS, SPOT_IDS } from './config';
 import type { BirdPath, DisturbanceLevel, FlightDisturbance } from './disturbance';
@@ -553,11 +555,11 @@ export interface MatchController {
   /** A fresh copy of the full state. Safe to keep. */
   snapshot(): Match;
   /**
-   * PASS_SCREEN -> AIMING. With Squads on, every dasher out on the field walks on if he must and
-   * bonks at the start of the turn (both teams' turns). Returns what each did, in order. A bonk can
-   * end the match (status OVER). Empty with Squads off.
+   * PASS_SCREEN -> AIMING. With Squads on, every dasher out on the field walks on if nothing is
+   * next to him (both teams' turns). Returns each walk, in order. Nobody bonks by itself. Empty
+   * with Squads off.
    */
-  ready(): StandBonk[];
+  ready(): StandWalk[];
   /** Only in AIMING or BONUS_AIMING. Clamps and stores the active team's aim. Returns the clamped aim. */
   setAim(aim: AimInput): AimInput;
   /**
@@ -611,7 +613,7 @@ export interface MatchController {
   helperTargets(): GroundSpotId[];
   /**
    * Squads S1. AIMING -> AIMING (after go 1) or RELOAD (after go 2). The picked dasher walks out to
-   * `to` (his one stop) over any obstacle. He bonks at the start of each turn after that. Does the
+   * `to` (his one stop) over any obstacle. He waits there until the player chooses Bonk!. Does the
    * work of fire() and shotLanded() in one call. Throws IllegalCommandError or IllegalTransitionError.
    */
   dash(to: GroundSpotId): DashResult;
@@ -621,18 +623,28 @@ export interface MatchController {
    * IllegalTransitionError.
    */
   recall(): RecallOutcome;
+  /** What the picked dasher may Bonk! now: the enemy helper next to him, the enemy base at the attack spot. */
+  bonkTargets(): BonkKind[];
+  /**
+   * Squads, Bonk!. Only in AIMING, with the dasher picked. One whole go, like dash and recall:
+   * AIMING -> AIMING (after go 1) or RELOAD (after go 2). Bonks the enemy base (shields, cuts, a
+   * Hoverboard Dodge and a built base's bricks all apply) or the enemy helper next to him. It can
+   * end the match (status OVER). Throws IllegalCommandError (`not_your_helper`, `wrong_command`,
+   * `not_out`, `resting`, `nothing_to_bonk`) or IllegalTransitionError (a third go).
+   */
+  bonk(kind: BonkKind): StandBonk;
   /** Options for a rematch: same players, seed + 1, the other team starts. */
   rematchOptions(): MatchOptions;
 }
 
-/** A dash go. The dasher only walks out; he bonks at the start of the next turn. */
+/** A dash go. The dasher only walks out; Bonk! is a go of its own. */
 export type DashResult = DashOutcome;
 
 /**
- * One dasher's bonk at the start of a turn, after shields. For a base, `damage` is what the base
- * really lost (0 if a force field or a Hoverboard Dodge stopped it).
+ * One Bonk! go, after shields. For a base, `damage` is what the base really lost (0 if a force
+ * field or a Hoverboard Dodge stopped it).
  */
-export type StandBonk = Omit<StandBeat, 'target'> & {
+export type StandBonk = Omit<BonkBeat, 'target'> & {
   target:
     | {
         kind: 'base';
@@ -643,7 +655,7 @@ export type StandBonk = Omit<StandBeat, 'target'> & {
         /** A built base: what the bonk did to its bricks. */
         built?: BuiltEvents;
       }
-    | Extract<StandBeat['target'], { kind: 'helper' }>;
+    | Extract<BonkBeat['target'], { kind: 'helper' }>;
 };
 
 export type CreateMatch = (options: MatchOptions) => MatchController;
