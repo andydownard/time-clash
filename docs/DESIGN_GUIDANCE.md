@@ -13,7 +13,7 @@ Voice dictation made some comments noisy, so a few asks are guesses. Claude Desi
 - **Melee is planned before it happens.** The mock offers jump, swipe, stab, sword, special.
 - **Wind and birds push shots.** In the mock they only wobble a shot. In the real game they should change where it lands.
 - **Shields.** A laser that hits a shield just disappears. A shield cracks on the first hit and breaks on the second.
-- **Explosions.** Cannonballs, missiles and tank shells explode where they land. When the fuel tank explodes, only the bunker nearest to it explodes. Only part of the castle explodes, and it keeps some life. Repeated tank hits bring it down.
+- **Explosions.** Cannonballs, rockets and tank shells explode where they land. When the fuel tank explodes, only the bunker nearest to it explodes. Only part of the castle explodes, and it keeps some life. Repeated tank hits bring it down.
 - **Nobody is hurt.** A hit fighter tumbles awkwardly, says one line after it lands (never while falling), then vanishes in a puff. If it lands on its feet it must then fall over. The speech bubble needs more padding and sits farther away. A pilot or driver of an exploded helicopter or tank falls out, says "Ah!", lands, and vanishes.
 - **A base that blows up** does not let anyone walk out. No new fighters can be made, but fighters already out keep fighting. The board counter reads "NEW FIGHTERS: 0".
 - **A match is about 10 minutes.**

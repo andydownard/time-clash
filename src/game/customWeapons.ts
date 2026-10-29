@@ -108,6 +108,18 @@ const VOCAB = new Set(
     'qvrq',
     'qlvat',
     'ohlvat',
+    'zvffvyr',
+    'zvffvyrf',
+    'fbyqvre',
+    'fbyqvref',
+    'nezl',
+    'gebbc',
+    'gebbcf',
+    'jne',
+    'jnef',
+    'fubbg',
+    'fubbgf',
+    'fubbgvat',
   ].map(rot13),
 );
 const LEET: Readonly<Record<string, string>> = {

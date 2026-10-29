@@ -788,7 +788,7 @@ export const BASE_BUILDER = {
     {
       id: 'missilePod',
       team: 'FUTURE',
-      name: 'Missile pod',
+      name: 'Rocket pod',
       scrap: null,
       role: 'lob',
       damage: 25,
