@@ -16,6 +16,7 @@ import {
   type BrickSprite,
   type PadSprite,
 } from './basePlan';
+import { brickJoins } from './baseJoin';
 import type { RiderDebug } from './riderArt';
 import { PALETTE, TEAM_COLOR } from './visual';
 
@@ -28,6 +29,8 @@ export type BaseLayerDebug = {
   standing: number;
   /** Bricks that have played their crumble. */
   crumbled: number;
+  /** Drawn bricks that are joined with a same-material neighbour (baseJoin.ts). */
+  joined: number;
   /** The drawn bricks' boxes, world px. */
   boxes: Rect[];
   /** The weapon pads: where each is, whether its picture is up, picked, and how often it fired. */
@@ -107,7 +110,7 @@ export class BaseLayer {
     this.views = bricks;
     this.container = scene.add.container(0, 0);
     this.cracks = scene.add.graphics();
-    for (const sprite of brickSprites(team, bricks)) {
+    for (const sprite of brickSprites(team, bricks, brickJoins(team, bricks))) {
       const view = bricks[sprite.id] as BrickView;
       const drawn: Drawn = { sprite, image: null, box: { ...view.box } };
       this.bricks.set(sprite.id, drawn);
@@ -198,7 +201,22 @@ export class BaseLayer {
       }
     });
     this.paintWear();
+    this.rejoin();
     await Promise.all(jobs);
+  }
+
+  /** A brick that fell leaves its neighbours' edge bare: redraw the ones whose joins changed. */
+  private rejoin(): void {
+    const joins = brickJoins(this.team, this.views);
+    for (const sprite of brickSprites(this.team, this.views, joins)) {
+      const d = this.bricks.get(sprite.id);
+      if (!d || !this.views[sprite.id]?.alive || d.sprite.key === sprite.key) continue;
+      d.sprite = sprite;
+      void ensureTexture(this.scene, sprite.key, sprite.svg).then((ok) => {
+        if (!ok || this.dead || d.sprite !== sprite || !d.image) return;
+        d.image.setTexture(sprite.key).setDisplaySize(sprite.w, sprite.h);
+      });
+    }
   }
 
   private crumble(image: Phaser.GameObjects.Image | null, box: Rect, order: number): Promise<void> {
@@ -297,6 +315,8 @@ export class BaseLayer {
       drawn: boxes.length,
       standing: Object.values(this.views).filter((v) => v.team === this.team && v.alive).length,
       crumbled: this.crumbled.size,
+      joined: [...this.bricks.values()].filter((d) => d.image && d.sprite.key.split('|').length > 4)
+        .length,
       boxes,
       pads: this.pads.map(({ pad, image }) => ({
         spot: pad.index,

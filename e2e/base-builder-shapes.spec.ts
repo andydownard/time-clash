@@ -52,6 +52,12 @@ async function fits(page: Page): Promise<string[]> {
   });
 }
 
+/** The L (2 wide, 3 high) lies on its side after a turn: wider than tall. */
+async function expectTurned(page: Page): Promise<void> {
+  const box = (await bricks(page).first().boundingBox())!;
+  expect(box.width).toBeGreaterThan(box.height);
+}
+
 test('draw an L, save it, drag it on, turn it, reload and see it again', async ({ page }) => {
   await toBuilderCamp(page);
   await openBuilder(page, 'PAST');
@@ -71,14 +77,14 @@ test('draw an L, save it, drag it on, turn it, reload and see it again', async (
   await expect(bricks(page)).toHaveCount(1);
   await expect(bricks(page).first()).toHaveAttribute('data-piece', /^own:P:/);
   await tid(page, 'bb-turn').click();
-  await expect(bricks(page).first()).toHaveAttribute('transform', /rotate\(90\)/);
+  await expectTurned(page);
 
   await tid(page, 'bb-done').click();
   await page.reload();
   await expect(tid(page, 'camp-start')).toBeVisible({ timeout: 10_000 });
   await openBuilder(page, 'PAST');
   await expect(bricks(page)).toHaveCount(1);
-  await expect(bricks(page).first()).toHaveAttribute('transform', /rotate\(90\)/);
+  await expectTurned(page);
   await expect(tid(page, 'bb-shape-1')).toBeVisible();
 });
 

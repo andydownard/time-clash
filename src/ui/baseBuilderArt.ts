@@ -15,70 +15,19 @@ import {
 import { materialOf, parseCustomId, type Cell, type Material } from '../game/customShapes';
 import type { Team } from '../game/types';
 import { svgFromString } from './svg';
+import { CELL, INK, MATERIAL_ART, PLOT_H, PLOT_W, STEP, materialSquare } from './materialArt';
+import { cellsOfPiece, plotJoins, plotTiles, type Joins } from './materialJoin';
+import { joinedBrickMarkup, joinedPlotMarkup, joinedShapeMarkup } from './materialTiles';
 
-/** One grid cell in picture units. The plot picture is cols * CELL wide. */
-export const CELL = 40;
-export const PLOT_W = B.cols * CELL;
-export const PLOT_H = B.rows * CELL;
-/** Steps (free grid) to picture units. */
-export const STEP = CELL / B.freeSteps;
+export { CELL, MATERIAL_ART, PLOT_H, PLOT_W, STEP, materialSquare };
 
-const INK = '#12102b';
 const O = `stroke="${INK}" stroke-width="4"`;
 const SHINE = (w: number): string =>
   `<path d="M6,10 H${Math.max(10, Math.min(w - 10, 30))}" stroke="#fff" stroke-opacity=".45" stroke-width="3" stroke-linecap="round" fill="none"/>`;
 
-/**
- * Art colors for the materials of a shape of your own (illustration shades, like the bricks
- * above). Stone, wood, panel and metal reuse the brick colors. Glass and jelly are new.
- */
-export const MATERIAL_ART: Record<Material, Readonly<Record<string, string>>> = {
-  stone: { fill: '#9aa8bd', line: INK },
-  wood: { fill: '#a8672b', line: '#6e3f17' },
-  panel: { fill: '#2a3a66', inner: '#1d2744', glow: '#2ee6ff' },
-  metal: { fill: '#b9c4d0', rivet: '#5d6c8c' },
-  glass: { fill: '#bfeaff', shine: '#ffffff' },
-  jelly: { fill: '#ff5fb0', bubble: '#ffffff' },
-};
-
-/**
- * One square of a material at (x, y), CELL wide. Each material has its own pattern as well as
- * its own color, so the look never rests on color alone: stone has a crack, wood has grain and
- * nails, a panel has a glowing inset, metal has four rivets, glass has slanted shine lines and
- * is see-through, jelly is rounded with bubbles.
- */
-export function materialSquare(mat: Material, x: number, y: number): string {
-  const a = MATERIAL_ART[mat];
-  const C = CELL;
-  switch (mat) {
-    case 'stone':
-      return `<rect x="${x}" y="${y}" width="${C}" height="${C}" rx="4" fill="${a.fill}" ${O}/><path d="M${x + 6},${y + 10} H${x + 24}" stroke="#fff" stroke-opacity=".45" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M${x + 26},${y + C - 5} l5,-8 l-3,-6" stroke="${a.line}" stroke-opacity=".5" stroke-width="2" fill="none"/>`;
-    case 'wood':
-      return `<rect x="${x}" y="${y}" width="${C}" height="${C}" rx="3" fill="${a.fill}" ${O}/><path d="M${x + 6},${y + 14} H${x + C - 6} M${x + 6},${y + 26} H${x + C - 6}" stroke="${a.line}" stroke-width="2.5" fill="none" stroke-dasharray="10 5"/><circle cx="${x + 8}" cy="${y + 8}" r="2" fill="${INK}"/><circle cx="${x + C - 8}" cy="${y + C - 8}" r="2" fill="${INK}"/>`;
-    case 'panel':
-      return `<rect x="${x}" y="${y}" width="${C}" height="${C}" rx="6" fill="${a.fill}" ${O}/><rect x="${x + 6}" y="${y + 6}" width="${C - 12}" height="${C - 12}" rx="3" fill="${a.inner}" stroke="${a.glow}" stroke-width="2"/>`;
-    case 'metal':
-      return `<rect x="${x}" y="${y}" width="${C}" height="${C}" rx="2" fill="${a.fill}" ${O}/>${[
-        [9, 9],
-        [C - 9, 9],
-        [9, C - 9],
-        [C - 9, C - 9],
-      ]
-        .map(
-          ([cx, cy]) =>
-            `<circle cx="${x + cx!}" cy="${y + cy!}" r="3.5" fill="${a.rivet}" stroke="${INK}" stroke-width="1.5"/>`,
-        )
-        .join('')}`;
-    case 'glass':
-      return `<rect x="${x}" y="${y}" width="${C}" height="${C}" rx="3" fill="${a.fill}" fill-opacity=".55" ${O}/><path d="M${x + 8},${y + 22} L${x + 22},${y + 8} M${x + 14},${y + 32} L${x + 32},${y + 14}" stroke="${a.shine}" stroke-width="3.5" stroke-linecap="round" opacity=".9"/>`;
-    case 'jelly':
-      return `<rect x="${x + 1}" y="${y + 1}" width="${C - 2}" height="${C - 2}" rx="13" fill="${a.fill}" ${O}/><circle cx="${x + 13}" cy="${y + 14}" r="4" fill="${a.bubble}" fill-opacity=".7"/><circle cx="${x + 25}" cy="${y + 24}" r="2.5" fill="${a.bubble}" fill-opacity=".7"/><circle cx="${x + 15}" cy="${y + 28}" r="1.8" fill="${a.bubble}" fill-opacity=".7"/>`;
-  }
-}
-
 /** The squares of a shape of your own, drawn upright, each in its own material. */
 function ownArt(team: Team, cells: readonly Cell[]): string {
-  return cells.map((q) => materialSquare(materialOf(team, q), q[0] * CELL, q[1] * CELL)).join('');
+  return joinedShapeMarkup(cells.map((q) => ({ c: q[0], r: q[1], mat: materialOf(team, q) })));
 }
 
 /** A small picture of one square of a material (the picker, a filled pad square). */
@@ -146,11 +95,18 @@ function placeTransform(def: PieceDef, rot: number, left: number, top: number): 
   return `translate(${cx} ${cy}) rotate(${rot}) translate(${(-def.w * CELL) / 2} ${(-def.h * CELL) / 2})`;
 }
 
-/** One placed brick, as markup. `index` lets a tap find it. */
-export function placedMarkup(p: Placed, index: number, label: string): string {
+/**
+ * One placed brick, as markup. `index` lets a tap find it. With `joins` (from `plotJoins`) the
+ * brick is drawn as squares that join their same-material neighbours, upright on the plot.
+ */
+export function placedMarkup(p: Placed, index: number, label: string, joins?: Joins[] | null): string {
   const def = pieceById(p.piece);
   const rect = rectOf(p);
   if (!def || !rect) return '';
+  if (joins) {
+    const body = joinedPlotMarkup(plotTiles([p])[0] ?? [], joins, STEP);
+    return `<g class="tc-bb-piece" data-index="${index}" data-piece="${def.id}" tabindex="0" role="button" aria-label="${label}">${body}</g>`;
+  }
   const tf = placeTransform(def, p.rot, rect.l * STEP, rect.t * STEP);
   return `<g class="tc-bb-piece" data-index="${index}" data-piece="${def.id}" tabindex="0" role="button" aria-label="${label}" transform="${tf}">${art(def.id, def.w * CELL, def.h * CELL)}</g>`;
 }
@@ -159,6 +115,10 @@ export function placedMarkup(p: Placed, index: number, label: string): string {
 export function staticMarkup(id: string, rot: number, left: number, top: number): string {
   const def = pieceById(id);
   if (!def) return '';
+  // A shape of your own is drawn upright in its turned frame, so its squares join cleanly.
+  if (def.cells) {
+    return `<g transform="translate(${left} ${top})">${joinedShapeMarkup(cellsOfPiece(id, rot))}</g>`;
+  }
   return `<g transform="${placeTransform(def, rot, left, top)}">${art(def.id, def.w * CELL, def.h * CELL)}</g>`;
 }
 
@@ -167,13 +127,20 @@ export function staticMarkup(id: string, rot: number, left: number, top: number)
  * The battle draws built bases with it, so a brick looks the same as in the builder (materials,
  * patterns and outlines). Pure text: only fixed piece ids go in. Empty for an unknown piece.
  */
-export function brickSvg(id: string, rot: number, width: number, height: number): string {
+export function brickSvg(
+  id: string,
+  rot: number,
+  width: number,
+  height: number,
+  /** Joins with same-material neighbours, one per square (see `cellsOfPiece`). */
+  joins?: readonly Joins[],
+): string {
   const def = pieceById(id);
   if (!def) return '';
   const f = footprint(def, rot as 0 | 90 | 180 | 270);
   const W = f.w * CELL;
   const H = f.h * CELL;
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${Math.max(1, Math.round(width))}" height="${Math.max(1, Math.round(height))}" preserveAspectRatio="none">${staticMarkup(id, rot, 0, 0)}</svg>`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${Math.max(1, Math.round(width))}" height="${Math.max(1, Math.round(height))}" preserveAspectRatio="none">${joins ? joinedBrickMarkup(cellsOfPiece(id, rot), joins) : staticMarkup(id, rot, 0, 0)}</svg>`;
 }
 
 /** A mounted weapon on its round pad, as a whole SVG document `size` px square (battle). */
@@ -265,9 +232,12 @@ export function nodesFromMarkup(doc: Document, markup: string): Element[] {
 export function baseThumb(doc: Document, team: Team, pieces: readonly Placed[]): SVGElement {
   const sky = team === 'PAST' ? '#6a4fb0' : '#1d2744';
   const ground = team === 'PAST' ? '#3b8a5c' : '#5d6c8c';
+  const joins = plotJoins(pieces);
   const bricks = pieces
-    .map((p) => {
+    .map((p, i) => {
       const rect = rectOf(p);
+      const j = joins[i];
+      if (j) return joinedPlotMarkup(plotTiles([p])[0] ?? [], j, STEP);
       return rect ? staticMarkup(p.piece, p.rot, rect.l * STEP, rect.t * STEP) : '';
     })
     .join('');

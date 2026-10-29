@@ -87,6 +87,8 @@ import {
   staticMarkup,
   trayIcon,
 } from './baseBuilderArt';
+import { plotJoins } from './materialJoin';
+import { joinedShapeMarkup } from './materialTiles';
 import { isBlockedName } from './nameBlocklist';
 import { radioGroup } from './selector';
 import { svgFromString } from './svg';
@@ -456,10 +458,17 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
         );
       }
     }
+    // The filled squares are drawn together in one picture under the buttons, so squares of one
+    // material join with no seam (the buttons stay the tap targets and are see-through).
+    const padArt = svgFromString(
+      doc,
+      `<svg class="tc-bb-pad-art" viewBox="0 0 ${B.shapePad * CELL} ${B.shapePad * CELL}" preserveAspectRatio="none" aria-hidden="true"></svg>`,
+    );
     const padGrid = h(
       doc,
       'div',
       { class: 'tc-bb-pad-grid', role: 'group', 'aria-label': SHAPE_COPY.grid },
+      padArt,
       ...padSquares,
     );
     padGrid.style.setProperty('--bb-pad-n', String(PAD));
@@ -629,10 +638,11 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
 
     // ---------- Drawing ----------
     function renderPlot(): void {
+      const joins = plotJoins(build.pieces);
       const nodes = build.pieces.flatMap((p, i) => {
         const def = pieceById(p.piece);
         const label = def ? BUILDER_COPY.pieceLabel(nameOf(def.id), p.x, p.y) : '';
-        return nodesFromMarkup(doc, placedMarkup(p, i, label));
+        return nodesFromMarkup(doc, placedMarkup(p, i, label, joins[i]));
       });
       piecesLayer.replaceChildren(...nodes);
       for (const n of nodes) {
@@ -1912,10 +1922,20 @@ export function showBaseBuilder(ctx: UiCtx, options: BuilderOptions): Promise<Te
         if ((sq.getAttribute('data-mat') ?? null) !== mat) {
           if (mat) sq.setAttribute('data-mat', mat);
           else sq.removeAttribute('data-mat');
-          sq.replaceChildren(...(mat ? [materialIcon(doc, mat, 54, 'tc-bb-sq-art')] : []));
         }
         sq.tabIndex = r === padAt.r && c === padAt.c ? 0 : -1;
       }
+      padArt.replaceChildren(
+        ...nodesFromMarkup(
+          doc,
+          joinedShapeMarkup(
+            [...padOn].map(([k, mat]) => {
+              const [c, r] = k.split(',').map(Number);
+              return { c: c!, r: r!, mat };
+            }),
+          ),
+        ),
+      );
       const cells = padCells();
       padPreview.replaceChildren(
         ...(cells.length ? [shapeIcon(doc, team, forTeam(team, cells), 72)] : []),
