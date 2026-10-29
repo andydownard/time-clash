@@ -80,11 +80,19 @@ export const plotFrame = (team: Team): PlotFrame => ({
 
 const padHalf = BB.spots.padSteps;
 
+/** The room a built base may fill: the old base footprint, widened by `fitWiden` (half a side). */
+export const fitRoom = (box: Rect): Rect => ({
+  x: box.x - BIB.fitWiden / 2,
+  y: box.y,
+  w: box.w + BIB.fitWiden,
+  h: box.h,
+});
+
 /**
  * Base health mode: the bricks and pads of a base, fitted inside the old base footprint `box`
- * (the drawn castle's place), so the aim, the fighters, the field and the HUD never move. It is
- * centered, stands on the box's bottom edge, keeps its shape, and is never drawn bigger than
- * BASE_IN_BATTLE.fitMaxScale px a step.
+ * (the drawn castle's place, widened by BASE_IN_BATTLE.fitWiden px), so the aim, the fighters,
+ * the field and the HUD never move. It is centered, stands on the box's bottom edge, keeps its
+ * shape, and is never drawn bigger than BASE_IN_BATTLE.fitMaxScale px a step.
  */
 export function fitFrame(team: Team, base: ChosenBase, box: Rect): PlotFrame {
   let l = Infinity;
@@ -111,9 +119,10 @@ export function fitFrame(team: Team, base: ChosenBase, box: Rect): PlotFrame {
   t = Math.max(0, Math.min(t, PLOT_STEPS.h - 1));
   const w = r - l;
   const h = PLOT_STEPS.h - t;
-  const scale = Math.min(box.w / w, box.h / h, BIB.fitMaxScale);
+  const room = fitRoom(box);
+  const scale = Math.min(room.w / w, room.h / h, BIB.fitMaxScale);
   return {
-    left: box.x + (box.w - w * scale) / 2,
+    left: room.x + (room.w - w * scale) / 2,
     bottom: box.y + box.h,
     scale,
     x0: l,

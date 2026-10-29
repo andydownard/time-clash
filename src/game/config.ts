@@ -856,11 +856,15 @@ export const BASE_IN_BATTLE = {
   /** The Computer player picks a mounted weapon this often when it has one that can fire. */
   botMountChance: 0.5,
   /**
-   * Base health mode (character health off): the base is drawn inside the old base footprint, so
-   * the aim, the fighters, the field and the HUD never move. It is never drawn bigger than this
-   * many px a build step (a cell is 8 steps, so 16 px).
+   * Base health mode (character health off): the base is drawn in the old base footprint, widened
+   * by `fitWiden` px (half on each side), so the aim, the fighters, the field and the HUD never
+   * move. It is never drawn bigger than `fitMaxScale` px a build step (a cell is 8 steps, so
+   * 32 px). It was 2 px a step inside the bare footprint, and a typical base looked tiny next to
+   * the fighters (owner report, 2026-10-28). The footprint's height is not widened (it is the
+   * room under the cards), and a base overhangs its rock or deck by 40 px a side at most.
    */
-  fitMaxScale: 2,
+  fitMaxScale: 4,
+  fitWiden: 80,
   /**
    * Base health mode: how much base health a built base starts with (docs/GAME_SPEC.md "How a
    * built base plays"). The saved brick hit points times `perHp`, held between `band.min` and

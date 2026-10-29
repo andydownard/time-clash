@@ -129,6 +129,15 @@ for (const [past, future] of [
     const meter = tid(page, 'base-hp-FUTURE').getByRole('meter');
     await expect(meter).toHaveAttribute('aria-valuetext', new RegExp(`^${m.baseHp.FUTURE} / `));
     await expectBricksClear(page, `${past}/${future}`);
+    // A built base is drawn big enough to read (owner report, 2026-10-28): a typical base is
+    // about 190 to 240 px wide in world px, and a huge one is 240 px wide (the box is 160 plus 80).
+    const want = { tiny: 72, typical: 190, huge: 240 } as const;
+    for (const layer of await bricksDrawn(page)) {
+      const size = layer.team === 'PAST' ? past : future;
+      const left = Math.min(...layer.boxes.map((b) => b.x));
+      const right = Math.max(...layer.boxes.map((b) => b.x + b.w));
+      expect(right - left, `${layer.team} ${size} width`).toBeGreaterThanOrEqual(want[size] - 1);
+    }
     await page.screenshot({
       path: info.outputPath(`built-${past}-${future}-${info.project.name}.png`),
     });

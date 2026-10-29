@@ -6,6 +6,8 @@ import { footprint, pieceById } from '../../game/baseBuilder';
 import { BASE_BUILDER } from '../../game/config';
 import type { BrickId, BrickView, Rect, SpotView, Team } from '../../game/types';
 import { brickSvg, weaponPadSvg } from '../../ui/baseBuilderArt';
+import type { Joins } from '../../ui/materialJoin';
+import { joinsKeyOf } from './baseJoin';
 import { ART, NO_TINT, PALETTE, TEAM_COLOR } from './visual';
 
 /** Bricks are drawn this many times sharper than their world size, so they stay crisp. */
@@ -38,22 +40,28 @@ export type PadSprite = {
   brick: BrickId | null;
 };
 
-const textureKey = (piece: string, rot: number, w: number, h: number): string =>
-  `tc-brick|${piece}|${rot}|${w}x${h}`;
+const textureKey = (piece: string, rot: number, w: number, h: number, joins = ''): string =>
+  `tc-brick|${piece}|${rot}|${w}x${h}${joins ? `|${joins}` : ''}`;
 
 /** What to draw for one team's bricks, in the order they were built. */
-export function brickSprites(team: Team, bricks: Record<BrickId, BrickView>): BrickSprite[] {
+export function brickSprites(
+  team: Team,
+  bricks: Record<BrickId, BrickView>,
+  /** Joins with same-material neighbours (baseJoin.ts). A brick not in the map is drawn alone. */
+  joins?: ReadonlyMap<BrickId, readonly Joins[]>,
+): BrickSprite[] {
   const out: BrickSprite[] = [];
   for (const [id, b] of Object.entries(bricks) as Array<[BrickId, BrickView]>) {
     if (b.team !== team) continue;
     const rot = b.rot ?? 0;
     const pw = Math.max(1, Math.round(b.box.w * RASTER));
     const ph = Math.max(1, Math.round(b.box.h * RASTER));
-    const svg = brickSvg(b.piece, rot, pw, ph);
+    const j = joins?.get(id);
+    const svg = brickSvg(b.piece, rot, pw, ph, j);
     if (!svg) continue;
     out.push({
       id,
-      key: textureKey(b.piece, rot, pw, ph),
+      key: textureKey(b.piece, rot, pw, ph, joinsKeyOf(j)),
       svg,
       x: b.box.x + b.box.w / 2,
       y: b.box.y + b.box.h / 2,
