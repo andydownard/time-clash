@@ -5,7 +5,14 @@ import { describe, expect, it } from 'vitest';
 import { SPOT_WEAPONS } from '../../src/game/baseBuilder';
 import { chooseShotWith } from '../../src/game/bot';
 import { playBotMatch } from '../../src/game/botPlay';
-import { createBuilt, fitFrame, hitWall, freshEvents, mountScale } from '../../src/game/builtBase';
+import {
+  createBuilt,
+  fitFrame,
+  fitLayout,
+  hitWall,
+  freshEvents,
+  mountScale,
+} from '../../src/game/builtBase';
 import {
   BASE_IN_BATTLE,
   BONUS,
@@ -49,7 +56,10 @@ const mk = (bases: MatchOptions['bases'], over: Partial<MatchOptions> = {}): Mat
     ...over,
   });
 
-const FLAT = { layout: PHASE1_LAYOUT, flatHp: { PAST: 400, FUTURE: 400 } };
+const FLAT = {
+  layout: fitLayout(PHASE1_LAYOUT, { PAST: true, FUTURE: true }),
+  flatHp: { PAST: 400, FUTURE: 400 },
+};
 
 /** A weak weapon of your own: Power 1, a short (direct) style. */
 const WEAK: CustomWeapon = {
@@ -410,7 +420,7 @@ describe('pads take hits and fall with their brick', () => {
     const built = createBuilt({ PAST: PAST_ARMED }, FLAT);
     const pad = built.PAST.mounts[0]!;
     // A pad is 10 steps across, at the scale the base is fitted at (the pads widen it a little).
-    const step = fitFrame('PAST', PAST_ARMED, PHASE1_LAYOUT.bases.PAST).scale;
+    const step = fitFrame('PAST', PAST_ARMED, FLAT.layout.bases.PAST).scale;
     expect(step).toBeGreaterThan(3);
     expect(pad.box.w).toBeCloseTo(10 * step, 6);
     expect(pad.box.h).toBeCloseTo(10 * step, 6);
@@ -472,7 +482,13 @@ describe('pads take hits and fall with their brick', () => {
 });
 
 describe('the Shield generator (base health)', () => {
-  const make = () => mk(GUARDED);
+  // The generator stands on a foundation brick (spot 0), so a hit on the top of the base does not
+  // bring it down between the two turns.
+  const make = () =>
+    mk({
+      PAST: PAST_ARMED,
+      FUTURE: armed(TYPICAL('FUTURE'), ['shieldGen', 'laser', 'turret', null]),
+    });
   const guarded = (out: BlastOutcome) => (out.built?.guardBlocked.length ?? 0) > 0;
 
   it('blocks the first go that would hurt, once per enemy turn, and saves the dodge', () => {
@@ -486,7 +502,7 @@ describe('the Shield generator (base health)', () => {
     c.setAim(aim);
     c.fire();
     const first = c.shotLanded();
-    expect(first.built?.guardBlocked).toEqual([{ team: 'FUTURE', mount: 'mount:1' }]);
+    expect(first.built?.guardBlocked).toEqual([{ team: 'FUTURE', mount: 'mount:0' }]);
     expect(first.damage).toBe(0);
     expect(first.built?.brickHits).toEqual([]);
     c.setAim(aim);

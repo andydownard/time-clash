@@ -2,13 +2,14 @@
 // line, the Squads first-go hint and Chrono's caption bar all show here, one at a time.
 // It is a band of sky under the wind sign, between Balloon A and the Helicopter, and above every
 // fighter's letter tag. So it never covers the team cards, the control bar, a fighter or a base
-// (a built base's bricks are fitted inside the base's box). tests/ui/messageLane.test.ts checks
+// (a built base's bricks are fitted inside the room of its place, BUILT_PLACES, which stops short
+// of the lane). tests/ui/messageLane.test.ts checks
 // that on every field, and e2e/layout.spec.ts checks it on screen.
 import { BATTLE_BAND, WORLD } from '../game/config';
 import type { Rect } from '../game/types';
 
 /** The lane in world px (the same units as the battlefield). */
-export const MESSAGE_LANE: Readonly<Rect> = { x: 344, y: 252, w: 592, h: 176 };
+export const MESSAGE_LANE: Readonly<Rect> = { x: 364, y: 252, w: 552, h: 176 };
 
 /** A box on screen, in CSS px. */
 export type ScreenBox = { left: number; top: number; width: number; height: number };

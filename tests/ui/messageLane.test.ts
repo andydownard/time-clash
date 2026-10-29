@@ -7,7 +7,8 @@ import { buildLayout } from '../../src/game/battlefield';
 import { BATTLE_BAND, BIOME_IDS, FORT_IDS, SPOT_IDS, TERRAIN, WORLD } from '../../src/game/config';
 import { dasherBox, dasherHomePoint } from '../../src/game/crew';
 import type { FortIdValue, Rect, SpotIdValue } from '../../src/game/types';
-import { RIDER_IDS, riderDrop } from '../../src/game/riders';
+import { fitLayout } from '../../src/game/builtBase';
+import { RIDER_IDS, riderDrop, riderFeet } from '../../src/game/riders';
 import { unitById } from '../../src/game/units';
 import { fighterKeepOut } from '../../src/scenes/battle/angleLabel';
 import { characterSpot } from '../../src/scenes/battle/geometry';
@@ -77,6 +78,40 @@ describe('the message lane on the field', () => {
         expect(overlaps(MESSAGE_LANE, l.bases[team]), `${JSON.stringify(plan)} ${team}`).toBe(
           false,
         );
+      }
+    }
+  });
+
+  it('clears the room of a built base, Chrono and the helpers, and a fighter standing as high as the room, on every field', () => {
+    // Built bases are drawn big (owner report, 2026-10-28). The base fills the room of its place
+    // (BUILT_PLACES), and a fighter stands on the top brick, at most as high as the room's top.
+    for (const plan of FIELDS) {
+      const l = fitLayout(buildLayout(plan), { PAST: true, FUTURE: true });
+      const id = JSON.stringify(plan);
+      const drops: Record<string, number> = {};
+      for (const team of ['PAST', 'FUTURE'] as const) {
+        const room = l.bases[team];
+        expect(overlaps(MESSAGE_LANE, room), `${id} ${team} room`).toBe(false);
+        expect(overlaps(MESSAGE_LANE, chronoBox(characterSpot(team, l))), `${id} Chrono`).toBe(
+          false,
+        );
+        expect(dasherHomePoint(team, l).y).toBeGreaterThan(MESSAGE_LANE.y + MESSAGE_LANE.h);
+        for (const rider of RIDER_IDS) {
+          if (unitById(rider)!.team !== team) continue;
+          const feet = riderFeet(team, rider, l)!;
+          const top = {
+            team,
+            box: { x: feet.left - 5, y: room.y, w: feet.right - feet.left + 10, h: 50 },
+            alive: true,
+          };
+          drops[rider] = riderDrop(team, rider, l, [top]);
+        }
+      }
+      for (const spot of ['g0', 'g1', 'g2', 'g3', 'g4']) {
+        expect(overlaps(MESSAGE_LANE, dasherBox(spot, l)), `${id} ${spot}`).toBe(false);
+      }
+      for (const k of fighterKeepOut(l, drops)) {
+        expect(overlaps(MESSAGE_LANE, k), `${id} ${JSON.stringify(k)}`).toBe(false);
       }
     }
   });

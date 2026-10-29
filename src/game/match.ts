@@ -39,6 +39,7 @@ import {
 import {
   builtHealth,
   createBuilt,
+  fitLayout,
   cutAtWalls,
   flightLayout,
   freshEvents,
@@ -146,7 +147,7 @@ const ownedAmmo = (list: readonly AmmoId[] | undefined): AmmoId[] => {
 
 export const createMatch: CreateMatch = (options: MatchOptions): MatchController => {
   const { players, seed } = options;
-  const layout = options.layout ?? PHASE1_LAYOUT;
+  const fieldLayout = options.layout ?? PHASE1_LAYOUT;
   const firstTeam = options.firstTeam ?? 'PAST';
   const characterHealth = options.characterHealth ?? CHARACTER_HEALTH.enabled;
   const effects = options.effects ?? DEFAULT_EFFECTS;
@@ -165,6 +166,11 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       if (standsOnGround(options.bases?.[t])) brickBases[t] = options.bases?.[t] as ChosenBase;
     }
   }
+  // A built base stands in the room of its place, on a footing as wide as it (BUILT_PLACES).
+  const layout = fitLayout(fieldLayout, {
+    PAST: !!brickBases.PAST,
+    FUTURE: !!brickBases.FUTURE,
+  });
   const built = !baseInBattle
     ? null
     : brickMode

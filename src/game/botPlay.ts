@@ -78,9 +78,8 @@ export const playBotMatch = (opts: SimOptions): SimResult => {
     // A walk-out leaves the helper picked. Firing needs the launcher, as for a child.
     const launcher = helperId(team, 'launcher');
     if (state.squads && state.squads.picked[team] !== launcher) match.selectHelper(launcher);
-    const shot = chooseShotWith(state, team, opts.profiles[team], rng, {
-      ...(opts.layout ? { layout: opts.layout } : {}),
-    });
+    // The match's own field: a built base moves the field's shapes (fitLayout), as in the game.
+    const shot = chooseShotWith(state, team, opts.profiles[team], rng, { layout: match.layout });
     match.selectUnit(shot.mount ?? shot.unit);
     match.setAim(shot);
     match.fire();

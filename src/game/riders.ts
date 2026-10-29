@@ -3,8 +3,9 @@
 // A fighter that stood on the old castle or secret base (`ridesBase`: the Archer, the Cannon
 // Knight, the Tank and the Laser Gun Robot) stands on the top brick of a built base instead of in
 // the air over a small one (owner, 2026-10-25). It stands on the highest standing brick under its
-// feet; with no brick there it stands on the ground under the base. It never stands higher than on
-// the old castle. When that brick falls, the fighter lands on whatever is below. Nobody is hurt.
+// feet; with no brick there it stands on the ground under the base. A base taller than the old
+// castle lifts it (at most BASE_RIDERS.maxRise higher than the old castle; owner, 2026-10-28:
+// the bases are drawn big). When that brick falls, the fighter lands on whatever is below. Nobody is hurt.
 // Only the height changes, never the x. The shot, the Computer player, the preview and the angle
 // guide all read `riderOrigin`, so the shell leaves from where the fighter is drawn.
 import { BASE_RIDERS, TEAM_FACING } from './config';
@@ -45,8 +46,10 @@ const under = (box: Rect, left: number, right: number): boolean =>
   box.x < right && box.x + box.w > left;
 
 /**
- * How far below its old spot a rider stands, in world px (0 or more). `bricks` null means the team
- * has no built base in play: nothing moves. Any order of bricks gives the same answer.
+ * How far below its old spot a rider stands, in world px. Negative means it stands higher than on
+ * the old castle (on the top of a tall base), by at most `BASE_RIDERS.maxRise`. `bricks` null
+ * means the team has no built base in play: nothing moves. Any order of bricks gives the same
+ * answer.
  */
 export function riderDrop(
   team: Team,
@@ -63,7 +66,7 @@ export function riderDrop(
     if (b.team !== team || !b.alive || !under(b.box, feet.left, feet.right)) continue;
     surface = Math.min(surface, b.box.y);
   }
-  return Math.max(0, surface - feet.y);
+  return Math.max(-BASE_RIDERS.maxRise, surface - feet.y);
 }
 
 /** Where this fighter's shot starts, standing on its built base. Same as firingOrigin without one. */
@@ -75,7 +78,7 @@ export function riderOrigin(
 ): Vec2 {
   const o = firingOrigin(team, unitId, layout);
   const drop = riderDrop(team, unitId, layout, bricks);
-  return drop > 0 ? { x: o.x, y: o.y + drop } : o;
+  return drop !== 0 ? { x: o.x, y: o.y + drop } : o;
 }
 
 type RiderSnapshot = Pick<Match, 'characterHealth' | 'builtBase' | 'bricks'>;
@@ -98,7 +101,7 @@ export function riderDrops(
   for (const id of RIDER_IDS) {
     const team = (unitById(id) as NonNullable<ReturnType<typeof unitById>>).team;
     const d = riderDrop(team, id, layout, riderBricks(snap, team));
-    if (d > 0) out[id] = d;
+    if (d !== 0) out[id] = d;
   }
   return out;
 }

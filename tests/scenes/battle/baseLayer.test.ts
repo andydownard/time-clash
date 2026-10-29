@@ -1,7 +1,7 @@
 // The pure plan behind a built base on the battlefield (src/scenes/battle/basePlan.ts).
 import { describe, expect, it } from 'vitest';
 import { BASE_IN_BATTLE, PHASE1_LAYOUT, WORLD } from '../../../src/game/config';
-import { fitRoom } from '../../../src/game/builtBase';
+import { fitLayout } from '../../../src/game/builtBase';
 import { createMatch } from '../../../src/game/match';
 import type { Match, Players, Team } from '../../../src/game/types';
 import {
@@ -58,11 +58,11 @@ describe('brick pictures come from the builder', () => {
       ['typical', TYPICAL(team)],
       ['huge', HUGE(team)],
     ] as const) {
-      it(`${team} ${name}: one sprite a brick, centered on its box, inside the widened base footprint`, () => {
+      it(`${team} ${name}: one sprite a brick, centered on its box, inside the room of its place`, () => {
         const s = snapWith(team, base);
         const sprites = brickSprites(team, s.bricks!);
         expect(sprites).toHaveLength(base.pieces.length);
-        const box = fitRoom(PHASE1_LAYOUT.bases[team]);
+        const box = fitLayout(PHASE1_LAYOUT, { PAST: true, FUTURE: true }).bases[team];
         for (const sp of sprites) {
           expect(sp.flip).toBe(team === 'FUTURE');
           expect(sp.x - sp.w / 2).toBeGreaterThanOrEqual(box.x - 1e-6);

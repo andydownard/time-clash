@@ -2,7 +2,18 @@
 // with hit points, falling and support, wall hits for shells, and mounted weapons. Pure rules,
 // no Phaser. Nobody is hurt: bricks puff and tumble. The match (match.ts) owns the state and
 // calls these functions. Numbers are in BASE_IN_BATTLE (config.ts). See docs/GAME_SPEC.md.
-import { BASE_BUILDER as BB, BASE_IN_BATTLE as BIB, BONUS, TEAM_FACING, WORLD } from './config';
+import {
+  BASE_BUILDER as BB,
+  BASE_IN_BATTLE as BIB,
+  BONUS,
+  BUILT_PLACES,
+  SPOTS,
+  TEAM_FACING,
+  WORLD,
+  type BuiltPlace,
+} from './config';
+import { isFortId } from './forts';
+import { isSpotId } from './spots';
 import {
   PLOT_STEPS,
   chosenBase,
@@ -80,19 +91,44 @@ export const plotFrame = (team: Team): PlotFrame => ({
 
 const padHalf = BB.spots.padSteps;
 
-/** The room a built base may fill: the old base footprint, widened by `fitWiden` (half a side). */
-export const fitRoom = (box: Rect): Rect => ({
-  x: box.x - BIB.fitWiden / 2,
-  y: box.y,
-  w: box.w + BIB.fitWiden,
-  h: box.h,
-});
+/** Where a team's built base stands: its castle place or Austin spot (the Phase 1 base if none). */
+export function builtPlaceOf(team: Team, layout: Pick<BattleLayout, 'spot' | 'fort'>): BuiltPlace {
+  if (team === 'PAST') return BUILT_PLACES[isFortId(layout.fort) ? layout.fort : 'pastGround'];
+  return BUILT_PLACES[isSpotId(layout.spot) ? layout.spot : 'futureGround'];
+}
 
 /**
- * Base health mode: the bricks and pads of a base, fitted inside the old base footprint `box`
- * (the drawn castle's place, widened by BASE_IN_BATTLE.fitWiden px), so the aim, the fighters,
- * the field and the HUD never move. It is centered, stands on the box's bottom edge, keeps its
- * shape, and is never drawn bigger than BASE_IN_BATTLE.fitMaxScale px a step.
+ * Base health mode: the field with each built team's place made ready for its base. The base's
+ * room becomes the team's box in `bases`, and the place's own shape (the rock, the tower, the
+ * deck, the truck, the drawbridge) is replaced by a footing as wide as the base. A team with no
+ * built base keeps its place exactly as it was. No built team gives the same object back. The new
+ * shape takes the old one's index in `terrain.obstacles`, so its picture (`obstacleKinds`) stays
+ * right.
+ */
+export function fitLayout(layout: BattleLayout, builtTeams: Record<Team, boolean>): BattleLayout {
+  if (!builtTeams.PAST && !builtTeams.FUTURE) return layout;
+  const obstacles = [...layout.terrain.obstacles];
+  const spot = isSpotId(layout.spot) ? layout.spot : null;
+  const spotCount = spot ? SPOTS[spot].obstacles.length : 0;
+  const at: Record<Team, number> = {
+    FUTURE: spot ? 1 : -1,
+    PAST: isFortId(layout.fort) ? 1 + spotCount : -1,
+  };
+  const bases = { ...layout.bases };
+  for (const team of TEAMS) {
+    if (!builtTeams[team]) continue;
+    const place = builtPlaceOf(team, layout);
+    bases[team] = { ...place.room };
+    if (at[team] >= 0 && place.footing) obstacles[at[team]] = place.footing.map((p) => ({ ...p }));
+  }
+  return { ...layout, terrain: { ...layout.terrain, obstacles }, bases };
+}
+
+/**
+ * Base health mode: the bricks and pads of a base, fitted inside the room `box` of its place
+ * (`BUILT_PLACES`; `fitLayout` puts it in `layout.bases`). It is centered, stands on the box's
+ * bottom edge, keeps its shape, and is never drawn bigger than BASE_IN_BATTLE.fitMaxScale px a
+ * step.
  */
 export function fitFrame(team: Team, base: ChosenBase, box: Rect): PlotFrame {
   let l = Infinity;
@@ -106,6 +142,8 @@ export function fitFrame(team: Team, base: ChosenBase, box: Rect): PlotFrame {
     t = Math.min(t, rect.t);
   }
   for (const sp of base.spots) {
+    // An empty pad is not drawn, so it does not make the base smaller.
+    if (!sp.weapon) continue;
     l = Math.min(l, sp.x - padHalf);
     r = Math.max(r, sp.x + padHalf);
     t = Math.min(t, sp.y - padHalf);
@@ -119,10 +157,9 @@ export function fitFrame(team: Team, base: ChosenBase, box: Rect): PlotFrame {
   t = Math.max(0, Math.min(t, PLOT_STEPS.h - 1));
   const w = r - l;
   const h = PLOT_STEPS.h - t;
-  const room = fitRoom(box);
-  const scale = Math.min(room.w / w, room.h / h, BIB.fitMaxScale);
+  const scale = Math.min(box.w / w, box.h / h, BIB.fitMaxScale);
   return {
-    left: room.x + (room.w - w * scale) / 2,
+    left: box.x + (box.w - w * scale) / 2,
     bottom: box.y + box.h,
     scale,
     x0: l,

@@ -500,6 +500,12 @@ export const BASE_RIDERS = {
   } as Partial<Record<UnitRole, { l: number; r: number; b: number }>>,
   /** Share of the drawing's width, in the middle, that the feet stand on. */
   footShare: 0.5,
+  /**
+   * A big built base is taller than the old castle, so a rider may stand this much higher than on
+   * the old castle (its feet on the top brick). It was never higher before (owner report,
+   * 2026-10-28: the bases were drawn bigger). The rooms in BUILT_PLACES are within it.
+   */
+  maxRise: 180,
 } as const;
 
 // ---------- Hit effects (drawing numbers; the burst, the pip, the funny fall) ----------
@@ -856,15 +862,16 @@ export const BASE_IN_BATTLE = {
   /** The Computer player picks a mounted weapon this often when it has one that can fire. */
   botMountChance: 0.5,
   /**
-   * Base health mode (character health off): the base is drawn in the old base footprint, widened
-   * by `fitWiden` px (half on each side), so the aim, the fighters, the field and the HUD never
-   * move. It is never drawn bigger than `fitMaxScale` px a build step (a cell is 8 steps, so
-   * 32 px). It was 2 px a step inside the bare footprint, and a typical base looked tiny next to
-   * the fighters (owner report, 2026-10-28). The footprint's height is not widened (it is the
-   * room under the cards), and a base overhangs its rock or deck by 40 px a side at most.
+   * Base health mode (character health off): a built base is drawn in the room of its place
+   * (`BUILT_PLACES`, below), standing on the room's bottom edge, centered, in its own shape, and
+   * never bigger than `fitMaxScale` px a build step (a cell is 8 steps, so 48 px). It was 2 px a
+   * step inside the bare castle box, then 4 (240 by 120 px for a typical base), and was still too
+   * small beside the fighters (owner reports, 2026-10-28). Now a typical base is 350 to 400 px
+   * wide and 175 to 200 tall, and a big one fills its room, so the base is clearly the biggest
+   * thing on its side. The rock or tower under it grows with it (`BUILT_PLACES.*.footing`), so it
+   * never hangs in the air.
    */
-  fitMaxScale: 4,
-  fitWiden: 80,
+  fitMaxScale: 6,
   /**
    * Base health mode: how much base health a built base starts with (docs/GAME_SPEC.md "How a
    * built base plays"). The saved brick hit points times `perHp`, held between `band.min` and
@@ -883,6 +890,85 @@ export const BASE_IN_BATTLE = {
    */
   baseHealthMount: { refDamage: 20, maxScale: 1 },
 } as const;
+
+// ---------- Where a built base stands (base health mode) ----------
+/**
+ * The room a built base may fill at each castle place and Austin spot, and the footing under it.
+ * `room` is a box in world px: the base stands on its bottom edge, centered, and is scaled down
+ * to fit (`BASE_IN_BATTLE.fitMaxScale` is the most). It becomes the team's box in `layout.bases`
+ * (so Chrono, the helpers and the bubbles stand at its edge). The rooms keep clear of the message
+ * lane (`MESSAGE_LANE`, x 364 to 916 and y 252 to 428), the middle hill and the team cards: a
+ * ground room is 400 wide and tops out at y 428, a rock or tower room is 352 wide and taller. `footing` replaces the place's own shapes
+ * (the rock, the tower, the deck, the wall, the drawbridge) when a built base stands there, so the
+ * ground under the base is as wide as the base and the picture is the collision outline. A place
+ * with no shape of its own has none. A side with no built base never reads this table.
+ * Owner report, 2026-10-28: "the custom base still renders too small".
+ */
+export type BuiltPlace = { room: Rect; footing?: Polygon };
+export type BuiltPlaceId =
+  | 'pastGround'
+  | 'villageWall'
+  | 'hillFort'
+  | 'drawbridge'
+  | 'futureGround'
+  | 'foodTruck'
+  | 'skyscraper'
+  | 'bridge';
+/** Ground rooms are as high as the message lane's bottom edge (y 428) allows, and 400 wide. */
+const PAST_GROUND_ROOM: Rect = { x: 8, y: 428, w: 400, h: GROUND_Y - 428 };
+const FUTURE_GROUND_ROOM: Rect = { x: 872, y: 428, w: 400, h: GROUND_Y - 428 };
+export const BUILT_PLACES: Record<BuiltPlaceId, BuiltPlace> = {
+  /** The Phase 1 castle and the Village: on the ground, the village wall stays out in front. */
+  pastGround: { room: PAST_GROUND_ROOM },
+  villageWall: { room: PAST_GROUND_ROOM },
+  /**
+   * A wide rock that flares up under the base, kept clear of the ground fighters at the right. It
+   * stops at x 360, the left edge of the message lane, so the room is a little narrower and tall.
+   */
+  hillFort: {
+    room: { x: 8, y: 270, w: 352, h: 210 },
+    footing: [
+      { x: 14, y: 480 },
+      { x: 352, y: 480 },
+      { x: 318, y: 540 },
+      { x: 244, y: GROUND_Y },
+      { x: 70, y: GROUND_Y },
+      { x: 18, y: 548 },
+    ],
+  },
+  /**
+   * The raised drawbridge hangs over the front of the castle, clear of the tallest base (y 428).
+   * Close in front of the base it walled off the bricks (matches with a big base ran past 100
+   * turns), so it is over it, like the Bridge deck.
+   */
+  drawbridge: {
+    room: PAST_GROUND_ROOM,
+    footing: rectToPolygon({ x: 248, y: 350, w: 160, h: 50 }),
+  },
+  /** The Phase 1 secret base and the Food Trucks: on the ground, a taco truck in front. */
+  futureGround: { room: FUTURE_GROUND_ROOM },
+  foodTruck: {
+    room: FUTURE_GROUND_ROOM,
+    footing: rectToPolygon({ x: 826, y: 540, w: 30, h: GROUND_Y - 540 }),
+  },
+  /** The tower flares up under the base the same way the rock does. */
+  skyscraper: {
+    room: { x: 920, y: 270, w: 352, h: 210 },
+    footing: [
+      { x: 1266, y: 480 },
+      { x: 928, y: 480 },
+      { x: 962, y: 540 },
+      { x: 1036, y: GROUND_Y },
+      { x: 1210, y: GROUND_Y },
+      { x: 1262, y: 548 },
+    ],
+  },
+  /** The deck stays over the front of the base, clear of the tallest base (y 428). */
+  bridge: {
+    room: FUTURE_GROUND_ROOM,
+    footing: rectToPolygon({ x: 872, y: 355, w: 200, h: 50 }),
+  },
+};
 
 // ---------- Disturbances: birds, gusts and recoil ----------
 /**
