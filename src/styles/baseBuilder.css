@@ -883,6 +883,18 @@
   border: 4px solid var(--tc-purple-700);
   border-radius: 16px;
   touch-action: none;
+  position: relative;
+}
+/* The filled squares, drawn as one picture under the buttons so same-material squares join. Each
+   picture square is a button plus half the gap on every side. */
+.tc-bb-pad-art {
+  position: absolute;
+  left: calc(var(--tc-s-2) - var(--tc-s-1) / 2);
+  top: calc(var(--tc-s-2) - var(--tc-s-1) / 2);
+  width: calc(var(--bb-pad-n, 6) * (var(--bb-sq) + var(--tc-s-1)));
+  height: calc(var(--bb-pad-n, 6) * (var(--bb-sq) + var(--tc-s-1)));
+  pointer-events: none;
+  overflow: visible;
 }
 .tc-bb[data-team='FUTURE'] .tc-bb-pad-grid {
   background: var(--tc-blue-900);
@@ -897,20 +909,17 @@
   border-radius: 8px;
   cursor: pointer;
   touch-action: none;
+  position: relative;
 }
 .tc-bb[data-team='FUTURE'] .tc-bb-sq {
   border-color: var(--tc-blue-300);
 }
-/* A filled square shows its material picture, and a thick light edge shows it is filled. */
-.tc-bb-sq[aria-pressed='true'] {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 3px solid var(--tc-parchment-warm);
-}
-.tc-bb-sq-art {
-  display: block;
-  pointer-events: none;
+/* A filled square is see-through: its material picture is the joined drawing under it
+   (.tc-bb-pad-art), outlined only round the outer edge of the joined area. */
+.tc-bb-sq[aria-pressed='true'],
+.tc-bb[data-team='FUTURE'] .tc-bb-sq[aria-pressed='true'] {
+  background: transparent;
+  border-color: transparent;
 }
 .tc-bb-pad-side {
   grid-area: side;

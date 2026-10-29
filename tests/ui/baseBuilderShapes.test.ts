@@ -247,7 +247,8 @@ describe('materials', () => {
     click(sq(1, 2));
     expect(sq(1, 2).getAttribute('data-mat')).toBe('wood');
     expect(sq(1, 2).getAttribute('aria-label')).toBe('Square row 1 column 2, Wood');
-    expect(sq(1, 2).querySelector('svg')).not.toBeNull();
+    // The picture is the joined drawing under the buttons: a lone wood square is drawn whole.
+    expect(q('bb-pad')!.querySelector('.tc-bb-pad-art path[fill="#a8672b"], .tc-bb-pad-art rect[fill="#a8672b"]')).not.toBeNull();
     expect(q('bb-pad-strength')!.textContent).toBe(`Strength ${32 + 5}`);
   });
   it('a tap on a square of another material paints it; the same material empties it', () => {
@@ -433,13 +434,15 @@ describe('a saved shape is a brick', () => {
       rot: 0,
     });
     click(q('bb-turn'));
-    expect(pieces()[0]!.getAttribute('transform')).toMatch(/rotate\(90\)/);
+    // The squares are drawn turned (joined, upright), so the group has no rotate transform.
+    expect(pieces()[0]!.querySelectorAll('path[fill="#9aa8bd"]')).toHaveLength(4);
     expect(slotPieces(o.saved.at(-1)!, 'Alex', 'PAST', 0)[0]!.rot).toBe(90);
   });
-  it('draws one square per filled cell', () => {
+  it('draws one square per filled cell, joined with no outlined rect between them', () => {
     open('PAST', withL());
     drag(q('bb-shape-1')!, [6 * 40 + 40, 8 * 40 + 60]);
-    expect(pieces()[0]!.querySelectorAll('rect')).toHaveLength(4);
+    expect(pieces()[0]!.querySelectorAll('path[fill="#9aa8bd"]')).toHaveLength(4);
+    expect(pieces()[0]!.querySelectorAll('rect')).toHaveLength(0);
   });
   it('a tap picks it, then a tap on the plot puts it down', () => {
     open('PAST', withL());
