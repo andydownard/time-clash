@@ -3,12 +3,22 @@
 import { describe, expect, it } from 'vitest';
 import { chooseSlot, freshBases, saveSlot } from '../../src/game/baseBuilder';
 import { HUGE, TINY, TYPICAL, baseOf, brick } from '../helpers/builtBases';
-import { BASE_IN_BATTLE, BONUS, DAMAGE, PHASE1_LAYOUT, PRACTICE_BOT } from '../../src/game/config';
+import {
+  BASE_IN_BATTLE,
+  BONUS,
+  DAMAGE,
+  FORTS,
+  PHASE1_LAYOUT,
+  PRACTICE_BOT,
+  SPOTS,
+  WORLD,
+} from '../../src/game/config';
 import {
   battleBasesFor,
   builtHealth,
   createBuilt,
   fitFrame,
+  fitRoom,
   healthPlan,
   plotFrame,
   pointToWorld,
@@ -57,8 +67,8 @@ describe('fitting the base into the old base footprint', () => {
       ['typical', TYPICAL(team)],
       ['huge', HUGE(team)],
     ] as const) {
-      it(`${team} ${name}: inside the footprint, standing on its bottom edge`, () => {
-        const box = PHASE1_LAYOUT.bases[team];
+      it(`${team} ${name}: inside the widened footprint, standing on its bottom edge`, () => {
+        const box = fitRoom(PHASE1_LAYOUT.bases[team]);
         const built = createBuilt(
           { [team]: base },
           { layout: PHASE1_LAYOUT, flatHp: { PAST: 400, FUTURE: 400 } },
@@ -82,7 +92,50 @@ describe('fitting the base into the old base footprint', () => {
     const f = fitFrame('PAST', TINY('PAST'), PHASE1_LAYOUT.bases.PAST);
     expect(f.scale).toBe(BASE_IN_BATTLE.fitMaxScale);
     const g = fitFrame('PAST', HUGE('PAST'), PHASE1_LAYOUT.bases.PAST);
-    expect(g.scale).toBeLessThan(1);
+    // The biggest base is as wide as the plot, so the widened footprint fits it at about 1.25.
+    expect(g.scale).toBeCloseTo(240 / 192, 6);
+  });
+
+  it('a typical base is drawn at 3.75 px a step, 240 by 120 px', () => {
+    // Owner report (2026-10-28): a built base was drawn way too small, 128 by 64 px at 2 px a step.
+    for (const team of ['PAST', 'FUTURE'] as const) {
+      const built = createBuilt(
+        { [team]: TYPICAL(team) },
+        { layout: PHASE1_LAYOUT, flatHp: { PAST: 400, FUTURE: 400 } },
+      );
+      const boxes = built[team].bricks.map((b) => b.box);
+      const w = Math.max(...boxes.map((b) => b.x + b.w)) - Math.min(...boxes.map((b) => b.x));
+      const h = Math.max(...boxes.map((b) => b.y + b.h)) - Math.min(...boxes.map((b) => b.y));
+      expect(w).toBeCloseTo(240, 6);
+      expect(h).toBeCloseTo(120, 6);
+    }
+  });
+
+  it('never overhangs its rock or deck by more than 40 px a side, never rises above the footprint', () => {
+    for (const [id, spot] of [...Object.entries(FORTS), ...Object.entries(SPOTS)]) {
+      for (const team of [id in FORTS ? 'PAST' : 'FUTURE'] as const) {
+        for (const base of [TINY(team), TYPICAL(team), HUGE(team)]) {
+          const built = createBuilt(
+            { [team]: base },
+            {
+              layout: { ...PHASE1_LAYOUT, bases: { ...PHASE1_LAYOUT.bases, [team]: spot.base } },
+              flatHp: { PAST: 400, FUTURE: 400 },
+            },
+          );
+          for (const b of built[team].bricks) {
+            expect(b.box.x, id).toBeGreaterThanOrEqual(
+              spot.base.x - BASE_IN_BATTLE.fitWiden / 2 - 1e-6,
+            );
+            expect(b.box.x + b.box.w, id).toBeLessThanOrEqual(
+              spot.base.x + spot.base.w + BASE_IN_BATTLE.fitWiden / 2 + 1e-6,
+            );
+            expect(b.box.y, id).toBeGreaterThanOrEqual(spot.base.y - 1e-6);
+            expect(b.box.x, id).toBeGreaterThan(0);
+            expect(b.box.x + b.box.w, id).toBeLessThan(WORLD.width);
+          }
+        }
+      }
+    }
   });
 
   it('Team Future is mirrored so it faces Team Past', () => {
