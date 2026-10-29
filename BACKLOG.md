@@ -21,7 +21,7 @@ Phase 1 is built (see docs/BUILD.md and docs/CONTRACTS.md). The look and feel ph
 - P2: Question-clip voice databases and files are unused; delete in a separate cleanup (`db/voice-k4.sqlite` question rows, later volumes, question clips in `public/audio` if any, and the Python voice scripts' question handling).
 - P2: Weapons on the base pads (built 2026-10-25), panel follow-ups. A Hear it line for what each weapon does (direct, lob, volley). A "pew-boing" sound for the pad flash. Owner to decide whether a Ballista or Catapult should hit harder than a fighter: the pace rule caps every weapon at a fighter's standard shot (`BASE_IN_BATTLE.baseHealthMount.maxScale`). See docs/GAME_SPEC.md "Weapons on the pads".
 - P2: Pace gap found while building the weapons: a fighter with `damageScale` 1.3 (the Spearman and the Saber Robot) does 33 + 33 + 50 = 116 in a perfect turn, so perfect aim with it can win on its fourth turn (7 total) against the flat 400 or the smallest built base. `tests/game/pace.test.ts` only plays the default fighters. Owner to decide: cap fighter damage too, or accept it.
-- P2: Battle simplification, next steps. Health shows in both the top chips and the base pills, so one of them can go. The richer scenery on the Battle board belongs to Phase 5 (Squads). The five-fighter picker is built.
+- P2: Battle simplification, next steps. The richer scenery on the Battle board belongs to Phase 5 (Squads). The five-fighter picker is built.
 
 ## P3
 - Phase 3 crafting that is still open: hybrid weapons and recipes (the Forge and Build Base are built). Phase 4 iPad play with room codes.

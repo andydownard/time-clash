@@ -59,6 +59,14 @@ test('battle: nothing covers the team cards, and canvas labels are at least 20px
   await expectBannerClear(page, 'banner');
   await expectHudClear(page, 'battle');
   await expectAimPanelClearOfBases(page, 'battle');
+  // Health shows once, on the pill by the base. The team cards draw no heart and no bar.
+  for (const t of ['PAST', 'FUTURE']) {
+    const card = page.locator(`.tc-team-panel[data-team="${t}"]`);
+    await expect(card.locator('svg[data-icon="health"]')).toHaveCount(0);
+    await expect(card.locator('svg[data-icon="scrap"]')).toBeVisible();
+    await expect(card.locator('[role="meter"]')).toHaveCount(1);
+    expect((await card.locator('[role="meter"]').boundingBox())!.width).toBeLessThanOrEqual(1);
+  }
   // Labels drawn on the canvas are at least 20px on screen (Regression 8).
   const px = await page.evaluate(() => window.__timeclash!.labelPx());
   expect(px, 'canvas labels exist').not.toBeNull();

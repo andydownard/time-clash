@@ -40,7 +40,6 @@ type Parts = {
   panel: Record<Team, HTMLElement>;
   name: Record<Team, HTMLElement>;
   hpMeter: Record<Team, HTMLElement>;
-  hpFill: Record<Team, HTMLElement>;
   scrap: Record<Team, HTMLElement>;
   gear: ReturnType<typeof createGear>;
   squadBar: SquadBar;
@@ -374,20 +373,18 @@ export function createHud(ctx: UiCtx) {
     });
 
     const name = record((t) => h(doc, 'span', { class: 'tc-team-name', 'data-role': `name-${t}` }));
-    const hpFill = record(() => h(doc, 'span', { class: 'tc-hp-fill' }));
     const hpMeter = record((t) =>
       h(
         doc,
         'div',
         {
-          class: 'tc-hp-meter',
+          class: 'tc-hp-meter tc-sr-only',
           role: 'meter',
           'aria-label': `${TEAM_NAMES[t]} ${HUD.baseHealth}`,
           'aria-valuemin': 0,
           'aria-valuemax': 100,
           'aria-valuenow': 100,
         },
-        hpFill[t],
       ),
     );
     const scrap = record((t) =>
@@ -406,9 +403,9 @@ export function createHud(ctx: UiCtx) {
           'div',
           { 'data-testid': TEST_IDS.baseHp(t), class: 'tc-hp' },
           h(doc, 'span', { class: 'tc-hp-label tc-sr-only', text: HUD.baseHealth }),
-          // Health shows once as a number: on the pill by the base, where the hits land. The card
-          // keeps the meter, and a screen reader hears the number from the meter itself.
-          h(doc, 'div', { class: 'tc-hp-row' }, hudIcon(doc, 'health'), hpMeter[t]),
+          // Health shows once: on the pill by the base, where the hits land (owner, 2026-10-29).
+          // The card draws none. A screen reader hears it from this meter, which is not drawn.
+          hpMeter[t],
         ),
         h(
           doc,
@@ -521,7 +518,6 @@ export function createHud(ctx: UiCtx) {
       panel,
       name,
       hpMeter,
-      hpFill,
       scrap,
       gear,
       squadBar,
@@ -620,7 +616,6 @@ export function createHud(ctx: UiCtx) {
         parts.hpMeter[t].setAttribute('aria-valuenow', String(hp));
         parts.hpMeter[t].setAttribute('aria-valuetext', HUD.hpValue(hp, max));
         parts.hpMeter[t].setAttribute('aria-valuemax', String(max));
-        parts.hpFill[t].style.width = `${(hp / max) * 100}%`;
         parts.scrap[t].textContent = String(state.scrap[t]);
         parts.panel[t].setAttribute('data-active', String(state.activeTeam === t));
         const turn = parts.panel[t].querySelector('[data-role="turn-text"]');
