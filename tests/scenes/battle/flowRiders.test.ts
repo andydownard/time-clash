@@ -16,7 +16,7 @@ const SEED = 7;
 const SHAKY = (): MatchOptions['bases'] => ({
   FUTURE: baseOf([
     ...[6, 8, 10, 12, 14, 16].map((x) => brick('panel', x, 10, 20)),
-    brick('antenna', 13, 7, 10),
+    brick('antenna', 11, 7, 10),
   ]),
 });
 
@@ -39,7 +39,7 @@ function fallAim(bases: MatchOptions['bases']): AimInput {
       m.fire();
       m.shotLanded();
       const after = riderDrops(m.snapshot(), m.layout);
-      if ((['1', '5'] as const).some((id) => (after[id] ?? 0) > (before[id] ?? 0))) {
+      if ((after['1'] ?? 0) > (before['1'] ?? 0)) {
         return { angleDeg, power };
       }
     }

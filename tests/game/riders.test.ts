@@ -3,6 +3,8 @@
 // whatever is below. The shot always leaves from where the fighter stands.
 import { describe, expect, it } from 'vitest';
 import { buildLayout } from '../../src/game/battlefield';
+import { fitLayout } from '../../src/game/builtBase';
+import { ARROW_RISE, unitSpot } from '../../src/scenes/battle/unitSpots';
 import { BASE_RIDERS, PHASE1_LAYOUT } from '../../src/game/config';
 import { chooseShotWith } from '../../src/game/bot';
 import { createMatch } from '../../src/game/match';
@@ -111,10 +113,46 @@ describe('riderDrop: standing on the top brick', () => {
     expect(riderDrop('PAST', 'B', L, [theirs, fallen])).toBe(riderDrop('PAST', 'B', L, []));
   });
 
-  it('never stands higher than on the old castle, so the HUD cards stay clear', () => {
+  it('stands on a tall base, up to BASE_RIDERS.maxRise higher than on the old castle', () => {
     const span = footSpan('B');
-    const tall = brickAt('PAST', { x: span.x, y: L.bases.PAST.y, w: span.w, h: 150 });
-    expect(riderDrop('PAST', 'B', L, [tall])).toBe(0);
+    const feet = riderFeet('PAST', 'B', L)!;
+    const tall = brickAt('PAST', { x: span.x, y: feet.y - 100, w: span.w, h: 150 });
+    expect(riderDrop('PAST', 'B', L, [tall])).toBeCloseTo(-100, 6);
+    expect(riderOrigin('PAST', 'B', L, [tall]).y).toBeCloseTo(
+      firingOrigin('PAST', 'B', L).y - 100,
+      6,
+    );
+    const tower = brickAt('PAST', { x: span.x, y: 0, w: span.w, h: 600 });
+    expect(riderDrop('PAST', 'B', L, [tower])).toBe(-BASE_RIDERS.maxRise);
+  });
+
+  it('on the tallest base of every place the fighter and its tag stay under the team cards', () => {
+    // The cards end about y 126 in world px. A rider stands on the top of its room at most.
+    const cardBottom = 126;
+    const fort = ['hillFort', 'villageWall', 'drawbridge', null] as const;
+    const spot = ['skyscraper', 'foodTruck', 'bridge', null] as const;
+    for (const [i, f] of fort.entries()) {
+      const l = fitLayout(buildLayout({ biome: 'aspen', fort: f, spot: spot[i]! }), {
+        PAST: true,
+        FUTURE: true,
+      });
+      for (const id of RIDER_IDS) {
+        const team = unitById(id)!.team;
+        const room = l.bases[team];
+        const feet = riderFeet(team, id, l)!;
+        const top = {
+          team,
+          box: { x: feet.left - 5, y: room.y, w: feet.right - feet.left + 10, h: 50 },
+          alive: true,
+        };
+        const d = riderDrop(team, id, l, [top]);
+        expect(d, `${f} ${id}`).toBeGreaterThanOrEqual(-BASE_RIDERS.maxRise);
+        const spotBox = unitSpot(unitById(id)!);
+        // The token and the selected arrow sit above the drawing, which stands `d` lower.
+        const arrowTop = spotBox.arrowTip.y - ARROW_RISE + d;
+        expect(arrowTop, `${f} ${id}`).toBeGreaterThanOrEqual(cardBottom);
+      }
+    }
   });
 
   it('moves with the castle place and the Austin spot', () => {

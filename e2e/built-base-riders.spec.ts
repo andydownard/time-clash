@@ -42,7 +42,7 @@ const SHAKY = {
   // A strong panel on top takes most of the top bricks' share, so one hit knocks the antenna out.
   FUTURE: baseOf([
     ...[6, 8, 10, 12, 14, 16].map((x) => brick('panel', x, 10, 20)),
-    brick('antenna', 13, 7, 10),
+    brick('antenna', 11, 7, 10),
     brick('panel', 6, 9, 50),
   ]),
 };
@@ -168,7 +168,7 @@ async function riderMatch(page: Page, shot: (name: string) => string): Promise<v
     const r = before.find((x) => x.id === id)!;
     const top = brickTopUnder(m, r.team, r.feet.x);
     expect(top, `${id} has a brick under it`).not.toBeNull();
-    expect(r.dy, `${id} stands lower than the old castle`).toBeGreaterThan(0);
+    expect(r.dy, `${id} stands on its base, not on the old castle spot`).not.toBe(0);
     expect(Math.abs(r.feet.y - top!), `${id} stands on the brick top`).toBeLessThan(1);
   }
   // The angle guide starts where the Cannon Knight stands.

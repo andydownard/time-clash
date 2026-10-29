@@ -1,4 +1,6 @@
 import { describe, expect, it } from 'vitest';
+import { buildLayout } from '../../../src/game/battlefield';
+import { fitLayout } from '../../../src/game/builtBase';
 import {
   AIM,
   BASES,
@@ -139,6 +141,32 @@ describe('placement', () => {
         expect(right <= b.x || left >= b.x + b.w, `${team} bubble vs ${t} base`).toBe(true);
       }
     }
+  });
+  it('keeps the speech bubble and Chrono off both built-base rooms, on every castle place and spot', () => {
+    // A built base fills the room of its place (BUILT_PLACES), which is bigger than the old box.
+    const forts = ['hillFort', 'villageWall', 'drawbridge', null] as const;
+    const spots = ['skyscraper', 'foodTruck', 'bridge', null] as const;
+    for (const fort of forts)
+      for (const spot of spots) {
+        const l = fitLayout(buildLayout({ biome: 'aspen', fort, spot }), {
+          PAST: true,
+          FUTURE: true,
+        });
+        for (const team of ['PAST', 'FUTURE'] as const) {
+          const a = bubbleAnchor(team, l);
+          const left = a.x - BUBBLE_MAX_WORLD_W / 2;
+          const right = a.x + BUBBLE_MAX_WORLD_W / 2;
+          expect(left, `${fort} ${spot} ${team}`).toBeGreaterThanOrEqual(0);
+          expect(right, `${fort} ${spot} ${team}`).toBeLessThanOrEqual(WORLD.width);
+          for (const t of ['PAST', 'FUTURE'] as const) {
+            const b = l.bases[t];
+            expect(right <= b.x || left >= b.x + b.w, `${fort} ${spot} ${team} vs ${t}`).toBe(true);
+          }
+          const c = characterSpot(team, l);
+          expect(c.x).toBeGreaterThan(0);
+          expect(c.x).toBeLessThan(WORLD.width);
+        }
+      }
   });
   it('aims the bubble tail at the speaker, with the bubble still clear of both bases', () => {
     for (const team of ['PAST', 'FUTURE'] as const) {

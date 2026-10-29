@@ -13,7 +13,8 @@ import {
   TEAM_FACING,
 } from '../../../src/game/config';
 import { UNITS, firingOrigin, unitById } from '../../../src/game/units';
-import { RIDER_IDS, riderDrop, riderOrigin } from '../../../src/game/riders';
+import { fitLayout } from '../../../src/game/builtBase';
+import { RIDER_IDS, riderDrop, riderFeet, riderOrigin } from '../../../src/game/riders';
 import type { FortIdValue, Rect, SpotIdValue, Vec2 } from '../../../src/game/types';
 import {
   ANGLE_LABEL_MAX,
@@ -185,6 +186,45 @@ describe('the angle number with fighters standing low on a built base', () => {
                     misses.push(`${where}: outside the world or below the ground`);
                 }
             }
+          }
+        }
+      expect(misses).toEqual([]);
+    });
+
+  for (const biome of BIOME_IDS)
+    it(`${biome}: every rider standing on the top of a tall built base, every field and angle, the number is off every fighter`, () => {
+      // Built bases are drawn big (owner report, 2026-10-28), so a rider may stand higher than on
+      // the old castle: on the top of its place's room at most (riders.ts, BASE_RIDERS.maxRise).
+      const misses: string[] = [];
+      for (const spot of SPOTS)
+        for (const fort of FORTS) {
+          const l = fitLayout(buildLayout({ biome, spot, fort }), { PAST: true, FUTURE: true });
+          const drops: Record<string, number> = {};
+          for (const id of RIDER_IDS) {
+            const team = unitById(id)!.team;
+            const room = l.bases[team];
+            const feet = riderFeet(team, id, l)!;
+            const top = {
+              team,
+              box: { x: feet.left - 5, y: room.y, w: feet.right - feet.left + 10, h: 50 },
+              alive: true,
+            };
+            drops[id] = riderDrop(team, id, l, [top]);
+          }
+          const keep = fighterKeepOut(l, drops);
+          const ground = l.terrain.ground[0]!.y;
+          for (const id of RIDER_IDS) {
+            const team = unitById(id)!.team;
+            const o = firingOrigin(team, id, l);
+            const from = { x: o.x, y: o.y + drops[id]! };
+            for (const size of SIZES)
+              for (let angle = AIM.angleMinDeg; angle <= AIM.angleMaxDeg; angle += 1) {
+                const box = angleLabelBox(from, angle, TEAM_FACING[team], size, keep, l);
+                const where = `${spot} ${fort} ${id} ${angle}°`;
+                if (keep.some((k) => overlaps(box, k))) misses.push(`${where}: covers a fighter`);
+                if (box.x < 0 || box.x + box.w > l.width || box.y < 0 || box.y + box.h > ground)
+                  misses.push(`${where}: outside the world or below the ground`);
+              }
           }
         }
       expect(misses).toEqual([]);

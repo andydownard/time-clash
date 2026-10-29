@@ -11,14 +11,17 @@ import {
   PHASE1_LAYOUT,
   PRACTICE_BOT,
   SPOTS,
+  TERRAIN,
   WORLD,
 } from '../../src/game/config';
+import { buildLayout } from '../../src/game/battlefield';
+import { MESSAGE_LANE } from '../../src/ui/messageLane';
 import {
   battleBasesFor,
   builtHealth,
   createBuilt,
   fitFrame,
-  fitRoom,
+  fitLayout,
   healthPlan,
   plotFrame,
   pointToWorld,
@@ -28,7 +31,12 @@ import { playBotMatch } from '../../src/game/botPlay';
 import { DEFAULT_EFFECTS } from '../../src/game/loadout';
 import { createMatch } from '../../src/game/match';
 import type {
+  BattleLayout,
   BlastOutcome,
+  ChosenBase,
+  Polygon,
+  Rect,
+  Team,
   MatchController,
   MatchOptions,
   Players,
@@ -60,20 +68,31 @@ describe('the flag', () => {
   });
 });
 
-describe('fitting the base into the old base footprint', () => {
+/** The field with both teams' places ready for a built base, as a match makes it. */
+const ready = (layout: BattleLayout = PHASE1_LAYOUT): BattleLayout =>
+  fitLayout(layout, { PAST: true, FUTURE: true });
+
+const fitted = (team: Team, base: ChosenBase, layout: BattleLayout = PHASE1_LAYOUT) =>
+  createBuilt({ [team]: base }, { layout: ready(layout), flatHp: { PAST: 400, FUTURE: 400 } });
+
+const spanOf = (boxes: readonly Rect[]) => {
+  const x0 = Math.min(...boxes.map((b) => b.x));
+  const x1 = Math.max(...boxes.map((b) => b.x + b.w));
+  const y0 = Math.min(...boxes.map((b) => b.y));
+  const y1 = Math.max(...boxes.map((b) => b.y + b.h));
+  return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
+};
+
+describe('fitting the base into the room of its place', () => {
   for (const team of ['PAST', 'FUTURE'] as const) {
     for (const [name, base] of [
       ['tiny', TINY(team)],
       ['typical', TYPICAL(team)],
       ['huge', HUGE(team)],
     ] as const) {
-      it(`${team} ${name}: inside the widened footprint, standing on its bottom edge`, () => {
-        const box = fitRoom(PHASE1_LAYOUT.bases[team]);
-        const built = createBuilt(
-          { [team]: base },
-          { layout: PHASE1_LAYOUT, flatHp: { PAST: 400, FUTURE: 400 } },
-        );
-        const bricks = built[team].bricks;
+      it(`${team} ${name}: inside its room, standing on its bottom edge`, () => {
+        const box = ready().bases[team];
+        const bricks = fitted(team, base)[team].bricks;
         expect(bricks.length).toBe(base.pieces.length);
         let bottom = 0;
         for (const b of bricks) {
@@ -88,54 +107,102 @@ describe('fitting the base into the old base footprint', () => {
     }
   }
 
-  it('is never drawn bigger than fitMaxScale px a step', () => {
-    const f = fitFrame('PAST', TINY('PAST'), PHASE1_LAYOUT.bases.PAST);
+  it('is never drawn bigger than fitMaxScale px a step, and the biggest base fills its room', () => {
+    const room = ready().bases.PAST;
+    const f = fitFrame('PAST', TINY('PAST'), room);
     expect(f.scale).toBe(BASE_IN_BATTLE.fitMaxScale);
-    const g = fitFrame('PAST', HUGE('PAST'), PHASE1_LAYOUT.bases.PAST);
-    // The biggest base is as wide as the plot, so the widened footprint fits it at about 1.25.
-    expect(g.scale).toBeCloseTo(240 / 192, 6);
+    const g = fitFrame('PAST', HUGE('PAST'), room);
+    // The biggest base is as wide as the plot, so the room's width fits it.
+    expect(g.scale).toBeCloseTo(room.w / 192, 6);
   });
 
-  it('a typical base is drawn at 3.75 px a step, 240 by 120 px', () => {
-    // Owner report (2026-10-28): a built base was drawn way too small, 128 by 64 px at 2 px a step.
+  it('a typical base is drawn about 350 by 175 px, a big one fills the room (owner report, 2026-10-28)', () => {
+    // Owner reports: 128 by 64 px at 2 px a step, then 240 by 120 at 4, both too small.
     for (const team of ['PAST', 'FUTURE'] as const) {
-      const built = createBuilt(
-        { [team]: TYPICAL(team) },
-        { layout: PHASE1_LAYOUT, flatHp: { PAST: 400, FUTURE: 400 } },
-      );
-      const boxes = built[team].bricks.map((b) => b.box);
-      const w = Math.max(...boxes.map((b) => b.x + b.w)) - Math.min(...boxes.map((b) => b.x));
-      const h = Math.max(...boxes.map((b) => b.y + b.h)) - Math.min(...boxes.map((b) => b.y));
-      expect(w).toBeCloseTo(240, 6);
-      expect(h).toBeCloseTo(120, 6);
+      const t = spanOf(fitted(team, TYPICAL(team))[team].bricks.map((b) => b.box));
+      expect(t.w).toBeGreaterThanOrEqual(340);
+      expect(t.h).toBeGreaterThanOrEqual(170);
+      const h = spanOf(fitted(team, HUGE(team))[team].bricks.map((b) => b.box));
+      expect(h.w).toBeGreaterThanOrEqual(340);
+      // About a third of the screen's width at most.
+      expect(h.w).toBeLessThanOrEqual(WORLD.width / 3);
     }
   });
 
-  it('never overhangs its rock or deck by more than 40 px a side, never rises above the footprint', () => {
-    for (const [id, spot] of [...Object.entries(FORTS), ...Object.entries(SPOTS)]) {
-      for (const team of [id in FORTS ? 'PAST' : 'FUTURE'] as const) {
-        for (const base of [TINY(team), TYPICAL(team), HUGE(team)]) {
-          const built = createBuilt(
-            { [team]: base },
-            {
-              layout: { ...PHASE1_LAYOUT, bases: { ...PHASE1_LAYOUT.bases, [team]: spot.base } },
-              flatHp: { PAST: 400, FUTURE: 400 },
-            },
-          );
-          for (const b of built[team].bricks) {
-            expect(b.box.x, id).toBeGreaterThanOrEqual(
-              spot.base.x - BASE_IN_BATTLE.fitWiden / 2 - 1e-6,
-            );
-            expect(b.box.x + b.box.w, id).toBeLessThanOrEqual(
-              spot.base.x + spot.base.w + BASE_IN_BATTLE.fitWiden / 2 + 1e-6,
-            );
-            expect(b.box.y, id).toBeGreaterThanOrEqual(spot.base.y - 1e-6);
-            expect(b.box.x, id).toBeGreaterThan(0);
-            expect(b.box.x + b.box.w, id).toBeLessThan(WORLD.width);
-          }
+  it('every place has a room on screen, under the cards, and clear of the message lane', () => {
+    const fortIds = Object.keys(FORTS) as (keyof typeof FORTS)[];
+    const spotIds = Object.keys(SPOTS) as (keyof typeof SPOTS)[];
+    for (const fort of [null, ...fortIds]) {
+      for (const spot of [null, ...spotIds]) {
+        const l = ready(buildLayout({ biome: 'aspen', spot, fort }));
+        for (const team of ['PAST', 'FUTURE'] as const) {
+          const r = l.bases[team];
+          const id = `${fort}/${spot}/${team}`;
+          expect(r.x, id).toBeGreaterThanOrEqual(0);
+          expect(r.x + r.w, id).toBeLessThanOrEqual(WORLD.width);
+          expect(r.y, id).toBeGreaterThanOrEqual(150);
+          expect(r.y + r.h, id).toBeLessThanOrEqual(TERRAIN.groundY);
+          const overlapsLane =
+            r.x < MESSAGE_LANE.x + MESSAGE_LANE.w &&
+            r.x + r.w > MESSAGE_LANE.x &&
+            r.y < MESSAGE_LANE.y + MESSAGE_LANE.h &&
+            r.y + r.h > MESSAGE_LANE.y;
+          expect(overlapsLane, id).toBe(false);
         }
       }
     }
+  });
+
+  it('the rock and the tower are as wide as the base and the base stands on them', () => {
+    const cases: [Team, Parameters<typeof buildLayout>[0]][] = [
+      ['PAST', { biome: 'aspen', spot: null, fort: 'hillFort' }],
+      ['FUTURE', { biome: 'aspen', spot: 'skyscraper', fort: null }],
+    ];
+    for (const [team, plan] of cases) {
+      const layout = ready(buildLayout(plan));
+      const room = layout.bases[team];
+      const top = room.y + room.h;
+      const shape = layout.terrain.obstacles.find((o) => Math.min(...o.map((p) => p.y)) === top);
+      expect(shape, `${team} ${JSON.stringify(plan)}`).toBeTruthy();
+      const xs = (shape as Polygon).map((p) => p.x);
+      // The shape reaches under at least 90 percent of the room's width.
+      const reach = Math.min(Math.max(...xs), room.x + room.w) - Math.max(Math.min(...xs), room.x);
+      expect(reach).toBeGreaterThanOrEqual(room.w * 0.9);
+    }
+  });
+
+  it('the wall, the drawbridge and the deck stand beside or over the base, never inside its room', () => {
+    const plans: [Team, Parameters<typeof buildLayout>[0]][] = [
+      ['PAST', { biome: 'aspen', spot: null, fort: 'villageWall' }],
+      ['PAST', { biome: 'aspen', spot: null, fort: 'drawbridge' }],
+      ['FUTURE', { biome: 'aspen', spot: 'foodTruck', fort: null }],
+      ['FUTURE', { biome: 'aspen', spot: 'bridge', fort: null }],
+    ];
+    for (const [team, plan] of plans) {
+      const layout = ready(buildLayout(plan));
+      const room = layout.bases[team];
+      // Obstacle 0 is the middle shape; the rest belong to the places.
+      for (const o of layout.terrain.obstacles.slice(1)) {
+        const xs = o.map((p) => p.x);
+        const ys = o.map((p) => p.y);
+        const hits =
+          Math.min(...xs) < room.x + room.w &&
+          Math.max(...xs) > room.x &&
+          Math.max(...ys) > room.y &&
+          Math.min(...ys) < room.y + room.h;
+        expect(hits, `${team} ${JSON.stringify(plan)}`).toBe(false);
+      }
+    }
+  });
+
+  it('a side with no built base keeps its place exactly as it was', () => {
+    const layout = buildLayout({ biome: 'aspen', spot: 'skyscraper', fort: 'hillFort' });
+    expect(fitLayout(layout, { PAST: false, FUTURE: false })).toBe(layout);
+    const one = fitLayout(layout, { PAST: true, FUTURE: false });
+    expect(one.bases.FUTURE).toEqual(layout.bases.FUTURE);
+    expect(one.terrain.obstacles[1]).toEqual(layout.terrain.obstacles[1]);
+    expect(one.terrain.obstacles[2]).not.toEqual(layout.terrain.obstacles[2]);
+    expect(one.terrain.obstacles.length).toBe(layout.terrain.obstacles.length);
   });
 
   it('Team Future is mirrored so it faces Team Past', () => {
