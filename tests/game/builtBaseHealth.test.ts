@@ -415,7 +415,7 @@ describe('shots hit bricks', () => {
 });
 
 describe('squads with built bases', () => {
-  it('the walking helper is still on, and a bonk chips the front brick on the ground', () => {
+  it('the walking helper is still on, and a Bonk! chips the front brick on the ground', () => {
     const c = createMatch({
       disturbances: false,
       squads: true,
@@ -426,40 +426,19 @@ describe('squads with built bases', () => {
       bases: { FUTURE: TYPICAL('FUTURE') },
     });
     expect(c.snapshot().squads).toBeDefined();
-    // Team Past's dasher walks out, and both sides pass until he bonks the Future base.
-    let bonked = null as null | { damage: number; ids: string[] };
-    for (let turn = 0; turn < 8 && !bonked; turn++) {
-      const team = c.snapshot().turn.team;
-      const beats = c.ready();
-      for (const b of beats) {
-        if (b.target.kind === 'base' && b.target.team === 'FUTURE' && b.target.damage > 0) {
-          bonked = {
-            damage: b.target.damage,
-            ids: (b.target.built?.brickHits ?? []).map((h) => h.id),
-          };
-        }
-      }
-      if (c.snapshot().status === 'OVER') break;
-      if (team === 'PAST' && turn === 0) {
-        c.selectHelper('PAST-dasher');
-        const to = c.helperTargets()[0];
-        if (to) c.dash(to);
-        c.selectHelper('PAST-launcher');
-      } else {
-        c.setAim({ angleDeg: 80, power: 25 });
-        c.fire();
-        c.shotLanded();
-      }
-      c.setAim({ angleDeg: 80, power: 25 });
-      c.fire();
-      c.shotLanded();
-      c.reloadDone({ correct: false, elapsedMs: 1000, kind: 'choice', grade: 3 });
-      c.pass();
-    }
-    expect(bonked).not.toBeNull();
-    expect(bonked!.ids).toHaveLength(1);
-    const s = c.snapshot();
-    const hit = s.bricks![bonked!.ids[0] as `FUTURE:${number}`]!;
+    // Team Past's dasher walks out (go 1) and Bonk!s the Future base (go 2).
+    c.ready();
+    c.selectHelper('PAST-dasher');
+    c.dash(c.helperTargets()[0]!);
+    const before = c.snapshot().baseHp.FUTURE;
+    const b = c.bonk('base');
+    expect(b.target.kind).toBe('base');
+    if (b.target.kind !== 'base') return;
+    expect(b.target.damage).toBeGreaterThan(0);
+    expect(c.snapshot().baseHp.FUTURE).toBe(before - b.target.damage);
+    const ids = (b.target.built?.brickHits ?? []).map((h) => h.id);
+    expect(ids).toHaveLength(1);
+    const hit = c.snapshot().bricks![ids[0] as `FUTURE:${number}`]!;
     expect(hit.grounded).toBe(true);
   });
 });

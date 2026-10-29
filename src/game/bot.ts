@@ -11,7 +11,15 @@ import {
   type BotLevel,
   type BotProfile,
 } from './config';
-import { dashTargets, dasherOf, groundSpotIds, helperId, type GroundSpotId } from './crew';
+import {
+  bonkTargets,
+  dashTargets,
+  dasherOf,
+  groundSpotIds,
+  helperId,
+  type BonkKind,
+  type GroundSpotId,
+} from './crew';
 import { DEFAULT_EFFECTS, type MatchEffects } from './loadout';
 import { otherTeam } from './types';
 import type { AimInput, BattleLayout, Match, MountId, Rect, Rng, Team, Vec2 } from './types';
@@ -272,8 +280,9 @@ export const answerReloadWith = (
   return { answer, correct: answer === question.answer, delayMs };
 };
 
-/** A helper go the Computer player chose: walk the helper out to `to`, or call him home. */
-export type HelperGo = { kind: 'dash'; to: GroundSpotId } | { kind: 'recall' };
+/** A helper go the Computer player chose: walk the helper out to `to`, call him home, or Bonk!. */
+export type HelperGo =
+  { kind: 'dash'; to: GroundSpotId } | { kind: 'recall' } | { kind: 'bonk'; target: BonkKind };
 
 export const helperPlanOf = (level: BotLevel): BotHelperPlan => {
   const plan = PRACTICE_BOT.helper.levels[level];
@@ -285,10 +294,11 @@ export const helperPlanOf = (level: BotLevel): BotHelperPlan => {
 const chance = (p: number, rng: Rng): boolean => p >= 1 || (p > 0 && rng.next() < p);
 
 /**
- * The walking helper's go for `side`, or null to fire as usual. It decides only on go 1 of its
- * own turn (never on go 2 or the Power Shot) and offers only what the match allows a child:
- * a walk-out when the helper is home and has a stop, a Come back when he is out. It sees only
- * what is on the field (both helpers, where they stand, and their health).
+ * The walking helper's go for `side`, or null to fire as usual. It never decides on the Power
+ * Shot. A walk-out or a Come back is offered only on go 1; a Bonk! on go 1 or go 2. It offers only
+ * what the match allows a child: a walk-out when the helper is home and has a stop, a Come back
+ * when he is out, a Bonk! when something is next to him. It sees only what is on the field (both
+ * helpers, where they stand, and their health).
  */
 export const chooseHelperGo = (
   state: Match,
@@ -298,9 +308,13 @@ export const chooseHelperGo = (
 ): HelperGo | null => {
   const squads = state.squads;
   if (!squads || state.status !== 'PLAYING') return null;
-  if (state.turn.team !== side || state.turn.phase !== 'AIMING' || state.turn.shotsFired !== 0)
-    return null;
+  if (state.turn.team !== side || state.turn.phase !== 'AIMING') return null;
   const crew = squads.crew;
+  // Bonk!: the enemy helper next to him first (he is the one who can tumble), otherwise the base.
+  const bonks = bonkTargets(crew, side, helperId(side, 'dasher'));
+  const [bonk] = bonks;
+  if (bonk !== undefined && chance(plan.bonkChance, rng)) return { kind: 'bonk', target: bonk };
+  if (state.turn.shotsFired !== 0) return null;
   const me = dasherOf(crew, side);
   const foe = dasherOf(crew, otherTeam(side));
   const foeOut = foe.state === 'out' && foe.spot !== null;

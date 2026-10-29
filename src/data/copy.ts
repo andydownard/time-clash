@@ -322,8 +322,18 @@ export const SQUAD_COPY = {
   recallIcon: '\uD83C\uDFE0',
   /** Shown in place of Walk out while the dasher rests. */
   resting: 'Resting. Back soon.',
-  walked: (name: string): string => `${name} walks out. He bonks every turn!`,
+  walked: (name: string): string => `${name} walks out. Tap Bonk! next.`,
   cameBack: (name: string): string => `${name} walks home.`,
+  /** The Bonk! buttons, one go each. A pointing picture leads the words. */
+  bonkButton: 'Bonk!',
+  /** When both can be bonked, the two buttons say which is which. */
+  bonkBaseButton: 'Base!',
+  bonkHelperButton: 'Helper!',
+  bonkIcon: '\uD83D\uDCA5',
+  bonkAria: (kind: string): string =>
+    kind === 'helper' ? 'Bonk! the enemy helper next to you' : 'Bonk! the enemy base',
+  /** Shown when the dasher is out but nothing is next to him. */
+  nothingToBonk: 'Nothing to bonk yet.',
   /** The word that pops up on the field with every bonk. */
   bonkWord: 'Bonk!',
   bonkBase: (name: string): string => `${name}: Bonk! The base wobbles.`,
@@ -346,7 +356,7 @@ export const SQUAD_COPY = {
   /** What Chrono says on Hear it. Plain words, one short line per kind of helper. */
   hearLine: (kind: string, name: string): string =>
     kind === 'dasher'
-      ? `${name} walks across. He bonks every turn. Tap Walk out!`
+      ? `${name} walks across. Tap Walk out! Then tap Bonk! to bonk.`
       : `${name} fires a ball. Press Fire!`,
 } as const;
 

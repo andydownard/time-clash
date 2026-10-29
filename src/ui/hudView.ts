@@ -78,13 +78,14 @@ export function createHud(ctx: UiCtx) {
 
   const sendAim = (): void => handlers?.onAim({ ...aim });
 
-  // Escape is Back and H is Hear it for the walking helper. This runs first (capture), and a press
+  // Escape is Back, H is Hear it and K is Bonk! for the walking helper. This runs first (capture), and a press
   // it uses goes no further, so Escape never also pauses the game (Regression 4).
   const onHelperKey = (e: KeyboardEvent): void => {
     if (!parts || !handlers) return;
     if (e.ctrlKey || e.metaKey || e.altKey || e.defaultPrevented) return;
     if (ctx.coverKind() !== null || doc.body.dataset.cover || doc.body.dataset.paused) return;
-    if (e.key !== 'Escape' && e.key.toLowerCase() !== 'h') return;
+    const k = e.key.toLowerCase();
+    if (e.key !== 'Escape' && k !== 'h' && k !== 'k') return;
     if (doc.querySelector('[data-testid="settings-panel"]')) return;
     const target = e.target as Element | null;
     const typing =
@@ -92,7 +93,12 @@ export function createHud(ctx: UiCtx) {
       'closest' in target &&
       target.closest('textarea, select, [contenteditable], input:not([type="range"])');
     if (typing) return;
-    const used = e.key === 'Escape' ? parts.squadBar.pressBack() : parts.squadBar.pressHear();
+    const used =
+      e.key === 'Escape'
+        ? parts.squadBar.pressBack()
+        : k === 'k'
+          ? parts.squadBar.pressBonk()
+          : parts.squadBar.pressHear();
     if (!used) return;
     e.preventDefault();
     e.stopPropagation();

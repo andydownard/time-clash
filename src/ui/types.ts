@@ -111,6 +111,8 @@ export const TEST_IDS = {
   helperBack: 'helper-back',
   helperHear: 'helper-hear',
   helperRecall: 'helper-recall',
+  helperBonk: (kind: string) => `helper-bonk-${kind}`,
+  bonkNone: 'bonk-none',
   dasherResting: 'dasher-resting',
   goHint: 'go-hint',
   /** The message lane: the coach line and the first-go hint (src/ui/messageLane.ts). */
@@ -219,6 +221,8 @@ export type HudSquads = {
   picked: string;
   /** The ground spot the picked dasher walks out to (one at most). Empty for a launcher. */
   targets: readonly string[];
+  /** What the picked dasher may Bonk! now: the enemy helper next to him, the enemy base. */
+  bonks?: readonly ('base' | 'helper')[];
   /** The active team's dasher: home and ready, out on the field, or resting. Missing means home. */
   dasher?: { state: 'home' | 'out' | 'resting'; hp: number; maxHp: number };
   /** True on a side's first go in a match: show the pointing finger and the words. */
@@ -250,6 +254,8 @@ export type HudHandlers = {
   onDash?: (spot: string) => void;
   /** Squads S1: Come back. The dasher on the field walks home. That is the whole go. */
   onRecall?: () => void;
+  /** Squads: Bonk! the enemy base or the enemy helper next to the dasher. That is the whole go. */
+  onBonk?: (kind: 'base' | 'helper') => void;
   /** Squads S1: Chrono says the picked helper's name and what it does, with a caption. */
   onHearHelper?: () => void;
 };

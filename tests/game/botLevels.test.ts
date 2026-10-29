@@ -18,7 +18,12 @@ import type { Team } from '../../src/game/types';
 const N = 200;
 
 /** A child who walks the helper out every time he is home and ready (the strongest simple use). */
-const HUMAN_WALKS: BotHelperPlan = { dashChance: 1, replyChance: 1, recallChance: 0 };
+const HUMAN_WALKS: BotHelperPlan = {
+  dashChance: 1,
+  replyChance: 1,
+  recallChance: 0,
+  bonkChance: 0.5,
+};
 
 /**
  * The bot's win share over N matches. Sides and the first turn alternate, as in the script. The

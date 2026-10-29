@@ -1,8 +1,9 @@
 // Squads S1 (docs/SQUADS_PLAN.md): each side has a launcher and one walking dasher. Pure, no Phaser.
 // The launcher is today's cannon or laser: it fires with the match's own aim and ammo.
 // The dasher walks out along the ground (over any obstacle: the walk is a ground line), stops
-// next to the first enemy thing in front, and bonks it at the start of every turn until he is
-// bonked down or called home. Nothing here is random. The caller passes in the seeded line bag.
+// next to the first enemy thing in front, and waits there. A Bonk! is the player's choice and one
+// of the 2 goes (owner, 2026-10-28): the enemy base, or the enemy helper if he is next to him.
+// Nothing bonks by itself. Nothing here is random. The caller passes in the seeded line bag.
 import { CHARACTER_HEALTH, SQUADS, TURN } from './config';
 import { classifyBlast } from './damage';
 import { otherTeam, type BattleLayout, type Rect, type Team, type Vec2 } from './types';
@@ -42,7 +43,8 @@ export type IllegalCommandReason =
   | 'no_free_spot'
   | 'already_out'
   | 'resting'
-  | 'not_out';
+  | 'not_out'
+  | 'nothing_to_bonk';
 
 /** A helper command that the rules refuse. The caller shows nothing and nothing changes. */
 export class IllegalCommandError extends RangeError {
@@ -54,13 +56,16 @@ export class IllegalCommandError extends RangeError {
   }
 }
 
-/** A dash go: the dasher walked out to `to`. He bonks at the start of the next turn. */
+/** A dash go: the dasher walked out to `to`. He can Bonk! on his next go. */
 export type DashOutcome = { helper: HelperId; to: GroundSpotId };
 /** A Come back go: the dasher walked home from `from`. */
 export type RecallOutcome = { helper: HelperId; from: GroundSpotId };
 
-/** What a dasher bonks at the start of a turn. Base damage here is before shields and cuts. */
-export type StandTarget =
+/** What a Bonk! can hit. */
+export type BonkKind = 'base' | 'helper';
+
+/** What one Bonk! did. Base damage here is before shields and cuts. */
+export type BonkTarget =
   | { kind: 'base'; team: Team; damage: number }
   | {
       kind: 'helper';
@@ -70,14 +75,16 @@ export type StandTarget =
       bubbleIndex: number | null;
     };
 
-/** One dasher's beat at the start of a turn: walk on (when `from` and `to` differ), then bonk. */
-export type StandBeat = {
+/** One Bonk! go: `helper` stood at `at` and bonked `target`. */
+export type BonkBeat = {
   helper: HelperId;
   team: Team;
-  from: GroundSpotId;
-  to: GroundSpotId;
-  target: StandTarget;
+  at: GroundSpotId;
+  target: BonkTarget;
 };
+
+/** A dasher who walked on at the start of a turn because nothing was next to him. */
+export type StandWalk = { helper: HelperId; team: Team; from: GroundSpotId; to: GroundSpotId };
 
 /** A shell that landed near an out dasher. */
 export type DasherHit = {
@@ -235,73 +242,102 @@ export function wakeDashers(crew: Crew, team: Team, ownTurns: number, maxHp: num
 }
 
 /**
- * The start of a turn. Every out dasher walks on if nothing is next to him, then bonks: the
- * enemy dasher next to him (both bonk each other at once), or the enemy base from his attack
- * spot. A dasher bonked to 0 tumbles and rests until `restAt[his team]`. The team whose turn
- * starts is listed first. `bubble` is called once per tumble, from the match's seeded bag.
+ * The start of a turn. Every out dasher walks on if nothing is next to him: to the last free
+ * spot before the enemy helper, or to the attack spot. Nobody bonks here. The team whose turn
+ * starts is listed first.
  */
-export function planStand(
-  crew: Crew,
-  active: Team,
-  restAt: Readonly<Record<Team, number>>,
-  bubble: () => number,
-): { crew: Crew; beats: StandBeat[] } {
-  const order: Team[] = [active, otherTeam(active)];
+export function planWalkOn(crew: Crew, active: Team): { crew: Crew; walks: StandWalk[] } {
   let next = crew;
-  const from: Partial<Record<Team, GroundSpotId>> = {};
-  // Walk on first, so two dashers who meet both get to bonk.
-  for (const team of order) {
+  const walks: StandWalk[] = [];
+  for (const team of [active, otherTeam(active)]) {
     const d = dasherOf(next, team);
     if (d.state !== 'out' || d.spot === null) continue;
-    from[team] = d.spot;
     const stop = stopIndex(next, team, indexOf(d.spot));
-    if (stop !== null && spotAt(stop) !== d.spot) next = patch(next, d.id, { spot: spotAt(stop) });
+    if (stop === null || spotAt(stop) === d.spot) continue;
+    walks.push({ helper: d.id, team, from: d.spot, to: spotAt(stop) });
+    next = patch(next, d.id, { spot: spotAt(stop) });
   }
-  const out = order.filter((t) => from[t] !== undefined);
-  const adjacent = (team: Team): boolean => {
-    const me = dasherOf(next, team);
-    const foe = dasherOf(next, otherTeam(team));
-    return (
-      foe.state === 'out' &&
-      me.spot !== null &&
-      foe.spot !== null &&
-      indexOf(foe.spot) === indexOf(me.spot) + forward(team)
-    );
-  };
-  // Both sides' bonks are decided from the same board, then applied together.
-  const duel = new Set(out.filter(adjacent));
-  let after = next;
-  for (const team of duel) {
-    const foe = dasherOf(after, otherTeam(team));
-    after = patch(after, foe.id, { hp: Math.max(0, foe.hp - SQUADS.duelBonkHp) });
+  return { crew: next, walks };
+}
+
+/** True when `team`'s out dasher stands right next to the enemy dasher, who is out too. */
+function nextToFoe(crew: Crew, team: Team): boolean {
+  const me = dasherOf(crew, team);
+  const foe = dasherOf(crew, otherTeam(team));
+  return (
+    me.state === 'out' &&
+    foe.state === 'out' &&
+    me.spot !== null &&
+    foe.spot !== null &&
+    indexOf(foe.spot) === indexOf(me.spot) + forward(team)
+  );
+}
+
+/**
+ * What the team's dasher may Bonk! right now: the enemy helper when he is next to him, and the
+ * enemy base when he stands at the attack spot. Empty at home, while resting, and for a launcher.
+ */
+export function bonkTargets(crew: Crew, team: Team, id: HelperId = crew.picked[team]): BonkKind[] {
+  const h = find(crew, id);
+  if (!h || h.team !== team || h.kind !== 'dasher' || h.state !== 'out' || h.spot === null)
+    return [];
+  const out: BonkKind[] = [];
+  if (nextToFoe(crew, team)) out.push('helper');
+  if (h.spot === attackSpotOf(team)) out.push('base');
+  return out;
+}
+
+/**
+ * Plan one Bonk! go. The picked dasher bonks the enemy helper next to him (SQUADS.duelBonkHp
+ * health; at 0 the enemy helper tumbles and rests until `restAt`) or the enemy base from the
+ * attack spot (damage before shields and cuts). Throws IllegalCommandError: not his helper, not a
+ * dasher, resting, at home, or nothing of that kind next to him.
+ */
+export function planBonk(
+  crew: Crew,
+  team: Team,
+  kind: BonkKind,
+  restAt: number,
+  bubble: () => number,
+  id: HelperId = crew.picked[team],
+): { crew: Crew; beat: BonkBeat } {
+  const d = ownDasher(crew, team, id);
+  if (d.state === 'resting') throw new IllegalCommandError('resting');
+  if (d.state !== 'out' || d.spot === null) throw new IllegalCommandError('not_out');
+  if (!bonkTargets(crew, team, id).includes(kind)) throw new IllegalCommandError('nothing_to_bonk');
+  const at = d.spot;
+  if (kind === 'base') {
+    return {
+      crew,
+      beat: {
+        helper: d.id,
+        team,
+        at,
+        target: { kind: 'base', team: otherTeam(team), damage: SQUADS.standBonkDamage },
+      },
+    };
   }
-  const beats: StandBeat[] = [];
-  for (const team of out) {
-    const me = dasherOf(next, team);
-    const spot = me.spot as GroundSpotId;
-    let target: StandTarget | null = null;
-    if (duel.has(team)) {
-      const foe = dasherOf(after, otherTeam(team));
-      const tumbled = foe.hp === 0;
-      target = {
+  const foe = dasherOf(crew, otherTeam(team));
+  const hp = Math.max(0, foe.hp - SQUADS.duelBonkHp);
+  const tumbled = hp === 0;
+  const next = tumbled
+    ? patch(crew, foe.id, { hp, state: 'resting', spot: null, readyAt: restAt })
+    : patch(crew, foe.id, { hp });
+  return {
+    crew: next,
+    beat: {
+      helper: d.id,
+      team,
+      at,
+      target: {
         kind: 'helper',
         helper: foe.id,
-        hp: foe.hp,
+        hp,
         tumbled,
         bubbleIndex: tumbled ? bubble() : null,
-      };
-    } else if (spot === attackSpotOf(team)) {
-      target = { kind: 'base', team: otherTeam(team), damage: SQUADS.standBonkDamage };
-    }
-    if (target)
-      beats.push({ helper: me.id, team, from: from[team] as GroundSpotId, to: spot, target });
-  }
-  for (const team of out) {
-    const d = dasherOf(after, team);
-    if (d.hp === 0)
-      after = patch(after, d.id, { state: 'resting', spot: null, readyAt: restAt[team] });
-  }
-  return { crew: after, beats };
+      },
+    },
+  };
 }
 
 // ---------- On the field (world px) ----------

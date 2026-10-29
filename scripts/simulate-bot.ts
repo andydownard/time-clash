@@ -7,7 +7,12 @@ import type { Team } from '../src/game/types';
 const N = Number(process.argv[2] ?? 2000);
 
 /** A child who walks the helper out every time he is home and ready. */
-const HUMAN_WALKS: BotHelperPlan = { dashChance: 1, replyChance: 1, recallChance: 0 };
+const HUMAN_WALKS: BotHelperPlan = {
+  dashChance: 1,
+  replyChance: 1,
+  recallChance: 0,
+  bonkChance: 0.5,
+};
 
 type Entry = { name: string; profile: BotProfile; helper?: BotHelperPlan };
 const entries: Entry[] = [

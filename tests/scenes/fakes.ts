@@ -75,6 +75,8 @@ export function fakeController(
     previewShot: unused,
     selectHelper: unused,
     helperTargets: () => [],
+    bonkTargets: () => [],
+    bonk: unused,
     dash: unused,
     recall: unused,
     fire: unused,

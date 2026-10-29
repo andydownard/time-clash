@@ -67,12 +67,16 @@ import {
   hitDasher,
   planDash,
   planRecall,
-  planStand,
+  planWalkOn,
+  planBonk,
+  bonkTargets,
   startingCrew,
   wakeDashers,
   type Crew,
   type HelperId,
+  type BonkKind,
   type RecallOutcome,
+  type StandWalk,
 } from './crew';
 import {
   birdsForTurn,
@@ -552,75 +556,16 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
 
     currentLayout,
 
-    ready(): StandBonk[] {
+    ready(): StandWalk[] {
       guard('get ready');
       step({ type: 'READY' });
       if (!squadsOn) return [];
       const team = turn.team;
       ownTurns[team] += 1;
       crew = wakeDashers(crew, team, ownTurns[team], dasherHp);
-      const stand = planStand(
-        crew,
-        team,
-        { PAST: readyAfterRest('PAST'), FUTURE: readyAfterRest('FUTURE') },
-        nextBubble,
-      );
+      const stand = planWalkOn(crew, team);
       crew = stand.crew;
-      const out: StandBonk[] = [];
-      for (const beat of stand.beats) {
-        if (beat.target.kind !== 'base') {
-          out.push({ ...beat, target: beat.target });
-          continue;
-        }
-        // Once the match is over, nobody bonks.
-        if (status === 'OVER') break;
-        const target = beat.target.team;
-        // A bonk lands at the gate: the gate's cut applies, never below 1, then the same shields as a shot.
-        let damage = Math.max(1, beat.target.damage - effects[target].nearCut);
-        let dodged = false;
-        let blocked = false;
-        if (dodgesNow(evasion[target])) {
-          evasion = { ...evasion, [target]: spend(evasion[target]) };
-          damage = 0;
-          dodged = true;
-        }
-        if (damage > 0 && shield[target] > 0) {
-          shield[target] -= 1;
-          damage = 0;
-          blocked = true;
-        }
-        let ev: ReturnType<typeof freshEvents> | null = null;
-        if (brickTeam(target)) {
-          // A built base: the bonk chips the brick on the ground nearest the helper.
-          const bt = (built as NonNullable<typeof built>)[target];
-          ev = freshEvents();
-          const front = frontBrick(bt);
-          if (damage > 0 && front) hitWall(bt, { kind: 'brick', id: front }, damage, ev);
-          const left = builtHealth(bt);
-          damage = baseHp[target] - left;
-          baseHp = { ...baseHp, [target]: left };
-        } else {
-          baseHp = { ...baseHp, [target]: Math.max(0, baseHp[target] - damage) };
-        }
-        dropFallenPicks();
-        const won = winnerOf(baseHp);
-        if (won) {
-          status = 'OVER';
-          winner = won;
-        }
-        out.push({
-          ...beat,
-          target: {
-            kind: 'base',
-            team: target,
-            damage,
-            ...(blocked ? { blocked: true } : {}),
-            ...(dodged ? { dodged: true } : {}),
-            ...(ev ? { built: ev } : {}),
-          },
-        });
-      }
-      return out;
+      return stand.walks;
     },
 
     setAim(input: AimInput): AimInput {
@@ -725,6 +670,69 @@ export const createMatch: CreateMatch = (options: MatchOptions): MatchController
       step({ type: 'SHOT_LANDED' });
       crew = planned.crew;
       return planned.outcome;
+    },
+
+    bonkTargets(): BonkKind[] {
+      if (!squadsOn || turn.phase !== 'AIMING') return [];
+      return bonkTargets(crew, turn.team);
+    },
+
+    bonk(kind: BonkKind): StandBonk {
+      guard('bonk');
+      requireSquads();
+      if (turn.phase !== 'AIMING') throw new IllegalTransitionError(turn.phase, 'BONK');
+      const team = turn.team;
+      const planned = planBonk(crew, team, kind, readyAfterRest(otherTeam(team)), nextBubble);
+      step({ type: 'FIRE' });
+      step({ type: 'SHOT_LANDED' });
+      crew = planned.crew;
+      const beat = planned.beat;
+      if (beat.target.kind === 'helper') return { ...beat, target: beat.target };
+      const target = beat.target.team;
+      // A bonk lands at the gate: the gate's cut applies, never below 1, then the same shields as a shot.
+      let damage = Math.max(1, beat.target.damage - effects[target].nearCut);
+      let dodged = false;
+      let blocked = false;
+      if (dodgesNow(evasion[target])) {
+        evasion = { ...evasion, [target]: spend(evasion[target]) };
+        damage = 0;
+        dodged = true;
+      }
+      if (damage > 0 && shield[target] > 0) {
+        shield[target] -= 1;
+        damage = 0;
+        blocked = true;
+      }
+      let ev: ReturnType<typeof freshEvents> | null = null;
+      if (brickTeam(target)) {
+        // A built base: the bonk chips the brick on the ground nearest the helper.
+        const bt = (built as NonNullable<typeof built>)[target];
+        ev = freshEvents();
+        const front = frontBrick(bt);
+        if (damage > 0 && front) hitWall(bt, { kind: 'brick', id: front }, damage, ev);
+        const left = builtHealth(bt);
+        damage = baseHp[target] - left;
+        baseHp = { ...baseHp, [target]: left };
+      } else {
+        baseHp = { ...baseHp, [target]: Math.max(0, baseHp[target] - damage) };
+      }
+      dropFallenPicks();
+      const won = winnerOf(baseHp);
+      if (won) {
+        status = 'OVER';
+        winner = won;
+      }
+      return {
+        ...beat,
+        target: {
+          kind: 'base',
+          team: target,
+          damage,
+          ...(blocked ? { blocked: true } : {}),
+          ...(dodged ? { dodged: true } : {}),
+          ...(ev ? { built: ev } : {}),
+        },
+      };
     },
 
     fire(fireOptions?: FireOptions): ShotResult {

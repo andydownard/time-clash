@@ -1,5 +1,5 @@
-// The walking dasher in the battle flow: he walks out, bonks at the start of every turn (both
-// sides' turns), comes back, wobbles when a shell lands near, and tumbles home dizzy at 0.
+// The walking dasher in the battle flow: he walks out, Bonk!s as a go the player chooses (the
+// base, or the enemy helper next to him), comes back, wobbles when a shell lands near, and tumbles home dizzy at 0.
 // Every line has a caption. The view only draws; the rules decide.
 import { describe, expect, it } from 'vitest';
 import { SQUAD_COPY } from '../../../src/data/copy';
@@ -25,6 +25,11 @@ const start = async (): Promise<World> => {
 const dash = async (w: World, team: 'PAST' | 'FUTURE') => {
   w.handlers()!.onHelper!(`${team}-dasher`);
   w.handlers()!.onDash!(w.match.helperTargets()[0]!);
+  await settle();
+};
+const bonk = async (w: World, team: 'PAST' | 'FUTURE', kind: 'base' | 'helper') => {
+  w.handlers()!.onHelper!(`${team}-dasher`);
+  w.handlers()!.onBonk!(kind);
   await settle();
 };
 const fire = async (w: World, team: 'PAST' | 'FUTURE', aim: AimInput = SAFE) => {
@@ -63,23 +68,43 @@ describe('the dasher in the battle flow', () => {
     w.flow.destroy();
   });
 
-  it('bonks the enemy base at the start of the enemy turn, after the cover lifts', async () => {
+  it('does not bonk by itself: the enemy turn starts with no bonk and no health lost', async () => {
     const w = await start();
     const full = w.match.snapshot().maxBaseHp.FUTURE;
     await dash(w, 'PAST');
     await fire(w, 'PAST');
-    const pass = w.log.indexOf('pass:FUTURE');
-    const bonk = w.log.findIndex((l) => l.startsWith('bonk:PAST:'));
-    expect(pass).toBeGreaterThan(-1);
-    expect(bonk).toBeGreaterThan(pass);
-    expect(w.log[bonk]).toContain(SQUAD_COPY.bonkWord);
+    expect(w.log.some((l) => l.startsWith('pass:FUTURE'))).toBe(true);
+    expect(w.log.some((l) => l.startsWith('bonk:'))).toBe(false);
+    expect(w.match.snapshot().baseHp.FUTURE).toBe(full);
+    w.flow.destroy();
+  });
+
+  it('Bonk! the base is a whole go: the swing, the word, a caption, and the new health', async () => {
+    const w = await start();
+    const full = w.match.snapshot().maxBaseHp.FUTURE;
+    await dash(w, 'PAST');
+    w.handlers()!.onHelper!('PAST-dasher');
+    expect(w.hudStates.at(-1)!.squads!.bonks).toEqual(['base']);
+    await bonk(w, 'PAST', 'base');
+    const swing = w.log.findIndex((l) => l.startsWith('bonk:PAST:'));
+    expect(swing).toBeGreaterThan(-1);
+    expect(w.log[swing]).toContain(SQUAD_COPY.bonkWord);
     expect(w.match.snapshot().baseHp.FUTURE).toBe(full - SQUADS.standBonkDamage);
     expect(w.captions).toContain(SQUAD_COPY.bonkBase(PAST_NAME));
     expect(w.sfx).toContain('bonk');
-    // The new health shows in the HUD before Team Future aims.
-    const aiming = w.hudStates.find((h) => h.activeTeam === 'FUTURE' && h.canFire)!;
-    expect(aiming.baseHp.FUTURE).toBe(full - SQUADS.standBonkDamage);
+    // The dash and the Bonk! are the 2 goes, so the reload comes next.
+    expect(w.log).toContain('reload:PAST');
     expect(w.coverViolations).toEqual([]);
+    w.flow.destroy();
+  });
+
+  it('the Bonk! buttons show only what is next to him', async () => {
+    const w = await start();
+    w.handlers()!.onHelper!('PAST-dasher');
+    expect(w.hudStates.at(-1)!.squads!.bonks).toEqual([]);
+    await dash(w, 'PAST');
+    w.handlers()!.onHelper!('PAST-dasher');
+    expect(w.hudStates.at(-1)!.squads!.bonks).toEqual(['base']);
     w.flow.destroy();
   });
 
@@ -97,21 +122,20 @@ describe('the dasher in the battle flow', () => {
     w.flow.destroy();
   });
 
-  it('two dashers bonk each other until both tumble and walk home dizzy, with a caption', async () => {
+  it('two dashers side by side: Bonk! the helper twice and he tumbles and walks home dizzy, with a caption', async () => {
     const w = await start();
     await dash(w, 'PAST');
     await fire(w, 'PAST');
     await dash(w, 'FUTURE');
     await fire(w, 'FUTURE');
-    for (let i = 0; i < CHARACTER_HEALTH.hp + 2; i++) {
-      const team = w.match.snapshot().turn.team;
-      if (dasherOf(w.match.snapshot().squads!.crew, team).state === 'home') break;
-      await fire(w, team);
-      await fire(w, team);
-    }
+    w.handlers()!.onHelper!('PAST-dasher');
+    expect(w.hudStates.at(-1)!.squads!.bonks).toEqual(['helper', 'base']);
+    for (let i = 0; i < CHARACTER_HEALTH.hp / SQUADS.duelBonkHp; i++)
+      await bonk(w, 'PAST', 'helper');
     expect(w.log).toContain('dasherHit:FUTURE:tumble');
     expect(w.log.some((l) => l.startsWith('walk:FUTURE:') && l.endsWith(':dizzy'))).toBe(true);
     expect(w.captions.some((c) => c?.startsWith(SQUAD_COPY.tumbleHome(FUTURE_NAME)))).toBe(true);
+    expect(w.captions).toContain(SQUAD_COPY.bonkHelper(PAST_NAME));
     expect(w.coverViolations).toEqual([]);
     w.flow.destroy();
   });
