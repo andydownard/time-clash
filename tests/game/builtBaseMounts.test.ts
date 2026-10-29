@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { SPOT_WEAPONS } from '../../src/game/baseBuilder';
 import { chooseShotWith } from '../../src/game/bot';
 import { playBotMatch } from '../../src/game/botPlay';
-import { createBuilt, hitWall, freshEvents, mountScale } from '../../src/game/builtBase';
+import { createBuilt, fitFrame, hitWall, freshEvents, mountScale } from '../../src/game/builtBase';
 import {
   BASE_IN_BATTLE,
   BONUS,
@@ -409,9 +409,11 @@ describe('pads take hits and fall with their brick', () => {
   it('the pad box is the pad as drawn', () => {
     const built = createBuilt({ PAST: PAST_ARMED }, FLAT);
     const pad = built.PAST.mounts[0]!;
-    // TYPICAL fits at 2 px a step, and a pad is 10 steps across.
-    expect(pad.box.w).toBe(20);
-    expect(pad.box.h).toBe(20);
+    // A pad is 10 steps across, at the scale the base is fitted at (the pads widen it a little).
+    const step = fitFrame('PAST', PAST_ARMED, PHASE1_LAYOUT.bases.PAST).scale;
+    expect(step).toBeGreaterThan(3);
+    expect(pad.box.w).toBeCloseTo(10 * step, 6);
+    expect(pad.box.h).toBeCloseTo(10 * step, 6);
     expect(pad.box.x + pad.box.w / 2).toBeCloseTo(pad.origin.x, 6);
   });
 
