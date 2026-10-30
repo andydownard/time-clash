@@ -63,7 +63,7 @@ export const UPGRADES: readonly Upgrade[] = [
   {
     id: 'missiles',
     team: 'FUTURE',
-    name: 'Missile Launcher',
+    name: 'Rocket Launcher',
     effect: 'directBonus',
     perLevel: 2,
   },

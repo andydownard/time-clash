@@ -95,6 +95,23 @@ describe('extractFromHtml', () => {
 });
 
 describe('findBanned', () => {
+  it.each(['missile', 'soldier', 'army', 'troops', 'war', 'shoot'])(
+    'flags the Squads word "%s"',
+    (w) => {
+      expect(findBanned(`You can ${w} it`)).toContain(w);
+    },
+  );
+
+  it('flags Squads word inflections', () => {
+    expect(findBanned('missiles, soldiers, armies, troop, wars, shooting, shooter')).toEqual(
+      expect.arrayContaining(['missile', 'soldier', 'army', 'troops', 'war', 'shoot']),
+    );
+  });
+
+  it('does not flag look-alikes of the Squads words', () => {
+    expect(findBanned('warm, award, toward, wart, swarm, armor, harmony, shot')).toEqual([]);
+  });
+
   it.each(['kill', 'die', 'dead', 'blood', 'gore', 'defeat', 'buy', 'price', 'upgrade to pro'])(
     'flags "%s"',
     (w) => {

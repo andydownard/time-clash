@@ -37,7 +37,7 @@ Choices made where the owner's words left room (the simplest option each time). 
 15. **The Computer player** answers a walk-out in kind: once the child's helper has left home, it walks its own out on go 1 (Easy 3 times in 4, Medium and Hard always), with the same goes and walk a child has. It Bonk!s as a go (`bonkChance`: the helper next to him first, else the base). It calls a hurt helper home only when he is losing a bonk-off. It never walks out first. Rules and numbers: docs/GAME_SPEC.md "Practice opponent". A bot match still ends (`tests/game/squadWalk.test.ts`, `tests/game/botHelper.test.ts`).
 16. **Pace.** Perfect-aim bots that keep their dashers out every turn still need at least 9 turns in all at base health 400, and a dasher saves at most one own turn (`tests/game/squadPace.test.ts`).
 17. **E2E switch.** With `?e2e=1` (never in a production build) `window.__timeclash.setSquads(false)` turns Squads off for matches started after it; `null` goes back to the config default (on). `window.__timeclash.dashers()` says where each dasher is drawn and what he is doing.
-18. **Still open:** a per-family first-match hint, re-recording intro cards 3 and 4 with "2 goes" (docs/NARRATION.md), and the copy lint words from section 7 (the Camp's "Forge Weapon" still uses "weapon").
+18. **Still open:** a per-family first-match hint, re-recording intro cards 3 and 4 with "2 goes" (docs/NARRATION.md). The copy lint words missile, soldier, army, troops, war and shoot are in (2026-10-29). "weapon" stays out while the Camp has Forge Weapon.
 
 ## 1. Goal and the "super simple" rules
 

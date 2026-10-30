@@ -915,7 +915,7 @@ describe('weapon spots', () => {
     key(q('bb-weapon-laser')!, 'ArrowDown');
     expect(document.activeElement).toBe(q('bb-weapon-missilePod'));
     click(q('bb-weapon-missilePod'));
-    expect(pad(3).getAttribute('aria-label')).toBe('Spot 3, missile pod, selected');
+    expect(pad(3).getAttribute('aria-label')).toBe('Spot 3, rocket pod, selected');
     key(q('bb-weapon-missilePod')!, 'Delete');
     expect(pad(3).getAttribute('data-weapon')).toBe('');
     key(q('bb-weapon-laser')!, 'Escape');

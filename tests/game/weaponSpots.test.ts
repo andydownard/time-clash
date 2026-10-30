@@ -49,7 +49,7 @@ describe('the weapon catalog', () => {
     ]);
     expect(spotWeaponsOf('FUTURE').map((w) => w.name)).toEqual([
       'Laser',
-      'Missile pod',
+      'Rocket pod',
       'Turret',
       'Shield generator',
     ]);

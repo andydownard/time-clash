@@ -22,7 +22,7 @@ describe('kindForRole', () => {
     ['spear', 'spear'],
     ['tank', 'shell'],
     ['helicopter', 'tracer'],
-    ['bunker', 'missile'],
+    ['bunker', 'rocket'],
     ['saber', 'wave'],
     ['laserGun', 'laser'],
   ];
@@ -120,7 +120,7 @@ describe('drawing table and colors', () => {
   it('kindFlies is defined for every kind', () => {
     for (const k of PROJECTILE_KINDS) expect(typeof kindFlies(k)).toBe('boolean');
     expect(kindFlies('arrow')).toBe(true);
-    expect(kindFlies('missile')).toBe(true);
+    expect(kindFlies('rocket')).toBe(true);
     expect(kindFlies('cannonball')).toBe(false);
   });
   it('uses only colors from visual.ts', () => {

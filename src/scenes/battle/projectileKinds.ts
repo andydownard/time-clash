@@ -7,7 +7,7 @@ export type ProjectileKind =
   | 'stone'
   | 'spear'
   | 'shell'
-  | 'missile'
+  | 'rocket'
   | 'tracer'
   | 'laser'
   | 'bomb'
@@ -19,7 +19,7 @@ export const PROJECTILE_KINDS: readonly ProjectileKind[] = [
   'stone',
   'spear',
   'shell',
-  'missile',
+  'rocket',
   'tracer',
   'laser',
   'bomb',
@@ -36,7 +36,7 @@ const ROLE_KIND: Record<string, ProjectileKind> = {
   spear: 'spear',
   tank: 'shell',
   helicopter: 'tracer',
-  bunker: 'missile',
+  bunker: 'rocket',
   saber: 'wave',
   laserGun: 'laser',
 };
