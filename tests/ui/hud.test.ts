@@ -189,29 +189,26 @@ describe('HUD', () => {
     expect(document.querySelectorAll('.tc-pip-bonus')).toHaveLength(0);
   });
 
-  it('the team card shows health once, as a meter: no number (the pill by the base has it)', () => {
+  it('the team card shows no health at all: the pill by the base is the one readout', () => {
     s.overlay.showHud(handlers());
     s.overlay.updateHud(state());
     for (const t of ['PAST', 'FUTURE'] as const) {
       const card = q(TEST_IDS.baseHp(t))!.closest<HTMLElement>('[data-team]')!;
       expect(card.textContent).not.toMatch(/\d+\s*\/\s*\d+/);
-      expect(card.querySelector('.tc-hp-text')).toBeNull();
-      // The name, the Scrap and the pictures stay.
+      expect(card.querySelector('.tc-hp-text, .tc-hp-row, .tc-hp-fill')).toBeNull();
+      expect(card.querySelector('[data-icon="health"]')).toBeNull();
+      // The name and the Scrap (with its picture) stay.
       expect(card.textContent).toContain(t === 'PAST' ? 'Alex' : 'Sam');
-      expect(card.querySelector('[data-icon="health"]')).not.toBeNull();
       expect(card.querySelector('[data-icon="scrap"]')).not.toBeNull();
     }
   });
 
-  it('health bars are meters a screen reader can read', () => {
+  it('a screen reader still hears health from a meter that is not drawn', () => {
     s.overlay.showHud(handlers());
     s.overlay.updateHud(state());
-    const meter = q(TEST_IDS.baseHp('FUTURE'))!.querySelector(
-      '[role="meter"], progress, [role="progressbar"]',
-    )!;
-    expect(
-      meter.getAttribute('aria-valuenow') ?? (meter as HTMLProgressElement).value.toString(),
-    ).toBe('75');
+    const meter = q(TEST_IDS.baseHp('FUTURE'))!.querySelector<HTMLElement>('[role="meter"]')!;
+    expect(meter.classList.contains('tc-sr-only')).toBe(true);
+    expect(meter.getAttribute('aria-valuenow')).toBe('75');
   });
 
   it('updates in place (no duplicate controls)', () => {
@@ -755,7 +752,7 @@ describe('HUD health with a raised maximum (Rebuild the Tower)', () => {
     expect(HUD.hpValue(full)).toBe(`${full} / ${full}`);
   });
 
-  it('shows health out of the raised maximum, and the bar is full at the maximum', () => {
+  it('shows health out of the raised maximum', () => {
     s.overlay.showHud(handlers());
     s.overlay.updateHud(
       state({ baseHp: { PAST: 124, FUTURE: 100 }, maxBaseHp: { PAST: 124, FUTURE: 100 } }),
@@ -764,16 +761,6 @@ describe('HUD health with a raised maximum (Rebuild the Tower)', () => {
     const meter = document.querySelector('[data-team="PAST"] [role="meter"]')!;
     expect(meter.getAttribute('aria-valuemax')).toBe('124');
     expect(meter.getAttribute('aria-valuenow')).toBe('124');
-    expect(meter.querySelector<HTMLElement>('.tc-hp-fill')!.style.width).toBe('100%');
-  });
-
-  it('scales the bar to the maximum when hurt', () => {
-    s.overlay.showHud(handlers());
-    s.overlay.updateHud(
-      state({ baseHp: { PAST: 62, FUTURE: 100 }, maxBaseHp: { PAST: 124, FUTURE: 100 } }),
-    );
-    const fill = document.querySelector<HTMLElement>('[data-team="PAST"] .tc-hp-fill')!;
-    expect(fill.style.width).toBe('50%');
   });
 
   it('never shows more than the maximum, and never below zero', () => {

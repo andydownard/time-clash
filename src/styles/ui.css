@@ -955,7 +955,7 @@ body:has(.tc-hud):not([data-cover]):not(:has([data-layer='screen'] > *)) .tc-cap
   display: block;
   font-size: var(--tc-fs-label);
 }
-/* Pre-reader pictures beside Base health, Shots left and Scrap. Decorative: the words stay. */
+/* Pre-reader pictures beside Shots left and Scrap. Decorative: the words stay. */
 .tc-hud-icon {
   flex: none;
   width: 26px;
@@ -970,26 +970,6 @@ body:has(.tc-hud):not([data-cover]):not(:has([data-layer='screen'] > *)) .tc-cap
 .tc-pips .tc-hud-icon {
   width: 30px;
   height: 30px;
-}
-.tc-hp-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.tc-hp-meter {
-  flex: 1 1 auto;
-  min-width: 60px;
-  height: var(--tc-bar-h);
-  border: 3px solid var(--tc-bar-edge);
-  border-radius: 13px;
-  background: var(--tc-bar-track);
-  overflow: hidden;
-}
-.tc-hp-fill {
-  display: block;
-  height: 100%;
-  background: var(--tc-bar-fill);
-  transition: width 300ms ease;
 }
 /* The control bar fills its own band under the picture (the canvas is taller than the
    battlefield, see BATTLE_BAND). It sits at the bottom of the screen, full width, so the
