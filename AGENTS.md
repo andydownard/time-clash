@@ -47,7 +47,7 @@ test: `npm test` · lint: `npm run lint` · typecheck: `npm run typecheck` · bu
 | Walk out, Come back | `dash`, `recall` | attack, retreat |
 
 ## Top damage risks
-1. **Anything gory, scary, or mean.** Wipeouts are silly and nobody is hurt. Copy lint blocks banned words (`kill`, `die`, `dead`, `blood`, `gore`, `defeat`, `buy`, `price`).
+1. **Anything gory, scary, or mean.** Wipeouts are silly and nobody is hurt. Copy lint blocks banned words (`kill`, `die`, `dead`, `blood`, `gore`, `defeat`, `buy`, `price`, `missile`, `soldier`, `army`, `troops`, `war`, `shoot`).
 2. **Collecting data from children.** Keep all progress in the browser (`localStorage`). No analytics, no third-party scripts, no cookies, no ads, no sign-in. Children's names never leave the device.
 3. **The other player seeing the answer.** The whole board is covered while a reload question is up (`INJECTION`-style leak of hidden state, `SERVER` in Phase 4).
 4. **Wrong or off-level questions.** Every question has a checked answer key and a grade. `npm run check:questions` runs in CI.
