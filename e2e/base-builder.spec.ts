@@ -431,7 +431,7 @@ test('weapons keyboard: Tab to a spot, Enter, arrows, Enter to mount, Delete to 
   await page.keyboard.press('ArrowDown');
   await expect(tid(page, 'bb-weapon-missilePod')).toBeFocused();
   await page.keyboard.press('Enter');
-  await expect(spotPad(page, 3)).toHaveAttribute('aria-label', 'Spot 3, missile pod, selected');
+  await expect(spotPad(page, 3)).toHaveAttribute('aria-label', 'Spot 3, rocket pod, selected');
   await expect(tid(page, 'bb-weapon-missilePod')).toBeFocused();
   await page.keyboard.press('Delete');
   await expect(spotPad(page, 3)).toHaveAttribute('aria-label', 'Spot 3, empty, selected');

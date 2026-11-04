@@ -37,7 +37,7 @@ export type UnitDef = {
  * Pace (owner, 2026-10-24): no fighter hits harder than the default. A perfect turn (two direct
  * hits and a Power Shot) must stay at 25 + 25 + 38 = 88 so perfect aim needs five turns; any
  * damageScale above 1 rounds a direct hit to 26 or more and breaks that (1.3 did 116, 1.1 did 98).
- * So the fighters differ by range and where they stand: the Catapult and Missile Bunkers reach
+ * So the fighters differ by range and where they stand: the Catapult and Rocket Bunkers reach
  * farthest, the Spearman and Saber Robot stand closest with a slow, easy-to-aim launch, and the
  * Archer and Laser Gun Robot trade a softer hit for a little more reach.
  * `tests/game/pace.test.ts` plays every fighter.
@@ -110,7 +110,7 @@ export const UNITS: readonly UnitDef[] = [
   {
     id: '3',
     team: 'FUTURE',
-    name: 'Missile Bunkers',
+    name: 'Rocket Bunkers',
     role: 'bunker',
     origin: { x: 950, y: 600 },
     ...STATS.heavy,

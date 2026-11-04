@@ -78,9 +78,8 @@ describe('HUD team cards', () => {
     expect(css).not.toMatch(/\.tc-team-panel\[data-active='false'\]/);
     expect(bodyOf('.tc-team-panel')).not.toMatch(/opacity/);
   });
-  it('the health meter uses the progress recipe and the counters never wrap', () => {
-    expect(bodyOf('.tc-hp-meter')).toContain('--tc-bar-track');
-    expect(bodyOf('.tc-hp-fill')).toContain('--tc-bar-fill');
+  it('the counters never wrap, and no health bar is styled on the card', () => {
+    expect(css).not.toMatch(/\.tc-hp-(meter|fill|row)\b/);
     expect(bodyOf('.tc-team-panel')).toMatch(/white-space:\s*nowrap/);
   });
   it('the turn mark stays, so the active team is not shown by color alone', () => {
@@ -92,12 +91,12 @@ describe('HUD team cards', () => {
     expect(mark?.textContent).toBe('▶');
     expect(bodyOf(".tc-team-panel[data-active='true'] .tc-active-mark")).toContain('visible');
   });
-  it('labels health once: a meter with no number beside it (the base pill shows the number)', () => {
+  it('labels health once, for screen readers only: no bar or number on the card', () => {
     s.overlay.showHud(handlers());
     s.overlay.updateHud(state());
     const hp = q(TEST_IDS.baseHp('FUTURE'))!;
     expect(hp.querySelector('.tc-hp-label')!.textContent).toBe(HUD.baseHealth);
-    expect(hp.querySelector('.tc-hp-row .tc-hp-meter')).not.toBeNull();
+    expect(hp.querySelector('.tc-hp-row')).toBeNull();
     expect(hp.querySelector('.tc-hp-text')).toBeNull();
     expect(hp.querySelector('.tc-hp-meter')!.getAttribute('aria-valuetext')).toBe(HUD.hpValue(75));
   });

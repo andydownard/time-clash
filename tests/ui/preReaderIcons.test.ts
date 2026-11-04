@@ -82,13 +82,11 @@ describe('HUD icons', () => {
 });
 
 describe('the battle HUD shows a picture beside each readout', () => {
-  it('Base health: a heart sits beside the meter, and the words stay for screen readers', () => {
+  it('Base health: the card draws no heart or bar (the pill by the base shows it)', () => {
     showHud();
     for (const t of ['PAST', 'FUTURE'] as const) {
       const hp = q(TEST_IDS.baseHp(t))!;
-      const icon = hp.querySelector('.tc-hp-row svg[data-icon="health"]');
-      expect(icon).not.toBeNull();
-      expect(icon!.getAttribute('aria-hidden')).toBe('true');
+      expect(hp.querySelector('svg[data-icon="health"]')).toBeNull();
       expect(hp.querySelector('.tc-hp-label')!.textContent).toBe(HUD.baseHealth);
     }
   });

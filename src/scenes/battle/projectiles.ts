@@ -134,7 +134,7 @@ const drawShell: Draw = (g) => {
   return {};
 };
 
-const drawMissile: Draw = (g, _team, add) => {
+const drawRocket: Draw = (g, _team, add) => {
   const flame = add();
   flame.fillStyle(ART.flame, 1);
   flame.fillTriangle(-26, -5, -26, 5, -46, 0);
@@ -209,7 +209,7 @@ export const DRAWINGS: Record<ProjectileKind, Draw> = {
   stone: drawStone,
   spear: drawSpear,
   shell: drawShell,
-  missile: drawMissile,
+  rocket: drawRocket,
   tracer: drawTracer,
   laser: drawLaser,
   bomb: drawBomb,

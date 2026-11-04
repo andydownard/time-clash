@@ -40,7 +40,28 @@ const WHOLE_WORD = [
   'qhzo',
 ];
 /** Tone words from the project vocabulary. Never a name, because the banner would shout them. */
-const TONE_WORDS = ['kill', 'killer', 'die', 'dead', 'death', 'blood', 'gore', 'defeat'];
+const TONE_WORDS = [
+  'kill',
+  'killer',
+  'die',
+  'dead',
+  'death',
+  'blood',
+  'gore',
+  'defeat',
+  'missile',
+  'missiles',
+  'soldier',
+  'soldiers',
+  'army',
+  'troop',
+  'troops',
+  'war',
+  'wars',
+  'shoot',
+  'shoots',
+  'shooting',
+];
 
 const substring = SUBSTRING.map(rot13);
 const whole = new Set([...WHOLE_WORD.map(rot13), ...TONE_WORDS]);

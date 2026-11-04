@@ -25,6 +25,12 @@ export const BANNED_WORDS = [
   'buy',
   'price',
   'upgrade to pro',
+  'missile',
+  'soldier',
+  'army',
+  'troops',
+  'war',
+  'shoot',
 ] as const;
 
 /** Whole-word patterns, with the simple inflections kids might meet in a sentence. */
@@ -38,6 +44,12 @@ const PATTERNS: Array<[string, RegExp]> = [
   ['buy', /\b(?:buy|buys|buying|bought)\b/i],
   ['price', /\bpric(?:e|es|ed|ing)\b/i],
   ['upgrade to pro', /\bupgrade\s+to\s+pro\b/i],
+  ['missile', /\bmissiles?\b/i],
+  ['soldier', /\bsoldiers?\b/i],
+  ['army', /\b(?:army|armies)\b/i],
+  ['troops', /\btroops?\b/i],
+  ['war', /\bwars?\b/i],
+  ['shoot', /\b(?:shoot|shoots|shooting|shooter|shooters)\b/i],
 ];
 
 export function findBanned(text: string): string[] {
